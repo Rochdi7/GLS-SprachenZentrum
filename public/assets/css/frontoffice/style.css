@@ -1,0 +1,70 @@
+/* ============================= */
+/* =  FRONT OFFICE MAIN STYLE  = */
+/* ============================= */
+
+/* ===== Import other CSS parts ===== */
+@import url('base.css');
+@import url('header.css');
+@import url('hero.css');
+
+/* ===== Mobile Drawer ===== */
+.drawer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    transform: translateY(-120%);
+    background: var(--cream);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+    border-bottom-left-radius: 32px;
+    border-bottom-right-radius: 32px;
+    transition: transform 0.28s ease;
+    z-index: 15;
+}
+
+.drawer.open {
+    transform: translateY(0);
+}
+
+.drawer-inner {
+    padding: 14px 18px 20px;
+}
+
+.drawer .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 6px;
+}
+
+.drawer .row + .row {
+    border-top: 1px solid var(--line);
+}
+
+.drawer .row .label {
+    font-weight: 700;
+}
+
+.drawer .row .tiny-caret {
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(-45deg);
+    opacity: 0.8;
+}
+
+.drawer .langs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.drawer .cta {
+    margin-top: 12px;
+}
+
+.drawer .note {
+    height: 14px;
+}

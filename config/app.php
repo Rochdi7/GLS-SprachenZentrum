@@ -185,4 +185,15 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    /*
+|--------------------------------------------------------------------------
+| Supported Locales
+|--------------------------------------------------------------------------
+|
+| These are the application languages the user can choose from.
+| You can use this for building language switchers or middleware.
+|
+*/
+    'supported_locales' => ['en', 'de'],
+
 ];

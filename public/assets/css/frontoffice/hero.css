@@ -1,0 +1,96 @@
+/* ===== HERO SECTION ===== */
+.hero {
+    position: relative;
+    margin-top: -28px;
+    height: 86vh;
+    min-height: 500px;
+    max-height: 1000px;
+    overflow: hidden;
+}
+
+.hero__bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center 40%;
+    /* background-image is set via Blade inline style */
+}
+
+.hero__inner {
+    position: relative;
+    z-index: 2;
+    max-width: 1320px;
+    margin: 0 auto;
+    height: 100%;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.headline {
+    font-family: "Outfit", "Manrope", system-ui, sans-serif;
+    color: #fff;
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
+    font-size: clamp(2rem, 6vw, 5rem); /* Reduced size */
+    max-width: 1000px;
+}
+
+/* ===== HERO BADGES ===== */
+.badge {
+    position: absolute;
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 100px;
+    color: #fff;
+    font-weight: 900;
+    font-size: clamp(0.8rem, 1.5vw, 1.4rem);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+    white-space: nowrap;
+}
+
+.b-blue   { background: var(--b-blue); }
+.b-green  { background: var(--b-green); }
+.b-orange { background: var(--b-orange); }
+.b-violet { background: var(--b-violet); }
+
+.b1 { left: 12%; top: 22%; }
+.b2 { left: 10%; bottom: 18%; }
+.b3 { right: 12%; top: 22%; }
+.b4 { right: 10%; bottom: 18%; }
+
+/* ===== HERO RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .hero {
+        height: 78vh;
+    }
+
+    .headline {
+        font-size: clamp(1.8rem, 7vw, 3.8rem);
+    }
+
+    .badge {
+        font-size: 1rem;
+        padding: 8px 16px;
+    }
+
+    .b1 { left: 6%; top: 14%; }
+    .b2 { left: 6%; bottom: 14%; }
+    .b3 { right: 6%; top: 14%; }
+    .b4 { right: 6%; bottom: 14%; }
+}
+
+@media (max-width: 500px) {
+    .headline {
+        font-size: clamp(1.6rem, 7vw, 2.8rem);
+    }
+
+    .b1 { top: 8%; left: 10%; }
+    .b2 { bottom: 8%; left: 10%; }
+    .b3 { top: 8%; right: 10%; }
+    .b4 { bottom: 8%; right: 10%; }
+}

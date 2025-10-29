@@ -1,31 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
+use Illuminate\Support\Facades\Auth;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+// Group everything under `web` middleware (for CSRF/session/auth)
+Route::middleware(['web'])->group(function () {
+    // Auth routes (login, register, password reset)
+    Auth::routes();
 
-
-Auth::routes();
-
-
-// Define a group of routes with 'auth' middleware applied
-Route::middleware(['auth'])->group(function () {
-    // Define a GET route for the root URL ('/')
-    Route::get('/', function () {
-        // Return a view named 'index' when accessing the root URL
-        return view('index');
+    // Backoffice routes – protected
+    Route::middleware(['auth'])->group(function () {
+        require __DIR__.'/backoffice.php';
     });
 
-    // Define a GET route with dynamic placeholders for route parameters
-    Route::get('{routeName}/{name?}', [HomeController::class, 'pageView']);
+    // Frontoffice routes – public
+    require __DIR__.'/frontoffice.php';
 });

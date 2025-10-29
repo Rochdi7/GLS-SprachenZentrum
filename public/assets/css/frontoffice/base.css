@@ -1,0 +1,40 @@
+/* ===== Root Variables ===== */
+:root {
+    --cream: #fff9d9;
+    --ink: #1c1c1a;
+    --chip-dark: #111;
+    --line: #e6e2c5;
+    --b-blue: #2563eb;
+    --b-green: #10b981;
+    --b-orange: #fb923c;
+    --b-violet: #7c3aed;
+}
+
+/* ===== Global Reset ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: #fff;
+}
+
+/* ===== Backdrop ===== */
+.backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 10;
+}
+
+.backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+}
