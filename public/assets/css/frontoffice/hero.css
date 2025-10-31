@@ -1,96 +1,144 @@
-/* ===== HERO SECTION ===== */
+/* =========================================================
+   HERO SECTION – "Learn Germany With GLS"
+   ========================================================= */
+
 .hero {
-    position: relative;
-    margin-top: -28px;
-    height: 86vh;
-    min-height: 500px;
-    max-height: 1000px;
-    overflow: hidden;
+  position: relative;
+  height: 90vh;
+  min-height: 600px;
+  max-height: 1000px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-top: -28px;
 }
 
+/* Background image */
 .hero__bg {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center 40%;
-    /* background-image is set via Blade inline style */
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 45%;
+  background-repeat: no-repeat;
+  z-index: 1;
+  filter: brightness(0.9);
 }
 
+/* Centered inner container */
 .hero__inner {
-    position: relative;
-    z-index: 2;
-    max-width: 1320px;
-    margin: 0 auto;
-    height: 100%;
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+  position: relative;
+  z-index: 3;
+  max-width: 1320px;
+  padding: 0 24px;
 }
 
-.headline {
-    font-family: "Outfit", "Manrope", system-ui, sans-serif;
-    color: #fff;
-    font-weight: 900;
-    line-height: 0.95;
-    letter-spacing: -0.5px;
-    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
-    font-size: clamp(2rem, 6vw, 5rem); /* Reduced size */
-    max-width: 1000px;
+/* Main title */
+.hero-title {
+  font-family: "Outfit", "Manrope", system-ui, sans-serif;
+  color: var(--color-light, #f8fff8);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+  font-size: clamp(64px, 8vw, 140px);
+  max-width: 1000px;
+  margin: 0;
+  position: relative;
+  z-index: 5;
+  filter: drop-shadow(0 2px 16px #0000004d);
 }
 
-/* ===== HERO BADGES ===== */
+/* =========================================================
+   BADGES (Location bubbles)
+   ========================================================= */
+
 .badge {
-    position: absolute;
-    display: inline-block;
-    padding: 10px 20px;
-    border-radius: 100px;
-    color: #fff;
-    font-weight: 900;
-    font-size: clamp(0.8rem, 1.5vw, 1.4rem);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.15);
-    white-space: nowrap;
+  position: absolute;
+  border-radius: 10000px;
+  padding: 0.6rem 1.5rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  transition: transform 0.25s ease;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18),
+              inset 0 -1px 0 rgba(255, 255, 255, 0.15);
 }
 
-.b-blue   { background: var(--b-blue); }
-.b-green  { background: var(--b-green); }
-.b-orange { background: var(--b-orange); }
-.b-violet { background: var(--b-violet); }
-
-.b1 { left: 12%; top: 22%; }
-.b2 { left: 10%; bottom: 18%; }
-.b3 { right: 12%; top: 22%; }
-.b4 { right: 10%; bottom: 18%; }
-
-/* ===== HERO RESPONSIVE ===== */
-@media (max-width: 768px) {
-    .hero {
-        height: 78vh;
-    }
-
-    .headline {
-        font-size: clamp(1.8rem, 7vw, 3.8rem);
-    }
-
-    .badge {
-        font-size: 1rem;
-        padding: 8px 16px;
-    }
-
-    .b1 { left: 6%; top: 14%; }
-    .b2 { left: 6%; bottom: 14%; }
-    .b3 { right: 6%; top: 14%; }
-    .b4 { right: 6%; bottom: 14%; }
+.badge:hover {
+  transform: scale(1.05);
 }
 
-@media (max-width: 500px) {
-    .headline {
-        font-size: clamp(1.6rem, 7vw, 2.8rem);
-    }
+/* ===== INDIVIDUAL COLORS (bubble + soft text tone) ===== */
+.b-blue {
+  background-color: var(--color-primary, #2563eb);
+  color: #85acf7;
+  z-index: 4;
+  left: 6%;
+  top: 15%;
+}
 
-    .b1 { top: 8%; left: 10%; }
-    .b2 { bottom: 8%; left: 10%; }
-    .b3 { top: 8%; right: 10%; }
-    .b4 { bottom: 8%; right: 10%; }
+.b-green {
+  background-color: var(--color-secondary, #007b3d);
+  color: #9af3c5;
+  z-index: 6;
+  left: 6%;
+  bottom: 12%;
+}
+
+.b-orange {
+  background-color: var(--color-tertiary, #fb923c);
+  color: #ffd161;
+  z-index: 2;
+  right: 6%;
+  top: 15%;
+}
+
+.b-violet {
+  background-color: var(--color-accent, #7c3aed);
+  color: #e6c9ff;
+  z-index: 5;
+  right: 6%;
+  bottom: 12%;
+}
+
+/* =========================================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================================= */
+@media (max-width: 992px) {
+  .hero {
+    height: 78vh;
+  }
+
+  .hero-title {
+    font-size: clamp(2.4rem, 6vw, 5rem);
+  }
+
+  .badge {
+    font-size: 1.2rem;
+    padding: 0.5rem 1.2rem;
+  }
+
+  .b-blue { top: 10%; left: 5%; }
+  .b-green { bottom: 8%; left: 5%; }
+  .b-orange { top: 10%; right: 5%; }
+  .b-violet { bottom: 8%; right: 5%; }
+}
+
+@media (max-width: 600px) {
+  .hero-title {
+    font-size: clamp(1.8rem, 8vw, 3rem);
+  }
+
+  .badge {
+    font-size: 1rem;
+    padding: 0.4rem 1rem;
+  }
+
+  .b-blue { top: 8%; left: 5%; }
+  .b-green { bottom: 6%; left: 5%; }
+  .b-orange { top: 8%; right: 5%; }
+  .b-violet { bottom: 6%; right: 5%; }
 }
