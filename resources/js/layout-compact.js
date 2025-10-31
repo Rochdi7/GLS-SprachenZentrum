@@ -2,8 +2,8 @@
 =========================================================================
 =========================================================================
 Template Name: Light-able - Admin Template
-Author: Phoenixcoded
-Support: https://phoenixcoded.authordesk.app
+Author: Gls Team
+Support: https://Gls Team.authordesk.app
 File: layout-compact.js
 Description:  this file will contains defining code for build compact layouts
               and handle funcnality of a comapct layout in theme.

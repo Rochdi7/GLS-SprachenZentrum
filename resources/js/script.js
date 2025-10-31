@@ -2,8 +2,8 @@
 =========================================================================
 =========================================================================
 Template Name: Light-able - Admin Template
-Author: Phoenixcoded
-Support: https://phoenixcoded.authordesk.app
+Author: Gls Team
+Support: https://Gls Team.authordesk.app
 File: script.js
 Description:  this file will contains behavior, properties,
               functionality and interactions of a small module of ui element

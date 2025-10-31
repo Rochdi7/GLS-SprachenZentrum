@@ -3,7 +3,7 @@
 =========================================================================
 Template Name: Light-able - Admin Template
 Author: Rochdi & Halima
-Support: https://phoenixcoded.authordesk.app
+Support: https://Gls Team.authordesk.app
 File: themes.js
 Description:  this file will contains overall theme setup and handle
               behavior of live custumizer like Dark/Light, LTR/RTL,
