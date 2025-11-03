@@ -1,0 +1,106 @@
+/* ===============================
+   INTRO SECTION – inspired by home-about container
+================================ */
+.intro-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;        /* center content vertically */
+  align-items: center;            /* center horizontally */
+  overflow: visible;
+  width: 100%;
+  border-top-left-radius: 60px;
+  border-top-right-radius: 60px;
+  background-image: linear-gradient(45deg, #ff7a08, #ff0000 103%);
+  padding-top: 6rem;
+  padding-bottom: 8rem;
+  z-index: 5;
+  margin-top: -60px;
+}
+
+/* gradient layer if you need a separate element */
+.intro-gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.95;
+}
+
+/* floating white card */
+.intro-card {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;     /* align top */
+  align-items: center;
+  background-color: var(--cream, #f8fff8);
+  border-radius: 28px;
+  width: 80%;                      /* same as .is-home-about width proportion */
+  max-width: 780px;
+  margin-top: -15rem;              /* nice overlap */
+  padding: 0 4rem 4rem;            /* inspired by container.is-home-about */
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+}
+
+.intro-card:hover {
+  transform: translateY(-3px);
+}
+
+/* logo and text alignment */
+.intro-logo {
+  display: inline-block;
+  width: 80px;
+  height: auto;
+  margin-top: -2rem;              /* float up slightly for elegant spacing */
+  margin-bottom: 1rem;
+}
+
+.intro-section h2 {
+  color: #0b0b0b;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.intro-section p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #444;
+  max-width: 600px;
+  text-align: center;
+  margin: 0 auto 1.5rem;
+}
+
+.intro-section .btn-success {
+  background-color: #007342;
+  border: none;
+  transition: all 0.3s ease;
+  padding: 0.65rem 1.8rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 50px;
+}
+
+.intro-section .btn-success:hover {
+  background-color: #005d32;
+  transform: translateY(-2px);
+}
+
+/* Responsive balance */
+@media (max-width: 992px) {
+  .intro-card {
+    width: 90%;
+    margin-top: -7rem;
+    padding: 0 2rem 3rem;
+  }
+
+  .intro-section h2 {
+    font-size: 1.7rem;
+  }
+
+  .intro-section p {
+    font-size: 1rem;
+  }
+}

@@ -1,59 +1,60 @@
 /* =========================================================
-   HERO SECTION – "Learn Germany With GLS"
+   HERO SECTION – Inspired by die deutSCHule structure
    ========================================================= */
 
 .hero {
   position: relative;
-  height: 90vh;
-  min-height: 600px;
-  max-height: 1000px;
-  overflow: hidden;
   display: flex;
-  align-items: center;
+  flex-direction: column;     /* stack title + optional badges */
   justify-content: center;
+  align-items: center;
   text-align: center;
+  background: none;           /* background handled by .hero__bg */
+  height: auto;               /* remove fixed viewport height */
+  min-height: 1000px;         /* match their 1000px minimum */
+  margin-bottom: -64px;       /* allow intro section to overlap naturally */
+  padding-top: 4rem;          /* top breathing space */
+  padding-bottom: 12rem;      /* long soft fade to intro */
+  overflow: hidden;
   margin-top: -28px;
+  z-index: 1;
 }
 
-/* Background image */
+/* Background image inspired by .home-hero-section.section */
 .hero__bg {
   position: absolute;
   inset: 0;
-  background-size: cover;
-  background-position: center 45%;
+  background-size: 130%;      /* zoom effect like their 130% */
+  background-position: 50% 40%; /* focus top-center */
   background-repeat: no-repeat;
-  z-index: 1;
+  z-index: 0;
   filter: brightness(0.9);
 }
 
-/* Centered inner container */
+/* Inner wrapper for title */
 .hero__inner {
   position: relative;
-  z-index: 3;
-  max-width: 1320px;
-  padding: 0 24px;
+  z-index: 2;
+  max-width: 1100px;
+  padding: 0 20px;
 }
 
-/* Main title */
+/* Title refinement */
 .hero-title {
   font-family: "Outfit", "Manrope", system-ui, sans-serif;
   color: var(--color-light, #f8fff8);
   font-weight: 900;
-  line-height: 0.95;
+  line-height: 1;
   letter-spacing: -0.5px;
   text-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
-  font-size: clamp(64px, 8vw, 140px);
-  max-width: 1000px;
-  margin: 0;
-  position: relative;
-  z-index: 5;
+  font-size: clamp(56px, 7vw, 120px);
+  margin: 0 auto;
   filter: drop-shadow(0 2px 16px #0000004d);
 }
 
 /* =========================================================
    BADGES (Location bubbles)
    ========================================================= */
-
 .badge {
   position: absolute;
   border-radius: 10000px;
@@ -71,37 +72,37 @@
   transform: scale(1.05);
 }
 
-/* ===== INDIVIDUAL COLORS (bubble + soft text tone) ===== */
+/* ===== Individual colors ===== */
 .b-blue {
   background-color: var(--color-primary, #2563eb);
   color: #85acf7;
   z-index: 4;
-  left: 6%;
-  top: 15%;
+  left: 8%;
+  top: 35%;
 }
 
 .b-green {
   background-color: var(--color-secondary, #007b3d);
   color: #9af3c5;
   z-index: 6;
-  left: 6%;
-  bottom: 12%;
+  left: 8%;
+  bottom: 30%;
 }
 
 .b-orange {
   background-color: var(--color-tertiary, #fb923c);
   color: #ffd161;
   z-index: 2;
-  right: 6%;
-  top: 15%;
+  right: 8%;
+  top: 35%;
 }
 
 .b-violet {
   background-color: var(--color-accent, #7c3aed);
   color: #e6c9ff;
   z-index: 5;
-  right: 6%;
-  bottom: 12%;
+  right: 8%;
+  bottom: 30%;
 }
 
 /* =========================================================
@@ -109,7 +110,15 @@
    ========================================================= */
 @media (max-width: 992px) {
   .hero {
-    height: 78vh;
+    min-height: 700px;
+    padding-top: 3rem;
+    padding-bottom: 8rem;
+    margin-bottom: -32px;
+  }
+
+  .hero__bg {
+    background-size: 160%;
+    background-position: 50% 35%;
   }
 
   .hero-title {
@@ -121,13 +130,23 @@
     padding: 0.5rem 1.2rem;
   }
 
-  .b-blue { top: 10%; left: 5%; }
-  .b-green { bottom: 8%; left: 5%; }
-  .b-orange { top: 10%; right: 5%; }
-  .b-violet { bottom: 8%; right: 5%; }
+  .b-blue { top: 15%; left: 5%; }
+  .b-green { bottom: 10%; left: 5%; }
+  .b-orange { top: 15%; right: 5%; }
+  .b-violet { bottom: 10%; right: 5%; }
 }
 
 @media (max-width: 600px) {
+  .hero {
+    min-height: 580px;
+    padding-bottom: 6rem;
+  }
+
+  .hero__bg {
+    background-size: 180%;
+    background-position: 50% 40%;
+  }
+
   .hero-title {
     font-size: clamp(1.8rem, 8vw, 3rem);
   }
@@ -137,8 +156,8 @@
     padding: 0.4rem 1rem;
   }
 
-  .b-blue { top: 8%; left: 5%; }
+  .b-blue { top: 10%; left: 5%; }
   .b-green { bottom: 6%; left: 5%; }
-  .b-orange { top: 8%; right: 5%; }
+  .b-orange { top: 10%; right: 5%; }
   .b-violet { bottom: 6%; right: 5%; }
 }

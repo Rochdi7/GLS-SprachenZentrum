@@ -1,0 +1,130 @@
+/* =========================================================
+   FOOTER STYLESHEET (GLS Sprachenzentrum)
+   ========================================================= */
+
+.site-footer {
+    background-color: #211e1d;
+    color: #fff;
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+    overflow: hidden;
+    position: relative;
+    z-index: 10;
+    font-family: "Now", sans-serif;
+}
+
+/* =========================================================
+   FOOTER INTRO SECTION
+   ========================================================= */
+.footer-intro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: right;
+    width: 100%;
+    gap: 1rem;
+}
+
+.footer-intro img {
+    height: 170px;
+    width: auto;
+}
+
+.footer-intro p {
+    color: #fdfdfd;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+    flex: 1;
+    text-align: left;
+    max-width: 400px;
+    margin-bottom: 0;
+}
+
+/* =========================================================
+   FOOTER COLUMN TITLES
+   ========================================================= */
+.footer-title {
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+}
+
+/* =========================================================
+   FOOTER LINKS
+   ========================================================= */
+.footer-links li {
+    margin-bottom: 4px;
+}
+
+.footer-links a {
+    text-wrap: balance;
+    font-size: 16px;
+    line-height: 1.2;
+    text-decoration: none;
+    display: block;
+    color: #bcbbaa;
+    transition-property: color;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+}
+
+.footer-links a:hover {
+    color: #ffd161; /* Yellow on hover */
+    text-decoration: none; /* Remove underline on hover */
+}
+
+/* =========================================================
+   FOOTER BOTTOM SECTION
+   ========================================================= */
+.footer-bottom {
+    background-color: #181615;
+    color: #ccc;
+}
+
+.footer-bottom a {
+    color: #ccc;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-bottom a:hover {
+    color: #ffd161; /* Yellow on hover */
+}
+
+/* =========================================================
+   FOOTER LEGAL LINKS AREA
+   ========================================================= */
+.footer-legal {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    grid-column-gap: 2rem;
+    grid-row-gap: 2rem;
+    flex-wrap: wrap;
+}
+
+/* =========================================================
+   RESPONSIVE TWEAKS
+   ========================================================= */
+@media (max-width: 768px) {
+    .footer-intro {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-intro img {
+        margin-top: 1rem;
+    }
+
+    .footer-legal {
+        justify-content: center;
+        text-align: center;
+        gap: 1rem;
+    }
+    .footer-intro img {
+        height: 110px;
+    }
+}
