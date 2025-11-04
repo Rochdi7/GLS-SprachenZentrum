@@ -6,7 +6,7 @@
      HERO SECTION
 =========================== --}}
 <section class="hero" aria-label="Intro">
-  <div class="hero__bg" style="background-image: url('{{ asset('assets/images/hero.png') }}');"></div>
+  <div class="hero__bg" style="background-image: url('{{ asset('assets/images/hero-2.png') }}');"></div>
 
   <div class="badge b-blue b1">Rabat</div>
   <div class="badge b-green b2">Casablanca</div>
@@ -30,14 +30,14 @@
 
   <div class="container position-relative z-2 py-5">
     <!-- Floating white card -->
-    <div class="intro-card bg-light shadow rounded-4 mx-auto p-5" style="max-width: 720px;">
+    <div class="intro-card bg-light shadow rounded-4 mx-auto p-5" style="max-width: 1020px;">
       <!-- Logo + Tagline -->
       <div class="text-center mb-4">
         <img 
           src="{{ asset('build/images/logo/gls-noir.png') }}" 
           alt="GLS Logo"
           class="intro-logo mb-3"
-          style="width: 90px; height: auto;"
+          style="width: 120px; height: auto;"
         >
         <p class="text-primary fw-medium small mb-0 letter-spacing-1 text-uppercase">
           Learn German in Morocco
