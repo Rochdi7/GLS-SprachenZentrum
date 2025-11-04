@@ -34,19 +34,16 @@
   flex-direction: column;
   justify-content: flex-start;     /* align top */
   align-items: center;
-  background-color: var(--cream, #f8fff8);
+  background-color: var(--cream, #fffee8);
   border-radius: 28px;
   width: 80%;                      /* same as .is-home-about width proportion */
   max-width: 780px;
   margin-top: -15rem;              /* nice overlap */
   padding: 0 4rem 4rem;            /* inspired by container.is-home-about */
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
-  transition: all 0.3s ease;
 }
 
-.intro-card:hover {
-  transform: translateY(-3px);
-}
+
 
 /* logo and text alignment */
 .intro-logo {
