@@ -1,0 +1,194 @@
+/* ===============================
+   ABOUT GLS MOROCCO SECTION
+================================ */
+.home-about-section.section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6rem 2rem;
+}
+
+/* Remove Bootstrap container padding only in this section */
+.home-about-section .container {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* ===============================
+   GRID LAYOUT
+================================ */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-desktop, 4rem);
+  align-items: stretch;
+}
+
+/* ===============================
+   GRADIENT CARD (Left)
+================================ */
+.about-card {
+  border-radius: var(--radius-small, 24px);
+  background-image:
+  linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+  linear-gradient(225deg, #f9d976 0%, #f39c12 30%, #00b894 65%, #0984e3 100%);
+
+  color: var(--off-white);
+  padding: 4rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  height: 100%;
+  transition: box-shadow 0.3s ease;
+  width: 96%;
+  margin: 0 auto;
+}
+
+/* Hover only adds depth (no scale) */
+.about-card:hover {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+}
+
+/* Title */
+.h-section-subtitle {
+  text-wrap: balance;
+  margin-top: 0;
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--off-white);
+}
+
+/* Paragraph */
+.about-card p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: 600px;
+  opacity: 0.95;
+}
+
+/* Button */
+.about-card .btn {
+  background-color: var(--off-white);
+  color: var(--off-black);
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.about-card .btn:hover {
+  background-color: var(--off-black);
+  color: var(--off-white);
+}
+
+/* ===============================
+   VIDEO BLOCK (Right)
+================================ */
+.about-video {
+  border-radius: var(--radius-small, 24px);
+  overflow: hidden;
+  background-color: var(--blue);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  width: 96%;
+  margin: 0 auto;
+}
+
+.about-video iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: var(--radius-small, 24px);
+  object-fit: cover;
+  aspect-ratio: 16 / 9;
+}
+
+/* ===============================
+   RESPONSIVE FIX (like die deutSCHule)
+================================ */
+@media (max-width: 991px) {
+  .home-about-section.section {
+    padding: 3rem 1.5rem;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+    grid-row-gap: 2.5rem;
+  }
+
+  .about-card {
+    align-items: center;
+    text-align: center;
+    padding: 2.5rem 1.75rem;
+    border-radius: 22px;
+  }
+
+  .about-card h2 {
+    font-size: clamp(1.8rem, 6vw, 2.4rem);
+    line-height: 1.1;
+    margin-bottom: 1.2rem;
+  }
+
+  .about-card p {
+    max-width: 90%;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .about-card .btn {
+    margin-top: 1.75rem;
+    padding: 0.65rem 1.75rem;
+    font-size: 0.95rem;
+  }
+
+  .about-video {
+    border-radius: 22px;
+    overflow: hidden;
+  }
+
+  .about-video iframe {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    display: block;
+  }
+}
+
+/* ===============================
+   MOBILE WIDTH FIX
+================================ */
+@media (max-width: 767px) {
+  .home-about-section.section {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .about-card {
+    width: 94%;
+    margin: 0 auto;
+    padding: 2.5rem 1.75rem;
+    border-radius: 22px;
+  }
+
+  .about-video {
+    width: 94%;
+    margin: 0 auto;
+    border-radius: 18px;
+  }
+
+  .about-video iframe {
+    border-radius: 18px;
+    height: 340px;
+  }
+}
+
+@media (max-width: 479px) {
+  .about-card {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}

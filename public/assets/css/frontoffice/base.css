@@ -5,122 +5,173 @@
 
 /* ===== INTER FONT FACES ===== */
 @font-face {
-  font-family: "Inter";
-  src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Thin.woff2) format("woff2"),
-       url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Thin.woff) format("woff");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 100;
+    font-family: "Inter";
+    src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Thin.woff2)
+            format("woff2"),
+        url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Thin.woff)
+            format("woff");
+    font-display: swap;
+    font-style: normal;
+    font-weight: 100;
 }
 @font-face {
-  font-family: "Inter";
-  src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-ExtraLight.woff2) format("woff2"),
-       url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-ExtraLight.woff) format("woff");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 200;
+    font-family: "Inter";
+    src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-ExtraLight.woff2)
+            format("woff2"),
+        url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-ExtraLight.woff)
+            format("woff");
+    font-display: swap;
+    font-style: normal;
+    font-weight: 200;
 }
 @font-face {
-  font-family: "Inter";
-  src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Light.woff2) format("woff2"),
-       url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Light.woff) format("woff");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 300;
+    font-family: "Inter";
+    src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Light.woff2)
+            format("woff2"),
+        url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Light.woff)
+            format("woff");
+    font-display: swap;
+    font-style: normal;
+    font-weight: 300;
 }
 @font-face {
-  font-family: "Inter";
-  src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Regular.woff2) format("woff2"),
-       url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Regular.woff) format("woff");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 400;
+    font-family: "Inter";
+    src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Regular.woff2)
+            format("woff2"),
+        url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Regular.woff)
+            format("woff");
+    font-display: swap;
+    font-style: normal;
+    font-weight: 400;
 }
 @font-face {
-  font-family: "Inter";
-  src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Medium.woff2) format("woff2"),
-       url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Medium.woff) format("woff");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 500;
+    font-family: "Inter";
+    src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Medium.woff2)
+            format("woff2"),
+        url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Medium.woff)
+            format("woff");
+    font-display: swap;
+    font-style: normal;
+    font-weight: 500;
 }
 @font-face {
-  font-family: "Inter";
-  src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-SemiBold.woff2) format("woff2"),
-       url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-SemiBold.woff) format("woff");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 600;
+    font-family: "Inter";
+    src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-SemiBold.woff2)
+            format("woff2"),
+        url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-SemiBold.woff)
+            format("woff");
+    font-display: swap;
+    font-style: normal;
+    font-weight: 600;
 }
 @font-face {
-  font-family: "Inter";
-  src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Bold.woff2) format("woff2"),
-       url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Bold.woff) format("woff");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 700;
+    font-family: "Inter";
+    src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Bold.woff2)
+            format("woff2"),
+        url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Bold.woff)
+            format("woff");
+    font-display: swap;
+    font-style: normal;
+    font-weight: 700;
 }
 @font-face {
-  font-family: "Inter";
-  src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-ExtraBold.woff2) format("woff2"),
-       url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-ExtraBold.woff) format("woff");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 800;
+    font-family: "Inter";
+    src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-ExtraBold.woff2)
+            format("woff2"),
+        url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-ExtraBold.woff)
+            format("woff");
+    font-display: swap;
+    font-style: normal;
+    font-weight: 800;
 }
 @font-face {
-  font-family: "Inter";
-  src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Black.woff2) format("woff2"),
-       url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Black.woff) format("woff");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 900;
+    font-family: "Inter";
+    src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Black.woff2)
+            format("woff2"),
+        url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Black.woff)
+            format("woff");
+    font-display: swap;
+    font-style: normal;
+    font-weight: 900;
 }
 
 /* =========================================================
    ROOT VARIABLES — THE DESIGN SYSTEM
    ========================================================= */
 :root {
-  /* ===== Colors ===== */
-  --color-primary: #2563eb;       /* Main accent (blue) */
-  --color-secondary: #007b3d;     /* Supportive accent (green) */
-  --color-tertiary: #fb923c;      /* Highlight (orange) */
-  --color-accent: #7c3aed;        /* Optional accent (violet) */
-  --color-bg: #ffffff;            /* Background color */
-  --color-surface: #fff9d9;       /* Surface / cream tone */
-  --color-text: #1c1c1a;          /* Primary text */
-  --color-border: #e6e2c5;        /* Border lines */
-  --color-dark: #111;             /* Dark chip or text color */
+    /* ===== Colors ===== */
+    --color-primary: #2563eb; /* Main accent (blue) */
+  --color-secondary: #007b3d; /* Supportive accent (green) */
+  --color-tertiary: #fb923c; /* Highlight (orange) */
+  --color-accent: #7c3aed; /* Optional accent (violet) */
+  --color-bg: #ffffff; /* Background color */
+  --color-surface: #fff9d9; /* Surface / cream tone */
+  --color-text: #1c1c1a; /* Primary text */
+  --color-border: #e6e2c5; /* Border lines */
+  --color-dark: #111; /* Dark chip or text color */
 
-  /* ===== Typography ===== */
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* =========================================================
+     EXTENDED BRAND PALETTE — GLS
+     ========================================================= */
+  --light--off-white: #fffff9;
+  --off-white: #fffee8;
+  --dark--off-white: #bcbbaa;
+  --off-black: #211e1d;
+  --light--off-black: #3e3832;
+  --dark--off-black: #181615;
 
-  /* Font sizes */
-  --h1-size: 2.75rem;   /* 44px */
-  --h2-size: 2rem;      /* 32px */
-  --h3-size: 1.5rem;    /* 24px */
-  --h4-size: 1.25rem;   /* 20px */
-  --p-size: 1rem;       /* 16px */
-  --small-size: 0.875rem; /* 14px */
+  /* Brand color families */
+  --green: #009d5a;
+  --dark--green: #007342;
+  --light--green: #00d98a;
+  
+  --blue: #1c45db;
+  --light--blue: #3577f4;
+  --dark--blue: #1533a1;
 
-  /* Font weights */
-  --fw-light: 300;
-  --fw-regular: 400;
-  --fw-medium: 500;
-  --fw-semibold: 600;
-  --fw-bold: 700;
-  --fw-black: 900;
+  --orange: #ff7a08;
+  --light--orange: #ffb90e;
+  --dark--orange: #bc5a06;
 
-  /* ===== Buttons ===== */
-  --btn-bg: var(--color-primary);
-  --btn-bg-hover: #1d4ed8;
-  --btn-text: #fff;
-  --btn-radius: 8px;
-  --btn-padding: 0.75rem 1.5rem;
+  --yellow: #fc0;
+  --light--yellow: #fff400;
+  --dark--yellow: #bc9600;
 
-  /* ===== Layout ===== */
-  --container-max: 1320px;
-  --section-padding: 80px;
+  --purple: #9767f8;
+  --light--purple: #d5a4fe;
+  --dark--purple: #704cb6;
+    /* ===== Typography ===== */
+    --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+        Helvetica, Arial, sans-serif;
+
+    /* Font sizes */
+    --h1-size: 2.75rem; /* 44px */
+    --h2-size: 2rem; /* 32px */
+    --h3-size: 1.5rem; /* 24px */
+    --h4-size: 1.25rem; /* 20px */
+    --p-size: 1rem; /* 16px */
+    --small-size: 0.875rem; /* 14px */
+
+    /* Font weights */
+    --fw-light: 300;
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-semibold: 600;
+    --fw-bold: 700;
+    --fw-black: 900;
+
+    /* ===== Buttons ===== */
+    --btn-bg: var(--color-primary);
+    --btn-bg-hover: #1d4ed8;
+    --btn-text: #fff;
+    --btn-radius: 8px;
+    --btn-padding: 0.75rem 1.5rem;
+
+    /* ===== Layout ===== */
+    --container-max: 1320px;
+    --section-padding: 80px;
+    --radius-small: 16px;
+    --radius-mid: 32px;
 }
 
 /* =========================================================
@@ -129,172 +180,180 @@
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 html,
 body {
-  font-family: Now,sans-serif;
-  margin: 0;
-  padding: 0;
-  scroll-behavior: smooth;
+    font-family: Now, sans-serif;
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
 }
 
 /* =========================================================
    BODY
    ========================================================= */
 body {
-  font-family: Now,sans-serif;
-  color: var(--color-text);
-  background-color: var(--color-bg);
-  line-height: 1.5;
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
+    font-family: Now, sans-serif;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    line-height: 1.5;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* =========================================================
    TYPOGRAPHY
    ========================================================= */
-h1, h2, h3, h4 {
-  font-family: var(--font-sans);
-  color: var(--color-text);
-  margin: 0 0 1rem;
-  line-height: 1.2;
+h1,
+h2,
+h3,
+h4 {
+    font-family: var(--font-sans);
+    color: var(--color-text);
+    margin: 0 0 1rem;
+    line-height: 1.2;
 }
 
 h1 {
-  font-size: var(--h1-size);
-  font-weight: var(--fw-bold);
+    font-size: var(--h1-size);
+    font-weight: var(--fw-bold);
 }
 
 h2 {
-  font-size: var(--h2-size);
-  font-weight: var(--fw-semibold);
+    font-size: var(--h2-size);
+    font-weight: var(--fw-semibold);
 }
 
 h3 {
-  font-size: var(--h3-size);
-  font-weight: var(--fw-medium);
+    font-size: var(--h3-size);
+    font-weight: var(--fw-medium);
 }
 
 h4 {
-  font-size: var(--h4-size);
-  font-weight: var(--fw-regular);
+    font-size: var(--h4-size);
+    font-weight: var(--fw-regular);
 }
 
 p {
-  font-size: var(--p-size);
-  font-weight: var(--fw-regular);
-  color: var(--color-text);
-  margin: 0 0 1rem;
+    font-size: var(--p-size);
+    font-weight: var(--fw-regular);
+    color: var(--color-text);
+    margin: 0 0 1rem;
 }
 
 small {
-  font-size: var(--small-size);
-  color: #555;
+    font-size: var(--small-size);
+    color: #555;
 }
 
 /* =========================================================
    LINKS
    ========================================================= */
 a {
-  color: inherit;
-  text-decoration: none;
-  transition: color 0.25s ease;
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.25s ease;
 }
 
 a:hover {
-  /* color: var(--color-primary); */
+    /* color: var(--color-primary); */
 }
 
 /* =========================================================
    BUTTONS
    ========================================================= */
 .btn {
-  display: inline-block;
-  background: var(--btn-bg);
-  color: var(--btn-text);
-  border: none;
-  border-radius: var(--btn-radius);
-  padding: var(--btn-padding);
-  font-weight: var(--fw-semibold);
-  text-align: center;
-  cursor: pointer;
-  transition: background 0.25s ease, transform 0.2s ease;
+    display: inline-block;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    border: none;
+    border-radius: var(--btn-radius);
+    padding: var(--btn-padding);
+    font-weight: var(--fw-semibold);
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.2s ease;
 }
 
 .btn:hover {
-  background: var(--btn-bg-hover);
-  color: #fff;
-  transform: translateY(-2px);
+    background: var(--btn-bg-hover);
+    color: #fff;
+    transform: translateY(-2px);
 }
 
 .btn:active {
-  transform: translateY(0);
+    transform: translateY(0);
 }
 
 /* =========================================================
    BACKDROP (Used for Mobile Drawer or Modal Overlays)
    ========================================================= */
 .backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.25);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-  z-index: 10;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 10;
 }
 
 .backdrop.show {
-  opacity: 1;
-  pointer-events: auto;
+    opacity: 1;
+    pointer-events: auto;
 }
 
-h1,h2,h3,h4,h5,h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin-bottom: 10px;
-    font-weight: 700
+    font-weight: 700;
 }
 
 h1 {
     margin-top: 20px;
     font-size: 38px;
-    line-height: 44px
+    line-height: 44px;
 }
 
 h2 {
     margin-top: 20px;
     font-size: 32px;
-    line-height: 36px
+    line-height: 36px;
 }
 
 h3 {
     margin-top: 20px;
     font-size: 24px;
-    line-height: 30px
+    line-height: 30px;
 }
 
 h4 {
     margin-top: 10px;
     font-size: 18px;
-    line-height: 24px
+    line-height: 24px;
 }
 
 h5 {
     margin-top: 10px;
     font-size: 14px;
-    line-height: 20px
+    line-height: 20px;
 }
 
 h6 {
     margin-top: 10px;
     font-size: 12px;
-    line-height: 18px
+    line-height: 18px;
 }
 
 p {
     margin-top: 0;
-    margin-bottom: 10px
+    margin-bottom: 10px;
 }
 
 blockquote {
@@ -302,20 +361,21 @@ blockquote {
     margin: 0 0 10px;
     padding: 10px 20px;
     font-size: 18px;
-    line-height: 22px
+    line-height: 22px;
 }
 
 figure {
-    margin: 0 0 10px
+    margin: 0 0 10px;
 }
 
-ul,ol {
+ul,
+ol {
     margin-top: 0;
     margin-bottom: 10px;
-    padding-left: 40px
+    padding-left: 40px;
 }
 
 .w-list-unstyled {
     padding-left: 0;
-    list-style: none
+    list-style: none;
 }
