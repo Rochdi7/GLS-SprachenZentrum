@@ -1,17 +1,21 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Frontoffice\HomeController; // <-- StudlyCase
-use App\Http\Middleware\SetLocaleFromUrl;
+use App\Http\Controllers\Frontoffice\HomeController;
 
-// Localized public site
-Route::group([
-    'prefix' => '{locale}',
-    'where' => ['locale' => 'en|de'],
-    'middleware' => ['web', SetLocaleFromUrl::class],
-], function () {
+// ===============================
+//  FRONT OFFICE – Public Routes
+//  Language: English only (for now)
+// ===============================
+
+// All public pages
+Route::middleware(['web'])->group(function () {
+    
+    // Home Page
     Route::get('/', [HomeController::class, 'index'])->name('front.home');
-});
+    
+    // About Page
+    Route::get('/about', [HomeController::class, 'about'])->name('front.about');
 
-// Redirect root (/) to /en
-Route::get('/', fn () => redirect('/en'));
+    
+});

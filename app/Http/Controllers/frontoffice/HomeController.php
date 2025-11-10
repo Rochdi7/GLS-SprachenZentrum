@@ -1,13 +1,26 @@
 <?php
 
-namespace App\Http\Controllers\frontoffice;
+namespace App\Http\Controllers\Frontoffice;
 
 use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {
+    /**
+     * Display the home page.
+     */
     public function index()
     {
-        return view('frontoffice.home'); // or return a string temporarily for testing
+        // Loads resources/views/frontoffice/home.blade.php
+        return view('frontoffice.home');
+    }
+
+    /**
+     * Display the About page.
+     */
+    public function about()
+    {
+        // Loads resources/views/frontoffice/about.blade.php
+        return view('frontoffice.about');
     }
 }
