@@ -1,5 +1,5 @@
 /* ===============================
-   INTRO SECTION – die deutSCHule Style
+   INTRO SECTION – die Code sommet Style
    Responsive + Balanced Positioning
 ================================ */
 .intro-section {
@@ -16,7 +16,7 @@
   padding-top: 5rem;
   padding-bottom: 1.5rem;
   z-index: 5;
-  margin-top: -160px; /* pull closer to hero like die deutSCHule */
+  margin-top: -160px; /* pull closer to hero like die Code sommet */
 }
 
 /* Remove Bootstrap container padding only for this section */
