@@ -66,8 +66,8 @@
 
         {{-- ===== Right Side (Desktop) ===== --}}
         <div class="right d-none d-lg-flex align-items-center gap-2">
-            <span class="chip chip--dark">EN</span>
-            <span class="chip">DE</span>
+            {{-- <span class="chip chip--dark">EN</span>
+            <span class="chip">DE</span> --}}
             <a class="btn btn-primary" href="#">Enroll Now</a>
         </div>
 
@@ -122,10 +122,10 @@
             </div>
         </div>
 
-        <div class="langs mt-4">
+        {{-- <div class="langs mt-4">
             <span class="chip chip--dark">EN</span>
             <span class="chip">DE</span>
-        </div>
+        </div> --}}
 
         <div class="cta mt-3">
             <a class="btn btn-primary w-100" href="#">Enroll Now</a>

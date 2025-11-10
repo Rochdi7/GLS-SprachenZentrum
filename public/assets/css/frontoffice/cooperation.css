@@ -1,82 +1,83 @@
 /* ===============================
-   COOPERATION PARTNERS SECTION
+   COOPERATION PARTNERS – Auto Marquee
 ================================ */
 .partners-section {
-    padding: 2rem 2rem;
-  }
-  
-  .partners-title {
-    font-size: 3rem;
-    font-weight: 700;
-    color: var(--off-black);
-    margin-bottom: 3rem;
-    text-wrap: balance;
-  }
-  
-  /* --- Desktop view: centered grid --- */
-  .partners-logos {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 4rem;
-    flex-wrap: wrap;
-  }
-  
-  .partners-logos img {
-    max-width: 180px;
-    height: auto;
-    opacity: 0.9;
-    filter: grayscale(100%);
-    transition: filter 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
-  }
-  
-  .partners-logos img:hover {
-    opacity: 1;
-    filter: grayscale(0%);
-    transform: scale(1.05);
-  }
-  
-  /* ===============================
-     MOBILE CAROUSEL BEHAVIOR
-  ================================ */
-  @media (max-width: 767px) {
-    .partners-carousel {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scroll-snap-type: x mandatory;
-      display: flex;
-      justify-content: center;
-    }
-  
-    .partners-logos {
-      flex-wrap: nowrap;
-      gap: 2rem;
-      padding: 0 2rem;
-    }
-  
-    .partners-logos img {
-      flex: 0 0 auto;
-      scroll-snap-align: center;
-      max-width: 140px;
-      opacity: 0.9;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-  
-    .partners-logos img:hover {
-      opacity: 1;
-      transform: scale(1.05);
-    }
-  
-    .partners-title {
-      font-size: 2rem;
-      margin-bottom: 2rem;
-    }
-  }
-  
-  /* Small mobile fine-tuning */
-  @media (max-width: 479px) {
-    .partners-logos img {
-      max-width: 120px;
-    }
-  }
-  
+  padding: 3rem 2rem;
+  background: #f8f9fb;
+}
+
+.partners-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--off-black, #000);
+  margin-bottom: 2.5rem;
+  text-wrap: balance;
+}
+
+/* Marquee shell with edge fade */
+.partners-marquee {
+  position: relative;
+  overflow: hidden;
+  /* subtle edge fade hint */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+}
+
+/* Scrolling track */
+.partners-track {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4rem);
+  padding-block: 0.5rem;
+  width: max-content;
+  animation: partnersScroll 24s linear infinite;
+}
+
+/* Logos */
+.partners-track img {
+  height: clamp(52px, 8vw, 90px);
+  width: auto;
+  flex: 0 0 auto;
+  opacity: 0.9;
+  filter: grayscale(100%);
+  transition: transform 0.25s ease, opacity 0.25s ease, filter 0.25s ease;
+}
+
+.partners-track img:hover {
+  transform: scale(1.05);
+  opacity: 1;
+  filter: grayscale(0%);
+}
+
+/* Hover to pause (desktop/tablet) */
+@media (hover: hover) and (pointer: fine) {
+  .partners-marquee:hover .partners-track { animation-play-state: paused; }
+}
+
+/* Speed tweak on small screens */
+@media (max-width: 767px) {
+  .partners-track { animation-duration: 18s; }
+  .partners-track img { height: clamp(48px, 10vw, 70px); }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .partners-track { animation: none; }
+}
+
+/* Keyframes: translate 50% = width of first set */
+@keyframes partnersScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.partners-logos-noscript {
+  margin-top: 1rem;
+  display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center; align-items: center;
+}
+.partners-logos-noscript img { height: 80px; opacity: .9; filter: grayscale(100%); }
+.partners-track img[alt="TLScontact"] {
+  height: clamp(60px, 8vw, 90px); 
+  max-width: 200px;               
+  object-fit: contain;             
+}

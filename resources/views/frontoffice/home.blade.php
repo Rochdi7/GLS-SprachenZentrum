@@ -2,6 +2,7 @@
 
 @section('content')
     {{-- ===========================
+
      HERO SECTION
 =========================== --}}
     <section class="hero" aria-label="Intro">
@@ -11,6 +12,10 @@
         <div class="badge b-green b2">Wunderbar</div>
         <div class="badge b-orange b3">Guten Tag</div>
         <div class="badge b-violet b4">Freunde</div>
+
+
+
+
 
 
         <div class="hero__inner text-center">
@@ -243,67 +248,74 @@
 
     </section>
 
-    {{-- ===========================
-     NOS SITES AU MAROC (Masonry Grid)
+   {{-- ===========================
+     NOS SITES AU MAROC (Masonry Grid with Hover Video)
 =========================== --}}
-    <section class="section sites-maroc-section">
-        <div class="container text-center mb-5">
-            <h2 class="sites-title">Our Sites GLS</h2>
-            <p class="sites-subtitle">Find your nearest German language center in Morocco.</p>
-        </div>
+<section class="section sites-maroc-section">
+  <div class="container text-center mb-5">
+    <h2 class="sites-title">Our Sites GLS</h2>
+    <p class="sites-subtitle">Find your nearest German language center in Morocco.</p>
+  </div>
 
-        <div class="container sites-grid">
+  <div class="container sites-grid">
 
-            <!-- 1. Rabat -->
-            <div class="site-card small">
-                <img src="{{ asset('assets/images/sites/rabat.jpg') }}" alt="GLS Rabat">
-                <div class="site-overlay">
-                    <h3>Rabat</h3>
-                </div>
-            </div>
+    <!-- 1. Rabat -->
+    <div class="site-card small">
+      <img src="{{ asset('assets/images/sites/rabat.jpg') }}" alt="GLS Rabat" class="site-image">
+      <video class="site-video" muted loop preload="metadata" playsinline>
+        <source src="https://yourcdn.com/videos/rabat-cinematic.mp4" type="video/mp4">
+      </video>
+      <div class="site-overlay"><h3>Rabat</h3></div>
+    </div>
 
-            <!-- 2. Kénitra -->
-            <div class="site-card small">
-                <img src="{{ asset('assets/images/sites/kenitra.jpg') }}" alt="GLS Kénitra">
-                <div class="site-overlay">
-                    <h3>Kénitra</h3>
-                </div>
-            </div>
+    <!-- 2. Kénitra -->
+    <div class="site-card small">
+      <img src="{{ asset('assets/images/sites/kenitra.jpg') }}" alt="GLS Kénitra" class="site-image">
+      <video class="site-video" muted loop preload="metadata" playsinline>
+        <source src="https://yourcdn.com/videos/kenitra-cinematic.mp4" type="video/mp4">
+      </video>
+      <div class="site-overlay"><h3>Kénitra</h3></div>
+    </div>
 
-            <!-- 3. Marrakech (wide) -->
-            <div class="site-card wide">
-                <img src="{{ asset('assets/images/sites/marrakech.webp') }}" alt="GLS Marrakech">
-                <div class="site-overlay">
-                    <h3>Marrakech</h3>
-                </div>
-            </div>
+    <!-- 3. Marrakech (wide) -->
+    <div class="site-card wide">
+      <img src="{{ asset('assets/images/sites/marrakech.webp') }}" alt="GLS Marrakech" class="site-image">
+      <video class="site-video" muted loop preload="metadata" playsinline>
+        <source src="https://yourcdn.com/videos/marrakech-cinematic.mp4" type="video/mp4">
+      </video>
+      <div class="site-overlay"><h3>Marrakech</h3></div>
+    </div>
 
-            <!-- 4. Salé (wide) -->
-            <div class="site-card wide">
-                <img src="{{ asset('assets/images/sites/sale.webp') }}" alt="GLS Salé">
-                <div class="site-overlay">
-                    <h3>Salé</h3>
-                </div>
-            </div>
+    <!-- 4. Salé -->
+    <div class="site-card wide">
+      <img src="{{ asset('assets/images/sites/sale.webp') }}" alt="GLS Salé" class="site-image">
+      <video class="site-video" muted loop preload="metadata" playsinline>
+        <source src="https://yourcdn.com/videos/sale-cinematic.mp4" type="video/mp4">
+      </video>
+      <div class="site-overlay"><h3>Salé</h3></div>
+    </div>
 
-            <!-- 5. Agadir -->
-            <div class="site-card small">
-                <img src="{{ asset('assets/images/sites/agadir.avif') }}" alt="GLS Agadir">
-                <div class="site-overlay">
-                    <h3>Agadir</h3>
-                </div>
-            </div>
+    <!-- 5. Agadir -->
+    <div class="site-card small">
+      <img src="{{ asset('assets/images/sites/agadir.avif') }}" alt="GLS Agadir" class="site-image">
+      <video class="site-video" muted loop preload="metadata" playsinline>
+        <source src="https://yourcdn.com/videos/agadir-cinematic.mp4" type="video/mp4">
+      </video>
+      <div class="site-overlay"><h3>Agadir</h3></div>
+    </div>
 
-            <!-- 6. Casablanca -->
-            <div class="site-card small">
-                <img src="{{ asset('assets/images/sites/casablanca.jpg') }}" alt="GLS Casablanca">
-                <div class="site-overlay">
-                    <h3>Casablanca</h3>
-                </div>
-            </div>
+    <!-- 6. Casablanca -->
+    <div class="site-card small">
+      <img src="{{ asset('assets/images/sites/casablanca.jpg') }}" alt="GLS Casablanca" class="site-image">
+      <video class="site-video" muted loop preload="metadata" playsinline>
+        <source src="https://yourcdn.com/videos/casablanca-cinematic.mp4" type="video/mp4">
+      </video>
+      <div class="site-overlay"><h3>Casablanca</h3></div>
+    </div>
 
-        </div>
-    </section>
+  </div>
+</section>
+
 
     <section class="home-courses-section section">
 
@@ -390,10 +402,13 @@
 
                 {{-- 2. OSD Exam Preparation (is-green) --}}
                 <div class="course-card is-green">
-                    <h3 class="course-card_title is-others">OSD Exam<br>Preparation</h3>
-                    <div class="course-card_text">Prepare for the official Austrian language diploma (ÖSD).</div>
-                    <a href="#" class="button is-course-card w-button">View Programs</a>
+                    <h3 class="course-card_title is-others">GLS Exam<br>Preparation</h3>
+                    <div class="course-card_text">
+                        Prepare for the official GLS German Language Certification Exams in Morocco.
+                    </div>
+                    <a href="#" class="button is-course-card w-button">View Exam Programs</a>
                 </div>
+                
 
                 {{-- 3. Goethe Exam Preparation (is-purple) --}}
                 <div class="course-card is-purple">
@@ -526,22 +541,46 @@
         </div>
     </section>
 
-    {{-- ===========================
-     COOPERATION PARTNERS SECTION
-=========================== --}}
-    <section class="partners-section section text-center">
-        <div class="container">
-            <h2 class="partners-title mb-5">Our Cooperation Partners</h2>
+    {{-- ===============================
+     COOPERATION PARTNERS – Auto Marquee (All breakpoints)
+================================ --}}
+<section class="partners-section text-center" aria-label="Our Cooperation Partners">
+  <div class="container">
+    <h2 class="partners-title">Our Cooperation Partners</h2>
 
-            <div class="partners-carousel">
-                <div class="partners-logos">
-                    <img src="{{ asset('assets/images/home/goethe.png') }}" alt="Goethe-Institut">
-                    <img src="{{ asset('assets/images/home/marokkofc.png') }}" alt="Marokko FC">
-                    <img src="{{ asset('assets/images/home/osd.png') }}" alt="ÖSD">
-                </div>
-            </div>
-        </div>
-    </section>
+    <div class="partners-marquee">
+      <div class="partners-track">
+        {{-- ——— Set A ——— --}}
+        <img src="{{ asset('assets/images/home/goethe.png') }}" alt="Goethe-Institut" loading="lazy">
+        <img src="{{ asset('assets/images/home/marokkofc.png') }}" alt="Marokko FC" loading="lazy">
+        <img src="{{ asset('assets/images/home/osd.png') }}" alt="ÖSD Exam" loading="lazy">
+        <img src="{{ asset('assets/images/home/gizlogo-unternehmen-de-rgb-300.webp') }}" alt="GIZ German Cooperation" loading="lazy">
+        <img src="{{ asset('assets/images/home/ECL_LOGO.png') }}" alt="ECL Language Certification" loading="lazy">
+        <img src="{{ asset('assets/images/home/TLScontact_main.webp') }}" alt="TLScontact" loading="lazy">
+
+        {{-- ——— Set B (duplicate for seamless loop) ——— --}}
+        <img src="{{ asset('assets/images/home/goethe.png') }}" alt="Goethe-Institut" aria-hidden="true" loading="lazy">
+        <img src="{{ asset('assets/images/home/marokkofc.png') }}" alt="Marokko FC" aria-hidden="true" loading="lazy">
+        <img src="{{ asset('assets/images/home/osd.png') }}" alt="ÖSD Exam" aria-hidden="true" loading="lazy">
+        <img src="{{ asset('assets/images/home/gizlogo-unternehmen-de-rgb-300.webp') }}" alt="GIZ German Cooperation" aria-hidden="true" loading="lazy">
+        <img src="{{ asset('assets/images/home/ECL_LOGO.png') }}" alt="ECL Language Certification" aria-hidden="true" loading="lazy">
+        <img src="{{ asset('assets/images/home/TLScontact_main.webp') }}" alt="TLScontact" aria-hidden="true" loading="lazy">
+      </div>
+    </div>
+
+    <noscript>
+      <div class="partners-logos-noscript">
+        <img src="{{ asset('assets/images/home/goethe.png') }}" alt="Goethe-Institut">
+        <img src="{{ asset('assets/images/home/marokkofc.png') }}" alt="Marokko FC">
+        <img src="{{ asset('assets/images/home/osd.png') }}" alt="ÖSD Exam">
+        <img src="{{ asset('assets/images/home/gizlogo-unternehmen-de-rgb-300.webp') }}" alt="GIZ German Cooperation">
+        <img src="{{ asset('assets/images/home/ECL_LOGO.png') }}" alt="ECL Language Certification">
+        <img src="{{ asset('assets/images/home/TLScontact_main.webp') }}" alt="TLScontact">
+      </div>
+    </noscript>
+  </div>
+</section>
+
 
     <section class="contact-section section">
         <div class="container is-2-col-grid">

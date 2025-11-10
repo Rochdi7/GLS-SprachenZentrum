@@ -154,3 +154,92 @@
     font-size: 1.3rem;
   }
 }
+/* =========================================
+   GLS – NOS SITES AU MAROC (Hover Video Effect)
+========================================= */
+
+/* Video Styling */
+.site-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.site-card .site-image,
+.site-card .site-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.5s ease;
+}
+
+.site-card .site-image {
+  z-index: 1;
+  opacity: 1;
+}
+
+.site-card .site-video {
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Play and reveal video on hover */
+.site-card:hover .site-video {
+  opacity: 1;
+  z-index: 1;
+}
+
+.site-card:hover .site-image {
+  opacity: 0;
+}
+
+.site-card:hover video {
+  animation: fadeInVideo 0.5s ease forwards;
+}
+
+/* Smooth video fade */
+@keyframes fadeInVideo {
+  from { opacity: 0; transform: scale(1.02); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Auto play video on hover */
+.site-card:hover video {
+  filter: brightness(1.05);
+}
+
+/* Overlay stays above */
+.site-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 70%);
+  color: #fff;
+  text-align: center;
+  padding: 1.5rem 0;
+  z-index: 2;
+}
+
+.site-overlay h3 {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Auto pause videos when not hovered */
+.site-card video {
+  display: block;
+}
+.site-card:not(:hover) video {
+  animation: none;
+  opacity: 0;
+  z-index: 0;
+}
