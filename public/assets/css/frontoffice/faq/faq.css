@@ -1,0 +1,590 @@
+body{
+    background-color: var(--light--off-white) !important;
+}
+/* ===============================
+   FAQ HERO SECTION – die deutSCHule inspired
+================================ */
+.hero-section.section.is-no-image.is-faq {
+  padding-bottom: 40px;
+  margin-top: -40px; /* 🔹 move closer under the header */
+}
+
+.hero-section.section.is-no-image {
+  margin-bottom: 0;
+  padding-bottom: 80px;
+}
+
+.hero-section.section {
+  border-bottom-left-radius: var(--radius-big);
+  border-bottom-right-radius: var(--radius-big);
+  background-image: linear-gradient(45deg, #00a06e, #00d98a 100%);
+
+  margin-bottom: 300px;
+  padding-top: 80px;
+  padding-bottom: 0;
+}
+
+/* generic section layout */
+.section {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6rem 4rem;
+}
+
+.container.is-hero {
+  text-align: center;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 4rem;
+  display: flex;
+}
+
+.container {
+  width: 100%;
+  max-width: 1440px;
+  position: relative;
+}
+
+/* title */
+.hero_title {
+  color: var(--off-white);
+  text-wrap: balance;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: clamp(3rem, 6vw, 5rem);
+  line-height: 1;
+}
+
+/* ===== FAQ FORM ===== */
+.faq-form {
+  width: 800px;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 991px) {
+  .faq-form {
+    width: 90%;
+  }
+}
+
+.faq-search-field.w-input {
+  width: 100%;
+  border-radius: 50px;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  outline: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.faq-search-field.w-input:focus {
+  box-shadow: 0 0 0 3px rgba(53, 119, 244, 0.3);
+}
+
+/* ===== Responsive fixes for hero ===== */
+@media screen and (max-width: 991px) {
+  .hero-section.section.is-no-image.is-faq {
+    margin-top: -30px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .hero-section.section.is-no-image.is-faq {
+    margin-top: -25px;
+  }
+
+  .hero_title {
+    font-size: 2rem;
+  }
+
+  .faq-search-field.w-input {
+    font-size: 0.95rem;
+    padding: 0.9rem 1.5rem;
+  }
+}
+
+/* ===================================
+   FAQ PAGE STYLING – GLS Style
+=================================== */
+
+/* ===== FILTER BUTTONS WRAPPER ===== */
+.faq-filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* hide scrollbar for Firefox */
+}
+.faq-filters::-webkit-scrollbar {
+  display: none; /* hide scrollbar for WebKit browsers */
+}
+
+/* individual button style */
+.faq-filter-btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  background: transparent;
+      border: 1px solid var(--dark--off-white);
+  border-radius: 40px;
+  padding: 10px 24px;
+  font-weight: 400;
+  font-size: 16px;
+  transition: all 0.25s ease;
+  color: #222;
+}
+
+.faq-filter-btn:hover {
+  border-color: #00a06e;
+  color: #00a06e;
+}
+
+.faq-filter-btn.active {
+  background-color: #00a06e;
+  color: white;
+  border-color: #00a06e;
+}
+
+/* ===== Accordion ===== */
+.faq-item {
+  border: 1.5px solid #e5e5e5;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  background: transparent;
+  transition: border 0.25s ease;
+}
+
+.faq-item.open {
+  border-color: #00a06e;
+}
+
+.faq-question {
+  width: 100%;
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: left;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #111;
+  cursor: pointer;
+}
+
+.faq-question:hover {
+  color: #00a06e;
+}
+
+.faq-icon {
+  font-size: 1.5rem;
+  font-weight: 500;
+  transition: transform 0.25s ease;
+}
+
+.faq-answer {
+  display: none;
+  padding: 0 1.5rem 1.25rem;
+  color: #555;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.faq-item.open .faq-answer {
+  display: block;
+}
+
+.faq-item.open .faq-icon {
+  transform: rotate(180deg);
+}
+
+/* ===== Links ===== */
+a {
+  color: #00a06e;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: #007d56;
+}
+
+/* ===== MOBILE OPTIMIZATION ===== */
+@media screen and (max-width: 767px) {
+  .faq-section {
+    padding: 3rem 1rem;
+  }
+
+  .faq-filter-btn {
+    padding: 8px 18px;
+    font-size: 14px;
+    border-radius: 30px;
+  }
+
+  .faq-question {
+    font-size: 1.05rem;
+    padding: 1rem 1.25rem;
+  }
+
+  .faq-answer {
+    font-size: 0.95rem;
+    padding: 0 1.25rem 1rem;
+  }
+
+  .faq-item {
+    border-radius: 10px;
+  }
+}
+
+/* ===============================
+   GET STARTED SECTION – Gradient Background Version
+   =============================== */
+.get-started-section.section {
+  background-image: linear-gradient(45deg, #000000, #00d98a  100%);
+  padding: 4rem 3rem; /* reduced from 6rem 4rem */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Two-column grid */
+.container.is-2-col-grid {
+  grid-column-gap: var(--gap-desktop);
+  grid-row-gap: var(--gap-desktop);
+  grid-template-columns: 1fr 1fr;
+  display: grid;
+  align-items: stretch;
+}
+
+/* Image on left */
+.get-started-image {
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 620px; /* desktop fixed height */
+}
+
+.get-started-image img.full-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  border-radius: 20px;
+}
+
+/* White text card on right */
+.get-started-card {
+  background-color: var(--light--off-white);
+  border-radius: 20px;
+  padding: 4rem 3rem; /* keep consistent with your design */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  height: 620px;
+}
+
+.box-rich-text {
+  max-width: 700px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.box-rich-text h2 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 0.3em;
+  color: var(--color-dark);
+  line-height: 1.1;
+}
+
+.box-rich-text h3 {
+  font-size: 1.5rem;
+  color: var(--dark--green);
+  margin-bottom: 1em;
+  font-weight: 700;
+}
+
+.box-rich-text p {
+  margin-bottom: 1em;
+}
+
+/* CTA Button */
+.button {
+  background-color: var(--color-dark);
+  color: var(--off-white);
+  text-align: center;
+  border-radius: 999px;
+  min-width: 140px;
+  padding: 0.85rem 2rem;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  background-color: var(--dark--green);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* ===============================
+   RESPONSIVE FIXES
+   =============================== */
+@media screen and (max-width: 991px) {
+  .container.is-2-col-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  /* Image first on mobile */
+  .get-started-image {
+    order: 1;
+    height: auto; /* allow natural resizing */
+  }
+
+  .get-started-card {
+    order: 2;
+    height: auto; /* natural height for text */
+    padding: 3rem 2rem;
+  }
+
+  .box-rich-text h2 {
+    font-size: 2.5rem;
+  }
+}
+
+/* ===== TABLET & MOBILE ===== */
+@media screen and (max-width: 767px) {
+  .get-started-section.section {
+    padding: 4rem 2rem;
+  }
+
+  .get-started-image {
+    height: auto; /* auto height removes empty space */
+  }
+
+  .get-started-image img.full-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: 75% center; /* shift left to show bouquet */
+  }
+
+  .get-started-card {
+    height: auto;
+    padding: 2.5rem 2rem;
+  }
+
+  .box-rich-text {
+    font-size: 1rem;
+  }
+
+  .box-rich-text h2 {
+    font-size: 1.8rem;
+  }
+
+  .box-rich-text h3 {
+    font-size: 1.25rem;
+  }
+
+  .button {
+    font-size: 0.95rem;
+    padding: 0.75rem 1.75rem;
+  }
+}
+
+/* ===== Small Mobile Edge Fix ===== */
+@media screen and (max-width: 479px) {
+  .get-started-section.section {
+    padding: 4rem 1.5rem;
+  }
+
+  .container {
+    --bs-gutter-x: 0;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .get-started-image,
+  .get-started-card {
+    width: 100%;
+  }
+
+  .get-started-image img.full-image {
+    object-position: 70% center; /* stronger left shift for very small screens */
+  }
+}
+
+
+
+/* ===============================
+   CONTACT SECTION (GLS Morocco)
+================================ */
+.contact-section {
+    padding: 6rem 2rem;
+  }
+  
+  /* Remove Bootstrap default padding only in this section */
+  .contact-section .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* ===============================
+     GRID LAYOUT
+  ================================ */
+  .container.is-2-col-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: stretch;
+  }
+  
+  /* ===============================
+     LEFT CARD (Contact Info)
+  ================================ */
+  .div-block-5-copy {
+    background-color: var(--off-black);
+    color: var(--off-white);
+    border-radius: 28px;
+    padding: 4rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    width: 96%;
+    margin: 0 auto;
+  }
+  
+  .h-section-subtitle {
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--off-white);
+  }
+  
+  .div-block-21 {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+  
+  .text-span {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #d3d3d3;
+    text-transform: uppercase;
+  }
+  
+  .text-block-3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--off-white);
+    line-height: 1.6;
+  }
+  
+  .link-block,
+  .link-block-2 {
+    text-decoration: none;
+    color: var(--off-white);
+  }
+  
+  .link-block:hover .text-block-3,
+  .link-block-2:hover .text-block-3 {
+    text-decoration: underline;
+  }
+  
+  /* ===============================
+     SOCIAL ICONS
+  ================================ */
+  .div-block-20 {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.75rem;
+  }
+  
+  .footer-social-link {
+    font-size: 1.8rem;
+    color: var(--off-white);
+    transition: color 0.3s ease;
+  }
+  
+  .footer-social-link.ig:hover { color: #e4405f; }  /* Instagram */
+  .footer-social-link.fb:hover { color: #1877f2; }  /* Facebook */
+  .footer-social-link.yt:hover { color: #ff0000; }  /* YouTube */
+  .footer-social-link.wa:hover { color: #25d366; }  /* WhatsApp */
+  
+  /* ===============================
+     MAP
+  ================================ */
+  .div-block-7 iframe {
+    width: 96%;
+    height: 100%;
+    border-radius: 28px;
+    border: none;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* ===============================
+     RESPONSIVE FIXES
+  ================================ */
+  @media screen and (max-width: 991px) {
+    .container.is-grid,
+    .container.is-2-col-grid {
+      flex-flow: column;
+      display: flex;
+      gap: 2rem;
+    }
+  
+    .div-block-5-copy {
+      padding: 3rem 2rem;
+    }
+  
+    .div-block-7 iframe {
+      height: 350px;
+    }
+  }
+  
+  @media screen and (max-width: 767px) {
+    .contact-section {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  
+    .div-block-5-copy {
+      width: 94%;
+      margin: 0 auto;
+      padding: 2.5rem 1.75rem;
+      border-radius: 24px;
+    }
+  
+    .div-block-7 iframe {
+      border-radius: 18px;
+      height: 340px;
+    }
+  }
+  
+  @media screen and (max-width: 479px) {
+    .div-block-5-copy {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }

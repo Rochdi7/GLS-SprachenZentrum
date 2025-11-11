@@ -105,7 +105,7 @@
   --color-tertiary: #fb923c; /* Highlight (orange) */
   --color-accent: #7c3aed; /* Optional accent (violet) */
   --color-bg: #ffffff; /* Background color */
-  --color-surface: #fff9d9; /* Surface / cream tone */
+  --color-surface: #fffee8; /* Surface / cream tone */
   --color-text: #1c1c1a; /* Primary text */
   --color-border: #e6e2c5; /* Border lines */
   --color-dark: #111; /* Dark chip or text color */
@@ -172,6 +172,7 @@
     --section-padding: 80px;
     --radius-small: 16px;
     --radius-mid: 32px;
+    --radius-big: 64px;
 }
 
 /* =========================================================
