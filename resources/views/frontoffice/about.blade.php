@@ -71,7 +71,7 @@
 
     <div class="image-block">
       <img
-        src="{{ asset('assets/images/about/GLS-Classroom-Morocco.jpg') }}"
+        src="{{ asset('assets/images/about/grid-1.png') }}"
         alt="GLS Sprachenzentrum students during class"
         class="full-image"
         loading="lazy">
@@ -82,7 +82,7 @@
   <div class="container is-2-col-grid">
     <div class="image-block is-1-1">
       <img
-        src="{{ asset('assets/images/about/GLS-Cafe-Morocco.jpg') }}"
+        src="{{ asset('assets/images/about/grid1.jpeg') }}"
         alt="Students at GLS Café relaxing between classes"
         class="full-image is-ratio"
         loading="lazy">
@@ -134,7 +134,7 @@
     {{-- ===== Left: Image Block ===== --}}
     <div class="get-started-image">
       <img 
-        src="{{ asset('assets/images/about/GLS-Students-GetStarted.jpg') }}" 
+        src="{{ asset('assets/images/about/subscribe.jpeg') }}" 
         alt="Students smiling at GLS Sprachenzentrum" 
         class="full-image rounded-4"
         loading="lazy">

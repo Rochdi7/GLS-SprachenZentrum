@@ -260,61 +260,81 @@
   <div class="container sites-grid">
 
     <!-- 1. Rabat -->
-    <div class="site-card small">
-      <img src="{{ asset('assets/images/sites/rabat.jpg') }}" alt="GLS Rabat" class="site-image">
-      <video class="site-video" muted loop preload="metadata" playsinline>
-        <source src="https://yourcdn.com/videos/rabat-cinematic.mp4" type="video/mp4">
-      </video>
-      <div class="site-overlay"><h3>Rabat</h3></div>
-    </div>
+<div class="site-card small">
+  <div class="site-video-wrapper">
+    <img src="{{ asset('assets/images/sites/rabat.jpg') }}" alt="GLS Kénitra" class="site-image">
+    <iframe
+      src="https://www.youtube.com/embed/MN6_-R2wvhY?autoplay=1&mute=1&controls=0&loop=1&playlist=MN6_-R2wvhY&modestbranding=1&playsinline=1"
+      frameborder="0"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+  <div class="site-overlay"><h3>RABAT</h3></div>
+</div>
 
-    <!-- 2. Kénitra -->
-    <div class="site-card small">
-      <img src="{{ asset('assets/images/sites/kenitra.jpg') }}" alt="GLS Kénitra" class="site-image">
-      <video class="site-video" muted loop preload="metadata" playsinline>
-        <source src="https://yourcdn.com/videos/kenitra-cinematic.mp4" type="video/mp4">
-      </video>
-      <div class="site-overlay"><h3>Kénitra</h3></div>
-    </div>
+<!-- 2. Kénitra -->
+<div class="site-card small">
+  <img src="{{ asset('assets/images/sites/kenitra.jpg') }}" alt="GLS Kénitra" class="site-image">
+  <video class="site-video" muted loop preload="metadata" playsinline>
+    <source src="https://yourcdn.com/videos/kenitra-cinematic.mp4" type="video/mp4">
+  </video>
+  <div class="site-overlay"><h3>Kénitra</h3></div>
+</div>
 
-    <!-- 3. Marrakech (wide) -->
-    <div class="site-card wide">
-      <img src="{{ asset('assets/images/sites/marrakech.webp') }}" alt="GLS Marrakech" class="site-image">
-      <video class="site-video" muted loop preload="metadata" playsinline>
-        <source src="https://yourcdn.com/videos/marrakech-cinematic.mp4" type="video/mp4">
-      </video>
-      <div class="site-overlay"><h3>Marrakech</h3></div>
-    </div>
+<!-- 3. Marrakech (wide) -->
+<div class="site-card wide">
+  <img src="{{ asset('assets/images/sites/marrakech.webp') }}" alt="GLS Marrakech" class="site-image">
+  <video class="site-video" muted loop preload="metadata" playsinline>
+    <source src="https://raw.githubusercontent.com/Rochdi7/Gls-Videos/main/agadir-cinematic.mp4" type="video/mp4">
+  </video>
+  <div class="site-overlay"><h3>Marrakech</h3></div>
+</div>
 
-    <!-- 4. Salé -->
-    <div class="site-card wide">
-      <img src="{{ asset('assets/images/sites/sale.webp') }}" alt="GLS Salé" class="site-image">
-      <video class="site-video" muted loop preload="metadata" playsinline>
-        <source src="https://yourcdn.com/videos/sale-cinematic.mp4" type="video/mp4">
-      </video>
-      <div class="site-overlay"><h3>Salé</h3></div>
-    </div>
+<!-- 4. Salé -->
+<div class="site-card wide">
+  <img src="{{ asset('assets/images/sites/sale.webp') }}" alt="GLS Salé" class="site-image">
+  <video class="site-video" muted loop preload="metadata" playsinline>
+    <source src="https://yourcdn.com/videos/sale-cinematic.mp4" type="video/mp4">
+  </video>
+  <div class="site-overlay"><h3>Salé</h3></div>
+</div>
 
-    <!-- 5. Agadir -->
-    <div class="site-card small">
-      <img src="{{ asset('assets/images/sites/agadir.avif') }}" alt="GLS Agadir" class="site-image">
-      <video class="site-video" muted loop preload="metadata" playsinline>
-        <source src="https://yourcdn.com/videos/agadir-cinematic.mp4" type="video/mp4">
-      </video>
-      <div class="site-overlay"><h3>Agadir</h3></div>
-    </div>
+<!-- 5. Agadir -->
+<div class="site-card small">
+  <img src="{{ asset('assets/images/sites/agadir.avif') }}" alt="GLS Agadir" class="site-image">
+  <video class="site-video" muted loop preload="metadata" playsinline>
+    <source src="https://yourcdn.com/videos/agadir-cinematic.mp4" type="video/mp4">
+  </video>
+  <div class="site-overlay"><h3>Agadir</h3></div>
+</div>
 
-    <!-- 6. Casablanca -->
-    <div class="site-card small">
-      <img src="{{ asset('assets/images/sites/casablanca.jpg') }}" alt="GLS Casablanca" class="site-image">
-      <video class="site-video" muted loop preload="metadata" playsinline>
-        <source src="https://yourcdn.com/videos/casablanca-cinematic.mp4" type="video/mp4">
-      </video>
-      <div class="site-overlay"><h3>Casablanca</h3></div>
-    </div>
+<!-- 6. Casablanca -->
+<div class="site-card small">
+  <img src="{{ asset('assets/images/sites/casablanca.jpg') }}" alt="GLS Casablanca" class="site-image">
+  <video class="site-video" muted loop preload="metadata" playsinline>
+    <source src="https://yourcdn.com/videos/casablanca-cinematic.mp4" type="video/mp4">
+  </video>
+  <div class="site-overlay"><h3>Casablanca</h3></div>
+</div>
+
 
   </div>
 </section>
+<script>
+  document.querySelectorAll('.site-card').forEach(card => {
+    const video = card.querySelector('video');
+
+    card.addEventListener('mouseenter', () => {
+      video.play();
+    });
+
+    card.addEventListener('mouseleave', () => {
+      video.pause();
+      video.currentTime = 0;
+    });
+  });
+</script>
 
 
     <section class="home-courses-section section">
