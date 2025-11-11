@@ -23,4 +23,7 @@ class HomeController extends Controller
         // Loads resources/views/frontoffice/about.blade.php
         return view('frontoffice.about');
     }
+    public function FAQ(){
+        return view('frontoffice.faq');
+    }
 }
