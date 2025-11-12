@@ -20,5 +20,12 @@ Route::middleware(['web'])->group(function () {
     // FAQ Page
     Route::get('/faq', [PageController::class, 'faq'])->name('front.faq');
 
+    // Contact Page
     Route::get('/contact', [PageController::class, 'contact'])->name('front.contact');
+
+    // Sites Page
+    Route::get('/sites', [PageController::class, 'sites'])->name('front.sites');
+
+    // Intensive Courses Page
+    Route::get('/intensive-courses', [PageController::class, 'intensiveCourses'])->name('front.intensive-courses');
 });
