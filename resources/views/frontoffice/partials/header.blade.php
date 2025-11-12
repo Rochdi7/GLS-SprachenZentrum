@@ -19,11 +19,12 @@
                     About
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">About Us</a></li>
-                    <li><a class="dropdown-item" href="#">Our Sites</a></li>
-                    <li><a class="dropdown-item" href="#">FAQ</a></li>
-                    <li><a class="dropdown-item" href="#">Contact</a></li>
-                </ul>
+    <li><a class="dropdown-item" href="{{ route('front.about') }}">About Us</a></li>
+    <li><a class="dropdown-item" href="{{ route('front.sites') }}">Our Sites</a></li>
+    <li><a class="dropdown-item" href="{{ route('front.faq') }}">FAQ</a></li>
+    <li><a class="dropdown-item" href="{{ route('front.contact') }}">Contact</a></li>
+</ul>
+
             </div>
 
             {{-- German Courses --}}
@@ -89,11 +90,12 @@
             <div class="menu-item">
                 <button class="menu-label" type="button">About</button>
                 <div class="submenu">
-                    <a href="#">About Us</a>
-                    <a href="#">Our Sites</a>
-                    <a href="#">FAQ</a>
-                    <a href="#">Contact</a>
-                </div>
+    <a href="{{ route('front.about') }}">About Us</a>
+    <a href="{{ route('front.sites') }}">Our Sites</a>
+    <a href="{{ route('front.faq') }}">FAQ</a>
+    <a href="{{ route('front.contact') }}">Contact</a>
+</div>
+
             </div>
 
             <div class="menu-item">

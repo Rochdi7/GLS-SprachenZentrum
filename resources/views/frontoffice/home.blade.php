@@ -13,11 +13,6 @@
         <div class="badge b-orange b3">Guten Tag</div>
         <div class="badge b-violet b4">Freunde</div>
 
-
-
-
-
-
         <div class="hero__inner text-center">
             <h1 class="hero-title">
                 Learn German in Morocco with GLS
