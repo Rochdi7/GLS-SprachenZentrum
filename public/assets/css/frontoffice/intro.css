@@ -12,7 +12,9 @@
   width: 100%;
   border-top-left-radius: 60px;
   border-top-right-radius: 60px;
-  background-image: linear-gradient(45deg, #ff7a08, #ff0000 103%);
+  background-image:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(225deg, #0057ff 0%, #00d98a 40%, #00a06e 70%, #ffd84c 100%);
   padding-top: 5rem;
   padding-bottom: 1.5rem;
   z-index: 5;

@@ -1,0 +1,829 @@
+/* =========================================================
+   INTENSIVE COURSES – HERO SECTION (like ABOUT HERO)
+========================================================= */
+.hero-section.section.intensive-hero {
+  border-bottom-left-radius: 60px;
+  border-bottom-right-radius: 60px;
+  background-image:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(225deg, #0057ff 0%, #00d98a 40%, #00a06e 70%, #ffd84c 100%);
+  margin-top: -40px;
+  padding-top: 120px;
+  padding-bottom: 0;
+  margin-bottom: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.container.is-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 2rem;
+  width: 100%;
+  max-width: 1440px;
+}
+
+/* subtitle */
+.hero_subtitle {
+  color: #fff;
+  mix-blend-mode: overlay;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
+}
+
+/* title */
+.hero_title {
+  color: #fff;
+  text-wrap: balance;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+  text-shadow: 0 0 18px rgba(0, 0, 0, 0.25);
+}
+
+/* image */
+.hero-image {
+  border-radius: var(--radius-mid);
+  background-color: var(--dark--off-white);
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 600px;
+  margin-top: 4rem;
+  margin-bottom: -300px;
+  display: flex;
+  overflow: hidden;
+}
+
+.full-image {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* =========================================================
+   RICH TEXT SECTION
+========================================================= */
+.rich-text-section.section {
+  background-color: var(--light--off-white);
+}
+
+.container {
+  width: 100%;
+  max-width: 1440px;
+  position: relative;
+}
+
+.rich-text {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--dark);
+}
+
+.rich-text p {
+  margin-bottom: 0.5em;
+}
+
+/* =========================================================
+   RESPONSIVE TWEAKS
+========================================================= */
+@media screen and (max-width: 991px) {
+  .hero-image {
+    border-radius: var(--radius-small);
+    height: 400px;
+    margin-bottom: -200px;
+  }
+
+  .hero_title {
+    font-size: 3.5rem;
+  }
+
+  .rich-text {
+    font-size: 1.1rem;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .hero-image {
+    height: 300px;
+    margin-top: 3rem;
+    margin-bottom: -150px;
+  }
+
+  .hero_title {
+    font-size: 2.4rem;
+  }
+
+  .hero_subtitle {
+    font-size: 1.25rem;
+  }
+}
+
+/* --- Rich text base (you already use this pattern) --- */
+.rich-text-section.section { background-color: var(--light--off-white); }
+.container { width: 100%; max-width: 1440px; position: relative; }
+/* =========================================================
+   INTENSIVE COURSES – RICH TEXT (Refined Typography)
+========================================================= */
+.rich-text {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: var(--dark);
+  font-weight: 400;
+}
+
+/* paragraphs – subtle vertical rhythm */
+.rich-text p {
+  margin-bottom: 1.25em;
+}
+
+/* ordered list block */
+.rich-text ol {
+  margin: 1.5em 0 1.5em 1.5em;
+  padding-left: 1.5em;
+  counter-reset: list-counter;
+}
+
+/* list items – numbered + bold question look */
+.rich-text ol li {
+  counter-increment: list-counter;
+  list-style: none;
+  position: relative;
+  margin-bottom: 0.75em;
+  font-weight: 700;
+  line-height: 1.5;
+  font-size: 15px;
+  color: var(--dark);
+}
+
+/* custom number styling */
+.rich-text ol li::before {
+  content: counter(list-counter) ".";
+  position: absolute;
+  left: -1.5em;
+  top: 0;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+/* subtle transition for hover (optional aesthetic) */
+.rich-text ol li:hover {
+  color: var(--color-primary, #0057ff);
+  transition: color 0.3s ease;
+}
+
+/* handle responsiveness for small screens */
+@media screen and (max-width: 767px) {
+  .rich-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+  .rich-text ol {
+    margin-left: 1em;
+  }
+  .rich-text ol li::before {
+    left: -1.2em;
+  }
+}
+
+
+/* =========================================================
+   INLINE CTA SECTION – Gradient Call-to-Action Block
+   ========================================================= */
+.inline-cta-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 1440px;
+  padding: 4rem 3rem;
+  border-radius: var(--radius-mid);
+  background-image:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(225deg, #0057ff 0%, #00d98a 40%, #00a06e 70%, #ffd84c 100%);
+  color: var(--off-white);
+  margin-inline: auto;
+  gap: 2rem;
+}
+
+/* Title styling */
+.heading-4 {
+  text-wrap: balance;
+  margin: 0;
+  font-size: 3.4rem;
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--off-white);
+}
+
+/* Overlay style (added for hero-like look) */
+.overlay-text {
+  color: #fff;
+  mix-blend-mode: overlay;
+  text-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.25),
+    0 0 40px rgba(255, 255, 255, 0.1);
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* Button base */
+.button {
+  background-color: white;
+  color: var(--off-white);
+  text-align: center;
+  border-radius: 8rem;
+  min-width: 125px;
+  padding: 0.75rem 2rem;
+  font-weight: 700;
+  transition: transform 0.2s, background-color 0.2s, color 0.2s;
+}
+
+.button:hover {
+  background-color: white;
+  transform: scale(1.05);
+}
+
+/* Variants */
+.button.is-big {
+  font-size: 1.25rem;
+}
+
+.button.is-white {
+  padding: 0.75rem 2rem;
+  background-color: white;
+  color: var(--off-black);
+}
+.button.is-white:hover{
+  background-color: black;
+}
+.w-button {
+  color: #fff;
+  line-height: inherit;
+  cursor: pointer;
+  background-color: #3898ec;
+  border: 0;
+  padding: 9px 15px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .inline-cta-block {
+    padding: 3rem 1.5rem;
+  }
+
+  .heading-4 {
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+  }
+
+  .button.is-big {
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+  }
+  .button{
+    line-height: 1.2;
+  }
+}
+
+/* ===============================
+   GET STARTED SECTION – Gradient Background Version
+   =============================== */
+.get-started-section.section {
+  background-image: linear-gradient(45deg, #000000, #3577f4 100%);
+  padding: 4rem 3rem; /* reduced from 6rem 4rem */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Two-column grid */
+.container.is-2-col-grid {
+  grid-column-gap: var(--gap-desktop);
+  grid-row-gap: var(--gap-desktop);
+  grid-template-columns: 1fr 1fr;
+  display: grid;
+  align-items: stretch;
+}
+
+/* Image on left */
+.get-started-image {
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 620px; /* desktop fixed height */
+}
+
+.get-started-image img.full-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  border-radius: 20px;
+}
+
+/* White text card on right */
+.get-started-card {
+  background-color: var(--light--off-white);
+  border-radius: 20px;
+  padding: 4rem 3rem; /* keep consistent with your design */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  height: 620px;
+}
+
+.box-rich-text {
+  max-width: 700px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.box-rich-text h2 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 0.3em;
+  color: var(--color-dark);
+  line-height: 1.1;
+}
+
+.box-rich-text h3 {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin-bottom: 1em;
+  font-weight: 700;
+}
+
+.box-rich-text p {
+  margin-bottom: 1em;
+}
+
+/* CTA Button */
+.button {
+  background-color: var(--color-dark);
+  color: var(--off-white);
+  text-align: center;
+  border-radius: 999px;
+  min-width: 140px;
+  padding: 0.85rem 2rem;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  background-color: var(--color-primary);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* ===============================
+   RESPONSIVE FIXES
+   =============================== */
+@media screen and (max-width: 991px) {
+  .container.is-2-col-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  /* Image first on mobile */
+  .get-started-image {
+    order: 1;
+    height: auto; /* allow natural resizing */
+  }
+
+  .get-started-card {
+    order: 2;
+    height: auto; /* natural height for text */
+    padding: 3rem 2rem;
+  }
+
+  .box-rich-text h2 {
+    font-size: 2.5rem;
+  }
+}
+
+/* ===== TABLET & MOBILE ===== */
+@media screen and (max-width: 767px) {
+  .get-started-section.section {
+    padding: 4rem 2rem;
+  }
+
+  .get-started-image {
+    height: auto; /* auto height removes empty space */
+  }
+
+  .get-started-image img.full-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: 75% center; /* shift left to show bouquet */
+  }
+
+  .get-started-card {
+    height: auto;
+    padding: 2.5rem 2rem;
+  }
+
+  .box-rich-text {
+    font-size: 1rem;
+  }
+
+  .box-rich-text h2 {
+    font-size: 1.8rem;
+  }
+
+  .box-rich-text h3 {
+    font-size: 1.25rem;
+  }
+
+  .button {
+    font-size: 0.95rem;
+    padding: 0.75rem 1.75rem;
+  }
+}
+
+/* ===== Small Mobile Edge Fix ===== */
+@media screen and (max-width: 479px) {
+  .get-started-section.section {
+    padding: 4rem 1.5rem;
+  }
+
+  .container {
+    --bs-gutter-x: 0;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .get-started-image,
+  .get-started-card {
+    width: 100%;
+  }
+
+  .get-started-image img.full-image {
+    object-position: 70% center; /* stronger left shift for very small screens */
+  }
+}
+
+
+
+/* ===============================
+   CONTACT SECTION (GLS Morocco)
+================================ */
+.contact-section {
+    padding: 6rem 2rem;
+  }
+  
+  /* Remove Bootstrap default padding only in this section */
+  .contact-section .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* ===============================
+     GRID LAYOUT
+  ================================ */
+  .container.is-2-col-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: stretch;
+  }
+  
+  /* ===============================
+     LEFT CARD (Contact Info)
+  ================================ */
+  .div-block-5-copy {
+    background-color: var(--off-black);
+    color: var(--off-white);
+    border-radius: 28px;
+    padding: 4rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    width: 96%;
+    margin: 0 auto;
+  }
+  
+  .h-section-subtitle {
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--off-white);
+  }
+  
+  .div-block-21 {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+  
+  .text-span {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #d3d3d3;
+    text-transform: uppercase;
+  }
+  
+  .text-block-3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--off-white);
+    line-height: 1.6;
+  }
+  
+  .link-block,
+  .link-block-2 {
+    text-decoration: none;
+    color: var(--off-white);
+  }
+  
+  .link-block:hover .text-block-3,
+  .link-block-2:hover .text-block-3 {
+    text-decoration: underline;
+  }
+  
+  /* ===============================
+     SOCIAL ICONS
+  ================================ */
+  .div-block-20 {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.75rem;
+  }
+  
+  .footer-social-link {
+    font-size: 1.8rem;
+    color: var(--off-white);
+    transition: color 0.3s ease;
+  }
+  
+  .footer-social-link.ig:hover { color: #e4405f; }  /* Instagram */
+  .footer-social-link.fb:hover { color: #1877f2; }  /* Facebook */
+  .footer-social-link.yt:hover { color: #ff0000; }  /* YouTube */
+  .footer-social-link.wa:hover { color: #25d366; }  /* WhatsApp */
+  
+  /* ===============================
+     MAP
+  ================================ */
+  .div-block-7 iframe {
+    width: 96%;
+    height: 100%;
+    border-radius: 28px;
+    border: none;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* ===============================
+     RESPONSIVE FIXES
+  ================================ */
+  @media screen and (max-width: 991px) {
+    .container.is-grid,
+    .container.is-2-col-grid {
+      flex-flow: column;
+      display: flex;
+      gap: 2rem;
+    }
+  
+    .div-block-5-copy {
+      padding: 3rem 2rem;
+    }
+  
+    .div-block-7 iframe {
+      height: 350px;
+    }
+  }
+  
+  @media screen and (max-width: 767px) {
+    .contact-section {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  
+    .div-block-5-copy {
+      width: 94%;
+      margin: 0 auto;
+      padding: 2.5rem 1.75rem;
+      border-radius: 24px;
+    }
+  
+    .div-block-7 iframe {
+      border-radius: 18px;
+      height: 340px;
+    }
+  }
+  
+  @media screen and (max-width: 479px) {
+    .div-block-5-copy {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+/* =========================================================
+   GLS – INTENSIVE COURSES SECTION (A1–B2) – CLEAN TOP
+========================================================= */
+
+/* --- Section and Container Overrides --- */
+.home-courses-section.section {
+  grid-column-gap: 6rem;
+  background-color: var(--off-white);
+  padding-top: 2rem;  /* reduced top space */
+  padding-bottom: 6rem;
+}
+
+.section {
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0 4rem;
+  display: flex;
+}
+
+.container {
+  width: 100%;
+  position: relative;
+}
+
+/* only the course content, no photo banner */
+.container.is-h-courses {
+  grid-column-gap: 0.5rem;
+  grid-row-gap: 0.5rem;
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  display: flex;
+}
+
+/* --- Typography --- */
+.h-section-subtitle-courses {
+  color: var(--off-black);
+  text-wrap: balance;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.subtitle {
+  color: var(--light--blue);
+  text-wrap: balance;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.paragraph-2 {
+  max-width: 800px;
+  margin-bottom: 1.5rem;
+  font-size: 1.05rem;
+  color: var(--dark);
+}
+
+/* --- Courses Cards (Grid Layout) --- */
+.courses-cards {
+  grid-column-gap: 2rem;
+  grid-row-gap: 2rem;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+  margin-top: 1rem;
+  display: grid;
+}
+
+/* --- Card Styling and Colors --- */
+.course-card {
+  border-radius: var(--radius-mid);
+  color: var(--off-black);
+  background-color: #81caff;
+  flex-flow: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 1.5rem;
+  display: flex;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.course-card.is-green { background-color: var(--light--green); }
+.course-card.is-purple { background-color: var(--light--purple); }
+.course-card.is-yellow { background-color: var(--light--yellow); }
+.course-card.is-orange { background-color: var(--light--orange); }
+
+/* --- Level Circles --- */
+.couse-card_level {
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  display: flex;
+}
+
+.course-card_level-circle {
+  border: 2px solid var(--off-black);
+  border-radius: 1000px;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  margin-right: -1px;
+  font-weight: 700;
+  display: flex;
+  color: var(--off-black);
+}
+
+/* --- Titles and Text --- */
+.course-card_title {
+  margin: 0 0 0.5rem 0;
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.course-card_text {
+  margin-bottom: auto;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* --- Button --- */
+.button.is-course-card {
+  margin-top: 1rem;
+  padding: 0.6rem 1.4rem;
+  font-size: 1rem;
+  background-color: black;
+  color: white;
+  border-radius: 8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+.button.is-course-card:hover {
+  background-color: var(--off-black);
+}
+
+/* --- Responsive Adjustments --- */
+@media screen and (max-width: 991px) {
+  .h-section-subtitle-courses { font-size: 3rem; }
+  .courses-cards {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1.5rem;
+    padding-bottom: 1rem;
+  }
+  .course-card {
+    flex: none;
+    width: 280px;
+    scroll-snap-align: start;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .home-courses-section.section { padding-top: 1rem; }
+  .h-section-subtitle-courses { font-size: 2.4rem; }
+  .subtitle { font-size: 1.2rem; }
+  .paragraph-2 { font-size: 1rem; }
+}
+
+@media screen and (max-width: 479px) {
+  .h-section-subtitle-courses { font-size: 2rem; }
+  .subtitle { font-size: 1rem; }
+  .courses-cards { gap: 1rem; }
+  .course-card { width: 240px; }
+}

@@ -41,15 +41,16 @@
 
 /* Title refinement */
 .hero-title {
-    font-family: "Outfit", "Manrope", system-ui, sans-serif;
+    font-family: Now, sans-serif;
     color: var(--color-light, #f8fff8);
-    font-weight: 900;
-    line-height: 1;
+    font-weight: 500;
+    line-height: .9;
     letter-spacing: -0.5px;
     text-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
     font-size: clamp(56px, 7vw, 120px);
     margin: 0 auto;
     filter: drop-shadow(0 2px 16px #0000004d);
+    
 }
 
 /* =========================================================
