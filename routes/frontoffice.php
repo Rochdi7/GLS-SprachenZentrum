@@ -27,5 +27,10 @@ Route::middleware(['web'])->group(function () {
     Route::get('/sites', [PageController::class, 'sites'])->name('front.sites');
 
     // Intensive Courses Page
-    Route::get('/intensive-courses', [PageController::class, 'intensiveCourses'])->name('front.intensive-courses');
+    Route::get('/intensive-courses', [PageController::class, 'intensiveCourses'])
+        ->name('front.intensive-courses');
+
+    // Online Courses Page  ✅ NEW
+    Route::get('/online-courses', [PageController::class, 'onlineCourses'])
+        ->name('front.online-courses');
 });
