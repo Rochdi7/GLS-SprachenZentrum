@@ -40,6 +40,15 @@
   .drawer-inner {
     margin-top: 55px;
   }
+
+  /* MOBILE FONT SIZE OPTIMIZATION */
+  .menu-label {
+    font-size: 0.7rem;        /* smaller category text */
+  }
+
+  .submenu a {
+    font-size: 0.8rem;     /* slightly smaller submenu */
+  }
 }
 
 /* =========================================================
@@ -91,7 +100,7 @@
   background: none;
   border: none;
   font-weight: var(--fw-bold);
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   padding: 14px 0;
   color: var(--color-text);
   text-align: left;
@@ -123,7 +132,7 @@
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.35s ease;
-  padding-left: 0;
+  padding-left: 18px;      /* ⭐ INDENT submenu to the right */
   border-bottom: none;
 }
 .menu-item.open .submenu {
@@ -133,7 +142,7 @@
 
 .submenu a {
   display: block;
-  padding: 10px 0;
+  padding: 10px 0 10px 4px;   /* ⭐ small extra indent */
   font-size: 1rem;
   color: var(--color-text);
   text-decoration: none;

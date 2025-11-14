@@ -33,7 +33,7 @@
   font-weight: var(--fw-black);
   letter-spacing: 0.3px;
   text-transform: lowercase;
-  transition: color 0.25s ease;
+  transition: none !important;
 }
 
 /* ===== NAVIGATION ===== */
@@ -57,29 +57,27 @@
   gap: 6px;
   padding: 6px 12px;
   border-radius: 8px;
-  transition: background 0.25s, color 0.25s;
-  font-family: var(--font-sans);
+  transition: none !important;
+  font-size: 0.8rem;
   font-weight: var(--fw-bold);
 }
 
 /* Hover style for main nav items */
 .nav a:hover,
 .nav button:hover {
-  background: rgba(255, 255, 255, 0.6);
+  background-image: linear-gradient(#f1f1d4, #f1f1d4);
   color: var(--color-secondary);
+  transition: none !important;
 }
 
-/* ===== CARET ARROW (desktop dropdown) ===== */
+/* ===== CARET ARROW ===== */
 .caret {
   width: 8px;
   height: 8px;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
   transform: rotate(45deg);
-  transition: transform 0.25s ease;
-}
-.dropdown:hover > button .caret {
-  transform: rotate(225deg);
+  transition: none !important;
 }
 
 /* ===== RIGHT SIDE ===== */
@@ -101,11 +99,13 @@
   background: var(--color-dark);
   color: #fff;
   border: 2px solid var(--color-text);
-  transition: all 0.25s ease;
+  transition: none !important;
 }
+
 .chip:hover {
   background: var(--color-primary);
   border-color: var(--color-primary);
+  transition: none !important;
 }
 
 .chip--dark {
@@ -123,15 +123,20 @@
   font-weight: var(--fw-bold);
   font-size: 14px;
   text-decoration: none;
-  transition: all 0.25s ease;
+  transition: none !important;
 }
+
 .btn:hover {
   background: var(--color-secondary);
   color: #fff;
-  transform: translateY(-2px);
+  transform: none !important;
+  transition: none !important;
 }
 
-/* ===== DROPDOWN MENU ===== */
+/* =========================================================
+   DROPDOWN MENU (FIXED HOVER + SLOW DISAPPEAR)
+   ========================================================= */
+
 .dropdown {
   position: relative;
 }
@@ -145,18 +150,25 @@
   top: 100%;
   left: 0;
   margin-top: 8px;
-  background: rgba(255, 255, 255, 0.95);
+
+    background-image: linear-gradient(#f1f1d4, #f1f1d4);
+
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  min-width: 220px;
+
   padding: 16px 24px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+
   opacity: 0;
   visibility: hidden;
+
+  /* THE MAGIC — THIS is why it worked */
   transform: translateY(8px);
   transition: all 0.25s ease;
-  min-width: 220px;
+
   z-index: 30;
   backdrop-filter: blur(8px);
 }
@@ -173,9 +185,11 @@
   font-weight: var(--fw-medium);
   transition: color 0.2s ease;
 }
+
 .dropdown-menu a:hover {
   color: var(--color-secondary);
 }
+
 
 /* ===== SUB-DROPDOWN (SECOND LEVEL) ===== */
 /* .dropdown-submenu {
