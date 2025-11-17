@@ -191,8 +191,8 @@
 
             <!-- RIGHT IMAGE BLOCK -->
             <div class="gls-online-info-image">
-                <img src="{{ asset('assets/images/online-courses/online.png') }}" 
-     alt="Online German Classes" class="gls-full-image">
+                <img src="{{ asset('assets/images/online-courses/online.png') }}" alt="Online German Classes"
+                    class="gls-full-image">
 
             </div>
 

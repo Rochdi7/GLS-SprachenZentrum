@@ -5,26 +5,39 @@
 
 <header class="site-header">
     <div class="nav-wrap container-xxl d-flex justify-content-between align-items-center">
+
         {{-- ===== Brand ===== --}}
-        <a href="#" class="brand">
-            gls sprachENzentrum
-        </a>
+        <a href="#" class="brand">gls sprachENzentrum</a>
 
         {{-- ===== Desktop Navigation ===== --}}
         <nav class="nav d-none d-lg-flex" aria-label="Primary Navigation">
+
             {{-- About --}}
             <div class="dropdown">
                 <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown"
                     aria-expanded="false">
                     About
                 </button>
-                <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="{{ route('front.about') }}">About Us</a></li>
-    <li><a class="dropdown-item" href="{{ route('front.sites') }}">Our Sites</a></li>
-    <li><a class="dropdown-item" href="{{ route('front.faq') }}">FAQ</a></li>
-    <li><a class="dropdown-item" href="{{ route('front.contact') }}">Contact</a></li>
-</ul>
 
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{{ route('front.about') }}">About Us</a></li>
+
+                    <!-- Our Sites NO ROUTE — dropdown only -->
+                    <li class="dropdown-submenu">
+                        <a class="dropdown-item" href="#">Our Sites</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('front.sites.casablanca') }}">Casablanca</a></li>
+                            <li><a class="dropdown-item" href="{{ route('front.sites.marrakech') }}">Marrakech</a></li>
+                            <li><a class="dropdown-item" href="{{ route('front.sites.rabat') }}">Rabat</a></li>
+                            <li><a class="dropdown-item" href="{{ route('front.sites.kenitra') }}">Kénitra</a></li>
+                            <li><a class="dropdown-item" href="{{ route('front.sites.sale') }}">Salé</a></li>
+                            <li><a class="dropdown-item" href="{{ route('front.sites.agadir') }}">Agadir</a></li>
+                        </ul>
+                    </li>
+
+                    <li><a class="dropdown-item" href="{{ route('front.faq') }}">FAQ</a></li>
+                    <li><a class="dropdown-item" href="{{ route('front.contact') }}">Contact</a></li>
+                </ul>
             </div>
 
             {{-- German Courses --}}
@@ -63,12 +76,11 @@
                     <li><a class="dropdown-item" href="#">Student Stories</a></li>
                 </ul>
             </div>
+
         </nav>
 
         {{-- ===== Right Side (Desktop) ===== --}}
         <div class="right d-none d-lg-flex align-items-center gap-2">
-            {{-- <span class="chip chip--dark">EN</span>
-            <span class="chip">DE</span> --}}
             <a class="btn btn-primary" href="#">Enroll Now</a>
         </div>
 
@@ -80,6 +92,8 @@
     </div>
 </header>
 
+
+
 {{-- =========================================================
      MOBILE DRAWER (Accordion Style)
    ========================================================= --}}
@@ -87,17 +101,32 @@
     <div class="drawer-inner">
 
         <div class="menu-section">
+
+            {{-- About --}}
             <div class="menu-item">
                 <button class="menu-label" type="button">About</button>
                 <div class="submenu">
-    <a href="{{ route('front.about') }}">About Us</a>
-    <a href="{{ route('front.sites') }}">Our Sites</a>
-    <a href="{{ route('front.faq') }}">FAQ</a>
-    <a href="{{ route('front.contact') }}">Contact</a>
-</div>
 
+                    <a href="{{ route('front.about') }}">About Us</a>
+
+                    <!-- Our Sites NO ROUTE — accordion only -->
+                    <button class="menu-label submenu-trigger" type="button">Our Sites</button>
+                    <div class="submenu sub-submenu">
+                        <a href="{{ route('front.sites.casablanca') }}">Casablanca</a>
+                        <a href="{{ route('front.sites.marrakech') }}">Marrakech</a>
+                        <a href="{{ route('front.sites.rabat') }}">Rabat</a>
+                        <a href="{{ route('front.sites.kenitra') }}">Kénitra</a>
+                        <a href="{{ route('front.sites.sale') }}">Salé</a>
+                        <a href="{{ route('front.sites.agadir') }}">Agadir</a>
+                    </div>
+
+                    <a href="{{ route('front.faq') }}">FAQ</a>
+                    <a href="{{ route('front.contact') }}">Contact</a>
+
+                </div>
             </div>
 
+            {{-- German Courses --}}
             <div class="menu-item">
                 <button class="menu-label" type="button">German Courses</button>
                 <div class="submenu">
@@ -107,6 +136,7 @@
                 </div>
             </div>
 
+            {{-- Exams --}}
             <div class="menu-item">
                 <button class="menu-label" type="button">Exams</button>
                 <div class="submenu">
@@ -115,6 +145,7 @@
                 </div>
             </div>
 
+            {{-- Resources --}}
             <div class="menu-item">
                 <button class="menu-label" type="button">Resources</button>
                 <div class="submenu">
@@ -122,12 +153,8 @@
                     <a href="#">Student Stories</a>
                 </div>
             </div>
-        </div>
 
-        {{-- <div class="langs mt-4">
-            <span class="chip chip--dark">EN</span>
-            <span class="chip">DE</span>
-        </div> --}}
+        </div>
 
         <div class="cta mt-3">
             <a class="btn btn-primary w-100" href="#">Enroll Now</a>
