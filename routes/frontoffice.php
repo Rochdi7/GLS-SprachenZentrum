@@ -4,11 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Frontoffice\HomeController;
 use App\Http\Controllers\Frontoffice\PageController;
 
-// ===============================
-//  FRONT OFFICE – Public Routes
-//  Language: English only (for now)
-// ===============================
-
 Route::middleware(['web'])->group(function () {
 
     // Home Page
@@ -23,14 +18,18 @@ Route::middleware(['web'])->group(function () {
     // Contact Page
     Route::get('/contact', [PageController::class, 'contact'])->name('front.contact');
 
-    // Sites Page
+    // All Sites Page (main centers listing)
     Route::get('/sites', [PageController::class, 'sites'])->name('front.sites');
 
-    // Intensive Courses Page
-    Route::get('/intensive-courses', [PageController::class, 'intensiveCourses'])
-        ->name('front.intensive-courses');
+    // --- Individual Center Pages ---
+    Route::get('/sites/rabat', [PageController::class, 'siteRabat'])->name('front.sites.rabat');
+    Route::get('/sites/sale', [PageController::class, 'siteSale'])->name('front.sites.sale');
+    Route::get('/sites/kenitra', [PageController::class, 'siteKenitra'])->name('front.sites.kenitra');
+    Route::get('/sites/casablanca', [PageController::class, 'siteCasablanca'])->name('front.sites.casablanca');
+    Route::get('/sites/agadir', [PageController::class, 'siteAgadir'])->name('front.sites.agadir');
+    Route::get('/sites/marrakech', [PageController::class, 'siteMarrakech'])->name('front.sites.marrakech');
 
-    // Online Courses Page  ✅ NEW
-    Route::get('/online-courses', [PageController::class, 'onlineCourses'])
-        ->name('front.online-courses');
+    // Courses Pages
+    Route::get('/intensive-courses', [PageController::class, 'intensiveCourses'])->name('front.intensive-courses');
+    Route::get('/online-courses', [PageController::class, 'onlineCourses'])->name('front.online-courses');
 });
