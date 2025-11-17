@@ -192,14 +192,14 @@
 
 
 /* ===== SUB-DROPDOWN (SECOND LEVEL) ===== */
-/* .dropdown-submenu {
+.dropdown-submenu {
   position: relative;
 }
 
 .dropdown-submenu > .dropdown-menu {
   top: 0;
   left: 100%;
-  margin-left: 10px;
+  margin-left: 23px;
   margin-top: -10px;
   opacity: 0;
   visibility: hidden;
@@ -226,4 +226,4 @@
 
 .dropdown-submenu > a:hover {
   color: var(--b-green);
-} */
+}

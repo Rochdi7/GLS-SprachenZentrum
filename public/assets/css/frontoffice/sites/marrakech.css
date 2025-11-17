@@ -1,0 +1,667 @@
+
+/* ===============================
+   ABOUT HERO SECTION (Inspired by Code Sommet)
+   =============================== */
+.hero-section.section.about-hero {
+  border-bottom-left-radius: 60px;
+  border-bottom-right-radius: 60px;
+  background-image: linear-gradient(
+    135deg,
+    #1d4fa4 0%,
+    #2f7bdc 35%,
+    #0fb28a 70%,
+    #ffdd9b 100%
+);
+
+  margin-top: -40px;
+  padding-top: 120px;
+  padding-bottom: 0;
+  margin-bottom: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* container center alignment */
+.container.is-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 2rem;
+  width: 100%;
+  max-width: 1440px;
+}
+
+/* subtitle */
+.hero_subtitle {
+  color: #fff;
+  mix-blend-mode: overlay;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+}
+
+/* title */
+.hero_title {
+  color: #fff;
+  text-wrap: balance;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+}
+
+/* image block */
+.hero-image {
+  background-color: #111;
+  border-radius: 24px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 1500px;
+  height: 600px;
+  margin-top: 3rem;
+  margin-bottom: -300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-image img.full-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===============================
+   GLS RICHTEXT SECTIONS
+=============================== */
+.gls-container {
+  width: 100%;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+
+.gls-section {
+  background-color: var(--light--off-white);
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6rem 2rem;
+}
+
+.gls-richtext-wrapper {
+  padding: 0rem 2rem;
+  background-color: var(--light--off-white);
+}
+
+.gls-richtext {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.25rem;
+}
+
+.gls-richtext h2 {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-top: 1em;
+  margin-bottom: .5em;
+  text-wrap: balance;
+  letter-spacing: -1px;
+}
+
+.gls-richtext h3 {
+  color: var(--light--blue);
+  margin-top: 1em;
+  margin-bottom: .5em;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.gls-richtext p {
+  margin-bottom: .5em;
+}
+
+/* ================================
+   IMAGE STRIP — Desktop (3 images)
+================================ */
+.gls-photo-strip {
+    background-color: var(--light--off-white);
+    padding: 4rem 2rem !important;
+}
+
+.gls-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.gls-photo-grid img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    border-radius: 1.5rem;
+    display: block;
+}
+
+@media (max-width: 767px) {
+    .gls-photo-grid {
+        display: flex;
+        flex-wrap: nowrap;       
+        gap: 0.75rem;
+        overflow-x: auto;         
+        padding-bottom: 0.5rem;   
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .gls-photo-grid img {
+        flex: 0 0 40%;           
+        height: 150px;
+        border-radius: 1rem;
+        object-fit: cover;
+    }
+}
+
+
+/* Extra small screens */
+@media (max-width: 450px) {
+    .gls-photo-grid img {
+        width: 95px;
+        height: 95px;
+    }
+}
+
+
+/* ===============================
+   RESPONSIVE FIXES (ALL IN ONE PLACE)
+   =============================== */
+
+/* ===== TABLET (max-width: 991px) ===== */
+@media (max-width: 991px) {
+
+  .hero-section.section.about-hero {
+    margin-top: -30px;
+    padding-top: 100px;
+    margin-bottom: 200px;
+  }
+
+  .hero-image {
+    height: 420px;
+    margin-bottom: -200px;
+  }
+}
+
+/* ===== MOBILE (max-width: 767px) ===== */
+@media (max-width: 767px) {
+
+  /* HERO ADJUSTMENTS */
+  .hero-section.section.about-hero {
+    margin-top: -75px;
+    padding-top: 80px;
+    margin-bottom: 80px !important; /* tightened spacing */
+  }
+
+  .hero-image {
+    height: 300px;
+    margin-bottom: -80px !important; /* fixed overlap */
+  }
+
+  .hero_subtitle {
+    font-size: 1.15rem;
+    line-height: 1.25;
+  }
+
+  .hero_title {
+    font-size: 1.9rem;
+    line-height: 1.15;
+  }
+
+  /* RICH TEXT */
+  .gls-richtext {
+    font-size: 1.05rem;
+    line-height: 1.45;
+  }
+
+  .gls-richtext h2 {
+    font-size: 2rem;
+    line-height: 1.15;
+  }
+
+  .gls-richtext h3 {
+    font-size: 1.25rem;
+    line-height: 1.2;
+  }
+
+  .gls-section.gls-richtext-wrapper {
+    padding-top: 2rem !important;
+  }
+}
+
+/* ===== SMALL MOBILE (max-width: 479px) ===== */
+@media (max-width: 479px) {
+
+  /* HERO */
+  .hero_subtitle {
+    font-size: 1rem;
+  }
+
+  .hero_title {
+    font-size: 1.65rem;
+  }
+
+  .hero-image {
+    height: 240px;
+    margin-bottom: -60px !important;
+  }
+
+  .hero-section.section.about-hero {
+    margin-bottom: 60px !important;
+  }
+
+  /* RICH TEXT */
+  .gls-richtext h2 {
+    font-size: 1.7rem;
+  }
+
+  .gls-richtext h3 {
+    font-size: 1.15rem;
+  }
+
+  .gls-section.gls-richtext-wrapper {
+    padding-top: 1.5rem !important;
+  }
+}
+
+/* SECTION BACKGROUND */
+.gls-info-section {
+    background-color: var(--off-white);
+}
+
+/* TITLE */
+.gls-info-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 2.5rem;
+    text-wrap: balance;
+}
+
+/* NIVAU TABS */
+.gls-niveau-tabs {
+    display: flex;
+    justify-content: center;   /* CENTER HORIZONTAL */
+    align-items: center;       /* CENTER VERTICAL (for symmetry) */
+    gap: 1rem;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+.gls-niveau-btn {
+    padding: .75rem 1.4rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: #f1f1f1;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.gls-niveau-btn.active {
+    background: var(--yellow);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+/* INFO GRID */
+.gls-info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    width: 100%;
+}
+
+/* CARDS */
+.gls-info-card {
+    background: var(--light--off-white);
+    padding: 2rem;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.gls-info-icon svg {
+    width: 60px;
+    height: 60px;
+}
+
+.gls-info-card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.gls-info-text {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+/* RESPONSIVE */
+@media(max-width: 991px) {
+    .gls-info-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media(max-width: 767px) {
+    .gls-info-grid {
+        grid-template-columns: 1fr;
+    }
+    .gls-info-title {
+        font-size: 2.2rem;
+    }
+    .gls-niveau-btn {
+        padding: 0.6rem 1rem;
+        font-size: 1rem;
+    }
+    .gls-niveau-tabs {
+        gap: .5rem;
+        justify-content: center;   /* STILL CENTERED */
+    }
+    .gls-schedule-main-title {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+}
+@media(max-width: 479px) {
+    .gls-niveau-tabs {
+        gap: .4rem;
+        justify-content: center;   /* STILL CENTERED */
+    }
+}
+/* ============================================
+   MAIN TITLE — Clean Modern Style
+============================================ */
+.gls-schedule-main-title {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    color: #121212;
+    text-align: center;
+    margin: 0 auto 3rem auto;
+}
+
+
+/* ============================================
+   SECTION WRAPPER
+============================================ */
+.gls-schedule-section {
+    padding: 4rem 1.5rem;
+        background-color: var(--light--off-white);
+}
+
+.gls-schedule-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+
+/* ============================================
+   DROPDOWN CARD WRAPPER
+============================================ */
+.schedule-dropdown {
+    width: 100%;
+        border: 1px solid var(--dark--off-white);
+    border-radius: 1rem;
+    background-color: #0000;
+    overflow: hidden;
+    transition: all .3s ease;
+}
+
+/* Trigger row */
+.schedule-dropdown_trigger {
+    padding: 1.75rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Trigger title */
+.schedule-dropdown_trigger h2 {
+    margin: 0;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-weight: 600;
+    color: #111;
+    letter-spacing: -0.3px;
+    text-wrap: pretty;
+}
+
+
+/* ============================================
+   DROPDOWN ICON ( + → X )
+============================================ */
+.dropdown-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.dropdown-line {
+    width: 55%;
+    height: 2px;
+    background-color: #333;
+    position: absolute;
+    border-radius: 2px;
+    transition: all .3s ease;
+}
+
+.dropdown-line.is-rotated {
+    transform: rotate(90deg);
+}
+
+/* OPEN → Transform into X */
+.schedule-dropdown.open .dropdown-line {
+    transform: rotate(45deg);
+}
+
+.schedule-dropdown.open .dropdown-line.is-rotated {
+    transform: rotate(-45deg);
+}
+
+
+/* ============================================
+   DROPDOWN CONTENT
+============================================ */
+.schedule-dropdown_content {
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: opacity .35s ease, height .35s ease;
+}
+
+.schedule-dropdown.open .schedule-dropdown_content {
+    opacity: 1;
+    height: auto;
+}
+
+.schedule-dropdown_height {
+    padding: 2rem;
+}
+
+
+/* ============================================
+   TABLE (Groups List)
+============================================ */
+.price-table-rich-text {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.table-rich-text {
+    flex: 1 1 300px;
+}
+
+.table-rich-text p {
+    font-size: 1.15rem;
+    padding: .65rem 0;
+    margin: 0;
+    border-bottom: 1px solid #00000012;
+    color: #333;
+}
+
+.table-rich-text p strong {
+    font-size: 1.2rem;
+    display: block;
+    padding-bottom: .6rem;
+    color: #111;
+}
+
+
+/* ============================================
+   MOBILE OPTIMIZATION
+============================================ */
+@media (max-width: 767px) {
+
+    .schedule-dropdown_trigger {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .schedule-dropdown_trigger h2 {
+        font-size: 1.45rem;
+        line-height: 1.3;
+    }
+
+    .dropdown-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .dropdown-line {
+        width: 50%;
+    }
+
+    .table-rich-text p {
+        font-size: 1.05rem;
+    }
+}
+
+@media (max-width: 479px) {
+
+    .gls-schedule-main-title {
+        font-size: 2rem;
+    }
+
+    .schedule-dropdown_trigger h2 {
+        font-size: 1.35rem;
+    }
+
+    .schedule-dropdown_height {
+        padding: 1.5rem 1rem;
+    }
+
+    .price-table-rich-text {
+        gap: 1.5rem;
+    }
+}
+
+/* ================================
+   INLINE CTA SECTION
+================================ */
+
+.inline-cta-section.section {
+  background-color: var(--light--off-white);
+  display: flex;
+  justify-content: center;
+}
+
+.inline-cta-block {
+  width: 100%;
+  max-width: 1440px;
+  padding: 4rem 3rem;
+  border-radius: var(--radius-mid);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2rem;
+      background-color: rgb(33, 30, 29);
+  color: var(--off-white);
+}
+
+.heading-cta {
+  margin: 0;
+  font-size: 3.6rem;
+  line-height: 1;
+  text-wrap: balance;
+  color: var(--off-white);
+}
+
+.cta-box-subtext {
+  max-width: 900px;
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--off-white);
+}
+
+.cta-btn {
+  background-color: var(--off-white);
+  color: var(--off-black);
+  padding: 1rem 2.5rem;
+  border-radius: 4rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: 0.25s ease;
+}
+
+.cta-btn:hover {
+  transform: translateY(-3px);
+}
+
+/* CTA RESPONSIVE */
+@media (max-width: 767px) {
+  .inline-cta-block {
+    padding: 3rem 1.75rem;
+    gap: 1.5rem;
+  }
+
+  .heading-cta {
+    font-size: 2.5rem;
+  }
+
+  .cta-box-subtext {
+    font-size: 1.1rem;
+  }
+
+  .cta-btn {
+    width: 100%;
+    padding: 1rem 0;
+    font-size: 1.1rem;
+  }
+}
+.about-card{
+  background-image: linear-gradient(
+    135deg,
+    #1d4fa4 0%,
+    #2f7bdc 35%,
+    #0fb28a 70%,
+    #ffdd9b 100%
+) !important;
+
+}

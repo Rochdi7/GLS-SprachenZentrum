@@ -20,7 +20,7 @@
 .about-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--gap-desktop, 4rem);
+  gap: var(--gap-desktop, 1rem);
   align-items: stretch;
 }
 
@@ -103,9 +103,10 @@
   height: 100%;
   border: none;
   border-radius: var(--radius-small, 24px);
-  object-fit: cover;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 16/9;
+  object-fit: initial; /* or remove this line entirely */
 }
+
 
 /* ===============================
    RESPONSIVE FIX (like die Code sommet)
