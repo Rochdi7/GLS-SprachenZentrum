@@ -526,6 +526,13 @@
             </div>
         </div>
     </section>
+{{-- <script>
+window.addEventListener('scroll', function () {
+    const header = document.querySelector('.site-header');
+    if (window.scrollY > 20) header.classList.add('is-stuck');
+    else header.classList.remove('is-stuck');
+});
+</script> --}}
 
     {{-- ===========================
      ABOUT GLS MOROCCO SECTION – 9onsol’s Talks

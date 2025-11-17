@@ -26,7 +26,7 @@
   margin-top: -40px;
   padding-top: 120px;
   padding-bottom: 80px;
-  margin-bottom: 15px;
+  margin-bottom: 110px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -72,7 +72,7 @@
   .hero-section.section.is-no-image {
     margin-top: -30px;
     padding-top: 100px;
-    margin-bottom: 15px;
+    margin-bottom: 200px;
   }
 }
 
@@ -86,7 +86,7 @@
   .hero-section.section.is-no-image {
     margin-top: -25px;
     padding-top: 90px;
-    margin-bottom: 10px;
+    margin-bottom: 160px;
     padding-bottom: 60px;
   }
 
@@ -97,6 +97,148 @@
   .hero_title {
     font-size: 2rem;
   }
+}
+
+/* ===============================
+   LOCATION TITLE
+   =============================== */
+.location-title {
+  text-wrap: balance;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 1;
+  background-image: 
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(225deg, #f9d976 0%, #f39c12 30%, #00b894 65%, #0984e3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  text-align: left;
+}
+
+
+/* ===============================
+   LOCATIONS CARDS SECTION
+   =============================== */
+   .location-image {
+  object-fit: cover;
+  object-position: 80% center; /* pushes visible area slightly to the right */
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  transition: transform 0.6s ease;
+}
+
+.location-image:hover {
+  transform: scale(1.03); /* small zoom on hover for a nice effect */
+}
+
+.locations-carousel-section {
+  border-top-left-radius: 60px;
+  border-top-right-radius: 60px;
+  margin-top: -60px;
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+.map-container {
+  border-radius: 20px;
+  overflow: hidden;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.location-image {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+}
+
+.location-card {
+  background: #ffffff;
+  border: 1px solid #eee;
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  margin-bottom: 1.25rem;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.location-slide.active .location-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.location-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Phone links */
+.location-card .phone {
+  color: #000;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+
+.location-card .phone:hover {
+  color: #d62828;
+}
+
+/* Dots */
+.dots-wrapper {
+  display: flex;
+  gap: 10px;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  background-color: #d62828;
+  border-radius: 50%;
+  opacity: 0.3;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+  .map-container {
+    margin-bottom: 2rem;
+    aspect-ratio: 16 / 9;
+  }
+}
+/* Slide container visibility fix */
+.location-slide {
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  transition: opacity 0.6s ease;
+}
+
+.location-slide.active {
+  display: block;
+  position: relative;
+  opacity: 1;
+  visibility: visible;
 }
 
 /* =========================================================
@@ -134,7 +276,6 @@
   background-color: #b71c1c !important;
   transform: scale(0.98);
 }
-
 /* =========================================================
    BOOK YOUR CONSULTATION SECTION
 ========================================================= */
