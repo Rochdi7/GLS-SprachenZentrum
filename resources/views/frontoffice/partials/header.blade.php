@@ -99,8 +99,8 @@
 
 
 {{-- =========================================================
-     MOBILE DRAWER (Accordion Style)
-   ========================================================= --}}
+     MOBILE DRAWER (clean version without DaF + languages)
+========================================================= --}}
 <div class="drawer" id="mobile-drawer">
     <div class="drawer-inner">
 
@@ -108,13 +108,21 @@
 
             {{-- About --}}
             <div class="menu-item">
-                <button class="menu-label" type="button">About</button>
+                <button class="menu-label" type="button">
+                    About
+                    <div class="nav-dropdown_icon w-icon-dropdown-toggle"></div>
+                </button>
+
                 <div class="submenu">
 
                     <a href="{{ route('front.about') }}">About Us</a>
 
-                    <!-- Our Sites NO ROUTE — accordion only -->
-                    <button class="menu-label submenu-trigger" type="button">Our Sites</button>
+                    {{-- Our Sites (accordion inside submenu) --}}
+                    <button class="menu-label submenu-trigger" type="button">
+                        Our Sites
+                        <div class="nav-dropdown_icon w-icon-dropdown-toggle"></div>
+                    </button>
+
                     <div class="submenu sub-submenu">
                         <a href="#">Casablanca</a>
                         <a href="{{ route('front.sites.marrakech') }}">Marrakech</a>
@@ -126,13 +134,16 @@
 
                     <a href="{{ route('front.faq') }}">FAQ</a>
                     <a href="{{ route('front.contact') }}">Contact</a>
-
                 </div>
             </div>
 
             {{-- German Courses --}}
             <div class="menu-item">
-                <button class="menu-label" type="button">German Courses</button>
+                <button class="menu-label" type="button">
+                    German Courses
+                    <div class="nav-dropdown_icon w-icon-dropdown-toggle"></div>
+                </button>
+
                 <div class="submenu">
                     <a href="#">Intensive Courses</a>
                     <a href="#">Online Courses</a>
@@ -142,7 +153,11 @@
 
             {{-- Exams --}}
             <div class="menu-item">
-                <button class="menu-label" type="button">Exams</button>
+                <button class="menu-label" type="button">
+                    German Exams
+                    <div class="nav-dropdown_icon w-icon-dropdown-toggle"></div>
+                </button>
+
                 <div class="submenu">
                     <a href="#">Goethe Exams</a>
                     <a href="#">ÖSD Exams</a>
@@ -151,7 +166,11 @@
 
             {{-- Resources --}}
             <div class="menu-item">
-                <button class="menu-label" type="button">Resources</button>
+                <button class="menu-label" type="button">
+                    Resources
+                    <div class="nav-dropdown_icon w-icon-dropdown-toggle"></div>
+                </button>
+
                 <div class="submenu">
                     <a href="#">Blog</a>
                     <a href="#">Student Stories</a>
@@ -160,11 +179,15 @@
 
         </div>
 
-        <div class="cta mt-3">
-            <a class="btn btn-primary w-100" href="#">Enroll Now</a>
+        {{-- Bottom CTA only --}}
+        <div class="bottom-section">
+            <div class="cta">
+                <a class="btn" href="#">Enroll Now</a>
+            </div>
         </div>
 
     </div>
 </div>
+
 
 <div class="backdrop" id="backdrop"></div>

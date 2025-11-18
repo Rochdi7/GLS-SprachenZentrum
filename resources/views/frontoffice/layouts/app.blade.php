@@ -32,31 +32,104 @@
     {{-- Footer --}}
     @include('frontoffice.partials.footer')
 
-    <!-- Scripts -->
-    <script>
-        document.querySelectorAll('.menu-label').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const item = btn.closest('.menu-item');
-                item.classList.toggle('open');
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // TOP-LEVEL MENUS (About, German Courses, etc.)
+    document.querySelectorAll(".menu-item > .menu-label:not(.submenu-trigger)").forEach(topLabel => {
+        topLabel.addEventListener("click", function () {
+            const parentItem = this.closest(".menu-item");
+
+            // CLOSE all other top-level menu-items
+            document.querySelectorAll(".menu-item").forEach(item => {
+                if (item !== parentItem) {
+                    item.classList.remove("open");
+                }
             });
+
+            // COLLAPSE all sub-submenus (like Our Sites)
+            document.querySelectorAll(".sub-submenu").forEach(sub => {
+                sub.style.maxHeight = "0px";
+            });
+
+            // Remove .open from all submenu-triggers
+            document.querySelectorAll(".submenu-trigger").forEach(btn => {
+                btn.classList.remove("open");
+            });
+
+            // Toggle open state for clicked item
+            parentItem.classList.toggle("open");
+        });
+    });
+
+
+    // INNER SUBMENU TRIGGERS (like "Our Sites")
+    document.querySelectorAll(".submenu-trigger").forEach(trigger => {
+        trigger.addEventListener("click", function (e) {
+            e.stopPropagation(); // don’t trigger parent open
+
+            const submenu = this.nextElementSibling;
+
+            // Close all other sub-submenus
+            document.querySelectorAll(".sub-submenu").forEach(s => {
+                if (s !== submenu) {
+                    s.style.maxHeight = "0px";
+                }
+            });
+
+            // Remove .open from all submenu-triggers except this
+            document.querySelectorAll(".submenu-trigger").forEach(btn => {
+                if (btn !== this) {
+                    btn.classList.remove("open");
+                }
+            });
+
+            // Toggle this submenu
+            if (submenu.style.maxHeight && submenu.style.maxHeight !== "0px") {
+                submenu.style.maxHeight = "0px";
+                this.classList.remove("open");
+            } else {
+                submenu.style.maxHeight = submenu.scrollHeight + "px";
+                this.classList.add("open");
+            }
+        });
+    });
+
+
+    // BURGER & DRAWER TOGGLE
+    const burger = document.getElementById('burger');
+    const drawer = document.getElementById('mobile-drawer');
+    const backdrop = document.getElementById('backdrop');
+
+    if (burger && drawer && backdrop) {
+        burger.addEventListener('click', () => {
+            drawer.classList.toggle('open');
+            backdrop.classList.toggle('active');
         });
 
-        const burger = document.getElementById('burger');
-        const drawer = document.getElementById('mobile-drawer');
-        const backdrop = document.getElementById('backdrop');
+        backdrop.addEventListener('click', () => {
+            drawer.classList.remove('open');
+            backdrop.classList.remove('active');
+        });
+    }
 
-        if (burger && drawer && backdrop) {
-            burger.addEventListener('click', () => {
-                drawer.classList.toggle('open');
-                backdrop.classList.toggle('active');
-            });
+});
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const header = document.querySelector('.site-header');
+    const stickyOffset = header.offsetTop;
 
-            backdrop.addEventListener('click', () => {
-                drawer.classList.remove('open');
-                backdrop.classList.remove('active');
-            });
-        }
-    </script>
+    window.addEventListener('scroll', function () {
+      if (window.pageYOffset > stickyOffset) {
+        header.classList.add('is-fixed');
+      } else {
+        header.classList.remove('is-fixed');
+      }
+    });
+  });
+</script>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RZsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">

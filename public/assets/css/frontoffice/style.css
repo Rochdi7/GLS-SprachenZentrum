@@ -115,8 +115,7 @@
 }
 
 .btn.btn-primary:hover {
-  background: #fff;
-  color: var(--color-dark);
+  color: white;
   border: 1px solid var(--color-dark);
   text-decoration: none;
 }

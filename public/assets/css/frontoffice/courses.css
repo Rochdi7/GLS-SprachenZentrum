@@ -277,7 +277,7 @@
 /* Small Mobile (max-width: 479px) */
 @media screen and (max-width: 479px) {
     .section {
-        padding: 4rem 1.5rem;
+        padding: 4rem 0rem;
     }
     .container.is-home-courses-photo {
         border-radius: var(--radius-small);
