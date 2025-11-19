@@ -233,7 +233,9 @@
 *::after {
     box-sizing: border-box;
 }
-
+html{
+    font-family: sans-serif !important;
+}
 html,
 body {
     font-family: Now, sans-serif;
