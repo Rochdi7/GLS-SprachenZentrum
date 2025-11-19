@@ -1,0 +1,508 @@
+body{
+    background-color: var(--light--off-white) !important;
+}
+/* ===============================
+   ABOUT HERO SECTION (Inspired by  Code sommet)
+   =============================== */
+.hero-section.section.about-hero {
+  border-bottom-left-radius: 60px;
+  border-bottom-right-radius: 60px;
+background-image:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.20)),
+    linear-gradient(225deg, #00a06e 0%, #00d98a 28%, #1fb6ff 65%, #0752c5 100%);
+
+  margin-top: -40px; 
+  padding-top: 120px; 
+  padding-bottom: 0;
+  margin-bottom: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* container center alignment */
+.container.is-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 2rem;
+  width: 100%;
+  max-width: 1440px;
+}
+
+/* subtitle */
+.hero_subtitle {
+  color: #fff;
+  mix-blend-mode: overlay;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+}
+
+/* title */
+.hero_title {
+  color: #fff;
+  text-wrap: balance;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+}
+
+/* image block */
+.hero-image {
+  background-color: #111;
+  border-radius: 24px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 1500px;
+  height: 600px;
+  margin-top: 3rem;
+  margin-bottom: -300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-image img.full-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===============================
+   RESPONSIVE FIXES
+   =============================== */
+@media (max-width: 991px) {
+  .hero-section.section.about-hero {
+    margin-top: -30px;
+    padding-top: 100px;
+    margin-bottom: 200px;
+  }
+
+  .hero-image {
+    height: 420px;
+    margin-bottom: -200px;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-section.section.about-hero {
+    margin-top: -25px;
+    padding-top: 90px;
+    margin-bottom: 160px;
+  }
+
+  .hero-image {
+    height: 320px;
+    margin-bottom: -150px;
+  }
+
+  .hero_subtitle {
+    font-size: 1.25rem;
+  }
+
+  .hero_title {
+    font-size: 2rem;
+  }
+}
+/* Base tab button */
+.gls-tab-link.btn {
+    background: transparent !important;
+    border: 1px solid #bcbbaa !important; /* subtle outline */
+    color: #000 !important;
+    font-weight: 600 !important;
+    padding: .75rem 1.5rem !important;
+    border-radius: .75rem !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Hover */
+.gls-tab-link.btn:hover,
+.gls-tab-link.btn.active {
+    background-color: #1a1a1a !important;
+    color: #fff !important;
+    border-color: #1a1a1a !important;
+}
+
+
+/* Disable text selection */
+.gls-tab-link.btn,
+.gls-tab-link.btn * {
+    user-select: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .gls-tab-link.btn {
+        padding: .55rem 1.2rem !important;
+        font-size: 1rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .gls-tabs-menu {
+        gap: .6rem;
+    }
+
+    .gls-tab-link.btn {
+        padding: .5rem 1rem !important;
+        font-size: .85rem !important;
+    }
+}
+
+/* ============================
+   HEADER (EXACT AS SCREENSHOT)
+============================ */
+.pricelist_header {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.text-block-6 {
+    text-align: center;
+    margin-top: .25rem;
+    font-size: 1.125rem;
+    color: #444;
+}
+
+/* ============================
+   TABLE WRAPPER (EXACT)
+============================ */
+.table-wrapper {
+    border: 1px solid var(--dark--off-white);
+    background-color: var(--light--off-white);
+    border-radius: 0 0 .5rem .5rem;
+    margin-top: 0;
+    padding: 2rem;
+    font-size: 1.125rem;
+}
+
+/* ============================
+   TOP BORDER BLOCK (HEADER BOX)
+============================ */
+.div-block-17 {
+    border: 1px solid var(--dark--off-white);
+    border-bottom: none;
+    background-color: var(--light--off-white);
+    border-radius: .5rem .5rem 0 0;
+    padding: 3rem 1rem;
+}
+
+/* ============================
+   TABLE LAYOUT (EXACT GRID)
+============================ */
+.price-table-rich-text {
+    display: flex;
+    gap: 2rem;
+    justify-content: space-between;
+}
+
+.price-table-rich-text.no-gap {
+    gap: 0rem !important;
+}
+
+/* LEFT COLUMN (Courses / Timeframe) */
+.table-rich-text-pricing2 {
+    flex: 1.5;
+}
+
+/* CENTER + RIGHT COLUMNS */
+.table-rich-text-pricing {
+    flex: 1;
+    text-align: center;
+}
+
+/* ============================
+   HEADER (EXACT)
+============================ */
+.pricelist_header {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.text-block-6 {
+    text-align: center;
+    margin-top: .25rem;
+    font-size: 1.125rem;
+    color: #444;
+}
+
+/* ============================
+   TABLE WRAPPER (WITH SCROLL)
+============================ */
+.table-wrapper {
+    border: 1px solid var(--dark--off-white);
+    background-color: var(--light--off-white);
+    border-radius: 0 0 .5rem .5rem;
+    margin-top: 0;
+    padding: 2rem;
+    font-size: 1.125rem;
+
+    /* This makes table scrollable on small screens */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Add a minimum width so it scrolls nicely */
+.price-table-rich-text {
+    display: flex;
+    gap: 2rem;
+    justify-content: space-between;
+    min-width: 600px; /* 📌 SCROLL TRIGGER */
+}
+
+.price-table-rich-text.no-gap {
+    gap: 0rem !important;
+}
+
+/* Columns */
+.table-rich-text-pricing2 {
+    flex: 1.4;
+}
+.table-rich-text-pricing {
+    flex: 1;
+    text-align: center;
+}
+
+.table-rich-text-pricing p,
+.table-rich-text-pricing2 p {
+    margin: .6rem 0;
+    font-size: 0.9rem;
+}
+
+.w-richtext p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+/* ============================
+   SMALL MOBILE TWEAKS
+============================ */
+@media (max-width: 768px) {
+
+    .pricelist_header {
+        font-size: 2.2rem;
+    }
+
+    .text-block-6 {
+        font-size: 1rem;
+    }
+
+    /* Slight less padding */
+    .table-wrapper {
+        padding: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .pricelist_header {
+        font-size: 1.9rem;
+    }
+
+    .table-wrapper {
+        padding: 1rem;
+    }
+}
+
+/* ===============================
+   GET STARTED SECTION – Gradient Background Version
+   =============================== */
+.get-started-section.section {
+  background-image:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.20)),
+    linear-gradient(225deg, #00a06e 0%, #00d98a 28%, #1fb6ff 65%, #0752c5 100%);
+  padding: 4rem 3rem; /* reduced from 6rem 4rem */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Two-column grid */
+.container.is-2-col-grid {
+  grid-column-gap: var(--gap-desktop);
+  grid-row-gap: var(--gap-desktop);
+  grid-template-columns: 1fr 1fr;
+  display: grid;
+  align-items: stretch;
+}
+
+/* Image on left */
+.get-started-image {
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 620px; /* desktop fixed height */
+}
+
+.get-started-image img.full-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  border-radius: 20px;
+}
+
+/* White text card on right */
+.get-started-card {
+  background-color: var(--light--off-white);
+  border-radius: 20px;
+  padding: 4rem 3rem; /* keep consistent with your design */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  height: 620px;
+}
+
+.box-rich-text {
+  max-width: 700px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.box-rich-text h2 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 0.3em;
+  color: var(--color-dark);
+  line-height: 1.1;
+}
+
+.box-rich-text h3 {
+  font-size: 1.5rem;
+  color: #06C39F;
+  margin-bottom: 1em;
+  font-weight: 700;
+}
+
+.box-rich-text p {
+  margin-bottom: 1em;
+}
+
+/* CTA Button */
+.button {
+  background-color: var(--color-dark);
+  color: var(--off-white);
+  text-align: center;
+  border-radius: 999px;
+  min-width: 140px;
+  padding: 0.85rem 2rem;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  background-color: #06C39F;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* ===============================
+   RESPONSIVE FIXES
+   =============================== */
+@media screen and (max-width: 991px) {
+  .container.is-2-col-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  /* Image first on mobile */
+  .get-started-image {
+    order: 1;
+    height: auto; /* allow natural resizing */
+  }
+
+  .get-started-card {
+    order: 2;
+    height: auto; /* natural height for text */
+    padding: 3rem 2rem;
+  }
+
+  .box-rich-text h2 {
+    font-size: 2.5rem;
+  }
+}
+
+/* ===== TABLET & MOBILE ===== */
+@media screen and (max-width: 767px) {
+  .get-started-section.section {
+    padding: 4rem 2rem;
+  }
+
+  .get-started-image {
+    height: auto; /* auto height removes empty space */
+  }
+
+  .get-started-image img.full-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: 75% center; /* shift left to show bouquet */
+  }
+
+  .get-started-card {
+    height: auto;
+    padding: 2.5rem 2rem;
+  }
+
+  .box-rich-text {
+    font-size: 1rem;
+  }
+
+  .box-rich-text h2 {
+    font-size: 1.8rem;
+  }
+
+  .box-rich-text h3 {
+    font-size: 1.25rem;
+  }
+
+  .button {
+    font-size: 0.95rem;
+    padding: 0.75rem 1.75rem;
+  }
+}
+
+/* ===== Small Mobile Edge Fix ===== */
+@media screen and (max-width: 479px) {
+  .get-started-section.section {
+    padding: 4rem 1.5rem;
+  }
+
+  .container {
+    --bs-gutter-x: 0;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .get-started-image,
+  .get-started-card {
+    width: 100%;
+  }
+
+  .get-started-image img.full-image {
+    object-position: 70% center; /* stronger left shift for very small screens */
+  }
+}
+

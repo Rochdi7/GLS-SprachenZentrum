@@ -112,12 +112,9 @@
 }
 
 .menu-label {
-  font-size: 1rem;
-  font-weight: 500;
-  font-family: inherit;
-  appearance: none;
-  background: none;
-  border: none;
+  font-size: 1rem;                 /* same as desktop navigation */
+  font-weight: var(--fw-bold);     /* stronger like desktop */
+  letter-spacing: 0.2px;
   padding: 16px 0;
   width: 100%;
   text-align: left;
@@ -126,6 +123,8 @@
   align-items: center;
   color: var(--color-text);
   cursor: pointer;
+  background: none;
+  border: none;
 }
 
 .menu-label.submenu-trigger {
@@ -137,8 +136,6 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* 🔧 Add this line */
   padding: 16px 0;
 }
-
-
 
 /* Submenus */
 .submenu {

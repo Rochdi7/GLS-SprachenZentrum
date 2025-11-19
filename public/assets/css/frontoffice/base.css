@@ -4,6 +4,55 @@
    ========================================================= */
 
 /* ===== INTER FONT FACES ===== */
+/* NOW FONT — LOCAL LOAD */
+@font-face {
+    font-family: "Now";
+    src: url("/assets/fonts/Now-Thin.otf") format("opentype");
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Now";
+    src: url("/assets/fonts/Now-Light.otf") format("opentype");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Now";
+    src: url("/assets/fonts/Now-Regular.otf") format("opentype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Now";
+    src: url("/assets/fonts/Now-Medium.otf") format("opentype");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Now";
+    src: url("/assets/fonts/Now-Bold.otf") format("opentype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Now";
+    src: url("/assets/fonts/Now-Black.otf") format("opentype");
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
 @font-face {
     font-family: "Inter";
     src: url(https://cdn.jotfor.ms/fonts/inter/fonts/Inter-Thin.woff2)
@@ -140,6 +189,7 @@
   --purple: #9767f8;
   --light--purple: #d5a4fe;
   --dark--purple: #704cb6;
+
     /* ===== Typography ===== */
     --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
         Helvetica, Arial, sans-serif;
@@ -213,7 +263,7 @@ h1,
 h2,
 h3,
 h4 {
-    font-family: var(--font-sans);
+    font-family: "Now", sans-serif;
     color: var(--color-text);
     margin: 0 0 1rem;
     line-height: 1.2;
