@@ -36,7 +36,7 @@
                     <img src="{{ asset('build/images/logo/gls-noir.png') }}" alt="GLS Logo" class="intro-logo mb-3"
                         style="width: 120px; height: auto;">
                     <p class="text-primary fw-medium small mb-0 letter-spacing-1">
-                        Learn German in Berlin
+                        Learn German in GLS
                     </p>
                 </div>
 

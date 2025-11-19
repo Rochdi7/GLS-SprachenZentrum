@@ -100,7 +100,10 @@ class PageController extends Controller
     {
         return view('frontoffice.blog.blog');
     }
-
+public function blogdetails()
+    {
+        return view('frontoffice.blog.blog-details');
+    }
     public function studentStories()
     {
         return view('frontoffice.resources.student-stories');

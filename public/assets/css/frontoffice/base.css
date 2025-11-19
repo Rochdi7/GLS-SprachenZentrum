@@ -234,7 +234,7 @@
     box-sizing: border-box;
 }
 html{
-    font-family: sans-serif !important;
+    font-family: sans-serif !;
 }
 html,
 body {

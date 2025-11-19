@@ -52,5 +52,9 @@ Route::middleware(['web'])->group(function () {
     // RESOURCES
     // ============================
     Route::get('/blog', [PageController::class, 'blog'])->name('front.blog');
+    Route::get('/blog/test-details', function () {
+    return view('frontoffice.blog.blog-details-test');
+})->name('front.blog.details.test');
+
     Route::get('/student-stories', [PageController::class, 'studentStories'])->name('front.student-stories');
 });
