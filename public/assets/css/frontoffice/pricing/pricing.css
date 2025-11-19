@@ -321,9 +321,9 @@ background-image:
    GET STARTED SECTION – Gradient Background Version
    =============================== */
 .get-started-section.section {
-  background-image:
+  /* background-image:
     linear-gradient(to bottom, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.20)),
-    linear-gradient(225deg, #00a06e 0%, #00d98a 28%, #1fb6ff 65%, #0752c5 100%);
+    linear-gradient(225deg, #00a06e 0%, #00d98a 28%, #1fb6ff 65%, #0752c5 100%); */
   padding: 4rem 3rem; /* reduced from 6rem 4rem */
   display: flex;
   justify-content: center;

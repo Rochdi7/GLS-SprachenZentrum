@@ -35,8 +35,8 @@
                 <div class="text-center mb-4" style="margin-top: 20px !important;">
                     <img src="{{ asset('build/images/logo/gls-noir.png') }}" alt="GLS Logo" class="intro-logo mb-3"
                         style="width: 120px; height: auto;">
-                    <p class="text-primary fw-medium small mb-0 letter-spacing-1 text-uppercase">
-                        Learn German in Morocco
+                    <p class="text-primary fw-medium small mb-0 letter-spacing-1">
+                        Learn German in Berlin
                     </p>
                 </div>
 

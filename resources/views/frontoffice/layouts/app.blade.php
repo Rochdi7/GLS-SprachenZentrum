@@ -14,6 +14,8 @@
     <!-- Custom Styles -->
     <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/footer.css') }}">
+<link rel="preload" href="/assets/fonts/Now-Regular.otf" as="font" type="font/otf" crossorigin>
+<link rel="preload" href="/assets/fonts/Now-Bold.otf" as="font" type="font/otf" crossorigin>
 
     <!-- Font (Now Sans) -->
     <link href="https://fonts.cdnfonts.com/css/now" rel="stylesheet">

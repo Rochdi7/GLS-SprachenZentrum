@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 
 class PageController extends Controller
 {
+    // ============================
+    // FAQ + CONTACT
+    // ============================
+
     public function faq()
     {
         return view('frontoffice.faq');
@@ -16,14 +20,14 @@ class PageController extends Controller
         return view('frontoffice.contact');
     }
 
+    // ============================
+    // SITES (Centers)
+    // ============================
+
     public function sites()
     {
         return view('frontoffice.sites');
     }
-
-    // ===========================
-    // INDIVIDUAL CENTER PAGES
-    // ===========================
 
     public function siteRabat()
     {
@@ -55,9 +59,9 @@ class PageController extends Controller
         return view('frontoffice.sites.marrakech');
     }
 
-    // ===========================
+    // ============================
     // COURSES
-    // ===========================
+    // ============================
 
     public function intensiveCourses()
     {
@@ -67,5 +71,38 @@ class PageController extends Controller
     public function onlineCourses()
     {
         return view('frontoffice.online-courses');
+    }
+
+    public function pricing()
+    {
+        return view('frontoffice.pricing');
+    }
+
+    // ============================
+    // EXAMS
+    // ============================
+
+    public function glsExams()
+    {
+        return view('frontoffice.exams.gls');
+    }
+
+    public function osdExams()
+    {
+        return view('frontoffice.exams.osd');
+    }
+
+    // ============================
+    // RESOURCES
+    // ============================
+
+    public function blog()
+    {
+        return view('frontoffice.resources.blog');
+    }
+
+    public function studentStories()
+    {
+        return view('frontoffice.resources.student-stories');
     }
 }
