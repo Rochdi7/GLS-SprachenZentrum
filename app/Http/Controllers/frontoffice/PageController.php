@@ -98,7 +98,7 @@ class PageController extends Controller
 
     public function blog()
     {
-        return view('frontoffice.resources.blog');
+        return view('frontoffice.blog.blog');
     }
 
     public function studentStories()
