@@ -8,26 +8,26 @@
 <main class="blog-page">
 
     {{-- ===============================
-         BLOG HERO SECTION
-       =============================== --}}
-    <section class="hero-section section blog-hero-section">
-        <div class="container">
-            <div class="blog-hero-inner">
-                <div class="blog-hero-badge">Blog</div>
-                <h1 class="blog-hero-title">
-                    GLS Insights & Resources
-                </h1>
-                <p class="blog-hero-subtitle">
-                    Practical guides, exam tips, and updates to help you learn German
-                    and prepare your journey to Germany with confidence.
-                </p>
-
-                <div class="blog-hero-meta">
-                    <span>German Courses · ÖSD & Goethe Exams · Study & Work in Germany</span>
-                </div>
+     BLOG HERO SECTION
+=============================== --}}
+<section class="hero-section section blog-hero-section blog-hero-margin">
+    <div class="container">
+        <div class="blog-hero-inner">
+            <div class="blog-hero-badge">Blog</div>
+            <h1 class="blog-hero-title">
+                GLS Insights & Resources
+            </h1>
+            <p class="blog-hero-subtitle">
+                Practical guides, exam tips, and updates to help you learn German
+                and prepare your journey to Germany with confidence.
+            </p>
+            <div class="blog-hero-meta">
+                <span>German Courses · ÖSD & Goethe Exams · Study & Work in Germany</span>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
 
     {{-- ===============================
          FEATURED + SIDEBAR
