@@ -33,6 +33,26 @@
 
     {{-- Footer --}}
     @include('frontoffice.partials.footer')
+<!-- GLS ENROLL MODAL -->
+<div class="modal fade" id="glsEnrollModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; overflow: hidden;">
+
+            <!-- HEADER -->
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Inscription GLS</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-body p-4">
+                @include('frontoffice.templates.gls-form')
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {

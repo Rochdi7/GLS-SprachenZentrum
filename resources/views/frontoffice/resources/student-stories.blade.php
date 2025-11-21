@@ -41,12 +41,12 @@
             <div class="row g-4">
                 @php
                     $students = [
-                        ['image' => 'student1.webp', 'name' => 'Sara El Amrani', 'path' => 'Ausbildung in Nursing – Stuttgart'],
+                        ['image' => 'student1.webp', 'name' => 'Amine EL amrani', 'path' => 'Ausbildung in Nursing – Stuttgart'],
                         ['image' => 'student2.webp', 'name' => 'Omar Bennis', 'path' => 'Contract Work in IT – Berlin'],
                         ['image' => 'student3.webp', 'name' => 'Fatima Zahra', 'path' => 'Studienkolleg Prep – Düsseldorf'],
-                        ['image' => 'student4.webp', 'name' => 'Yassine Lahlou', 'path' => 'Ausbildung in Hospitality – Hamburg'],
-                        ['image' => 'student5.webp', 'name' => 'Imane Abkari', 'path' => 'Student Visa – Universität Köln'],
-                        ['image' => 'student6.webp', 'name' => 'Hicham Idrissi', 'path' => 'Contract Job – Mechanical Sector, Munich'],
+                        ['image' => 'student4.webp', 'name' => 'malak Lahlou', 'path' => 'Ausbildung in Hospitality – Hamburg'],
+                        ['image' => 'student5.webp', 'name' => 'hatim Abkari', 'path' => 'Student Visa – Universität Köln'],
+                        ['image' => 'student6.webp', 'name' => 'ikram Idrissi', 'path' => 'Contract Job – Mechanical Sector, Munich'],
                     ];
                 @endphp
 

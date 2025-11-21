@@ -65,9 +65,17 @@
 
         </nav>
 
-        <div class="right d-none d-lg-flex align-items-center gap-2">
-            <a class="btn btn-primary" href="#">Enroll Now</a>
-        </div>
+       <div class="right d-none d-lg-flex align-items-center gap-2">
+    <a 
+        class="btn btn-primary" 
+        href="#" 
+        data-bs-toggle="modal" 
+        data-bs-target="#glsEnrollModal"
+    >
+        Enroll Now
+    </a>
+</div>
+
 
         <div class="menu-toggle d-flex d-lg-none flex-column justify-content-center" id="burger"
             aria-label="Open mobile menu" aria-expanded="false" aria-controls="mobile-drawer">
@@ -151,10 +159,13 @@
         </div>
 
         <div class="bottom-section">
-            <div class="cta">
-                <a class="btn" href="#">Enroll Now</a>
-            </div>
-        </div>
+    <div class="cta">
+        <a class="btn" href="#" data-bs-toggle="modal" data-bs-target="#glsEnrollModal">
+            Enroll Now
+        </a>
+    </div>
+</div>
+
 
     </div>
 </div>
