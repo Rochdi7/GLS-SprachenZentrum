@@ -7,7 +7,7 @@
                 Our mission is to provide a supportive, inspiring environment where students across Morocco — in Rabat,
                 Casablanca, Marrakesh, and Agadir — can master the German language and connect with a global community.
             </p>
-            <img src="{{ asset('assets/images/logo/gls-blanc.webp') }}" alt="GLS Sprachenzentrum Logo">
+            <img src="{{ asset('assets/images/favicon/favicon.svg') }}" alt="GLS Sprachenzentrum Logo">
         </div>
 
         <!-- ===== Footer Columns ===== -->

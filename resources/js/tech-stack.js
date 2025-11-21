@@ -1,7 +1,7 @@
 /**
 =========================================================================
 =========================================================================
-Template Name: Light Able - Bootstrap Admin Template
+Template Name: Code Sommet - Bootstrap Admin Template
 Author: Gls Team
 Support: https://Gls Team.authordesk.app
 File: script.js
