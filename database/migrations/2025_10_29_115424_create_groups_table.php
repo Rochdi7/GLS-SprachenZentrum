@@ -8,12 +8,21 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('site_id')->constrained('sites')->cascadeOnDelete();
             $table->foreignId('teacher_id')->constrained('teachers')->cascadeOnDelete();
-            $table->json('name');
-            $table->enum('level', ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']);
-            $table->string('schedule')->nullable();
-            $table->json('description')->nullable();
+
+            // Example: A1 – A2 – B1 – B2
+            $table->enum('level', ['A1', 'A2', 'B1', 'B2']); 
+
+            // Example: "Morning Groups"
+            $table->string('period_label'); 
+
+            // Example: "10:00 – 12:30"
+            $table->string('time_range');   
+
+            $table->longText('description')->nullable();
+
             $table->timestamps();
 
             $table->index('site_id');

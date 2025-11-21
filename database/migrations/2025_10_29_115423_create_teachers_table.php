@@ -8,12 +8,17 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('teachers', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('site_id')->constrained('sites')->cascadeOnDelete();
-            $table->json('name');
+
+            $table->string('name');
             $table->string('slug')->unique();
-            $table->string('email');
+            $table->string('email')->nullable();
             $table->string('phone')->nullable();
-            $table->json('description')->nullable();
+
+            $table->string('speciality')->nullable(); 
+            $table->longText('bio')->nullable(); 
+
             $table->timestamps();
 
             $table->index('site_id');

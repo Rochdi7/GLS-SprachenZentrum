@@ -3,8 +3,8 @@
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Hash;
 
 return new class extends Migration
 {
@@ -23,10 +23,11 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // Create default admin user
         User::create([
             'name' => 'Admin',
-            'email' => 'admin@Gls Team.com',
-            'password' => Hash::make(12345678),
+            'email' => 'admin@glsteam.com',
+            'password' => Hash::make('12345678'),
         ]);
     }
 

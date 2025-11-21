@@ -8,11 +8,10 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('blog_categories', function (Blueprint $table) {
             $table->id();
-            $table->json('name');              // {"en": "News", "de": "Nachrichten"}
-            $table->string('slug')->unique();
-            $table->json('description')->nullable();
-            $table->integer('position')->nullable();
+            $table->string('name');            // Example: "German Courses"
+            $table->string('slug')->unique();  // german-courses
             $table->boolean('is_active')->default(true);
+            $table->integer('position')->nullable();
             $table->timestamps();
         });
     }
