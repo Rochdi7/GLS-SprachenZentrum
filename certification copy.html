@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Zertifikat Deutsch B2</title>
+
+    <!-- Close fonts to the original -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* PAGE */
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            font-family: "Lato", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #333333;
+        }
+
+        .cert-page {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 15px;
+        }
+
+        .cert {
+            background: #ffffff;
+            width: 100%;
+            max-width: 800px;
+            padding: 60px 70px 70px;
+            box-sizing: border-box;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+
+        /* TOP HEADER */
+        .cert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 90px;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+        }
+
+        .cert-logo {
+            font-weight: 700;
+            font-size: 26px;
+            letter-spacing: 0.12em;
+        }
+
+        .cert-logo span {
+            display: block;
+        }
+
+        .cert-logo-sub {
+            font-weight: 300;
+            font-size: 9px;
+            letter-spacing: 0.12em;
+            margin-top: 4px;
+            color: #555;
+            text-transform: uppercase;
+        }
+
+        .cert-header-right {
+            text-align: right;
+            font-size: 10px;
+            line-height: 1.4;
+        }
+
+        /* MAIN TITLE */
+        .cert-title {
+            text-align: center;
+            margin-bottom: 90px;
+        }
+
+        .cert-title-main {
+            font-family: "Playfair Display", "Times New Roman", serif;
+            font-size: 26px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        .cert-title-sub {
+            font-family: "Playfair Display", "Times New Roman", serif;
+            font-size: 22px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        /* PERSONAL DATA */
+        .cert-personal {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 80px;
+            font-size: 11px;
+        }
+
+        .person-col {
+            width: 45%;
+        }
+
+        .person-name {
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            margin-bottom: 4px;
+        }
+
+        .person-line {
+            height: 1px;
+            background: #999999;
+            margin-bottom: 16px;
+        }
+
+        .person-block {
+            margin-bottom: 16px;
+        }
+
+        .person-label {
+            text-transform: lowercase;
+            color: #777777;
+            letter-spacing: 0.18em;
+            font-size: 9px;
+        }
+
+        .person-value {
+            margin-top: 4px;
+            letter-spacing: 0.12em;
+            font-size: 11px;
+        }
+
+        /* RESULTS AREA */
+        .cert-results {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 60px;
+            font-size: 11px;
+        }
+
+        .results-left {
+            width: 45%;
+        }
+
+        .results-right {
+            width: 40%;
+            text-align: right;
+        }
+
+        .section-title {
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: lowercase;
+            margin-bottom: 12px;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .results-left ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 4px 0 18px;
+        }
+
+        .results-left li {
+            margin-bottom: 4px;
+        }
+
+        .results-left li::before {
+            content: "•";
+            margin-right: 6px;
+        }
+
+        .results-right-top {
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            margin-bottom: 6px;
+        }
+
+        .results-right-top span:first-child {
+            margin-right: 6px;
+        }
+
+        .results-right-top span:last-child {
+            margin-left: 6px;
+        }
+
+        .results-line {
+            height: 1px;
+            background: #999999;
+            margin: 4px 0 12px;
+        }
+
+        .score-row {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 6px;
+            gap: 6px;
+        }
+
+        .score-points {
+            min-width: 24px;
+            text-align: right;
+        }
+
+        .score-max {
+            min-width: 24px;
+            text-align: left;
+        }
+
+        /* ERGEBNIS */
+        .cert-ergebnis-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 70px;
+            font-size: 11px;
+        }
+
+        .ergebnis-label {
+            letter-spacing: 0.18em;
+            text-transform: lowercase;
+        }
+
+        .ergebnis-value {
+            font-weight: 700;
+            letter-spacing: 0.2em;
+        }
+
+        /* BOTTOM INFO */
+        .cert-bottom-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 70px;
+            font-size: 11px;
+        }
+
+        .bottom-left {
+            width: 55%;
+        }
+
+        .bottom-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .bottom-label {
+            letter-spacing: 0.16em;
+            text-transform: lowercase;
+            color: #777;
+        }
+
+        .bottom-value {
+            letter-spacing: 0.24em;
+            font-weight: 700;
+        }
+
+        /* SIGNATURES */
+        .cert-signatures {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            margin-top: 10px;
+        }
+
+        .sign-block {
+            width: 42%;
+            text-align: left;
+        }
+
+        .sign-line {
+            height: 1px;
+            background: #999999;
+            margin-bottom: 6px;
+        }
+
+        .sign-label {
+            letter-spacing: 0.16em;
+            text-transform: lowercase;
+            color: #777;
+        }
+
+        @media (max-width: 768px) {
+            .cert {
+                padding: 40px 25px 50px;
+            }
+
+            .cert-personal,
+            .cert-results,
+            .cert-bottom-info,
+            .cert-signatures {
+                flex-direction: column;
+                gap: 25px;
+            }
+
+            .person-col,
+            .results-left,
+            .results-right,
+            .bottom-left,
+            .sign-block {
+                width: 100%;
+            }
+
+            .results-right {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="cert-page">
+    <div class="cert">
+
+        <!-- HEADER -->
+        <div class="cert-header">
+            <div>
+                <div class="cert-logo">
+                    <span>WZD</span>
+                </div>
+                <div class="cert-logo-sub">
+                    WZD-LANGUAGE &amp;<br>
+                    INTEGRATION CENTER
+                </div>
+            </div>
+
+            <div class="cert-header-right">
+                WZD-Language &amp; Integration<br>
+                Center
+            </div>
+        </div>
+
+        <!-- TITLE -->
+        <div class="cert-title">
+            <div class="cert-title-main">ZERTIFIKAT</div>
+            <div class="cert-title-sub">DEUTSCH B2</div>
+        </div>
+
+        <!-- PERSONAL DATA -->
+        <div class="cert-personal">
+            <div class="person-col">
+                <div class="person-name">Smaali</div>
+                <div class="person-line"></div>
+
+                <div class="person-block">
+                    <div class="person-label">Name</div>
+                </div>
+
+                <div class="person-block">
+                    <div class="person-value">09/17/1991</div>
+                    <div class="person-line"></div>
+                    <div class="person-label">Geburtsdatum</div>
+                </div>
+            </div>
+
+            <div class="person-col">
+                <div class="person-name">Amna</div>
+                <div class="person-line"></div>
+
+                <div class="person-block">
+                    <div class="person-label">Vorname</div>
+                </div>
+
+                <div class="person-block">
+                    <div class="person-value">BOUFICHA/TU</div>
+                    <div class="person-line"></div>
+                    <div class="person-label">Geburtsort</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="cert-results">
+            <div class="results-left">
+                <div class="section-title">Schriftliche Prüfung</div>
+                <ul>
+                    <li>Leseverstehen</li>
+                    <li>Sprachbausteine</li>
+                    <li>Hörverstehen</li>
+                    <li>Schriftlicher Ausdruck</li>
+                </ul>
+
+                <div class="section-title" style="margin-top: 20px;">Mündliche Prüfung</div>
+                <ul>
+                    <li>Präsentation</li>
+                    <li>Diskussion</li>
+                    <li>Problemlösung</li>
+                </ul>
+            </div>
+
+            <div class="results-right">
+                <!-- TOTAL WRITTEN -->
+                <div class="results-right-top">
+                    <span>158</span> / <span>225</span>
+                </div>
+                <div class="results-line"></div>
+
+                <!-- SUB SCORES -->
+                <div class="score-row">
+                    <div class="score-points">46</div>
+                    <span>/</span>
+                    <div class="score-max">75</div>
+                </div>
+                <div class="score-row">
+                    <div class="score-points">24</div>
+                    <span>/</span>
+                    <div class="score-max">30</div>
+                </div>
+                <div class="score-row">
+                    <div class="score-points">63</div>
+                    <span>/</span>
+                    <div class="score-max">75</div>
+                </div>
+                <div class="score-row" style="margin-bottom: 18px;">
+                    <div class="score-points">25</div>
+                    <span>/</span>
+                    <div class="score-max">45</div>
+                </div>
+
+                <!-- TOTAL ORAL -->
+                <div class="results-right-top">
+                    <span>69</span> / <span>75</span>
+                </div>
+                <div class="results-line"></div>
+
+                <div class="score-row">
+                    <div class="score-points">24</div>
+                    <span>/</span>
+                    <div class="score-max">25</div>
+                </div>
+                <div class="score-row">
+                    <div class="score-points">23</div>
+                    <span>/</span>
+                    <div class="score-max">25</div>
+                </div>
+                <div class="score-row">
+                    <div class="score-points">22</div>
+                    <span>/</span>
+                    <div class="score-max">25</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ERGEBNIS -->
+        <div class="cert-ergebnis-row">
+            <div class="ergebnis-label">Ergebnis</div>
+            <div class="ergebnis-value">Befriedigend</div>
+        </div>
+
+        <!-- BOTTOM INFO -->
+        <div class="cert-bottom-info">
+            <div class="bottom-left">
+                <div class="bottom-row">
+                    <div class="bottom-label">Datum der Prüfung</div>
+                    <div class="bottom-value">25.06.2025</div>
+                </div>
+                <div class="bottom-row">
+                    <div class="bottom-label">Datum der Ausstellung</div>
+                    <div class="bottom-value">29.07.2025</div>
+                </div>
+                <div class="bottom-row">
+                    <div class="bottom-label">Teilnehmernummer</div>
+                    <div class="bottom-value">K5FDM3VB</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIGNATURES -->
+        <div class="cert-signatures">
+            <div class="sign-block">
+                <div class="sign-line"></div>
+                <div class="sign-label">Geschäftsführer</div>
+            </div>
+            <div class="sign-block">
+                <div class="sign-line"></div>
+                <div class="sign-label">Prüfungszentrum</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
