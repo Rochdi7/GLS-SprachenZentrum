@@ -20,9 +20,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    text-align: right;
     width: 100%;
-    gap: 1rem;
+    gap: 2rem;
 }
 
 .footer-intro img {
@@ -31,24 +30,22 @@
 }
 
 .footer-intro p {
-    color: #fdfdfd;
+    color: var(--color-surface);
     font-size: 0.95rem;
     line-height: 1.6;
     margin-bottom: 0;
     flex: 1;
-    text-align: left;
-    max-width: 400px;
-    margin-bottom: 0;
+    max-width: 450px;
 }
 
 /* =========================================================
-   FOOTER COLUMN TITLES
+   FOOTER TITLES
    ========================================================= */
 .footer-title {
     font-weight: 700;
-    color: #fff;
-    margin-bottom: 0.75rem;
-    font-size: 0.95rem;
+    color: var(--color-surface); /* UPDATED */
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
     letter-spacing: 0.3px;
 }
 
@@ -56,66 +53,92 @@
    FOOTER LINKS
    ========================================================= */
 .footer-links li {
-    margin-bottom: 4px;
+    margin-bottom: 10px;
 }
 
-.footer-links a {
-    text-wrap: balance;
-    font-size: 16px;
-    line-height: 1.2;
+.footer-links a,
+.footer-small-link {
+    color: var(--dark--off-white); /* UPDATED */
+    font-size: 14px;
+    /* line-height: 1.2; */
     text-decoration: none;
     display: block;
-    color: #bcbbaa;
-    transition-property: color;
-    transition-duration: 0.2s;
-    transition-timing-function: ease;
+    text-wrap: balance;
+    transition: color .2s ease;
 }
 
-.footer-links a:hover {
-    color: #ffd161; /* Yellow on hover */
-    text-decoration: none; /* Remove underline on hover */
+.footer-links a:hover,
+.footer-small-link:hover {
+    color: var(--dark--yellow); /* UPDATED (#bc9600) */
+}
+
+/* If using big-link class */
+.footer-big-link {
+    font-weight: 700;
+    line-height: 1.1;
+    display: block;
+    text-decoration: none;
+    font-size: 1.05rem;
+    margin-bottom: 1.2rem;
+    color: var(--color-surface);
+}
+
+/* indentation */
+.footer-indent {
+    padding-left: 1rem;
 }
 
 /* =========================================================
-   FOOTER BOTTOM SECTION
+   FOOTER COLUMNS
+   ========================================================= */
+.footer-columns {
+    margin-top: 2.5rem !important;
+    padding-top: 2.5rem !important;
+    border-color: #2a2725 !important;
+}
+
+.footer-columns .col-md-3 {
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+/* =========================================================
+   FOOTER BOTTOM
    ========================================================= */
 .footer-bottom {
     background-color: #181615;
     color: #ccc;
+    margin-top: 2rem;
 }
 
 .footer-bottom a {
-    color: #ccc;
+    color: var(--dark--off-white); /* match */
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color .2s ease;
 }
 
 .footer-bottom a:hover {
-    color: #ffd161; /* Yellow on hover */
+    color: var(--dark--yellow);
 }
 
-/* =========================================================
-   FOOTER LEGAL LINKS AREA
-   ========================================================= */
 .footer-legal {
     display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    grid-column-gap: 2rem;
-    grid-row-gap: 2rem;
+    gap: 2rem;
     flex-wrap: wrap;
 }
 
 /* =========================================================
-   RESPONSIVE TWEAKS
+   RESPONSIVE
    ========================================================= */
 @media (max-width: 768px) {
+
     .footer-intro {
         flex-direction: column;
         text-align: center;
     }
 
     .footer-intro img {
+        height: 120px;
         margin-top: 1rem;
     }
 
@@ -124,7 +147,8 @@
         text-align: center;
         gap: 1rem;
     }
-    .footer-intro img {
-        height: 110px;
+
+    .footer-columns .col-6 {
+        margin-bottom: 2.5rem;
     }
 }
