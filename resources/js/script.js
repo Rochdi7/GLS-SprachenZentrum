@@ -422,7 +422,7 @@ var tc = document.querySelectorAll('.auth-main.v2 .img-brand');
 // Loop through each selected element
 for (var t = 0; t < tc.length; t++) {
   // Change the 'src' attribute to the new logo path
-  tc[t].setAttribute('src', '../build/images/logo-white.svg');
+  tc[t].setAttribute('src', '../build/images/assets/images/logo/gls.png');
 }
 
 // =======================================================

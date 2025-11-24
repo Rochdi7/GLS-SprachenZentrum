@@ -3,8 +3,7 @@
     <div class="navbar-wrapper">
         <div class="m-header">
             <a href="//index" class="b-brand text-primary">
-                <!-- ========   Change your logo from here   ============ -->
-                <img src="{{ URL::asset('assets/images/logo/gls.png') }}" alt="logo image" class="logo-lg">
+                <img src="{{ URL::asset('assets/images/logo/gls.png') }}" alt="image du logo" class="logo-lg">
                 <span class="badge bg-brand-color-2 rounded-pill ms-1 theme-version">v1.0.0</span>
             </a>
         </div>
@@ -14,28 +13,44 @@
             </ul>
             <div class="card nav-action-card bg-brand-color-4">
                 <div class="card-body" style="background-image: url('/build/images/layout/nav-card-bg.svg')">
-                    <h5 class="text-dark">Help Center</h5>
-                    <p class="text-dark text-opacity-75">Please contact us for more questions.</p>
-                    <a href="https://Gls Team.support-hub.io/" class="btn btn-primary" target="_blank">Go to help
-                        Center</a>
+                    <h5 class="text-dark">Centre d'aide</h5>
+                    <p class="text-dark text-opacity-75">Veuillez nous contacter pour toute question.</p>
+                    <a href="https://Gls Team.support-hub.io/" class="btn btn-primary" target="_blank">Accéder au Centre d'aide</a>
                 </div>
             </div>
         </div>
         <div class="card pc-user-card">
             <div class="card-body">
+                @php
+                    $authUser = Auth::user();
+                    $media = $authUser->getFirstMedia('profile_photo');
+                @endphp
+
                 <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <img src="{{ URL::asset('build/images/user/avatar-1.jpg') }}" alt="user-image"
-                            class="user-avtar wid-45 rounded-circle">
-                    </div>
+                    @php
+                        $media = Auth::user()->getFirstMedia('profile_photo');
+                    @endphp
+
+                    <img src="{{ $media
+                        ? route('media.custom', ['id' => $media->id, 'filename' => $media->file_name])
+                        : asset('assets/images/user/avatar-2.jpg') }}"
+                        alt="image utilisateur" class="user-avtar wid-45 rounded-circle" />
+
+
                     <div class="flex-grow-1 ms-3">
                         <div class="dropdown">
                             <a href="#" class="arrow-none dropdown-toggle" data-bs-toggle="dropdown"
                                 aria-expanded="false" data-bs-offset="0,20">
+
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1 me-2">
-                                        <h6 class="mb-0">Jonh Smith</h6>
-                                        <small>Administrator</small>
+
+                                        {{-- Dynamic Name --}}
+                                        <h6 class="mb-0">{{ $authUser->name }}</h6>
+
+                                        {{-- Optional: Role (change later) --}}
+                                        <small>Administrateur</small>
+
                                     </div>
                                     <div class="flex-shrink-0">
                                         <div class="btn btn-icon btn-link-secondary avtar">
@@ -43,19 +58,23 @@
                                         </div>
                                     </div>
                                 </div>
+
                             </a>
+
                             <div class="dropdown-menu">
                                 <ul>
-                                    <li><a class="pc-user-links">
+                                    <li>
+                                        <a class="pc-user-links" href="{{ route('profile.index') }}">
                                             <i class="ph-duotone ph-user"></i>
-                                            <span>My Account</span>
-                                        </a></li>
-                                                                     
-                                    <li><a class="pc-user-links" href="{{ route('logout') }}"
-                                            onclick="event.preventDefault();
-                                              document.getElementById('logout-form').submit();">
+                                            <span>Mon Compte</span>
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="pc-user-links" href="{{ route('logout') }}"
+                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                             <i class="ph-duotone ph-power"></i>
-                                            <span>Logout</span>
+                                            <span>Déconnexion</span>
                                         </a>
                                     </li>
                                 </ul>
@@ -63,6 +82,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

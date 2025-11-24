@@ -7,7 +7,7 @@
         <div class="card my-5">
             <div class="card-body">
                 <div class="text-center">
-                    <img src="{{ URL::asset('build/images/authentication/img-auth-login.png') }}" alt="images" class="img-fluid mb-3">
+                    <img src="{{ URL::asset('assets/images/login/img-auth-login.png') }}" alt="images" class="img-fluid mb-3">
                     <h4 class="f-w-500 mb-1">Login with your email</h4>
                     
                 </div>

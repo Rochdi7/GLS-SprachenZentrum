@@ -1,27 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <title>@yield('title') | GLS Sprachen Zentrum – Back Office</title>
 
-    <!-- [Meta] -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <!-- SEO -->
     <meta name="description"
-        content="GLS Sprachen Zentrum Back Office – Manage blog posts, teachers, certificates, groups, sites and more. Admin dashboard for the GLS centers across Morocco." />
-    <meta name="author" content="GLS Team" />
+        content="GLS Sprachen Zentrum Back Office – Gérez les articles de blog, les enseignants, les certificats, les groupes, les sites et plus encore. Tableau de bord d'administration pour les centres GLS à travers le Maroc." />
+    <meta name="author" content="Équipe GLS" />
 
-    <!-- [Favicon] -->
-    <!-- Modern browsers -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('assets/images/favicon/favicon.svg') }}">
-    <!-- PNG fallback -->
     <link rel="alternate icon" type="image/png" href="{{ asset('assets/images/favicon/favicon-96x96.png') }}">
-    <!-- Apple touch icon -->
     <link rel="apple-touch-icon" href="{{ asset('assets/images/favicon/apple-touch-icon.png') }}">
-    <!-- Webmanifest -->
     <link rel="manifest" href="{{ asset('assets/images/favicon/site.webmanifest') }}">
 
     @yield('css')
@@ -57,7 +50,6 @@
     @include('layouts.sidebar')
     @include('layouts.topbar')
 
-    <!-- [ Main Content ] start -->
     <div class="pc-container">
         <div class="pc-content">
 
@@ -69,8 +61,6 @@
 
         </div>
     </div>
-    <!-- [ Main Content ] end -->
-
     @include('layouts.footer')
     @include('layouts.customizer')
     @include('layouts.footerjs')

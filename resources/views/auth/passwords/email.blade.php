@@ -7,7 +7,8 @@
         <div class="card my-5">
             <div class="card-body">
                 <div class="text-center">
-                    <img src="{{ URL::asset('build/images/authentication/img-auth-fporgot-password.png') }}" alt="images"
+                    <img src="{{ URL::asset('assets
+                    /images/login/img-auth-fporgot-password.png') }}" alt="images"
                         class="img-fluid mb-3">
                     <h4 class="f-w-500 mb-1">Forgot Password</h4>
                     <p class="mb-3">Back to <a href="{{ route('login') }}" class="link-primary ms-1">Log in</a></p>
