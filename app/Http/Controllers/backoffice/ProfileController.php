@@ -34,7 +34,7 @@ class ProfileController extends Controller
         $user->phone   = $request->phone;
         $user->address = $request->address;
 
-        // Profile photo (using Spatie Media Library if installed)
+        // Profile photo (Spatie Media Library)
         if ($request->hasFile('profile_photo')) {
             $user->clearMediaCollection('profile_photo');
             $user->addMediaFromRequest('profile_photo')->toMediaCollection('profile_photo');
@@ -42,25 +42,27 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return back()->with('success', 'Profile updated successfully.');
+        return back()->with('success', 'Votre profil a été mis à jour avec succès.');
     }
 
     public function updatePassword(Request $request)
     {
         $request->validate([
-            'current_password'      => 'required',
-            'password'              => 'required|confirmed|min:8'
+            'current_password' => 'required',
+            'password'         => 'required|confirmed|min:8'
         ]);
 
         $user = Auth::user();
 
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Current password is incorrect']);
+            return back()->withErrors([
+                'current_password' => 'Le mot de passe actuel est incorrect.'
+            ]);
         }
 
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return back()->with('success', 'Password updated successfully.');
+        return back()->with('success', 'Votre mot de passe a été mis à jour avec succès.');
     }
 }

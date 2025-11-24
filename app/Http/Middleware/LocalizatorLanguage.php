@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware\Traits;
+namespace App\Http\Middleware;
 
 use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
