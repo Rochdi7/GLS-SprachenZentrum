@@ -65,16 +65,90 @@
 
         </nav>
 
-       <div class="right d-none d-lg-flex align-items-center gap-2">
-    <a 
-        class="btn btn-primary" 
-        href="#" 
-        data-bs-toggle="modal" 
-        data-bs-target="#glsEnrollModal"
-    >
+      <div class="right d-none d-lg-flex align-items-center gap-2">
+
+    <div class="right d-none d-lg-flex align-items-center gap-3">
+
+    <div class="nav-language">
+        <div class="w-locales-list">
+            <div role="list" class="locales-list w-locales-items d-flex gap-1">
+
+                <div role="listitem" class="w-locales-item">
+                    <a href="#" 
+                       class="nav-language-selector lang-btn w--current" 
+                       data-lang="en" 
+                       onclick="changeLanguage('en'); return false;">
+                       EN
+                    </a>
+                </div>
+
+                <div role="listitem" class="w-locales-item">
+                    <a href="#" 
+                       class="nav-language-selector lang-btn" 
+                       data-lang="fr" 
+                       onclick="changeLanguage('fr'); return false;">
+                       FR
+                    </a>
+                </div>
+
+                <div role="listitem" class="w-locales-item">
+                    <a href="#" 
+                       class="nav-language-selector lang-btn" 
+                       data-lang="ar" 
+                       onclick="changeLanguage('ar'); return false;">
+                       AR
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#glsEnrollModal">
         Enroll Now
     </a>
+
 </div>
+<style>.nav-language {
+    display: flex;
+    gap: .25rem;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.locales-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .25rem;
+}
+
+.nav-language-selector {
+    border: 2px solid var(--off-black);
+    color: var(--off-black);
+    border-radius: 1000px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    font-size: 14px;
+    font-weight: 900;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.nav-language-selector:hover {
+    background-color: var(--off-black);
+    color: var(--off-white);
+}
+
+.nav-language-selector.w--current,
+.nav-language-selector.is-active {
+    background-color: var(--off-black);
+    color: var(--off-white);
+}
+</style>
 
 
         <div class="menu-toggle d-flex d-lg-none flex-column justify-content-center" id="burger"

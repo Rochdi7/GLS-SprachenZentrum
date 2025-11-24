@@ -6,7 +6,7 @@
      HERO SECTION
 =========================== --}}
     <section class="hero" aria-label="Intro">
-        <div class="hero__bg" style="background-image: url('{{ asset('assets/images/hero-2.png') }}');"></div>
+        <div class="hero__bg" style="background-image: url('{{ asset('assets/images/home/Centre-GLS-de-langue-Allemande.jpg') }}');"></div>
 
         <div class="badge b-blue b1">Jawohl</div>
         <div class="badge b-green b2">Wunderbar</div>

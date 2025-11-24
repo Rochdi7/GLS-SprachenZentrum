@@ -48,7 +48,8 @@
         layout_sidebar_change('dark');
         layout_caption_change('false');
         if (document.querySelector('.pc-sidebar .m-header .logo-lg')) {
-            document.querySelector('.pc-sidebar .m-header .logo-lg').setAttribute('src', '/build/images/logo-white.svg');
+            document.querySelector('.pc-sidebar .m-header .logo-lg').setAttribute('src',
+                '/build/images/assets/images/logo/gls.png');
             document.querySelector('.pc-sidebar .m-header').classList.add('bg-brand-color-2');
         }
 

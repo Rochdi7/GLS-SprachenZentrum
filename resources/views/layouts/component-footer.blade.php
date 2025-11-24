@@ -25,7 +25,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <img src="{{ URL::asset('build/images/logo-dark.svg') }}" alt="image"
+                    <img src="{{ URL::asset('assets/images/logo/gls.png') }}" alt="image"
                         class="footer-logo img-fluid mb-3" />
                     <p class="mb-4">Since 2014, over 6.3K developers have placed their trust in Gls Team's
                         Templates. Code Sommet is managed by their

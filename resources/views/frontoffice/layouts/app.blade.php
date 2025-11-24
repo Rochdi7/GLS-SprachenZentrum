@@ -172,6 +172,43 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RZsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
     </script>
+
+    <div id="google_translate_element" style="display:none"></div>
+
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en', 
+            includedLanguages: 'ar,en,fr', 
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script type="text/javascript">
+    function changeLanguage(lang) {
+        // 1. Trigger Google Translate
+        var select = document.querySelector("select.goog-te-combo");
+        if (select) {
+            select.value = lang; 
+            select.dispatchEvent(new Event('change'));
+        }
+
+        // 2. Update the Visual Classes (CSS)
+        // Remove 'w--current' and 'active' from ALL language buttons
+        document.querySelectorAll('.lang-btn').forEach(function(btn) {
+            btn.classList.remove('w--current');
+            btn.classList.remove('active');
+        });
+
+        // Add classes to the clicked button
+        document.querySelectorAll('.lang-btn[data-lang="' + lang + '"]').forEach(function(btn) {
+            btn.classList.add('w--current');
+            btn.classList.add('active');
+        });
+    }
+</script>
 </body>
 
 </html>

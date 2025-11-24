@@ -28,7 +28,7 @@
     @include('layouts.head-css')
 </head>
 
-<body data-pc-preset="preset-1"
+<body data-pc-preset="preset-5"
       data-pc-sidebar-theme="light"
       data-pc-sidebar-caption="true"
       data-pc-direction="ltr"
@@ -36,8 +36,8 @@
 
       <style>
         .logo-lg {
-    width: 140px !important;
-    height: 40px !important;
+    width: 160px !important;
+    height: 60px !important;
     object-fit: contain !important;
     display: block !important;
 }
@@ -47,7 +47,12 @@
     justify-content: space-between !important;
     width: 100% !important;
 }
-
+img[src*="assets/images/logo/gls.png"],
+img[src$="gls.png"] {
+    width: 160px !important;
+    height: 60px !important;
+    object-fit: contain !important;
+}
       </style>
     @include('layouts.loader')
     @include('layouts.sidebar')

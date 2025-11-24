@@ -2,7 +2,7 @@
 <nav class="navbar navbar-expand-md navbar-light default">
     <div class="container">
         <a class="navbar-brand " href="{{ url('index') }}">
-            <img src="{{ URL::asset('build/images/logo-dark.svg') }}" alt="logo" class="logo-lg landing-logo" />
+            <img src="{{ URL::asset('assets/images/logo/gls.png') }}" alt="logo" class="logo-lg landing-logo" />
         </a>
         <button class="navbar-toggler rounded" type="button" data-bs-toggle="collapse"
             data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false"
@@ -10,7 +10,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-          <ul class="navbar-nav ms-auto mt-lg-0 mt-2 mb-2 mb-lg-0 align-items-start">
+            <ul class="navbar-nav ms-auto mt-lg-0 mt-2 mb-2 mb-lg-0 align-items-start">
                 <li class="nav-item px-1">
                     <a class="nav-link" href="{{ url('dashboard') }}">Dashboard</a>
                 </li>
@@ -44,8 +44,8 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a href="https://1.envato.market/EKD9M4" target="_blank"
-                        class="btn btn-primary">Get Light able <i class="ph-duotone ph-arrow-square-out"></i></a>
+                    <a href="https://1.envato.market/EKD9M4" target="_blank" class="btn btn-primary">Get Light able <i
+                            class="ph-duotone ph-arrow-square-out"></i></a>
                 </li>
             </ul>
         </div>
