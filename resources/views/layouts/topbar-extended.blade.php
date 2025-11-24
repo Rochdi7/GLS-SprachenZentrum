@@ -2,7 +2,7 @@
 <header class="pc-header">
     <div class="container d-flex">
         <div class="m-header">
-            <a href="//index" class="b-brand text-primary">
+            <a href="{{ route('dashboard') }}" class="b-brand text-primary">
                 <!-- ========   Change your logo from here   ============ -->
                 <img src="{{ URL::asset('build/images/assets/images/logo/gls.png') }}" alt="logo image" class="logo-lg" />
                 <span class="badge bg-brand-color-2 rounded-pill ms-1 theme-version">v1.0.0</span>

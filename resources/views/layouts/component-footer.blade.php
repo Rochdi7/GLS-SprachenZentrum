@@ -3,80 +3,93 @@
     <div class="container title mb-0">
         <div class="row align-items-center">
             <div class="col-md-8">
-                <h2 class="mb-3">Be the first to know</h2>
+                <h2 class="mb-3">Restez informé en premier</h2>
                 <p class="mb-4 mb-md-0">
-                    Simply submit your email, we share you the top news related to
-                    Able Pro feature updates, roadmap, and news.
+                    Inscrivez votre email pour recevoir les dernières actualités GLS : 
+                    nouveautés, mises à jour, conseils pour apprendre l’allemand 
+                    et informations sur nos programmes en Allemagne.
                 </p>
             </div>
             <div class="col-md-4">
                 <div class="row">
                     <div class="col">
-                        <input type="email" class="form-control" placeholder="Enter your email" />
+                        <input type="email" class="form-control" placeholder="Entrez votre email" />
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-primary">Subscribe</button>
+                        <button class="btn btn-primary">S'abonner</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="footer-top">
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
                     <img src="{{ URL::asset('assets/images/logo/gls.png') }}" alt="image"
                         class="footer-logo img-fluid mb-3" />
-                    <p class="mb-4">Since 2014, over 6.3K developers have placed their trust in Gls Team's
-                        Templates. Code Sommet is managed by their
-                        experienced team of professionals.</p>
+                    <p class="mb-4">
+                        GLS Sprachen Zentrum accompagne depuis des années les étudiants marocains
+                        dans leur parcours linguistique et leur transition vers l’Allemagne.
+                        Notre mission : offrir une formation de qualité, un suivi personnalisé
+                        et un accompagnement complet pour réussir vos projets d’études ou de carrière.
+                    </p>
                 </div>
+
                 <div class="col-md-8">
                     <div class="row">
                         <div class="col-sm-4 my-3 my-sm-0">
-                            <h5 class="mb-4">Company</h5>
+                            <h5 class="mb-4">GLS</h5>
                             <ul class="list-unstyled footer-link">
-                                <li><a href="#" target="_blank">About</a></li>
-                                <li><a href="#" target="_blank">Blog</a></li>
-                                <li><a href="#" target="_blank">Team</a></li>
-                                <li><a href="#" target="_blank">Free Version</a></li>
+                                <li><a href="/about" target="_blank">À propos</a></li>
+                                <li><a href="/blog" target="_blank">Blog</a></li>
+                                <li><a href="/sites" target="_blank">Nos centres</a></li>
+                                <li><a href="/courses" target="_blank">Cours d’Allemand</a></li>
                             </ul>
                         </div>
+
                         <div class="col-sm-4 my-3 my-sm-0">
-                            <h5 class="mb-4">Help & Support</h5>
+                            <h5 class="mb-4">Aide & Support</h5>
                             <ul class="list-unstyled footer-link">
-                                <li><a href="#" target="_blank">Documentation</a></li>
-                                <li><a href="#" target="_blank">Contact us</a></li>
-                                <li><a href="#" target="_blank">Support</a></li>
-                                <li><a href="#" target="_blank">RoadMap</a></li>
+                                <li><a href="/contact" target="_blank">Contact</a></li>
+                                <li><a href="/faq" target="_blank">FAQ</a></li>
+                                <li><a href="/osd-exam" target="_blank">Examens ÖSD</a></li>
+                                <li><a href="/guides" target="_blank">Guides & Ressources</a></li>
                             </ul>
                         </div>
+
                         <div class="col-sm-4 my-3 my-sm-0">
-                            <h5 class="mb-4">Useful Resources</h5>
+                            <h5 class="mb-4">Liens Utiles</h5>
                             <ul class="list-unstyled footer-link">
-                                <li><a href="#" target="_blank">Terms & Condition</a></li>
-                                <li><a href="#" target="_blank">Privacy Policy</a></li>
-                                <li><a href="#" target="_blank">Licencse</a></li>
-                                <li><a href="#" target="_blank">FAQ</a></li>
+                                <li><a href="/terms" target="_blank">Conditions d’utilisation</a></li>
+                                <li><a href="/privacy" target="_blank">Politique de confidentialité</a></li>
+                                <li><a href="/imprint" target="_blank">Mentions légales</a></li>
+                                <li><a href="/certificates" target="_blank">Vérifier un certificat</a></li>
                             </ul>
                         </div>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="footer-bottom">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col my-1">
-                    <p class="m-0">Made with &#9829; by Team <a
-                            href="https://www.glssprachenzentrum.ma/user/Gls Team" target="_blank"> Gls Team</a></p>
+                    <p class="m-0">
+                        Réalisé avec &#9829; par l'équipe 
+                        <a href="https://www.glssprachenzentrum.ma" target="_blank">GLS Sprachen Zentrum</a>
+                    </p>
                 </div>
                 <div class="col-auto my-1">
                     <ul class="list-inline footer-sos-link mb-0">
                         <li class="list-inline-item">
-                            <a href="https://fb.com/Gls Team"><i class="ph-duotone ph-facebook-logo f-20"></i></a>
+                            <a href="https://fb.com/glssprachenzentrum"><i class="ph-duotone ph-facebook-logo f-20"></i></a>
                         </li>
+                        <!-- Ajoutez vos autres réseaux ici -->
                     </ul>
                 </div>
             </div>
@@ -84,29 +97,3 @@
     </div>
 </footer>
 <!-- [ footer apps ] End -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-<script src="{{ URL::asset('build/js/plugins/clipboard.min.js') }}"></script>
-<script src="{{ URL::asset('build/js/component.js') }}"></script>
-<script>
-    // pc-component
-    var elem = document.querySelectorAll('.component-list-card a');
-    for (var l = 0; l < elem.length; l++) {
-        var pageUrl = window.location.href.split(/[?#]/)[0];
-        if (elem[l].href == pageUrl && elem[l].getAttribute('href') != '') {
-            elem[l].classList.add('active');
-        }
-    }
-    document.querySelector('#compo-menu-search').addEventListener('keyup', function() {
-        var tval = document.querySelector('#compo-menu-search').value.toLowerCase();
-        var elem = document.querySelectorAll('.component-list-card a');
-        for (var l = 0; l < elem.length; l++) {
-            var aval = elem[l].innerHTML.toLowerCase();
-            var n = aval.indexOf(tval);
-            if (n !== -1) {
-                elem[l].style.display = 'block';
-            } else {
-                elem[l].style.display = 'none';
-            }
-        }
-    });
-</script>

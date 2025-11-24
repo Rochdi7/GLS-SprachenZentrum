@@ -2,7 +2,7 @@
 <nav class="pc-sidebar">
     <div class="navbar-wrapper">
         <div class="m-header">
-            <a href="//index" class="b-brand text-primary">
+            <a href="{{ route('dashboard') }}" class="b-brand text-primary">
                 <img src="{{ URL::asset('assets/images/logo/gls.png') }}" alt="image du logo" class="logo-lg">
                 <span class="badge bg-brand-color-2 rounded-pill ms-1 theme-version">v1.0.0</span>
             </a>
@@ -15,7 +15,8 @@
                 <div class="card-body" style="background-image: url('/build/images/layout/nav-card-bg.svg')">
                     <h5 class="text-dark">Centre d'aide</h5>
                     <p class="text-dark text-opacity-75">Veuillez nous contacter pour toute question.</p>
-                    <a href="https://Gls Team.support-hub.io/" class="btn btn-primary" target="_blank">Accéder au Centre d'aide</a>
+                    <a href="https://Gls Team.support-hub.io/" class="btn btn-primary" target="_blank">Accéder au Centre
+                        d'aide</a>
                 </div>
             </div>
         </div>

@@ -33,7 +33,8 @@
                                 <li class="list-group-item">
                                     <div class="d-flex align-items-center">
                                         @php
-                                            $media = $user->getFirstMedia('profile_photo');
+                                            $user = Auth::user();
+$media = $user?->getFirstMedia('profile_photo');
                                         @endphp
 
                                         <img class="rounded-circle img-fluid wid-90 img-thumbnail"

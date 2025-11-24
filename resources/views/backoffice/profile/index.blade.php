@@ -35,7 +35,8 @@
                                     {{-- Point this to your resend verification route --}}
                                 <form method="POST" action="{{ route('verification.resend') }}" style="display: inline;">
                                     @csrf
-                                    <button type="submit" class="btn btn-link link-light p-0 m-0 align-baseline"><u>Renvoyer la
+                                    <button type="submit"
+                                        class="btn btn-link link-light p-0 m-0 align-baseline"><u>Renvoyer la
                                             confirmation</u></button>
                                 </form>
                                 </p>
@@ -56,14 +57,15 @@
                             <div class="text-center mt-3">
                                 <div class="chat-avtar d-inline-flex mx-auto">
                                     @php
-                                        $media = $user->getFirstMedia('profile_photo');
+                                        $user = Auth::user();
+                                        $media = $user?->getFirstMedia('profile_photo');
                                     @endphp
 
                                     <img class="rounded-circle img-fluid wid-90 img-thumbnail"
                                         src="{{ $media
                                             ? route('media.custom', ['id' => $media->id, 'filename' => $media->file_name])
                                             : URL::asset('build/images/user/avatar-1.jpg') }}"
-                                    alt="Image utilisateur" />
+                                        alt="Image utilisateur" />
 
                                     <i class="chat-badge bg-success me-2 mb-2"></i>
                                 </div>
@@ -91,7 +93,8 @@
                             <a class="nav-link list-group-item list-group-item-action" id="user-set-information-tab"
                                 data-bs-toggle="pill" href="#user-set-information" role="tab"
                                 aria-controls="user-set-information" aria-selected="false">
-                                <span class="f-w-500"><i class="ph-duotone ph-clipboard-text m-r-10"></i>Modifier les informations</span>
+                                <span class="f-w-500"><i class="ph-duotone ph-clipboard-text m-r-10"></i>Modifier les
+                                    informations</span>
                             </a>
                             <a class="nav-link list-group-item list-group-item-action" id="user-set-password-tab"
                                 data-bs-toggle="pill" href="#user-set-password" role="tab"
@@ -130,7 +133,8 @@
                                     <div class="d-flex align-items-center">
                                         <div class="flex-grow-1 me-3">
                                             <h4 class="alert-heading">Changez votre mot de passe</h4>
-                                            <p class="mb-2">Pour votre sécurité, nous recommandons de changer votre mot de passe régulièrement.</p>
+                                            <p class="mb-2">Pour votre sécurité, nous recommandons de changer votre mot de
+                                                passe régulièrement.</p>
                                             <a href="#user-set-password" class="alert-link update-password-tab"
                                                 role="tab">
                                                 <u>Mettez à jour votre mot de passe maintenant</u>
@@ -151,7 +155,8 @@
                                     <h5>À propos de moi</h5>
                                 </div>
                                 <div class="card-body">
-                                    <p class="mb-0">{{ $user->bio ?? 'Bonjour ! Ajoutez une bio en modifiant votre profil.' }}</p>
+                                    <p class="mb-0">
+                                        {{ $user->bio ?? 'Bonjour ! Ajoutez une bio en modifiant votre profil.' }}</p>
                                 </div>
                             </div>
                             <div class="card">
@@ -257,7 +262,8 @@
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Email <span class="text-danger">(ne peut pas être modifié)</span></label>
+                                                    <label class="form-label">Email <span class="text-danger">(ne peut pas
+                                                            être modifié)</span></label>
                                                     <input type="email" class="form-control"
                                                         value="{{ $user->email }}" disabled>
                                                 </div>
@@ -306,7 +312,8 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="password_confirmation" class="form-label">Confirmer le nouveau mot de passe</label>
+                                    <label for="password_confirmation" class="form-label">Confirmer le nouveau mot de
+                                        passe</label>
                                     <input type="password" name="password_confirmation" id="password_confirmation"
                                         class="form-control" required>
                                     @error('password_confirmation')
@@ -325,8 +332,8 @@
                 </div>
             </div>
         </div>
-        </div>
-    @endsection
+    </div>
+@endsection
 
 @section('scripts')
     <script>
