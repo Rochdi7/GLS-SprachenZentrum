@@ -11,7 +11,7 @@
 
     <!-- SEO -->
     <meta name="description"
-          content="GLS Sprachen Zentrum Back Office – Manage blog posts, teachers, certificates, groups, sites and more. Admin dashboard for the GLS centers across Morocco." />
+        content="GLS Sprachen Zentrum Back Office – Manage blog posts, teachers, certificates, groups, sites and more. Admin dashboard for the GLS centers across Morocco." />
     <meta name="author" content="GLS Team" />
 
     <!-- [Favicon] -->
@@ -28,32 +28,31 @@
     @include('layouts.head-css')
 </head>
 
-<body data-pc-preset="preset-5"
-      data-pc-sidebar-theme="light"
-      data-pc-sidebar-caption="true"
-      data-pc-direction="ltr"
-      data-pc-theme="light">
+<body data-pc-preset="preset-5" data-pc-sidebar-theme="light" data-pc-sidebar-caption="true" data-pc-direction="ltr"
+    data-pc-theme="light">
 
-      <style>
+    <style>
         .logo-lg {
-    width: 160px !important;
-    height: 60px !important;
-    object-fit: contain !important;
-    display: block !important;
-}
-.m-header .b-brand {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-}
-img[src*="assets/images/logo/gls.png"],
-img[src$="gls.png"] {
-    width: 160px !important;
-    height: 60px !important;
-    object-fit: contain !important;
-}
-      </style>
+            width: 160px !important;
+            height: 60px !important;
+            object-fit: contain !important;
+            display: block !important;
+        }
+
+        .m-header .b-brand {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+        }
+
+        img[src*="assets/images/logo/gls.png"],
+        img[src$="gls.png"] {
+            width: 160px !important;
+            height: 60px !important;
+            object-fit: contain !important;
+        }
+    </style>
     @include('layouts.loader')
     @include('layouts.sidebar')
     @include('layouts.topbar')
@@ -79,4 +78,5 @@ img[src$="gls.png"] {
     @yield('scripts')
 
 </body>
+
 </html>

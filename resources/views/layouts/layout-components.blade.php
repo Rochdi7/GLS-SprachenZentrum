@@ -21,7 +21,7 @@
     @yield('css-bottom')
 </head>
 
-<body class="component-page" data-pc-preset="preset-1" data-pc-sidebar-theme="light" data-pc-sidebar-caption="true"
+<body class="component-page" data-pc-preset="preset-5" data-pc-sidebar-theme="light" data-pc-sidebar-caption="true"
     data-pc-direction="ltr" data-pc-theme="light">
 
     @include('layouts.loader')
