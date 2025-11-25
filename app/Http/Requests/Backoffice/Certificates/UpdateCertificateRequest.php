@@ -6,23 +6,51 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCertificateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+
+            // Personal Information
+            'last_name'            => 'required|string|max:255',
+            'first_name'           => 'required|string|max:255',
+            'birth_date'           => 'required|date',
+            'birth_place'          => 'nullable|string|max:255',
+
+            // Exam Information
+            'exam_level'           => 'required|string|max:255',
+            'exam_date'            => 'required|date',
+            'issue_date'           => 'required|date',
+
+            // Unique certificate number except current row
+            'certificate_number'   => 'required|string|max:255|unique:certificates,certificate_number,' . $this->id,
+
+            // Written Exam Scores
+            'reading_score'        => 'required|integer|min:0',
+            'grammar_score'        => 'required|integer|min:0',
+            'listening_score'      => 'required|integer|min:0',
+            'writing_score'        => 'required|integer|min:0',
+
+            // Oral Exam Scores
+            'presentation_score'   => 'required|integer|min:0',
+            'discussion_score'     => 'required|integer|min:0',
+            'problemsolving_score' => 'required|integer|min:0',
+
+            // Final result
+            'final_result'         => 'required|string|max:255',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'last_name.required' => 'Le nom de famille est obligatoire.',
+            'first_name.required' => 'Le prénom est obligatoire.',
+            'certificate_number.unique' => 'Ce numéro de certificat existe déjà.',
         ];
     }
 }
