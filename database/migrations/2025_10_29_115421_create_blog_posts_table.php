@@ -8,26 +8,28 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('blog_posts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('blog_category_id')
-                  ->nullable()
+
+            // Correct category column
+            $table->foreignId('category_id')
                   ->constrained('blog_categories')
-                  ->nullOnDelete();
+                  ->cascadeOnDelete();
 
             $table->string('title');
             $table->string('slug')->unique();
-            $table->string('excerpt')->nullable();
-            $table->longText('body');
 
-            $table->string('image')->nullable(); // blog-card-image
-            $table->integer('reading_time')->nullable(); // ⏱ 6 min read
+            // Correct content field
+            $table->longText('content');
 
-            $table->boolean('is_featured')->default(false); // For your featured post on top
-            $table->boolean('is_published')->default(false);
+            // Reading time (default 3 mins)
+            $table->integer('reading_time')->default(3);
 
-            $table->timestamp('published_at')->nullable();
+            // Featured (0/1)
+            $table->boolean('featured')->default(false);
+
+            // Status (draft/published)
+            $table->enum('status', ['draft', 'published'])->default('draft');
 
             $table->timestamps();
-            $table->index('blog_category_id');
         });
     }
 
