@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Backoffice;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Backoffice\Sites\StoreSiteRequest;
+use App\Http\Requests\Backoffice\Sites\UpdateSiteRequest;
+use App\Models\Site;
 
 class SiteController extends Controller
 {
@@ -12,7 +14,8 @@ class SiteController extends Controller
      */
     public function index()
     {
-        //
+        $sites = Site::latest()->paginate(10);
+        return view('backoffice.sites.index', compact('sites'));
     }
 
     /**
@@ -20,15 +23,25 @@ class SiteController extends Controller
      */
     public function create()
     {
-        //
+        return view('backoffice.sites.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreSiteRequest $request)
     {
-        //
+        $site = Site::create($request->validated());
+
+        // Hero photo (MediaLibrary)
+        if ($request->hasFile('hero_image')) {
+            $site->addMedia($request->file('hero_image'))
+                ->toMediaCollection('hero_image');
+        }
+
+        return redirect()
+            ->route('backoffice.sites.index')
+            ->with('success', 'Le site a été créé avec succès.');
     }
 
     /**
@@ -36,7 +49,8 @@ class SiteController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $site = Site::findOrFail($id);
+        return view('backoffice.sites.show', compact('site'));
     }
 
     /**
@@ -44,15 +58,29 @@ class SiteController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $site = Site::findOrFail($id);
+        return view('backoffice.sites.edit', compact('site'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateSiteRequest $request, string $id)
     {
-        //
+        $site = Site::findOrFail($id);
+
+        $site->update($request->validated());
+
+        // Update hero image
+        if ($request->hasFile('hero_image')) {
+            $site->clearMediaCollection('hero_image');
+            $site->addMedia($request->file('hero_image'))
+                ->toMediaCollection('hero_image');
+        }
+
+        return redirect()
+            ->route('backoffice.sites.index')
+            ->with('success', 'Le site a été mis à jour avec succès.');
     }
 
     /**
@@ -60,6 +88,15 @@ class SiteController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $site = Site::findOrFail($id);
+
+        // Delete media
+        $site->clearMediaCollection('hero_image');
+
+        $site->delete();
+
+        return redirect()
+            ->route('backoffice.sites.index')
+            ->with('success', 'Le site a été supprimé avec succès.');
     }
 }

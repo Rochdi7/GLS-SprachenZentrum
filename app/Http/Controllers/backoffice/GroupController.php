@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Backoffice;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Backoffice\Groups\StoreGroupRequest;
+use App\Http\Requests\Backoffice\Groups\UpdateGroupRequest;
+use App\Models\Group;
+use App\Models\Site;
+use App\Models\Teacher;
 
 class GroupController extends Controller
 {
@@ -12,7 +16,12 @@ class GroupController extends Controller
      */
     public function index()
     {
-        //
+        // Load site and teacher relationships
+        $groups = Group::with(['site', 'teacher'])
+                        ->latest()
+                        ->paginate(10);
+
+        return view('backoffice.groups.index', compact('groups'));
     }
 
     /**
@@ -20,15 +29,22 @@ class GroupController extends Controller
      */
     public function create()
     {
-        //
+        $sites = Site::orderBy('name')->get();
+        $teachers = Teacher::orderBy('name')->get();
+
+        return view('backoffice.groups.create', compact('sites', 'teachers'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreGroupRequest $request)
     {
-        //
+        Group::create($request->validated());
+
+        return redirect()
+            ->route('backoffice.groups.index')
+            ->with('success', 'Le groupe a été créé avec succès.');
     }
 
     /**
@@ -36,7 +52,9 @@ class GroupController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $group = Group::with(['site', 'teacher'])->findOrFail($id);
+
+        return view('backoffice.groups.show', compact('group'));
     }
 
     /**
@@ -44,15 +62,26 @@ class GroupController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $group = Group::findOrFail($id);
+
+        $sites = Site::orderBy('name')->get();
+        $teachers = Teacher::orderBy('name')->get();
+
+        return view('backoffice.groups.edit', compact('group', 'sites', 'teachers'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateGroupRequest $request, string $id)
     {
-        //
+        $group = Group::findOrFail($id);
+
+        $group->update($request->validated());
+
+        return redirect()
+            ->route('backoffice.groups.index')
+            ->with('success', 'Le groupe a été mis à jour avec succès.');
     }
 
     /**
@@ -60,6 +89,12 @@ class GroupController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $group = Group::findOrFail($id);
+
+        $group->delete();
+
+        return redirect()
+            ->route('backoffice.groups.index')
+            ->with('success', 'Le groupe a été supprimé avec succès.');
     }
 }

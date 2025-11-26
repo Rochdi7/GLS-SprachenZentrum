@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Frontoffice;
 
 use App\Http\Controllers\Controller;
+use App\Models\Certificate;
+use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
@@ -100,7 +102,7 @@ class PageController extends Controller
     {
         return view('frontoffice.blog.blog');
     }
-public function blogdetails()
+    public function blogdetails()
     {
         return view('frontoffice.blog.blog-details');
     }
@@ -108,4 +110,38 @@ public function blogdetails()
     {
         return view('frontoffice.resources.student-stories');
     }
+
+    public function certificateCheck()
+{
+    return view('frontoffice.certificates.check');
+}
+
+public function certificateCheckPost(Request $request)
+{
+    $request->validate([
+        'certificate_number' => 'required',
+    ]);
+
+    $certificate = Certificate::where('certificate_number', $request->certificate_number)->first();
+
+    if (! $certificate) {
+        return redirect()
+            ->route('front.certificate.check')
+            ->with('certificate_error', 'Aucun certificat trouvé pour ce numéro. Vérifiez le numéro et réessayez.');
+    }
+
+    // On ne stocke pas tout l'objet, juste ce qu’on a besoin
+    return redirect()
+        ->route('front.certificate.check')
+        ->with('certificate_success', [
+            'id' => $certificate->id,
+            'first_name' => $certificate->first_name,
+            'last_name' => $certificate->last_name,
+            'level' => $certificate->level,
+            'exam_date' => $certificate->exam_date,
+            'issued_date' => $certificate->issued_date,
+            'certificate_number' => $certificate->certificate_number,
+        ]);
+}
+
 }

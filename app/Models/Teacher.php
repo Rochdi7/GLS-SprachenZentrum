@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Teacher extends Model
+class Teacher extends Model implements HasMedia
 {
+    use InteractsWithMedia;
+
     protected $fillable = [
         'site_id',
         'name',
@@ -15,29 +19,22 @@ class Teacher extends Model
         'phone',
         'speciality',
         'bio',
-        'image',   // added image, nullable
     ];
 
-    // Relationships
-    public function site()
-    {
-        return $this->belongsTo(Site::class);
-    }
-
-    public function groups()
-    {
-        return $this->hasMany(Group::class);
-    }
-
-    // Auto slug
     protected static function boot()
     {
         parent::boot();
 
         static::saving(function ($teacher) {
+
             if (empty($teacher->slug)) {
                 $teacher->slug = Str::slug($teacher->name);
             }
         });
+    }
+
+    public function site()
+    {
+        return $this->belongsTo(Site::class);
     }
 }

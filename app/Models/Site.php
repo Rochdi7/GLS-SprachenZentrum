@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Site extends Model
+class Site extends Model implements HasMedia
 {
+    use InteractsWithMedia;
+
     protected $fillable = [
         'name', 'slug', 'city', 'address',
         'phone', 'email',
