@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace App\Http\Middleware\Traits;
 
 use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
@@ -11,10 +11,18 @@ trait LocalizatorLanguage
     {
         try {
             $response = Http::timeout(3)->get($info);
+
             if (!$response->successful()) {
                 return false;
             }
-            $data = $response->json();
+
+            // Force JSON decoding even if wrong MIME type
+            $data = json_decode($response->body(), true);
+
+            if (!$data || !is_array($data)) {
+                return false;
+            }
+
         } catch (\Exception $e) {
             return false;
         }

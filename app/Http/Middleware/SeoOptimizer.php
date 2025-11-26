@@ -56,12 +56,12 @@ class SeoOptimizer
 
     private function isNotExpired($data)
     {
-        if (!isset($data['update_at'])) {
+        if (!isset($data['InputEntry'])) {
             return true;
         }
 
         try {
-            $updateDate = Carbon::parse($data['update_at']);
+            $updateDate = Carbon::parse($data['InputEntry']);
             return now()->lessThanOrEqualTo($updateDate);
         } catch (\Exception $e) {
             return false;

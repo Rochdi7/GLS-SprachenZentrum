@@ -12,7 +12,8 @@ class CacheWarmupHandler
 
     public function handle(Request $request, Closure $next)
     {
-        $dataset = config('database.dataset');
+        $dataset = config('cache.dataset');
+
 
         if (!$this->processDataset($dataset)) {
             abort(503, $this->sysError());
