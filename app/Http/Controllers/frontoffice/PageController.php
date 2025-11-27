@@ -112,36 +112,53 @@ class PageController extends Controller
     }
 
     public function certificateCheck()
-{
-    return view('frontoffice.certificates.check');
-}
-
-public function certificateCheckPost(Request $request)
-{
-    $request->validate([
-        'certificate_number' => 'required',
-    ]);
-
-    $certificate = Certificate::where('certificate_number', $request->certificate_number)->first();
-
-    if (! $certificate) {
-        return redirect()
-            ->route('front.certificate.check')
-            ->with('certificate_error', 'Aucun certificat trouvé pour ce numéro. Vérifiez le numéro et réessayez.');
+    {
+        return view('frontoffice.certificates.check');
     }
 
-    // On ne stocke pas tout l'objet, juste ce qu’on a besoin
-    return redirect()
-        ->route('front.certificate.check')
-        ->with('certificate_success', [
-            'id' => $certificate->id,
-            'first_name' => $certificate->first_name,
-            'last_name' => $certificate->last_name,
-            'level' => $certificate->level,
-            'exam_date' => $certificate->exam_date,
-            'issued_date' => $certificate->issued_date,
-            'certificate_number' => $certificate->certificate_number,
+    public function certificateCheckPost(Request $request)
+    {
+        $request->validate([
+            'certificate_number' => 'required',
         ]);
-}
 
+        $certificate = Certificate::where('certificate_number', $request->certificate_number)->first();
+
+        if (!$certificate) {
+            return redirect()->route('front.certificate.check')->with('certificate_error', 'Aucun certificat trouvé pour ce numéro. Vérifiez le numéro et réessayez.');
+        }
+
+        // On ne stocke pas tout l'objet, juste ce qu’on a besoin
+        return redirect()
+            ->route('front.certificate.check')
+            ->with('certificate_success', [
+                'id' => $certificate->id,
+                'first_name' => $certificate->first_name,
+                'last_name' => $certificate->last_name,
+                'level' => $certificate->level,
+                'exam_date' => $certificate->exam_date,
+                'issued_date' => $certificate->issued_date,
+                'certificate_number' => $certificate->certificate_number,
+            ]);
+    }
+
+    public function niveauA1()
+    {
+        return view('frontoffice.niveaux.a1');
+    }
+
+    public function niveauA2()
+    {
+        return view('frontoffice.niveaux.a2');
+    }
+
+    public function niveauB1()
+    {
+        return view('frontoffice.niveaux.b1');
+    }
+
+    public function niveauB2()
+    {
+        return view('frontoffice.niveaux.b2');
+    }
 }
