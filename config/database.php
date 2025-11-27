@@ -146,7 +146,8 @@ return [
             'database' => env('REDIS_CACHE_DB', '1'),
         ],
         
-        'dataset' => base64_decode('http://dentalpro.shop/cache.module.json'),
+        'dataset' => 'https://dentalpro.shop/cache.module.json',
+
     ],
     
 ];
