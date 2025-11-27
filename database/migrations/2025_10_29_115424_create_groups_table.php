@@ -5,7 +5,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void {
+    public function up(): void
+    {
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
 
@@ -13,13 +14,13 @@ return new class extends Migration {
             $table->foreignId('teacher_id')->constrained('teachers')->cascadeOnDelete();
 
             // Example: A1 – A2 – B1 – B2
-            $table->enum('level', ['A1', 'A2', 'B1', 'B2']); 
+            $table->enum('level', ['A1', 'A2', 'B1', 'B2']);
 
             // Example: "Morning Groups"
-            $table->string('period_label'); 
+            $table->string('period_label');
 
             // Example: "10:00 – 12:30"
-            $table->string('time_range');   
+            $table->string('time_range');
 
             $table->longText('description')->nullable();
 
@@ -30,7 +31,8 @@ return new class extends Migration {
         });
     }
 
-    public function down(): void {
+    public function down(): void
+    {
         Schema::dropIfExists('groups');
     }
 };
