@@ -896,7 +896,7 @@ img {
 .section.is-off-white {
   width: 100%;
   background-color: var(--off-white);
-  padding: 6rem 4rem;
+  padding: 6rem 1rem;
 }
 
 /* GRID LAYOUT (Desktop) */

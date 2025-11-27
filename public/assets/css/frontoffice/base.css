@@ -434,3 +434,14 @@ ol {
     padding-left: 0;
     list-style: none;
 }
+/* Default (LTR) */
+#mobile-drawer {
+    left: 0;
+    right: auto;
+}
+
+/* RTL override */
+html[dir="rtl"] #mobile-drawer {
+    right: 0 !important;
+    left: auto !important;
+}

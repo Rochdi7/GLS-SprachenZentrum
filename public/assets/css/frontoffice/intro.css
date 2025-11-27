@@ -121,17 +121,50 @@
   }
 }
 
-/* Mobile (≤ 767px) */
 @media (max-width: 767px) {
-  /* Reduce Bootstrap padding gap */
+
+  /* HERO – Move H1 */
+  .hero .hero-title {
+    margin-bottom: 220px !important;
+    position: relative;
+    z-index: 5;
+    display: block;
+  }
+
+  /* HERO – Badges positions mobile */
+  .hero .b-blue {
+      left: 2% !important;
+      top: 18% !important;
+      bottom: auto !important;
+  }
+
+  .hero .b-green {
+      left: 8% !important;
+      bottom: 64% !important;
+      top: auto !important;
+              z-index: 0;
+  }
+
+  .hero .b-orange {
+      right: 11% !important;
+      top: 17% !important;
+      bottom: auto !important;
+  }
+
+  .hero .b-violet {
+      right: 15% !important;
+      bottom: 64% !important;
+      top: auto !important;
+  }
+
+  /* INTRO SECTION */
   .intro-section {
     padding-left: 1rem;
     padding-right: 1rem;
     padding-top: 3.5rem;
-    margin-top: -150px;
+    margin-top: -250px;
   }
 
-  /* Full-width balanced card like 9onsol & Contact */
   .intro-card {
     width: 94%;
     margin: 0 auto;
@@ -148,30 +181,46 @@
 
   .intro-section h1 {
     font-size: 40px !important;
+    max-width: 200px !important;
+    font-weight: 600 !important;
+    line-height: .9 !important;
     letter-spacing: 0 !important;
-        max-width: 200px !important;
-        font-weight: 600 !important;
-        line-height: .9 !important;
-  }
-
-  .intro-section p {
-    font-size: 0.95rem;
-    line-height: 1.5;
-  }
-
-  .intro-section .btn-success {
-    font-size: 0.9rem;
-    color: var(--light--green);
-    padding: 0.55rem 1.4rem;
   }
 }
 
-/* Small mobile (≤ 479px) */
 @media (max-width: 479px) {
+
   .intro-card {
     width: 92%;
     padding-left: 1.25rem;
     padding-right: 1.25rem;
     border-radius: 20px;
+  }
+
+  /* HERO – tighter spacing */
+  .hero .hero-title {
+    margin-bottom: 280px !important;
+  }
+
+  /* HERO – badges tighter */
+  .hero .b-blue {
+    left: 3% !important;
+    top: 13% !important;
+  }
+
+  .hero .b-green {
+    left: 6% !important;
+    bottom: 70% !important;
+            z-index: 0;
+  }
+
+  .hero .b-orange {
+    right: 6% !important;
+    top: 14% !important;
+  }
+
+  .hero .b-violet {
+    right: 13% !important;
+    bottom: 70% !important;
   }
 }

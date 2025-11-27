@@ -1,0 +1,59 @@
+/* Full site flips RTL automatically */
+html[dir="rtl"] body {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Reverse flex layouts for RTL */
+html[dir="rtl"] .d-flex {
+    flex-direction: row-reverse !important;
+}
+
+/* Header fixes */
+html[dir="rtl"] .site-header .nav {
+    flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .dropdown-menu {
+    text-align: right;
+    right: 0 !important;
+    left: auto !important;
+}
+
+/* Submenu arrow flip */
+html[dir="rtl"] .nav-dropdown_icon {
+    transform: rotate(180deg);
+}
+
+/* Mobile drawer direction */
+html[dir="rtl"] #mobile-drawer {
+    left: auto;
+    right: 0;
+    transform: translateX(100%);
+}
+
+html[dir="rtl"] #mobile-drawer.open {
+    transform: translateX(0);
+}
+
+/* Mobile submenu alignment */
+html[dir="rtl"] .submenu-content {
+    padding-right: 15px;
+    padding-left: 0;
+}
+
+/* Buttons */
+html[dir="rtl"] .btn {
+    text-align: center !important;
+}
+
+/* Fix dropdown arrow direction */
+html[dir="rtl"] .dropdown-toggle::after {
+    margin-left: 0;
+    margin-right: .255em;
+}
+html[dir="rtl"] body,
+html[dir="rtl"] .menu-label,
+html[dir="rtl"] .dropdown-item {
+    font-family: "Tajawal", "Cairo", sans-serif !important;
+}
