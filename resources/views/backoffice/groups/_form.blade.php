@@ -1,5 +1,14 @@
 <div class="row">
 
+    {{-- NOM DU GROUPE ✅ --}}
+    <div class="col-md-12 mb-3">
+        <label class="form-label fw-bold">Nom du groupe</label>
+        <input type="text" name="name"
+               class="form-control"
+               value="{{ old('name', $group->name ?? '') }}"
+               placeholder="Ex: Groupe A1 Intensif" required>
+    </div>
+
     {{-- SITE --}}
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Centre GLS</label>
@@ -14,7 +23,7 @@
         </select>
     </div>
 
-    {{-- TEACHER --}}
+    {{-- ENSEIGNANT --}}
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Enseignant</label>
         <select name="teacher_id" class="form-select" required>
@@ -28,7 +37,7 @@
         </select>
     </div>
 
-    {{-- LEVEL --}}
+    {{-- NIVEAU --}}
     <div class="col-md-4 mb-3">
         <label class="form-label fw-bold">Niveau</label>
         <select name="level" class="form-select" required>
@@ -39,7 +48,7 @@
         </select>
     </div>
 
-    {{-- PERIOD --}}
+    {{-- PÉRIODE --}}
     <div class="col-md-4 mb-3">
         <label class="form-label fw-bold">Période</label>
         <input type="text" name="period_label"
@@ -48,7 +57,7 @@
                placeholder="Ex: Groupe du matin" required>
     </div>
 
-    {{-- TIME RANGE --}}
+    {{-- HORAIRE --}}
     <div class="col-md-4 mb-3">
         <label class="form-label fw-bold">Horaire</label>
         <input type="text" name="time_range"

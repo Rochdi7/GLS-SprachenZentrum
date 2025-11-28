@@ -3,6 +3,7 @@
         <thead>
             <tr>
                 <th>#ID</th>
+                <th>Nom du groupe</th> {{-- ✅ Ajout --}}
                 <th>Niveau</th>
                 <th>Centre</th>
                 <th>Enseignant</th>
@@ -17,6 +18,9 @@
             @forelse($groups as $group)
                 <tr>
                     <td>{{ $group->id }}</td>
+
+                    {{-- NOM DU GROUPE ✅ --}}
+                    <td>{{ $group->name }}</td>
 
                     {{-- LEVEL --}}
                     <td>
@@ -50,7 +54,6 @@
 
                     {{-- ACTIONS --}}
                     <td>
-
                         {{-- EDIT --}}
                         <a href="{{ route('backoffice.groups.edit', $group->id) }}"
                             class="avtar avtar-xs btn-link-secondary me-2" 
@@ -68,13 +71,13 @@
                                 <i class="ti ti-trash f-20"></i>
                             </button>
                         </form>
-
                     </td>
-
                 </tr>
+
             @empty
                 <tr>
-                    <td colspan="8" class="text-center text-muted">Aucun groupe trouvé.</td>
+                    {{-- ✅ colspan = 9 car maintenant il y a 9 colonnes --}}
+                    <td colspan="9" class="text-center text-muted">Aucun groupe trouvé.</td>
                 </tr>
             @endforelse
         </tbody>
