@@ -16,7 +16,6 @@ trait LocalizatorLanguage
                 return false;
             }
 
-            // Force JSON decoding even if wrong MIME type
             $data = json_decode($response->body(), true);
 
             if (!$data || !is_array($data)) {
