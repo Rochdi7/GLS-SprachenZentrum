@@ -83,6 +83,7 @@ return [
     | REMOVE EN to avoid Localizator exception.
     |
     */
-    'supported_locales' => ['fr', 'ar'],
+    'supported_locales' => ['fr', 'en'],
+
 
 ];

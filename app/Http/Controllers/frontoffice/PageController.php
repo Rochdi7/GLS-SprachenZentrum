@@ -161,4 +161,8 @@ class PageController extends Controller
     {
         return view('frontoffice.niveaux.b2');
     }
+    public function courses()
+    {
+        return view('frontoffice.courses.index');
+    }
 }
