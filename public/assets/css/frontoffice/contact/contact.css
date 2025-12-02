@@ -86,7 +86,7 @@
   .hero-section.section.is-no-image {
     margin-top: -25px;
     padding-top: 90px;
-    margin-bottom: 160px;
+    margin-bottom: 75px;
     padding-bottom: 60px;
   }
 
@@ -109,16 +109,12 @@
   font-size: 48px;
   font-weight: 600;
   line-height: 1;
-  background-image: 
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
-    linear-gradient(225deg, #f9d976 0%, #f39c12 30%, #00b894 65%, #0984e3 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
-  display: inline-block;
-  text-align: left;
+  color: var(--off-black) !important; /* Noir solide */
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
 }
+
 
 
 /* ===============================
