@@ -9,24 +9,30 @@ return new class extends Migration {
         Schema::create('blog_posts', function (Blueprint $table) {
             $table->id();
 
-            // Correct category column
+            // Category relation
             $table->foreignId('category_id')
-                  ->constrained('blog_categories')
-                  ->cascadeOnDelete();
+                ->constrained('blog_categories')
+                ->cascadeOnDelete();
 
-            $table->string('title');
+            // Multilangue fields (FR + EN)
+            $table->string('title_fr');
+            $table->string('title_en');
+
             $table->string('slug')->unique();
 
-            // Correct content field
-            $table->longText('content');
+            $table->longText('content_fr');
+            $table->longText('content_en');
 
-            // Reading time (default 3 mins)
+            // Reading time
             $table->integer('reading_time')->default(3);
 
-            // Featured (0/1)
+            // Featured
             $table->boolean('featured')->default(false);
 
-            // Status (draft/published)
+            // VIEWS (needed for popular posts)
+            $table->unsignedBigInteger('views')->default(0);
+
+            // Status
             $table->enum('status', ['draft', 'published'])->default('draft');
 
             $table->timestamps();

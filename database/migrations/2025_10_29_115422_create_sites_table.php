@@ -18,13 +18,6 @@ return new class extends Migration {
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
 
-           
-
-            // 9onsol video block
-            $table->string('video_title')->nullable();
-            $table->longText('video_description')->nullable();
-            $table->string('video_url')->nullable();
-
             $table->boolean('is_active')->default(true);
 
             $table->timestamps();
