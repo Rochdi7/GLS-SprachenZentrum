@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="utf-8" />
@@ -35,6 +35,12 @@
 
     <!-- Now Sans Font -->
     <link href="https://fonts.cdnfonts.com/css/now" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/style.css') }}">
+
+    @if (app()->getLocale() == 'ar')
+        <link rel="stylesheet" href="{{ asset('assets/css/rtl.css') }}">
+    @endif
+
 </head>
 
 
@@ -51,108 +57,20 @@
     @include('frontoffice.partials.footer')
     <!-- GLS ENROLL MODAL -->
     <div class="modal fade" id="glsEnrollModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content" style="border-radius: 20px; overflow: hidden;">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content p-0" style="background:none; border:none; border-radius:0;">
 
-                <!-- HEADER -->
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Inscription GLS</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <!-- BODY -->
-                <div class="modal-body p-4">
+                <div class="modal-body p-0">
                     @include('frontoffice.templates.gls-form')
                 </div>
 
             </div>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
 
-            // TOP-LEVEL MENUS (About, German Courses, etc.)
-            document.querySelectorAll(".menu-item > .menu-label:not(.submenu-trigger)").forEach(topLabel => {
-                topLabel.addEventListener("click", function() {
-                    const parentItem = this.closest(".menu-item");
-
-                    // CLOSE all other top-level menu-items
-                    document.querySelectorAll(".menu-item").forEach(item => {
-                        if (item !== parentItem) {
-                            item.classList.remove("open");
-                        }
-                    });
-
-                    // COLLAPSE all sub-submenus (like Our Sites)
-                    document.querySelectorAll(".sub-submenu").forEach(sub => {
-                        sub.style.maxHeight = "0px";
-                    });
-
-                    // Remove .open from all submenu-triggers
-                    document.querySelectorAll(".submenu-trigger").forEach(btn => {
-                        btn.classList.remove("open");
-                    });
-
-                    // Toggle open state for clicked item
-                    parentItem.classList.toggle("open");
-                });
-            });
-
-
-            // INNER SUBMENU TRIGGERS (like "Our Sites")
-            document.querySelectorAll(".submenu-trigger").forEach(trigger => {
-                trigger.addEventListener("click", function(e) {
-                    e.stopPropagation(); // don’t trigger parent open
-
-                    const submenu = this.nextElementSibling;
-
-                    // Close all other sub-submenus
-                    document.querySelectorAll(".sub-submenu").forEach(s => {
-                        if (s !== submenu) {
-                            s.style.maxHeight = "0px";
-                        }
-                    });
-
-                    // Remove .open from all submenu-triggers except this
-                    document.querySelectorAll(".submenu-trigger").forEach(btn => {
-                        if (btn !== this) {
-                            btn.classList.remove("open");
-                        }
-                    });
-
-                    // Toggle this submenu
-                    if (submenu.style.maxHeight && submenu.style.maxHeight !== "0px") {
-                        submenu.style.maxHeight = "0px";
-                        this.classList.remove("open");
-                    } else {
-                        submenu.style.maxHeight = submenu.scrollHeight + "px";
-                        this.classList.add("open");
-                    }
-                });
-            });
-
-
-            // BURGER & DRAWER TOGGLE
-            const burger = document.getElementById('burger');
-            const drawer = document.getElementById('mobile-drawer');
-            const backdrop = document.getElementById('backdrop');
-
-            if (burger && drawer && backdrop) {
-                burger.addEventListener('click', () => {
-                    drawer.classList.toggle('open');
-                    backdrop.classList.toggle('active');
-                });
-
-                backdrop.addEventListener('click', () => {
-                    drawer.classList.remove('open');
-                    backdrop.classList.remove('active');
-                });
-            }
-
-        });
-    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const header = document.querySelector('.site-header');
@@ -168,47 +86,12 @@
         });
     </script>
 
-
+    <script src="{{ asset('assets/js/header.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RZsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
     </script>
 
-    <div id="google_translate_element" style="display:none"></div>
 
-<script type="text/javascript">
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'en', 
-            includedLanguages: 'ar,en,fr', 
-            autoDisplay: false
-        }, 'google_translate_element');
-    }
-</script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-<script type="text/javascript">
-    function changeLanguage(lang) {
-        // 1. Trigger Google Translate
-        var select = document.querySelector("select.goog-te-combo");
-        if (select) {
-            select.value = lang; 
-            select.dispatchEvent(new Event('change'));
-        }
-
-        // 2. Update the Visual Classes (CSS)
-        // Remove 'w--current' and 'active' from ALL language buttons
-        document.querySelectorAll('.lang-btn').forEach(function(btn) {
-            btn.classList.remove('w--current');
-            btn.classList.remove('active');
-        });
-
-        // Add classes to the clicked button
-        document.querySelectorAll('.lang-btn[data-lang="' + lang + '"]').forEach(function(btn) {
-            btn.classList.add('w--current');
-            btn.classList.add('active');
-        });
-    }
-</script>
 </body>
 
 </html>
