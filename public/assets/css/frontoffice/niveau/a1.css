@@ -211,7 +211,6 @@ margin-top: .5rem;
 /* SECTION BASE */
 .section.is-off-white {
     background-color: var(--off-white);
-    padding: 4rem 2rem;
 }
 
 /* GRID (DESKTOP) — EQUAL HEIGHT FIX INCLUDED */
