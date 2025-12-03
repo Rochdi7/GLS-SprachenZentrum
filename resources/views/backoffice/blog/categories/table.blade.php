@@ -16,7 +16,7 @@
             @forelse($categories as $category)
                 <tr>
                     <td>{{ $category->id }}</td>
-                    <td>{{ $category->name }}</td>
+                    <td>{{ $category->getName() }}</td>
                     <td>{{ $category->slug }}</td>
 
                     <td>

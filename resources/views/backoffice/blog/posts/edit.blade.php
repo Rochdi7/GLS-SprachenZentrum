@@ -76,18 +76,51 @@
 <script src="{{ asset('build/js/plugins/ckeditor/classic/ckeditor.js') }}"></script>
 
 <script>
-    // Initialize CKEditor
+    // =======================================
+    // CKEditor – FR + EN
+    // =======================================
     ClassicEditor
-        .create(document.querySelector('#classic-editor'))
+        .create(document.querySelector('#editor-fr'))
         .catch(error => {
-            console.error('Error initializing ClassicEditor:', error);
+            console.error('CKEditor FR error:', error);
         });
 
+    ClassicEditor
+        .create(document.querySelector('#editor-en'))
+        .catch(error => {
+            console.error('CKEditor EN error:', error);
+        });
+
+
+    // =======================================
+    // Choices.js – Category select
+    // =======================================
+    document.addEventListener("DOMContentLoaded", function () {
+        const selectCategory = document.getElementById("blog_category_id");
+
+        if (selectCategory) {
+            new Choices(selectCategory, {
+                searchPlaceholderValue: 'Rechercher...',
+                noResultsText: 'Aucun résultat trouvé',
+                itemSelectText: 'Sélectionner',
+                shouldSort: false
+            });
+
+            // Force correct name (fix Choices removing it sometimes)
+            selectCategory.setAttribute('name', 'category_id');
+        }
+    });
+
+
+    // =======================================
     // Bootstrap Validation
+    // =======================================
     (function () {
         'use strict';
+
         window.addEventListener('load', function () {
             const forms = document.getElementsByClassName('needs-validation');
+
             [...forms].forEach(form => {
                 form.addEventListener('submit', function (event) {
                     if (!form.checkValidity()) {
@@ -100,26 +133,26 @@
         });
     })();
 
-    // Roll-Out animation when clicking Cancel
+
+    // =======================================
+    // Cancel Animation – Roll Out
+    // =======================================
     function rollOutCard(event, link, cardId = 'post-form-card') {
         event.preventDefault();
+
         const card = document.getElementById(cardId);
 
-        card.classList.remove('animate__rollIn');
-        card.classList.add('animate__animated', 'animate__rollOut');
+        if (card) {
+            card.classList.remove('animate__rollIn');
+            card.classList.add('animate__animated', 'animate__rollOut');
 
-        setTimeout(() => {
+            setTimeout(() => {
+                window.location.href = link.href;
+            }, 800);
+        } else {
             window.location.href = link.href;
-        }, 800);
+        }
     }
-
-    // Initialize Choices.js
-    document.addEventListener("DOMContentLoaded", function () {
-        new Choices('#blog_category_id', {
-            searchPlaceholderValue: 'Rechercher...',
-            noResultsText: 'Aucun résultat trouvé',
-            itemSelectText: 'Sélectionner'
-        });
-    });
 </script>
+
 @endsection

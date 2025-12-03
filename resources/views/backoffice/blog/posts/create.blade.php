@@ -71,26 +71,40 @@
 <script src="{{ asset('build/js/plugins/ckeditor/classic/ckeditor.js') }}"></script>
 
 <script>
-    // CKEditor
+    // ===============================
+    // CKEditor – FR + EN
+    // ===============================
     ClassicEditor
-        .create(document.querySelector('#classic-editor'))
+        .create(document.querySelector('#editor-fr'))
         .catch(error => console.error(error));
 
-    // Fix Choices.js breaking the select "name"
+    ClassicEditor
+        .create(document.querySelector('#editor-en'))
+        .catch(error => console.error(error));
+
+
+    // ===============================
+    // Choices.js – Fix select category
+    // ===============================
     document.addEventListener("DOMContentLoaded", function () {
         const element = document.getElementById('blog_category_id');
 
-        new Choices(element, {
-            searchPlaceholderValue: 'Rechercher...',
-            itemSelectText: 'Sélectionner',
-            shouldSort: false,
-        });
+        if (element) {
+            new Choices(element, {
+                searchPlaceholderValue: 'Rechercher...',
+                itemSelectText: 'Sélectionner',
+                shouldSort: false,
+            });
 
-        // HARD FIX: ensure name attribute stays
-        element.setAttribute('name', 'category_id');
+            // HARD FIX : keep correct name="category_id"
+            element.setAttribute('name', 'category_id');
+        }
     });
 
-    // Validation
+
+    // ===============================
+    // Form validation
+    // ===============================
     (function () {
         'use strict';
         window.addEventListener('load', function () {
@@ -107,10 +121,15 @@
         });
     })();
 
-    // Animation on cancel
+
+    // ===============================
+    // Cancel animation (rollOut)
+    // ===============================
     function rollOutCard(event, link, cardId = 'post-form-card') {
         event.preventDefault();
+
         const card = document.getElementById(cardId);
+        if (!card) return window.location.href = link.href;
 
         card.classList.remove('animate__rollIn');
         card.classList.add('animate__animated', 'animate__rollOut');
@@ -120,4 +139,5 @@
         }, 800);
     }
 </script>
+
 @endsection

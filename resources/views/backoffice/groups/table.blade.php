@@ -3,7 +3,7 @@
         <thead>
             <tr>
                 <th>#ID</th>
-                <th>Nom du groupe</th> {{-- ✅ Ajout --}}
+                <th>Nom du groupe</th>
                 <th>Niveau</th>
                 <th>Centre</th>
                 <th>Enseignant</th>
@@ -19,8 +19,8 @@
                 <tr>
                     <td>{{ $group->id }}</td>
 
-                    {{-- NOM DU GROUPE ✅ --}}
-                    <td>{{ $group->name }}</td>
+                    {{-- NOM DU GROUPE --}}
+                    <td class="fw-semibold">{{ $group->name }}</td>
 
                     {{-- LEVEL --}}
                     <td>
@@ -29,24 +29,24 @@
                         </span>
                     </td>
 
-                    {{-- SITE --}}
+                    {{-- CENTRE --}}
                     <td>
                         <span class="badge bg-light-primary text-primary">
                             {{ $group->site->name ?? '—' }}
                         </span>
                     </td>
 
-                    {{-- TEACHER --}}
+                    {{-- ENSEIGNANT --}}
                     <td>{{ $group->teacher->name ?? '—' }}</td>
 
-                    {{-- PERIOD --}}
+                    {{-- PERIOD LABEL --}}
                     <td>
                         <span class="badge bg-light-warning text-warning">
                             {{ $group->period_label }}
                         </span>
                     </td>
 
-                    {{-- TIME RANGE --}}
+                    {{-- HORAIRE --}}
                     <td>{{ $group->time_range }}</td>
 
                     {{-- CREATED --}}
@@ -56,8 +56,8 @@
                     <td>
                         {{-- EDIT --}}
                         <a href="{{ route('backoffice.groups.edit', $group->id) }}"
-                            class="avtar avtar-xs btn-link-secondary me-2" 
-                            title="Modifier">
+                           class="avtar avtar-xs btn-link-secondary me-2"
+                           title="Modifier">
                             <i class="ti ti-edit f-20"></i>
                         </a>
 
@@ -66,8 +66,8 @@
                               method="POST" class="d-inline-block">
                             @csrf @method('DELETE')
                             <button class="avtar avtar-xs btn-link-secondary border-0 bg-transparent p-0"
-                                onclick="return confirm('Supprimer ce groupe ?')" 
-                                title="Supprimer">
+                                    onclick="return confirm('Supprimer ce groupe ?')"
+                                    title="Supprimer">
                                 <i class="ti ti-trash f-20"></i>
                             </button>
                         </form>
@@ -76,8 +76,9 @@
 
             @empty
                 <tr>
-                    {{-- ✅ colspan = 9 car maintenant il y a 9 colonnes --}}
-                    <td colspan="9" class="text-center text-muted">Aucun groupe trouvé.</td>
+                    <td colspan="9" class="text-center text-muted">
+                        Aucun groupe trouvé.
+                    </td>
                 </tr>
             @endforelse
         </tbody>
