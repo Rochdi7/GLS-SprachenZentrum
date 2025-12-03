@@ -18,11 +18,8 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Locale Configuration
+    | Default App Locale
     |--------------------------------------------------------------------------
-    |
-    | DEFAULT LANGUAGE = FRENCH
-    |
     */
     'locale' => 'fr',
 
@@ -30,9 +27,6 @@ return [
     |--------------------------------------------------------------------------
     | Fallback Locale
     |--------------------------------------------------------------------------
-    |
-    | FALLBACK LANGUAGE = FRENCH
-    |
     */
     'fallback_locale' => 'fr',
 
@@ -65,6 +59,11 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+
+        /**
+         * ⭐ IMPORTANT : Laravel Localization
+         */
+        Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -72,18 +71,15 @@ return [
     | Class Aliases
     |--------------------------------------------------------------------------
     */
-    'aliases' => Facade::defaultAliases()->merge([])->toArray(),
+    'aliases' => Facade::defaultAliases()->merge([
+        'LaravelLocalization' => Mcamara\LaravelLocalization\Facades\LaravelLocalization::class,
+    ])->toArray(),
 
     /*
     |--------------------------------------------------------------------------
-    | Supported Locales (YOUR APP LANGUAGES)
+    | Supported Locales
     |--------------------------------------------------------------------------
-    |
-    | ONLY FRENCH AND ARABIC are supported.
-    | REMOVE EN to avoid Localizator exception.
-    |
     */
     'supported_locales' => ['fr', 'en'],
-
 
 ];
