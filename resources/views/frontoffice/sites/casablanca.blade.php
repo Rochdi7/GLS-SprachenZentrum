@@ -1,5 +1,5 @@
 ﻿@extends('frontoffice.layouts.app')
-@section('title', 'GLS Casablanca | German Language Center')
+@section('title', __('sites/casablanca.hero.title'))
 
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/sites/marrakech.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/9onsol.css') }}">
@@ -9,297 +9,233 @@
 <!-- ===========================
      HERO SECTION – CASABLANCA
 =========================== -->
-<section class="hero-section section about-hero">
-  <div class="container is-hero">
+<section class="hero-section section about-hero reveal delay-1">
+  <div class="container is-hero reveal delay-2">
 
-    <div class="hero_subtitle">Learn German in the Heart of Casablanca</div>
-    <h1 class="hero_title">GLS Sprachenzentrum – Casablanca Center</h1>
+    <div class="hero_subtitle reveal delay-1">{{ __('sites/casablanca.hero.subtitle') }}</div>
 
-    <div class="hero-image">
+    <h1 class="hero_title fade-blur-title reveal delay-2">
+      {{ __('sites/casablanca.hero.title') }}
+    </h1>
+
+    <div class="hero-image reveal delay-3">
       <img 
         src="{{ asset('assets/images/sites/casablanca/centre-casablanca.webp') }}" 
         alt="GLS Sprachenzentrum Casablanca" 
-        class="full-image" 
+        class="full-image reveal delay-1"
         loading="lazy"
       >
     </div>
+
   </div>
 </section>
+
+
 
 <!-- ===========================
      ABOUT CASABLANCA CENTER
 =========================== -->
-<section class="gls-section gls-richtext-wrapper">
-    <div class="gls-container">
-        <div class="gls-richtext">
+<section class="gls-section gls-richtext-wrapper reveal delay-1">
+    <div class="gls-container reveal delay-2">
+        <div class="gls-richtext reveal delay-3">
 
-            <h2>Welcome to GLS Casablanca</h2>
-            <h3>Your German Language Gateway in Maarif</h3>
+            <h2 class="fade-blur-title reveal delay-1">{{ __('sites/casablanca.about.title1') }}</h2>
+            <h3 class="fade-blur-title reveal delay-2">{{ __('sites/casablanca.about.subtitle1') }}</h3>
 
-            <p>
-                The <strong>GLS Sprachenzentrum Casablanca</strong> is one of the most active and modern German language hubs 
-                in Morocco. Located in <strong>Maarif</strong>, our center offers a warm, motivating environment 
-                where students of all ages come to learn German with confidence and enjoyment.
-            </p>
+            <p class="reveal delay-1">{!! __('sites/casablanca.about.p1') !!}</p>
+            <p class="reveal delay-2">{!! __('sites/casablanca.about.p2') !!}</p>
 
-            <p>
-                Whether you are preparing for studies in Germany, planning for Ausbildung, or aiming to improve your professional 
-                prospects, GLS Casablanca provides <strong>structured, immersive, and result-oriented</strong> German courses.
-            </p>
+            <h2 class="fade-blur-title reveal delay-1">{{ __('sites/casablanca.about.title2') }}</h2>
+            <h3 class="fade-blur-title reveal delay-2">{{ __('sites/casablanca.about.subtitle2') }}</h3>
 
-            <h2>What We Offer</h2>
-            <h3>German Courses for Every Goal</h3>
-
-            <p>At GLS Casablanca, you benefit from:</p>
+            <p class="reveal delay-1">{{ __('sites/casablanca.about.text_list') }}</p>
 
             <ul>
-                <li><strong>Intensive German Courses (A1–B2)</strong></li>
-                <li><strong>Online German Courses</strong> for maximum flexibility</li>
-                <li><strong>Speaking & communication workshops</strong></li>
-                <li><strong>Visa & study guidance</strong> for Germany</li>
-                <li><strong>Soon: Official ÖSD & GLS Exams</strong></li>
+                <li class="reveal delay-1">{{ __('sites/casablanca.about.offers.1') }}</li>
+                <li class="reveal delay-2">{{ __('sites/casablanca.about.offers.2') }}</li>
+                <li class="reveal delay-3">{{ __('sites/casablanca.about.offers.3') }}</li>
+                <li class="reveal delay-1">{{ __('sites/casablanca.about.offers.4') }}</li>
+                <li class="reveal delay-2">{{ __('sites/casablanca.about.offers.5') }}</li>
             </ul>
 
-            <p>
-                Our teaching method is built on interaction, communication, and real-life usage — allowing you to progress quickly 
-                in a motivating classroom setting.
-            </p>
+            <p class="reveal delay-3">{!! __('sites/casablanca.about.p3') !!}</p>
 
         </div>
     </div>
 </section>
+
 
 
 <!-- ===========================
-     PHOTO STRIP (3 images)
+     PHOTO STRIP
 =========================== -->
-<section class="gls-photo-strip section">
-    <div class="gls-container gls-photo-grid">
+<section class="gls-photo-strip section reveal delay-1">
+    <div class="gls-container gls-photo-grid reveal delay-2">
 
-        <img src="{{ asset('assets/images/sites/casablanca/centre-casablanca1.webp') }}" alt="GLS Casablanca Students">
-        <img src="{{ asset('assets/images/sites/casablanca/centre-casablanca2.webp') }}" alt="GLS Casablanca Students">
-        <img src="{{ asset('assets/images/sites/casablanca/centre-casablanca3.webp') }}" alt="GLS Casablanca Students">
+        <img src="{{ asset('assets/images/sites/casablanca/centre-casablanca1.webp') }}" alt="" class="reveal delay-1">
+        <img src="{{ asset('assets/images/sites/casablanca/centre-casablanca2.webp') }}" alt="" class="reveal delay-2">
+        <img src="{{ asset('assets/images/sites/casablanca/centre-casablanca3.webp') }}" alt="" class="reveal delay-3">
+
+    </div>
+</section>
+
+
+
+<!-- ===========================
+     INFO CARDS
+=========================== -->
+<section class="gls-info-section gls-section reveal delay-1">
+    <div class="gls-container reveal delay-2">
+
+        <h2 class="gls-info-title fade-blur-title reveal delay-3">
+            {{ __('sites/casablanca.info.title') }}
+        </h2>
+
+        <div class="gls-niveau-tabs reveal delay-1">
+            <button class="gls-niveau-btn active reveal delay-1" data-level="A1">A1</button>
+            <button class="gls-niveau-btn reveal delay-2" data-level="A2">A2</button>
+            <button class="gls-niveau-btn reveal delay-3" data-level="B1">B1</button>
+            <button class="gls-niveau-btn reveal delay-1" data-level="B2">B2</button>
+        </div>
+
+        <div class="gls-info-grid reveal delay-2">
+
+            <div class="gls-info-card reveal delay-1">
+                <div class="gls-info-icon reveal delay-2">@include('frontoffice.svg.sites-info')</div>
+                <h3 class="gls-info-card-title fade-blur-title reveal delay-3">{{ __('sites/casablanca.info.certification') }}</h3>
+                <div class="gls-info-text reveal delay-1" id="graduation-text"></div>
+            </div>
+
+            <div class="gls-info-card reveal delay-2">
+                <div class="gls-info-icon reveal delay-3">@include('frontoffice.svg.sites-duration')</div>
+                <h3 class="gls-info-card-title fade-blur-title reveal delay-1">{{ __('sites/casablanca.info.duration') }}</h3>
+                <div class="gls-info-text reveal delay-2" id="duration-text"></div>
+            </div>
+
+            <div class="gls-info-card reveal delay-3">
+                <div class="gls-info-icon reveal delay-1">@include('frontoffice.svg.sites-times')</div>
+                <h3 class="gls-info-card-title fade-blur-title reveal delay-2">{{ __('sites/casablanca.info.times') }}</h3>
+                <div class="gls-info-text reveal delay-3" id="times-text"></div>
+            </div>
+
+            <div class="gls-info-card reveal delay-1">
+                <div class="gls-info-icon reveal delay-2">@include('frontoffice.svg.sites-price')</div>
+                <h3 class="gls-info-card-title fade-blur-title reveal delay-3">{{ __('sites/casablanca.info.price') }}</h3>
+                <div class="gls-info-text reveal delay-1" id="price-text"></div>
+            </div>
+
+        </div>
 
     </div>
 </section>
 
 
 
-<section class="gls-info-section gls-section">
+<!-- ===========================
+     GROUPS
+=========================== -->
+<section class="gls-schedule-section reveal delay-1">
+    <div class="gls-schedule-container reveal delay-2">
 
-    <div class="gls-container">
+        <h2 class="gls-schedule-main-title fade-blur-title reveal delay-3">
+            {{ __('sites/casablanca.groups.title') }}
+        </h2>
 
-        <h2 class="gls-info-title">Information about our German Courses</h2>
+        @php
+            $periods = [
+                'morning'   => __('sites/casablanca.groups.morning'),
+                'midday'    => __('sites/casablanca.groups.midday'),
+                'afternoon' => __('sites/casablanca.groups.afternoon'),
+                'evening'   => __('sites/casablanca.groups.evening'),
+            ];
+        @endphp
 
-        <!-- LEVEL SWITCHER -->
-        <div class="gls-niveau-tabs">
-            <button class="gls-niveau-btn active" data-level="A1">A1</button>
-            <button class="gls-niveau-btn" data-level="A2">A2</button>
-            <button class="gls-niveau-btn" data-level="B1">B1</button>
-            <button class="gls-niveau-btn" data-level="B2">B2</button>
-        </div>
+        @foreach ($periods as $key => $label)
 
-        <!-- INFO CARDS GRID -->
-        <div class="gls-info-grid">
+            @php $collection = $groups[$key] ?? collect(); @endphp
 
-            <!-- GRADUATION -->
-            <div class="gls-info-card">
-                <div class="gls-info-icon">
-                    @include('frontoffice.svg.sites-info')
+            <div class="schedule-dropdown reveal delay-1">
+
+                <div class="schedule-dropdown_trigger reveal delay-2">
+                    <h2 class="heading-5 fade-blur-title reveal delay-3">{{ $label }}</h2>
+
+                    <div class="dropdown-icon reveal delay-1">
+                        <div class="dropdown-line"></div>
+                        <div class="dropdown-line is-rotated"></div>
+                    </div>
                 </div>
-                <h3 class="gls-info-card-title">Graduation</h3>
-                <div class="gls-info-text" id="graduation-text"></div>
-            </div>
 
-            <!-- DURATION -->
-            <div class="gls-info-card">
-                <div class="gls-info-icon">
-                    @include('frontoffice.svg.sites-duration')
-                </div>
-                <h3 class="gls-info-card-title">Duration</h3>
-                <div class="gls-info-text" id="duration-text"></div>
-            </div>
+                <div class="schedule-dropdown_content reveal delay-2">
+                    <div class="schedule-dropdown_height reveal delay-3">
 
-            <!-- COURSE TIMES -->
-            <div class="gls-info-card">
-                <div class="gls-info-icon">
-                    @include('frontoffice.svg.sites-times')
-                </div>
-                <h3 class="gls-info-card-title">Course Times</h3>
-                <div class="gls-info-text" id="times-text"></div>
-            </div>
+                        <div class="price-table-rich-text reveal delay-1">
 
-            <!-- PRICE -->
-            <div class="gls-info-card">
-                <div class="gls-info-icon">
-                    @include('frontoffice.svg.sites-price')
-                </div>
-                <h3 class="gls-info-card-title">Price</h3>
-                <div class="gls-info-text" id="price-text"></div>
-            </div>
+                            <!-- ACTIVE -->
+                            <div class="table-rich-text reveal delay-2">
+                                <p><strong>{{ __('sites/casablanca.groups.active') }}</strong></p>
 
-        </div>
+                                @forelse ($collection->where('status', 'active') as $group)
+                                    <p class="reveal delay-1">
+                                        {{ $group->teacher->name }} -
+                                        {{ strtoupper($group->level) }} -
+                                        {{ $group->time_range }}
+                                    </p>
+                                @empty
+                                    <p class="reveal delay-1">Aucun groupe actif</p>
+                                @endforelse
+                            </div>
 
-    </div>
+                            <!-- UPCOMING -->
+                            <div class="table-rich-text reveal delay-3">
+                                <p><strong>{{ __('sites/casablanca.groups.upcoming') }}</strong></p>
 
-</section>
+                                @forelse ($collection->where('status', 'upcoming') as $group)
+                                    <p class="reveal delay-1">
+                                        {{ $group->teacher->name }} -
+                                        {{ strtoupper($group->level) }} -
+                                        {{ $group->time_range }}
+                                    </p>
+                                @empty
+                                    <p class="reveal delay-1">Pas de nouveaux groupes prévus</p>
+                                @endforelse
+                            </div>
 
-<section class="gls-schedule-section">
-    <div class="gls-schedule-container">
-
-        <!-- SECTION TITLE -->
-        <h2 class="gls-schedule-main-title">Our Groups – GLS Casablanca</h2>
-
-        <!-- ==============================
-             GROUP 1 — 10:00 - 12:30
-        =============================== -->
-        <div class="schedule-dropdown">
-            <div class="schedule-dropdown_trigger">
-                <h2 class="heading-5">10:00 – 12:30 • Morning Groups</h2>
-
-                <div class="dropdown-icon">
-                    <div class="dropdown-line"></div>
-                    <div class="dropdown-line is-rotated"></div>
-                </div>
-            </div>
-
-            <div class="schedule-dropdown_content">
-                <div class="schedule-dropdown_height">
-
-                    <div class="price-table-rich-text">
-
-                        <div class="table-rich-text">
-                            <p><strong>Active Groups</strong></p>
-                            <p>Prof. Soufiane</p>
-                            <p>Prof. Yassine</p>
-                            <p>Prof. Imane</p>
-                        </div>
-
-                        <div class="table-rich-text">
-                            <p><strong>Starting November</strong></p>
-                            <p>Prof. Alaoui</p>
-                            <p>Prof. Laila</p>
-                            <p>New Group (13:00)</p>
-                            <p>New Group (16:00)</p>
-                            <p>New Group (19:00)</p>
                         </div>
 
                     </div>
-
                 </div>
-            </div>
-        </div>
 
-
-        <!-- ==============================
-             GROUP 2 — 16:00 - 18:30
-        =============================== -->
-        <div class="schedule-dropdown">
-            <div class="schedule-dropdown_trigger">
-                <h2 class="heading-5">16:00 – 18:30 • Afternoon Groups</h2>
-
-                <div class="dropdown-icon">
-                    <div class="dropdown-line"></div>
-                    <div class="dropdown-line is-rotated"></div>
-                </div>
             </div>
 
-            <div class="schedule-dropdown_content">
-                <div class="schedule-dropdown_height">
-
-                    <div class="price-table-rich-text">
-                        <div class="table-rich-text">
-                            <p><strong>Active</strong></p>
-                            <p>Prof. Soufiane</p>
-                            <p>Prof. Manal</p>
-                            <p>Prof. Hajar</p>
-                        </div>
-
-                        <div class="table-rich-text">
-                            <p><strong>Upcoming</strong></p>
-                            <p>No new groups planned</p>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-
-        <!-- ==============================
-             GROUP 3 — 19:00 - 21:30
-        =============================== -->
-        <div class="schedule-dropdown">
-            <div class="schedule-dropdown_trigger">
-                <h2 class="heading-5">19:00 – 21:30 • Evening Groups</h2>
-
-                <div class="dropdown-icon">
-                    <div class="dropdown-line"></div>
-                    <div class="dropdown-line is-rotated"></div>
-                </div>
-            </div>
-
-            <div class="schedule-dropdown_content">
-                <div class="schedule-dropdown_height">
-
-                    <div class="price-table-rich-text">
-
-                        <div class="table-rich-text">
-                            <p><strong>Active</strong></p>
-                            <p>Prof. Manal</p>
-                            <p>Prof. Yassine</p>
-                            <p>Prof. Hajar</p>
-                            <p>Prof. Laila</p>
-                        </div>
-
-                        <div class="table-rich-text">
-                            <p><strong>Upcoming</strong></p>
-                            <p>More groups will open soon</p>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-        </div>
+        @endforeach
 
     </div>
 </section>
 
-{{-- ===========================
-     ABOUT GLS MOROCCO SECTION – 9onsol’s Talks
-=========================== --}}
-<section class="home-about-section section">
-    <div class="container about-grid">
 
-        {{-- Left Gradient Card --}}
-        <div class="about-card text-light">
-            <h2 class="h-section-subtitle mb-4">
-                Deutshow – Episode 2<br>Auditions from Casablanca
-            </h2>
 
-            <p class="lead mb-4">
-    Welcome to <strong>Deutshow</strong>, Morocco’s first German-language talent competition! 🇩🇪🇲🇦 <br><br>
-    In this Casablanca episode, learners showcase their German skills, creativity,  
-    and confidence through expressive and authentic performances. <br><br>
-    Produced by <strong>9onsol’s Talks</strong>, it highlights the passion of our GLS Casablanca students.
-</p>
+<!-- ===========================
+     9ONSOL TALKS – CASABLANCA
+=========================== -->
+<section class="home-about-section section reveal delay-1">
+    <div class="container about-grid reveal delay-2">
 
+        <div class="about-card text-light reveal delay-1">
+            <h2 class="h-section-subtitle mb-4 fade-blur-title reveal delay-2">{!! __('sites/casablanca.9onsol.title') !!}</h2>
+
+            <p class="lead mb-4 reveal delay-3">{!! __('sites/casablanca.9onsol.text') !!}</p>
 
             <a href="https://www.youtube.com/@9onsolsTalks" target="_blank"
-                class="btn btn-light rounded-pill fw-semibold px-4 py-2 mt-auto">
-                More Episodes
+                class="btn btn-light rounded-pill fw-semibold px-4 py-2 mt-auto reveal delay-1">
+                {{ __('sites/casablanca.9onsol.button') }}
             </a>
         </div>
 
-        {{-- Right Video Embed --}}
-        <div class="about-video">
+        <div class="about-video reveal delay-3">
             <iframe width="560" height="315"
                 src="https://www.youtube.com/embed/QeLeByG2eok?si=WZ6EWcq1uOTjyCA4"
-                title="Deutshow – Episode 2: Auditions from Casablanca"
+                title="Deutshow – Casablanca"
                 frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
                 allowfullscreen loading="lazy">
             </iframe>
         </div>
@@ -307,32 +243,26 @@
     </div>
 </section>
 
-<!-- CTA -->
-<section class="inline-cta-section section">
-    <div class="inline-cta-block">
+<!-- ===========================
+     CTA
+=========================== -->
+<section class="inline-cta-section section reveal delay-1">
+    <div class="inline-cta-block reveal delay-2">
         
-        <h2 class="heading-cta">
-            Ready to Start Your German Journey<br>in Casablanca?
-        </h2>
+        <h2 class="heading-cta fade-blur-title reveal delay-3">{!! __('sites/casablanca.cta.title') !!}</h2>
 
-        <p class="cta-box-subtext">
-            Book your free consultation at GLS Casablanca and get  
-            clear guidance about studying or working in Germany.  
-            Our administrative team will explain every step —  
-            programs, visa process, schedules, and how to choose  
-            the right German course for your goals.
-        </p>
+        <p class="cta-box-subtext reveal delay-1">{!! __('sites/casablanca.cta.text') !!}</p>
 
-        <a href="/contact" class="cta-btn">Book Your Consultation</a>
+        <a href="{{ route('front.contact') }}" class="cta-btn reveal delay-2">
+            {{ __('sites/casablanca.cta.button') }}
+        </a>
 
     </div>
 </section>
 
 
-
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-
     const dropdowns = document.querySelectorAll(".schedule-dropdown");
 
     dropdowns.forEach(drop => {
@@ -340,10 +270,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const content = drop.querySelector(".schedule-dropdown_content");
 
         trigger.addEventListener("click", () => {
-
             const isOpen = drop.classList.contains("open");
 
-            // Close all others
             dropdowns.forEach(d => {
                 d.classList.remove("open");
                 const c = d.querySelector(".schedule-dropdown_content");
@@ -351,7 +279,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 c.style.opacity = 0;
             });
 
-            // Toggle current
             if (!isOpen) {
                 drop.classList.add("open");
                 content.style.height = content.scrollHeight + "px";
@@ -359,40 +286,35 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
-
 });
-</script>
 
-
-<script>
 const data = {
   A1: {
-    graduation: "A1 Certification (Basic German)",
-    duration: "5 weeks<br>18 lessons per week",
-    times: "Mon–Fri<br>13:15–16:30",
+    graduation: "Certification A1 (Allemand débutant)",
+    duration: "5 semaines<br>18 leçons par semaine",
+    times: "Lun–Ven<br>13h15–16h30",
     price: "998 DH"
   },
   A2: {
-    graduation: "A2 Certification (Elementary level)",
-    duration: "5 weeks<br>18 lessons per week",
-    times: "Mon–Fri<br>13:15–16:30",
+    graduation: "Certification A2 (Niveau élémentaire)",
+    duration: "5 semaines<br>18 leçons par semaine",
+    times: "Lun–Ven<br>13h15–16h30",
     price: "1100 DH"
   },
   B1: {
-    graduation: "B1 Certification (Intermediate)",
-    duration: "6 weeks<br>18 lessons per week",
-    times: "Mon–Fri<br>13:15–16:30",
+    graduation: "Certification B1 (Niveau intermédiaire)",
+    duration: "6 semaines<br>18 leçons par semaine",
+    times: "Lun–Ven<br>13h15–16h30",
     price: "1300 DH"
   },
   B2: {
-    graduation: "B2 Certification (Upper-Intermediate)",
-    duration: "6 weeks<br>20 lessons per week",
-    times: "Mon–Fri<br>13:15–16:30",
+    graduation: "Certification B2 (Niveau avancé)",
+    duration: "6 semaines<br>20 leçons par semaine",
+    times: "Lun–Ven<br>13h15–16h30",
     price: "1500 DH"
   }
 };
 
-// UPDATE CARDS
 function updateCards(level) {
     document.getElementById("graduation-text").innerHTML = data[level].graduation;
     document.getElementById("duration-text").innerHTML = data[level].duration;
@@ -400,7 +322,6 @@ function updateCards(level) {
     document.getElementById("price-text").innerHTML = data[level].price;
 }
 
-// TAB CLICK
 document.querySelectorAll(".gls-niveau-btn").forEach(btn => {
     btn.addEventListener("click", () => {
         document.querySelectorAll(".gls-niveau-btn").forEach(b => b.classList.remove("active"));
@@ -409,7 +330,7 @@ document.querySelectorAll(".gls-niveau-btn").forEach(btn => {
     });
 });
 
-// default A1
+// Default
 updateCards("A1");
 </script>
 

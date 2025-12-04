@@ -1,5 +1,5 @@
 ﻿@extends('frontoffice.layouts.app')
-@section('title', 'GLS Salé | German Language Center')
+@section('title', __('sites/sale.hero.title') . ' | GLS Sprachenzentrum')
 
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/sites/marrakech.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/9onsol.css') }}">
@@ -9,277 +9,245 @@
 <!-- ===========================
      HERO SECTION – SALÉ
 =========================== -->
-<section class="hero-section section about-hero">
-  <div class="container is-hero">
+<section class="hero-section section about-hero reveal delay-1">
+  <div class="container is-hero reveal delay-2">
 
-    <div class="hero_subtitle">Learn German in the Heart of Salé</div>
-    <h1 class="hero_title">GLS Sprachenzentrum – Salé Center</h1>
+    <div class="hero_subtitle reveal delay-1">
+        {{ __('sites/sale.hero.subtitle') }}
+    </div>
 
-    <div class="hero-image">
+    <h1 class="hero_title fade-blur-title reveal delay-2">
+        {{ __('sites/sale.hero.title') }}
+    </h1>
+
+    <div class="hero-image reveal delay-3">
       <img 
         src="{{ asset('assets/images/sites/sale/centre-sale.webp') }}" 
         alt="GLS Sprachenzentrum Salé" 
-        class="full-image" 
+        class="full-image reveal delay-1"
         loading="lazy"
       >
     </div>
   </div>
 </section>
 
+
+
 <!-- ===========================
      ABOUT SALÉ CENTER
 =========================== -->
-<section class="gls-section gls-richtext-wrapper">
-    <div class="gls-container">
-        <div class="gls-richtext">
+<section class="gls-section gls-richtext-wrapper reveal delay-1">
+    <div class="gls-container reveal delay-2">
+        <div class="gls-richtext reveal delay-3">
 
-            <h2>Welcome to GLS Salé</h2>
-            <h3>Your German Language Gateway in Diyar, Salé</h3>
+            <h2 class="fade-blur-title reveal delay-1">{{ __('sites/sale.about.title1') }}</h2>
+            <h3 class="fade-blur-title reveal delay-2">{{ __('sites/sale.about.subtitle1') }}</h3>
 
-            <p>
-                The <strong>GLS Sprachenzentrum Salé</strong> is a modern center dedicated to helping learners
-                develop strong and practical German skills.  
-                Located at <strong>Avenue Mohamed V, Rue Halima N°12, Diyar, Salé</strong>,  
-                our center offers a warm and motivating learning environment for all levels.
-            </p>
+            <p class="reveal delay-1">{!! __('sites/sale.about.p1') !!}</p>
+            <p class="reveal delay-2">{!! __('sites/sale.about.p2') !!}</p>
 
-            <p>
-                Whether your dream is to study in Germany, prepare for Ausbildung, 
-                or enhance your career opportunities, GLS Salé provides 
-                <strong>immersive, structured, and results-focused German courses</strong>.
-            </p>
+            <h2 class="fade-blur-title reveal delay-1">{{ __('sites/sale.about.title2') }}</h2>
+            <h3 class="fade-blur-title reveal delay-2">{{ __('sites/sale.about.subtitle2') }}</h3>
 
-            <h2>What We Offer</h2>
-            <h3>German Courses for Every Path</h3>
-
-            <p>At GLS Salé, you benefit from:</p>
+            <p class="reveal delay-1">{{ __('sites/sale.about.text_list') }}</p>
 
             <ul>
-                <li><strong>Intensive German Courses (A1–B2)</strong></li>
-                <li><strong>Online German Lessons</strong> with live instructors</li>
-                <li><strong>Conversation & speaking workshops</strong></li>
-                <li><strong>Visa, study & immigration guidance</strong> for Germany</li>
-                <li><strong>Soon: Official ÖSD & GLS Certified Exams</strong></li>
+                <li class="reveal delay-1"><strong>{{ __('sites/sale.about.offers.1') }}</strong></li>
+                <li class="reveal delay-2"><strong>{{ __('sites/sale.about.offers.2') }}</strong></li>
+                <li class="reveal delay-3"><strong>{{ __('sites/sale.about.offers.3') }}</strong></li>
+                <li class="reveal delay-1"><strong>{{ __('sites/sale.about.offers.4') }}</strong></li>
+                <li class="reveal delay-2"><strong>{{ __('sites/sale.about.offers.5') }}</strong></li>
             </ul>
 
-            <p>
-                Our training method emphasizes communication, interaction, and real-world usage — 
-                ensuring solid progress for every learner.
-            </p>
+            <p class="reveal delay-3">{!! __('sites/sale.about.p3') !!}</p>
 
         </div>
     </div>
 </section>
+
 
 
 <!-- ===========================
      PHOTO STRIP – SALÉ
 =========================== -->
-<section class="gls-photo-strip section">
-    <div class="gls-container gls-photo-grid">
+<section class="gls-photo-strip section reveal delay-1">
+    <div class="gls-container gls-photo-grid reveal delay-2">
 
-        <img src="{{ asset('assets/images/sites/sale/centre-sale1.webp') }}" alt="GLS Salé Students">
-        <img src="{{ asset('assets/images/sites/sale/centre-sale2.webp') }}" alt="GLS Salé Classroom">
-        <img src="{{ asset('assets/images/sites/sale/centre-sale3.webp') }}" alt="GLS Salé Activities">
+        <img src="{{ asset('assets/images/sites/sale/centre-sale1.webp') }}" class="reveal delay-1" alt="">
+        <img src="{{ asset('assets/images/sites/sale/centre-sale2.webp') }}" class="reveal delay-2" alt="">
+        <img src="{{ asset('assets/images/sites/sale/centre-sale3.webp') }}" class="reveal delay-3" alt="">
 
     </div>
 </section>
+
 
 
 <!-- ===========================
      INFO CARDS – NIVEAUX
 =========================== -->
-<section class="gls-info-section gls-section">
+<section class="gls-info-section gls-section reveal delay-1">
+    <div class="gls-container reveal delay-2">
 
-    <div class="gls-container">
+        <h2 class="gls-info-title fade-blur-title reveal delay-3">
+            {{ __('sites/sale.info.title') }}
+        </h2>
 
-        <h2 class="gls-info-title">Information about our German Courses</h2>
-
-        <div class="gls-niveau-tabs">
-            <button class="gls-niveau-btn active" data-level="A1">A1</button>
-            <button class="gls-niveau-btn" data-level="A2">A2</button>
-            <button class="gls-niveau-btn" data-level="B1">B1</button>
-            <button class="gls-niveau-btn" data-level="B2">B2</button>
+        <div class="gls-niveau-tabs reveal delay-1">
+            <button class="gls-niveau-btn active reveal delay-1" data-level="A1">A1</button>
+            <button class="gls-niveau-btn reveal delay-2" data-level="A2">A2</button>
+            <button class="gls-niveau-btn reveal delay-3" data-level="B1">B1</button>
+            <button class="gls-niveau-btn reveal delay-1" data-level="B2">B2</button>
         </div>
 
-        <div class="gls-info-grid">
+        <div class="gls-info-grid reveal delay-2">
 
-            <div class="gls-info-card">
-                <div class="gls-info-icon">@include('frontoffice.svg.sites-info')</div>
-                <h3 class="gls-info-card-title">Graduation</h3>
-                <div class="gls-info-text" id="graduation-text"></div>
+            <div class="gls-info-card reveal delay-1">
+                <div class="gls-info-icon reveal delay-2">@include('frontoffice.svg.sites-info')</div>
+                <h3 class="gls-info-card-title fade-blur-title reveal delay-3">
+                    {{ __('sites/sale.info.certification') }}
+                </h3>
+                <div class="gls-info-text reveal delay-1" id="graduation-text"></div>
             </div>
 
-            <div class="gls-info-card">
-                <div class="gls-info-icon">@include('frontoffice.svg.sites-duration')</div>
-                <h3 class="gls-info-card-title">Duration</h3>
-                <div class="gls-info-text" id="duration-text"></div>
+            <div class="gls-info-card reveal delay-2">
+                <div class="gls-info-icon reveal delay-3">@include('frontoffice.svg.sites-duration')</div>
+                <h3 class="gls-info-card-title fade-blur-title reveal delay-1">
+                    {{ __('sites/sale.info.duration') }}
+                </h3>
+                <div class="gls-info-text reveal delay-2" id="duration-text"></div>
             </div>
 
-            <div class="gls-info-card">
-                <div class="gls-info-icon">@include('frontoffice.svg.sites-times')</div>
-                <h3 class="gls-info-card-title">Course Times</h3>
-                <div class="gls-info-text" id="times-text"></div>
+            <div class="gls-info-card reveal delay-3">
+                <div class="gls-info-icon reveal delay-1">@include('frontoffice.svg.sites-times')</div>
+                <h3 class="gls-info-card-title fade-blur-title reveal delay-2">
+                    {{ __('sites/sale.info.times') }}
+                </h3>
+                <div class="gls-info-text reveal delay-3" id="times-text"></div>
             </div>
 
-            <div class="gls-info-card">
-                <div class="gls-info-icon">@include('frontoffice.svg.sites-price')</div>
-                <h3 class="gls-info-card-title">Price</h3>
-                <div class="gls-info-text" id="price-text"></div>
+            <div class="gls-info-card reveal delay-1">
+                <div class="gls-info-icon reveal delay-2">@include('frontoffice.svg.sites-price')</div>
+                <h3 class="gls-info-card-title fade-blur-title reveal delay-3">
+                    {{ __('sites/sale.info.price') }}
+                </h3>
+                <div class="gls-info-text reveal delay-1" id="price-text"></div>
             </div>
 
         </div>
 
     </div>
-
 </section>
+
+
 
 <!-- ===========================
      GROUP SCHEDULE – SALÉ
 =========================== -->
-<section class="gls-schedule-section">
-    <div class="gls-schedule-container">
+<section class="gls-schedule-section reveal delay-1">
+    <div class="gls-schedule-container reveal delay-2">
 
-        <h2 class="gls-schedule-main-title">Our Groups – GLS Salé</h2>
+        <h2 class="gls-schedule-main-title fade-blur-title reveal delay-3">
+            {{ __('sites/sale.groups.title') }}
+        </h2>
 
-        <!-- MORNING -->
-        <div class="schedule-dropdown">
-            <div class="schedule-dropdown_trigger">
-                <h2 class="heading-5">10:00 – 12:30 • Morning Groups</h2>
-                <div class="dropdown-icon">
-                    <div class="dropdown-line"></div>
-                    <div class="dropdown-line is-rotated"></div>
+        @php
+            $periods = [
+                'morning'   => __('sites/sale.groups.morning'),
+                'midday'    => __('sites/sale.groups.midday'),
+                'afternoon' => __('sites/sale.groups.afternoon'),
+                'evening'   => __('sites/sale.groups.evening'),
+            ];
+        @endphp
+
+        @foreach ($periods as $key => $label)
+
+            @php $collection = $groups[$key] ?? collect(); @endphp
+
+            <div class="schedule-dropdown reveal delay-1">
+
+                <div class="schedule-dropdown_trigger reveal delay-2">
+                    <h2 class="heading-5 fade-blur-title reveal delay-3">{{ $label }}</h2>
+
+                    <div class="dropdown-icon reveal delay-1">
+                        <div class="dropdown-line"></div>
+                        <div class="dropdown-line is-rotated"></div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="schedule-dropdown_content">
-                <div class="schedule-dropdown_height">
+                <div class="schedule-dropdown_content reveal delay-2">
+                    <div class="schedule-dropdown_height reveal delay-3">
 
-                    <div class="price-table-rich-text">
+                        <div class="price-table-rich-text reveal delay-1">
 
-                        <div class="table-rich-text">
-                            <p><strong>Active Groups</strong></p>
-                            <p>Prof. Soufiane</p>
-                            <p>Prof. Yassine</p>
-                            <p>Prof. Amina</p>
-                        </div>
+                            <!-- ACTIVE -->
+                            <div class="table-rich-text reveal delay-2">
+                                <p><strong>{{ __('sites/sale.groups.active') }}</strong></p>
 
-                        <div class="table-rich-text">
-                            <p><strong>Starting November</strong></p>
-                            <p>Prof. Laila</p>
-                            <p>Prof. Manal</p>
-                            <p>New Group (13:00)</p>
-                            <p>New Group (16:00)</p>
-                            <p>New Group (19:00)</p>
+                                @forelse ($collection->where('status', 'active') as $group)
+                                    <p class="reveal delay-1">
+                                        {{ $group->teacher->name }} -
+                                        {{ strtoupper($group->level) }} -
+                                        {{ $group->time_range }}
+                                    </p>
+                                @empty
+                                    <p class="reveal delay-1">Aucun groupe actif</p>
+                                @endforelse
+                            </div>
+
+                            <!-- UPCOMING -->
+                            <div class="table-rich-text reveal delay-3">
+                                <p><strong>{{ __('sites/sale.groups.upcoming') }}</strong></p>
+
+                                @forelse ($collection->where('status', 'upcoming') as $group)
+                                    <p class="reveal delay-1">
+                                        {{ $group->teacher->name }} -
+                                        {{ strtoupper($group->level) }} -
+                                        {{ $group->time_range }}
+                                    </p>
+                                @empty
+                                    <p class="reveal delay-1">Pas de nouveaux groupes prévus</p>
+                                @endforelse
+                            </div>
+
                         </div>
 
                     </div>
-
                 </div>
-            </div>
-        </div>
 
-        <!-- AFTERNOON -->
-        <div class="schedule-dropdown">
-            <div class="schedule-dropdown_trigger">
-                <h2 class="heading-5">16:00 – 18:30 • Afternoon Groups</h2>
-                <div class="dropdown-icon">
-                    <div class="dropdown-line"></div>
-                    <div class="dropdown-line is-rotated"></div>
-                </div>
             </div>
 
-            <div class="schedule-dropdown_content">
-                <div class="schedule-dropdown_height">
-
-                    <div class="price-table-rich-text">
-                        <div class="table-rich-text">
-                            <p><strong>Active</strong></p>
-                            <p>Prof. Driss</p>
-                            <p>Prof. Hanafi</p>
-                            <p>Prof. Nizar</p>
-                        </div>
-
-                        <div class="table-rich-text">
-                            <p><strong>Upcoming</strong></p>
-                            <p>No new groups planned</p>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- EVENING -->
-        <div class="schedule-dropdown">
-            <div class="schedule-dropdown_trigger">
-                <h2 class="heading-5">19:00 – 21:30 • Evening Groups</h2>
-                <div class="dropdown-icon">
-                    <div class="dropdown-line"></div>
-                    <div class="dropdown-line is-rotated"></div>
-                </div>
-            </div>
-
-            <div class="schedule-dropdown_content">
-                <div class="schedule-dropdown_height">
-
-                    <div class="price-table-rich-text">
-
-                        <div class="table-rich-text">
-                            <p><strong>Active</strong></p>
-                            <p>Prof. Yassine</p>
-                            <p>Prof. Manal</p>
-                            <p>Prof. Hajar</p>
-                            <p>Prof. Amina</p>
-                        </div>
-
-                        <div class="table-rich-text">
-                            <p><strong>Upcoming</strong></p>
-                            <p>More groups will open soon</p>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-        </div>
+        @endforeach
 
     </div>
 </section>
+
 
 
 {{-- ===========================
      9ONSOL – SALÉ EPISODE
 =========================== --}}
-<section class="home-about-section section">
-    <div class="container about-grid">
+<section class="home-about-section section reveal delay-1">
+    <div class="container about-grid reveal delay-2">
 
-        <div class="about-card text-light">
-            <h2 class="h-section-subtitle mb-4">
-                Deutshow – Episode 4<br>Auditions from Salé
+        <div class="about-card text-light reveal delay-1">
+            <h2 class="h-section-subtitle mb-4 fade-blur-title reveal delay-2">
+                {!! __('sites/sale.9onsol.title') !!}
             </h2>
 
-            <p class="lead mb-4">
-    Welcome to <strong>Deutshow</strong>, Morocco’s first German-language talent competition! 🇩🇪🇲🇦 <br><br>
-    In this Salé episode, learners present expressive performances that reflect their  
-    creativity, confidence, and growing German skills. <br><br>
-    Produced by <strong>9onsol’s Talks</strong>, it highlights the dedication of GLS Salé students.
-</p>
-
+            <p class="lead mb-4 reveal delay-3">
+                {!! __('sites/sale.9onsol.text') !!}
+            </p>
 
             <a href="https://www.youtube.com/@9onsolsTalks" target="_blank"
-                class="btn btn-light rounded-pill fw-semibold px-4 py-2 mt-auto">
-                More Episodes
+                class="btn btn-light rounded-pill fw-semibold px-4 py-2 mt-auto reveal delay-1">
+                {{ __('sites/sale.9onsol.button') }}
             </a>
         </div>
 
-        <div class="about-video">
+        <div class="about-video reveal delay-3">
             <iframe width="560" height="315"
                 src="https://www.youtube.com/embed/NQa8WpPvd8w?si=RNbF6jNcIauKF7Dy"
-                title="Deutshow – Episode 4: Auditions from Salé"
                 frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
                 allowfullscreen loading="lazy">
             </iframe>
         </div>
@@ -287,22 +255,23 @@
     </div>
 </section>
 
-<!-- CTA -->
-<section class="inline-cta-section section">
-    <div class="inline-cta-block">
+<!-- ===========================
+     CTA – SALÉ
+=========================== -->
+<section class="inline-cta-section section reveal delay-1">
+    <div class="inline-cta-block reveal delay-2">
         
-        <h2 class="heading-cta">
-            Ready to Start Your German Journey<br>in Salé?
+        <h2 class="heading-cta fade-blur-title reveal delay-3">
+            {!! __('sites/sale.cta.title') !!}
         </h2>
 
-        <p class="cta-box-subtext">
-            Book your free consultation at GLS Salé and get  
-            full guidance about studying or working in Germany.  
-            Our team will help you understand the programs,  
-            visa process, schedules, and the best course for your goals.
+        <p class="cta-box-subtext reveal delay-1">
+            {!! __('sites/sale.cta.text') !!}
         </p>
 
-        <a href="/contact" class="cta-btn">Book Your Consultation</a>
+        <a href="{{ route('front.contact') }}" class="cta-btn reveal delay-2">
+            {{ __('sites/sale.cta.button') }}
+        </a>
 
     </div>
 </section>
@@ -342,28 +311,28 @@ document.addEventListener("DOMContentLoaded", () => {
 <script>
 const data = {
   A1: {
-    graduation: "A1 Certification (Basic German)",
-    duration: "5 weeks<br>18 lessons per week",
-    times: "Mon–Fri<br>13:15–16:30",
-    price: "998 DH"
+    graduation: "{{ __('sites/sale.levels.A1.graduation') }}",
+    duration: "{{ __('sites/sale.levels.A1.duration') }}",
+    times: "{{ __('sites/sale.levels.A1.times') }}",
+    price: "{{ __('sites/sale.levels.A1.price') }}"
   },
   A2: {
-    graduation: "A2 Certification (Elementary level)",
-    duration: "5 weeks<br>18 lessons per week",
-    times: "Mon–Fri<br>13:15–16:30",
-    price: "1100 DH"
+    graduation: "{{ __('sites/sale.levels.A2.graduation') }}",
+    duration: "{{ __('sites/sale.levels.A2.duration') }}",
+    times: "{{ __('sites/sale.levels.A2.times') }}",
+    price: "{{ __('sites/sale.levels.A2.price') }}"
   },
   B1: {
-    graduation: "B1 Certification (Intermediate)",
-    duration: "6 weeks<br>18 lessons per week",
-    times: "Mon–Fri<br>13:15–16:30",
-    price: "1300 DH"
+    graduation: "{{ __('sites/sale.levels.B1.graduation') }}",
+    duration: "{{ __('sites/sale.levels.B1.duration') }}",
+    times: "{{ __('sites/sale.levels.B1.times') }}",
+    price: "{{ __('sites/sale.levels.B1.price') }}"
   },
   B2: {
-    graduation: "B2 Certification (Upper-Intermediate)",
-    duration: "6 weeks<br>20 lessons per week",
-    times: "Mon–Fri<br>13:15–16:30",
-    price: "1500 DH"
+    graduation: "{{ __('sites/sale.levels.B2.graduation') }}",
+    duration: "{{ __('sites/sale.levels.B2.duration') }}",
+    times: "{{ __('sites/sale.levels.B2.times') }}",
+    price: "{{ __('sites/sale.levels.B2.price') }}"
   }
 };
 

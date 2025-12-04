@@ -1,5 +1,5 @@
 ﻿@extends('frontoffice.layouts.app')
-@section('title', 'GLS Rabat | German Language Center')
+@section('title', 'GLS Rabat | Centre de langue allemande')
 
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/sites/marrakech.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/9onsol.css') }}">
@@ -7,126 +7,131 @@
 @section('content')
 
 <!-- ===========================
-     HERO SECTION – RABAT
+     HERO – RABAT
 =========================== -->
-<section class="hero-section section about-hero">
-  <div class="container is-hero">
+<section class="hero-section section about-hero reveal delay-1">
+  <div class="container is-hero reveal delay-2">
 
-    <div class="hero_subtitle">Learn German in the Heart of Rabat</div>
-    <h1 class="hero_title">GLS Sprachenzentrum – Rabat Center</h1>
-
-    <div class="hero-image">
-      <img 
-        src="{{ asset('assets/images/sites/rabat/centre-rabat.webp') }}" 
-        alt="GLS Sprachenzentrum Rabat" 
-        class="full-image" 
-        loading="lazy"
-      >
+    <div class="hero_subtitle reveal delay-1">
+        {{ __('sites/rabat.hero.subtitle') }}
     </div>
+
+    <h1 class="hero_title fade-blur-title reveal delay-2">
+        {{ __('sites/rabat.hero.title') }}
+    </h1>
+
+    <div class="hero-image reveal delay-3">
+      <img 
+        src="{{ asset('assets/images/sites/rabat/centre-rabat.webp') }}"
+        alt="GLS Rabat"
+        class="full-image reveal delay-1"
+        loading="lazy">
+    </div>
+
   </div>
 </section>
 
+
+
 <!-- ===========================
-     ABOUT RABAT CENTER
+     ABOUT RABAT
 =========================== -->
-<section class="gls-section gls-richtext-wrapper">
-    <div class="gls-container">
-        <div class="gls-richtext">
+<section class="gls-section gls-richtext-wrapper reveal delay-1">
+    <div class="gls-container reveal delay-2">
+        <div class="gls-richtext reveal delay-3">
 
-            <h2>Welcome to GLS Rabat</h2>
-            <h3>Your German Language Gateway in Agdal</h3>
+            <h2 class="fade-blur-title reveal delay-1">{{ __('sites/rabat.about.title1') }}</h2>
+            <h3 class="fade-blur-title reveal delay-2">{{ __('sites/rabat.about.subtitle1') }}</h3>
 
-            <p>
-                The <strong>GLS Sprachenzentrum Rabat</strong> is one of the most established and active German language 
-                learning hubs in Morocco. Located in the central district of <strong>Agdal</strong>, at  
-                <strong>Avenue Fal Ould Oumeir, Immeuble 77, 1er étage N°1</strong>,  
-                our center welcomes learners in a modern and friendly environment.
-            </p>
+            <p class="reveal delay-1">{!! __('sites/rabat.about.p1') !!}</p>
+            <p class="reveal delay-2">{!! __('sites/rabat.about.p2') !!}</p>
 
-            <p>
-                Whether you're aiming to study in Germany, prepare for Ausbildung, or enhance your professional future,  
-                GLS Rabat offers <strong>immersive, structured, and result-driven German programs</strong> to support your goals.
-            </p>
+            <h2 class="fade-blur-title reveal delay-1">{{ __('sites/rabat.about.title2') }}</h2>
+            <h3 class="fade-blur-title reveal delay-2">{{ __('sites/rabat.about.subtitle2') }}</h3>
 
-            <h2>What We Offer</h2>
-            <h3>German Courses for All Levels and Pathways</h3>
-
-            <p>At GLS Rabat, learners benefit from:</p>
+            <p class="reveal delay-1">{{ __('sites/rabat.about.text_list') }}</p>
 
             <ul>
-                <li><strong>Intensive German Courses (A1–B2)</strong></li>
-                <li><strong>Online German Courses</strong> with live teachers</li>
-                <li><strong>Conversation & speaking workshops</strong></li>
-                <li><strong>Visa, study & career guidance</strong> for Germany</li>
-                <li><strong>Soon: Official ÖSD & GLS Exams</strong></li>
+                <li class="reveal delay-1"><strong>{{ __('sites/rabat.about.offers.1') }}</strong></li>
+                <li class="reveal delay-2"><strong>{{ __('sites/rabat.about.offers.2') }}</strong></li>
+                <li class="reveal delay-3"><strong>{{ __('sites/rabat.about.offers.3') }}</strong></li>
+                <li class="reveal delay-1"><strong>{{ __('sites/rabat.about.offers.4') }}</strong></li>
+                <li class="reveal delay-2"><strong>{{ __('sites/rabat.about.offers.5') }}</strong></li>
             </ul>
 
-            <p>
-                Our teaching approach combines communication, real-life practice, and a dynamic classroom atmosphere  
-                — ensuring fast progress for every student.
-            </p>
+            <p class="reveal delay-3">{!! __('sites/rabat.about.p3') !!}</p>
 
         </div>
     </div>
 </section>
+
 
 
 <!-- ===========================
      PHOTO STRIP – RABAT
 =========================== -->
-<section class="gls-photo-strip section">
-    <div class="gls-container gls-photo-grid">
+<section class="gls-photo-strip section reveal delay-1">
+    <div class="gls-container gls-photo-grid reveal delay-2">
 
-        <img src="{{ asset('assets/images/sites/rabat/centre-rabat1.webp') }}" alt="GLS Rabat Students">
-        <img src="{{ asset('assets/images/sites/rabat/centre-rabat2.webp') }}" alt="GLS Rabat Classroom">
-        <img src="{{ asset('assets/images/sites/rabat/centre-rabat3.webp') }}" alt="GLS Rabat Activities">
+        <img src="{{ asset('assets/images/sites/rabat/centre-rabat1.webp') }}" class="reveal delay-1" alt="GLS Rabat Students">
+        <img src="{{ asset('assets/images/sites/rabat/centre-rabat2.webp') }}" class="reveal delay-2" alt="GLS Rabat Classroom">
+        <img src="{{ asset('assets/images/sites/rabat/centre-rabat3.webp') }}" class="reveal delay-3" alt="GLS Rabat Activities">
 
     </div>
 </section>
+
 
 
 <!-- ===========================
-     INFO CARDS – NIVEAUX
+     INFO CARDS
 =========================== -->
-<section class="gls-info-section gls-section">
+<section class="gls-info-section gls-section reveal delay-1">
 
-    <div class="gls-container">
+    <div class="gls-container reveal delay-2">
 
-        <h2 class="gls-info-title">Information about our German Courses</h2>
+        <h2 class="gls-info-title fade-blur-title reveal delay-3">
+            {{ __('sites/rabat.info.title') }}
+        </h2>
 
-        <!-- LEVEL SWITCHER -->
-        <div class="gls-niveau-tabs">
-            <button class="gls-niveau-btn active" data-level="A1">A1</button>
-            <button class="gls-niveau-btn" data-level="A2">A2</button>
-            <button class="gls-niveau-btn" data-level="B1">B1</button>
-            <button class="gls-niveau-btn" data-level="B2">B2</button>
+        <div class="gls-niveau-tabs reveal delay-1">
+            <button class="gls-niveau-btn active reveal delay-1" data-level="A1">A1</button>
+            <button class="gls-niveau-btn reveal delay-2" data-level="A2">A2</button>
+            <button class="gls-niveau-btn reveal delay-3" data-level="B1">B1</button>
+            <button class="gls-niveau-btn reveal delay-1" data-level="B2">B2</button>
         </div>
 
-        <!-- INFO CARDS GRID -->
-        <div class="gls-info-grid">
+        <div class="gls-info-grid reveal delay-2">
 
-            <div class="gls-info-card">
-                <div class="gls-info-icon">@include('frontoffice.svg.sites-info')</div>
-                <h3 class="gls-info-card-title">Graduation</h3>
-                <div class="gls-info-text" id="graduation-text"></div>
+            <div class="gls-info-card reveal delay-1">
+                <div class="gls-info-icon reveal delay-2">@include('frontoffice.svg.sites-info')</div>
+                <h3 class="gls-info-card-title fade-blur-title reveal delay-3">
+                    {{ __('sites/rabat.info.certification') }}
+                </h3>
+                <div class="gls-info-text reveal delay-1" id="graduation-text"></div>
             </div>
 
-            <div class="gls-info-card">
-                <div class="gls-info-icon">@include('frontoffice.svg.sites-duration')</div>
-                <h3 class="gls-info-card-title">Duration</h3>
-                <div class="gls-info-text" id="duration-text"></div>
+            <div class="gls-info-card reveal delay-2">
+                <div class="gls-info-icon reveal delay-3">@include('frontoffice.svg.sites-duration')</div>
+                <h3 class="gls-info-card-title fade-blur-title reveal delay-1">
+                    {{ __('sites/rabat.info.duration') }}
+                </h3>
+                <div class="gls-info-text reveal delay-2" id="duration-text"></div>
             </div>
 
-            <div class="gls-info-card">
-                <div class="gls-info-icon">@include('frontoffice.svg.sites-times')</div>
-                <h3 class="gls-info-card-title">Course Times</h3>
-                <div class="gls-info-text" id="times-text"></div>
+            <div class="gls-info-card reveal delay-3">
+                <div class="gls-info-icon reveal delay-1">@include('frontoffice.svg.sites-times')</div>
+                <h3 class="gls-info-card-title fade-blur-title reveal delay-2">
+                    {{ __('sites/rabat.info.times') }}
+                </h3>
+                <div class="gls-info-text reveal delay-3" id="times-text"></div>
             </div>
 
-            <div class="gls-info-card">
-                <div class="gls-info-icon">@include('frontoffice.svg.sites-price')</div>
-                <h3 class="gls-info-card-title">Price</h3>
-                <div class="gls-info-text" id="price-text"></div>
+            <div class="gls-info-card reveal delay-1">
+                <div class="gls-info-icon reveal delay-2">@include('frontoffice.svg.sites-price')</div>
+                <h3 class="gls-info-card-title fade-blur-title reveal delay-3">
+                    {{ __('sites/rabat.info.price') }}
+                </h3>
+                <div class="gls-info-text reveal delay-1" id="price-text"></div>
             </div>
 
         </div>
@@ -134,156 +139,116 @@
     </div>
 
 </section>
+
+
 
 <!-- ===========================
      GROUP SCHEDULE – RABAT
 =========================== -->
-<section class="gls-schedule-section">
-    <div class="gls-schedule-container">
+<section class="gls-schedule-section reveal delay-1">
+    <div class="gls-schedule-container reveal delay-2">
 
-        <h2 class="gls-schedule-main-title">Our Groups – GLS Rabat</h2>
+        <h2 class="gls-schedule-main-title fade-blur-title reveal delay-3">
+            {{ __('sites/rabat.groups.title') }}
+        </h2>
 
-        <!-- MORNING -->
-        <div class="schedule-dropdown">
-            <div class="schedule-dropdown_trigger">
-                <h2 class="heading-5">10:00 – 12:30 • Morning Groups</h2>
+        @php
+            $periods = [
+                'morning'   => __('sites/rabat.groups.morning'),
+                'midday'    => __('sites/rabat.groups.midday'),
+                'afternoon' => __('sites/rabat.groups.afternoon'),
+                'evening'   => __('sites/rabat.groups.evening'),
+            ];
+        @endphp
 
-                <div class="dropdown-icon">
-                    <div class="dropdown-line"></div>
-                    <div class="dropdown-line is-rotated"></div>
+        @foreach ($periods as $key => $label)
+
+            @php $collection = $groups[$key] ?? collect(); @endphp
+
+            <div class="schedule-dropdown reveal delay-1">
+
+                <div class="schedule-dropdown_trigger reveal delay-2">
+                    <h2 class="fade-blur-title reveal delay-3">{{ $label }}</h2>
+
+                    <div class="dropdown-icon reveal delay-1">
+                        <div class="dropdown-line"></div>
+                        <div class="dropdown-line is-rotated"></div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="schedule-dropdown_content">
-                <div class="schedule-dropdown_height">
+                <div class="schedule-dropdown_content reveal delay-2">
+                    <div class="schedule-dropdown_height reveal delay-3">
 
-                    <div class="price-table-rich-text">
+                        <div class="price-table-rich-text reveal delay-1">
 
-                        <div class="table-rich-text">
-                            <p><strong>Active Groups</strong></p>
-                            <p>Prof. Jaïl</p>
-                            <p>Prof. Nizar</p>
-                            <p>Prof. Amal</p>
-                        </div>
+                            <div class="table-rich-text reveal delay-2">
+                                <p><strong>{{ __('sites/rabat.groups.active') }}</strong></p>
 
-                        <div class="table-rich-text">
-                            <p><strong>Starting November</strong></p>
-                            <p>Prof. Laila</p>
-                            <p>Prof. Driss</p>
-                            <p>New Group (13:00)</p>
-                            <p>New Group (16:00)</p>
-                            <p>New Group (19:00)</p>
+                                @forelse ($collection->where('status', 'active') as $group)
+                                    <p class="reveal delay-1">
+                                        {{ $group->teacher->name }} –
+                                        {{ strtoupper($group->level) }} –
+                                        {{ $group->time_range }}
+                                    </p>
+                                @empty
+                                    <p class="reveal delay-1">Aucun groupe actif</p>
+                                @endforelse
+                            </div>
+
+                            <div class="table-rich-text reveal delay-3">
+                                <p><strong>{{ __('sites/rabat.groups.upcoming') }}</strong></p>
+
+                                @forelse ($collection->where('status', 'upcoming') as $group)
+                                    <p class="reveal delay-1">
+                                        {{ $group->teacher->name }} –
+                                        {{ strtoupper($group->level) }} –
+                                        {{ $group->time_range }}
+                                    </p>
+                                @empty
+                                    <p class="reveal delay-1">Pas de nouveaux groupes prévus</p>
+                                @endforelse
+                            </div>
+
                         </div>
 
                     </div>
-
                 </div>
-            </div>
-        </div>
 
-        <!-- AFTERNOON -->
-        <div class="schedule-dropdown">
-            <div class="schedule-dropdown_trigger">
-                <h2 class="heading-5">16:00 – 18:30 • Afternoon Groups</h2>
-
-                <div class="dropdown-icon">
-                    <div class="dropdown-line"></div>
-                    <div class="dropdown-line is-rotated"></div>
-                </div>
             </div>
 
-            <div class="schedule-dropdown_content">
-                <div class="schedule-dropdown_height">
-
-                    <div class="price-table-rich-text">
-                        <div class="table-rich-text">
-                            <p><strong>Active</strong></p>
-                            <p>Prof. Driss</p>
-                            <p>Prof. Hanafi</p>
-                            <p>Prof. Nizar</p>
-                        </div>
-
-                        <div class="table-rich-text">
-                            <p><strong>Upcoming</strong></p>
-                            <p>No new groups planned</p>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- EVENING -->
-        <div class="schedule-dropdown">
-            <div class="schedule-dropdown_trigger">
-                <h2 class="heading-5">19:00 – 21:30 • Evening Groups</h2>
-
-                <div class="dropdown-icon">
-                    <div class="dropdown-line"></div>
-                    <div class="dropdown-line is-rotated"></div>
-                </div>
-            </div>
-
-            <div class="schedule-dropdown_content">
-                <div class="schedule-dropdown_height">
-
-                    <div class="price-table-rich-text">
-
-                        <div class="table-rich-text">
-                            <p><strong>Active</strong></p>
-                            <p>Prof. Jaïl</p>
-                            <p>Prof. Manal</p>
-                            <p>Prof. Laila</p>
-                            <p>Prof. Hanafi</p>
-                        </div>
-
-                        <div class="table-rich-text">
-                            <p><strong>Upcoming</strong></p>
-                            <p>More groups will open soon</p>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-        </div>
+        @endforeach
 
     </div>
 </section>
 
 
-{{-- ===========================
-     9ONSOL – RABAT EPISODE
-=========================== --}}
-<section class="home-about-section section">
-    <div class="container about-grid">
 
-        <div class="about-card text-light">
-            <h2 class="h-section-subtitle mb-4">
-                Deutshow – Episode 5<br>Auditions from Rabat
+<!-- ===========================
+     9ONSOL — RABAT EPISODE
+=========================== -->
+<section class="home-about-section section reveal delay-1">
+    <div class="container about-grid reveal delay-2">
+
+        <div class="about-card text-light reveal delay-1">
+            <h2 class="h-section-subtitle mb-4 fade-blur-title reveal delay-2">
+                {!! __('sites/rabat.9onsol.title') !!}
             </h2>
 
-            <p class="lead mb-4">
-    Welcome to <strong>Deutshow</strong>, Morocco’s first German-language talent competition! 🇩🇪🇲🇦 <br><br>
-    In this Rabat episode, learners showcase their German skills, creativity,  
-    and personality through expressive and inspiring performances. <br><br>
-    Produced by <strong>9onsol’s Talks</strong>, it highlights the ambition of our GLS Rabat students.
-</p>
+            <p class="lead mb-4 reveal delay-3">
+                {!! __('sites/rabat.9onsol.text') !!}
+            </p>
 
-
-            <a href="https://www.youtube.com/@9onsolsTalks" target="_blank"
-                class="btn btn-light rounded-pill fw-semibold px-4 py-2 mt-auto">
-                More Episodes
+            <a href="https://www.youtube.com/@9onsolsTalks"
+               target="_blank"
+               class="btn btn-light rounded-pill fw-semibold px-4 py-2 mt-auto reveal delay-1">
+                {{ __('sites/rabat.9onsol.button') }}
             </a>
         </div>
 
-        <div class="about-video">
+        <div class="about-video reveal delay-3">
             <iframe width="560" height="315"
                 src="https://www.youtube.com/embed/HdZcNCPoJm8?si=5udMi0NFC4MbzvV1"
-                title="Deutshow – Episode 5: Auditions from Rabat"
                 frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
                 allowfullscreen loading="lazy">
             </iframe>
         </div>
@@ -291,29 +256,30 @@
     </div>
 </section>
 
-<!-- CTA -->
-<section class="inline-cta-section section">
-    <div class="inline-cta-block">
-        
-        <h2 class="heading-cta">
-            Ready to Start Your German Journey<br>in Rabat?
+<!-- ===========================
+     CTA – RABAT
+=========================== -->
+<section class="inline-cta-section section reveal delay-1">
+    <div class="inline-cta-block reveal delay-2">
+
+        <h2 class="heading-cta fade-blur-title reveal delay-3">
+            {!! __('sites/rabat.cta.title') !!}
         </h2>
 
-        <p class="cta-box-subtext">
-            Book your free consultation at GLS Rabat and get  
-            expert guidance about studying or working in Germany.  
-            Our administrative team will explain programs, visa steps,  
-            and help you choose the ideal German course for your goals.
+        <p class="cta-box-subtext reveal delay-1">
+            {!! __('sites/rabat.cta.text') !!}
         </p>
 
-        <a href="/contact" class="cta-btn">Book Your Consultation</a>
+        <a href="{{ route('front.contact') }}" class="cta-btn reveal delay-2">
+            {{ __('sites/rabat.cta.button') }}
+        </a>
 
     </div>
 </section>
 
 
 <!-- ===========================
-     JAVASCRIPT
+     JS
 =========================== -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -345,30 +311,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <script>
 const data = {
-  A1: {
-    graduation: "A1 Certification (Basic German)",
-    duration: "5 weeks<br>18 lessons per week",
-    times: "Mon–Fri<br>13:15–16:30",
-    price: "998 DH"
-  },
-  A2: {
-    graduation: "A2 Certification (Elementary level)",
-    duration: "5 weeks<br>18 lessons per week",
-    times: "Mon–Fri<br>13:15–16:30",
-    price: "1100 DH"
-  },
-  B1: {
-    graduation: "B1 Certification (Intermediate)",
-    duration: "6 weeks<br>18 lessons per week",
-    times: "Mon–Fri<br>13:15–16:30",
-    price: "1300 DH"
-  },
-  B2: {
-    graduation: "B2 Certification (Upper-Intermediate)",
-    duration: "6 weeks<br>20 lessons per week",
-    times: "Mon–Fri<br>13:15–16:30",
-    price: "1500 DH"
-  }
+  A1: { graduation: "A1 Certification (Basic German)", duration: "5 weeks<br>18 lessons per week", times: "Mon–Fri<br>13:15–16:30", price: "998 DH" },
+  A2: { graduation: "A2 Certification (Elementary level)", duration: "5 weeks<br>18 lessons per week", times: "Mon–Fri<br>13:15–16:30", price: "1100 DH" },
+  B1: { graduation: "B1 Certification (Intermediate)", duration: "6 weeks<br>18 lessons per week", times: "Mon–Fri<br>13:15–16:30", price: "1300 DH" },
+  B2: { graduation: "B2 Certification (Upper-Intermediate)", duration: "6 weeks<br>20 lessons per week", times: "Mon–Fri<br>13:15–16:30", price: "1500 DH" }
 };
 
 function updateCards(level) {
