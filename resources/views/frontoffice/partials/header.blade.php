@@ -272,12 +272,11 @@
                     {{ __('header.resources') }}
                 </button>
                 <ul class="dropdown-menu">
-                   <li>
-    <a class="dropdown-item"
-       href="{{ LaravelLocalization::localizeUrl(route('blog.index')) }}">
-        {{ __('header.blog') }}
-    </a>
-</li>
+                    <li>
+                        <a class="dropdown-item" href="{{ LaravelLocalization::localizeUrl(route('blog.index')) }}">
+                            {{ __('header.blog') }}
+                        </a>
+                    </li>
 
                     <li><a class="dropdown-item"
                             href="{{ LaravelLocalization::localizeUrl(route('front.student-stories')) }}">{{ __('header.student_stories') }}</a>
@@ -348,17 +347,17 @@
                         </button>
                         <div class="submenu-content">
 
-    @php
-        $sitesMenu = \App\Models\Site::orderBy('name')->get();
-    @endphp
+                            @php
+                                $sitesMenu = \App\Models\Site::orderBy('name')->get();
+                            @endphp
 
-    @foreach ($sitesMenu as $site)
-        <a href="{{ LaravelLocalization::localizeUrl(url('/sites/' . $site->slug)) }}">
-            {{ __('header.' . $site->slug) ?: ucfirst($site->name) }}
-        </a>
-    @endforeach
+                            @foreach ($sitesMenu as $site)
+                                <a href="{{ LaravelLocalization::localizeUrl(url('/sites/' . $site->slug)) }}">
+                                    {{ __('header.' . $site->slug) ?: ucfirst($site->name) }}
+                                </a>
+                            @endforeach
 
-</div>
+                        </div>
 
                     </div>
 
@@ -418,13 +417,18 @@
             </button>
             <div class="submenu">
                 <a href="{{ LaravelLocalization::localizeUrl(route('blog.index')) }}">
-    {{ __('footer.blog') }}
-</a>
+                    {{ __('footer.blog') }}
+                </a>
 
-                    href="{{ LaravelLocalization::localizeUrl(route('front.student-stories')) }}">{{ __('header.student_stories') }}</a>
-                <a
-                    href="{{ LaravelLocalization::localizeUrl(route('front.certificate.check')) }}">{{ __('header.verify_certificate') }}</a>
+                <a href="{{ LaravelLocalization::localizeUrl(route('front.student-stories')) }}">
+                    {{ __('header.student_stories') }}
+                </a>
+
+                <a href="{{ LaravelLocalization::localizeUrl(route('front.certificate.check')) }}">
+                    {{ __('header.verify_certificate') }}
+                </a>
             </div>
+
         </div>
 
         <!-- INSCRIPTION -->
