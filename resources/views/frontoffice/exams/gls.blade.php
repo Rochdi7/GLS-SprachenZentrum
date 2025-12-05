@@ -6,42 +6,42 @@
 
 @section('content')
 
-<!-- ============================
-     HERO
-============================= -->
-<section class="hero-section section about-hero">
-    <div class="container is-hero">
+    <!-- ============================
+         HERO
+    ============================= -->
+    <section class="hero-section section about-hero reveal delay-1">
+        <div class="container is-hero reveal delay-2">
 
-        <div class="hero_subtitle">
-            {{ __('gls-exam.hero.subtitle') }}
+            <div class="hero_subtitle reveal delay-1">
+                {{ __('gls-exam.hero.subtitle') }}
+            </div>
+
+            <h1 class="hero_title fade-blur-title reveal delay-2">
+                {!! __('gls-exam.hero.title') !!}
+            </h1>
+
+            <div class="hero-image reveal delay-3">
+                <img src="{{ asset('assets/images/about/Centre-GLS-de-langue-Allemande.jpg') }}"
+                    alt="{{ __('gls-exam.hero.alt') }}" class="full-image reveal delay-1" loading="lazy">
+            </div>
+
         </div>
+    </section>
 
-        <h1 class="hero_title">
-            {!! __('gls-exam.hero.title') !!}
-        </h1>
+    <!-- ============================
+         INTRO SECTION
+    ============================= -->
+    <div class="rich-text-section section reveal delay-1">
+        <div class="container reveal delay-2">
+            <div class="rich-text w-richtext reveal delay-3">
 
-        <div class="hero-image">
-            <img src="{{ asset('assets/images/about/Centre-GLS-de-langue-Allemande.jpg') }}"
-                 alt="{{ __('gls-exam.hero.alt') }}"
-                 class="full-image"
-                 loading="lazy">
+                <p class="reveal delay-1">{!! __('gls-exam.intro.p1') !!}</p>
+                <p class="reveal delay-2">{!! __('gls-exam.intro.p2') !!}</p>
+                <p class="reveal delay-3"><strong>{!! __('gls-exam.intro.p3') !!}</strong></p>
+
+            </div>
         </div>
     </div>
-</section>
 
-<!-- ============================
-     INTRO SECTION
-============================= -->
-<div class="rich-text-section section">
-    <div class="container">
-        <div class="rich-text w-richtext">
-
-            <p>{!! __('gls-exam.intro.p1') !!}</p>
-            <p>{!! __('gls-exam.intro.p2') !!}</p>
-            <p><strong>{!! __('gls-exam.intro.p3') !!}</strong></p>
-
-        </div>
-    </div>
-</div>
 
 @endsection
