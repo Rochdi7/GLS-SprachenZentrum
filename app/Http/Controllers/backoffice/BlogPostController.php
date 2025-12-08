@@ -11,44 +11,42 @@ use App\Http\Requests\Backoffice\Blog\UpdateBlogPostRequest;
 
 class BlogPostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $posts = BlogPost::latest()->paginate(15);
+        $posts = BlogPost::with('category')->latest()->paginate(15);
         return view('backoffice.blog.posts.index', compact('posts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $categories = BlogCategory::orderBy('name')->get();
+        $categories = BlogCategory::orderBy('position')->get();
 
-        return view('backoffice.blog.posts.create', [
-            'categories' => $categories
-        ]);
+        return view('backoffice.blog.posts.create', compact('categories'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreBlogPostRequest $request)
     {
-        // Create Post
         $post = BlogPost::create([
-            'title'        => $request->title,
-            'slug'         => Str::slug($request->title),
-            'category_id'  => $request->category_id,
-            'content'      => $request->content,
+            'category_id' => $request->category_id,
+
+            // Titles
+            'title_fr'    => $request->title_fr,
+            'title_en'    => $request->title_en,
+
+            // Slug
+            'slug'        => Str::slug($request->title_fr) . '-' . uniqid(),
+
+            // Content
+            'content_fr'  => $request->content_fr,
+            'content_en'  => $request->content_en,
+
+            // Meta
             'reading_time' => $request->reading_time ?? 3,
-            'featured'     => $request->featured ? 1 : 0,
+            'featured'     => $request->boolean('featured'),
             'status'       => $request->status,
         ]);
 
-        // Upload image via Spatie Media Library
+        // Upload main image
         if ($request->hasFile('image')) {
             $post->addMediaFromRequest('image')
                  ->toMediaCollection('blog_images');
@@ -56,64 +54,58 @@ class BlogPostController extends Controller
 
         return redirect()
             ->route('backoffice.blog.posts.index')
-            ->with('success', 'L’article a été ajouté avec succès.');
+            ->with('success', 'Article créé avec succès.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(BlogPost $post)
     {
-        $post = BlogPost::findOrFail($id);
-        $categories = BlogCategory::orderBy('name')->get();
+        $categories = BlogCategory::orderBy('position')->get();
 
-        return view('backoffice.blog.posts.edit', [
-            'post'        => $post,
-            'categories'  => $categories
-        ]);
+        return view('backoffice.blog.posts.edit', compact('post', 'categories'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateBlogPostRequest $request, string $id)
+    public function update(UpdateBlogPostRequest $request, BlogPost $post)
     {
-        $post = BlogPost::findOrFail($id);
-
         $post->update([
-            'title'        => $request->title,
-            'slug'         => Str::slug($request->title),
-            'category_id'  => $request->category_id,
-            'content'      => $request->content,
+            'category_id' => $request->category_id,
+
+            // Titles
+            'title_fr'    => $request->title_fr,
+            'title_en'    => $request->title_en,
+
+            // Slug
+            'slug'        => Str::slug($request->title_fr) . '-' . uniqid(),
+
+            // Content
+            'content_fr'  => $request->content_fr,
+            'content_en'  => $request->content_en,
+
+            // Meta
             'reading_time' => $request->reading_time ?? 3,
-            'featured'     => $request->featured ? 1 : 0,
+            'featured'     => $request->boolean('featured'),
             'status'       => $request->status,
         ]);
 
-        // Replace image if uploaded
+        // Replace image
         if ($request->hasFile('image')) {
             $post->clearMediaCollection('blog_images');
+
             $post->addMediaFromRequest('image')
                  ->toMediaCollection('blog_images');
         }
 
         return redirect()
             ->route('backoffice.blog.posts.index')
-            ->with('success', 'L’article a été mis à jour.');
+            ->with('success', 'Article mis à jour avec succès.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(BlogPost $post)
     {
-        $post = BlogPost::findOrFail($id);
-
         $post->clearMediaCollection('blog_images');
         $post->delete();
 
         return redirect()
             ->back()
-            ->with('success', 'L’article a été supprimé.');
+            ->with('success', 'Article supprimé avec succès.');
     }
 }

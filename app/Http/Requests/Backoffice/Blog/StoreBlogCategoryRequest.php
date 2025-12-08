@@ -8,13 +8,17 @@ class StoreBlogCategoryRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // autoriser tous les admins
+        return true;
     }
 
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:2|max:100|unique:blog_categories,name',
+            'name_fr' => 'required|string|min:2|max:150|unique:blog_categories,name_fr',
+            'name_en' => 'required|string|min:2|max:150|unique:blog_categories,name_en',
+
+            'is_active' => 'nullable|boolean',
+            'position'  => 'nullable|integer|min:0|max:999',
         ];
     }
 }
