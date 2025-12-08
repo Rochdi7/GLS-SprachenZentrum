@@ -3,7 +3,6 @@
         <thead>
             <tr>
                 <th>#ID</th>
-                <th>Image</th> {{-- → On garde si tu veux afficher une image générique --}}
                 <th>Nom du site</th>
                 <th>Ville</th>
                 <th>Statut</th>
@@ -17,14 +16,7 @@
                 <tr>
                     <td>{{ $site->id }}</td>
 
-                    {{-- IMAGE → on affiche placeholder car Hero supprimé --}}
-                    <td>
-                        <img src="{{ asset('assets/images/placeholder.webp') }}"
-                             class="rounded"
-                             style="width: 55px; height: 45px; object-fit: cover;"
-                             alt="site">
-                    </td>
-
+                    {{-- NOM DU SITE --}}
                     <td class="fw-semibold">{{ $site->name }}</td>
 
                     {{-- VILLE --}}
@@ -34,7 +26,7 @@
                         </span>
                     </td>
 
-                    {{-- STATUS --}}
+                    {{-- STATUT --}}
                     <td>
                         @if ($site->is_active)
                             <span class="badge bg-light-success text-success">Actif</span>
@@ -43,13 +35,13 @@
                         @endif
                     </td>
 
-                    {{-- CREATED --}}
+                    {{-- DATE DE CREATION --}}
                     <td>{{ $site->created_at->format('Y-m-d') }}</td>
 
                     {{-- ACTIONS --}}
                     <td>
                         <a href="{{ route('backoffice.sites.edit', $site->id) }}"
-                            class="avtar avtar-xs btn-link-secondary me-2" title="Modifier">
+                           class="avtar avtar-xs btn-link-secondary me-2" title="Modifier">
                             <i class="ti ti-edit f-20"></i>
                         </a>
 
@@ -62,12 +54,11 @@
                             </button>
                         </form>
                     </td>
-
                 </tr>
             @empty
                 <tr>
-                    {{-- ✔ colspan = 7 car 7 colonnes affichées --}}
-                    <td colspan="7" class="text-center text-muted">Aucun centre trouvé.</td>
+                    {{-- ✔ colspan = 6 car 6 colonnes maintenant --}}
+                    <td colspan="6" class="text-center text-muted">Aucun centre trouvé.</td>
                 </tr>
             @endforelse
         </tbody>

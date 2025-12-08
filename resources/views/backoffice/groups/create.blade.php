@@ -8,6 +8,7 @@
 @section('css')
     <link rel="stylesheet" href="{{ URL::asset('build/css/plugins/style.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('build/css/plugins/animate.min.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('build/css/plugins/flatpickr.min.css') }}">
 @endsection
 
 @section('content')
@@ -41,8 +42,11 @@
                 </div>
 
                 <div class="card-body">
+
+                    {{-- Include the form fields --}}
                     @include('backoffice.groups._form')
-                </div>
+
+                                 </div>
 
                 <div class="card-footer text-end">
                     <a 
@@ -69,20 +73,67 @@
 
 @section('scripts')
 <script src="{{ asset('build/js/plugins/ckeditor/classic/ckeditor.js') }}"></script>
+<script src="{{ URL::asset('build/js/plugins/flatpickr.min.js') }}"></script>
 
 <script>
-    // CKEditor Description
+    // CKEditor Init
     ClassicEditor
         .create(document.querySelector('#group-description'))
         .catch(error => console.error(error));
 
+    // Date Range Picker Init
+    flatpickr("#date_range_picker", {
+    mode: "range",
+    dateFormat: "Y-m-d",
+
+    // Style weekends visually
+    onDayCreate: function(dObj, dStr, fp, dayElem) {
+        const date = dayElem.dateObj;
+        const day = date.getDay();
+
+        if (day === 0 || day === 6) {
+            dayElem.classList.add("flatpickr-disabled-day"); 
+        }
+    },
+
+    // Prevent selecting weekend as start or end
+    onChange: function(selectedDates, dateStr, instance) {
+        if (selectedDates.length === 1) {
+            const day = selectedDates[0].getDay();
+
+            if (day === 0 || day === 6) {
+                alert("Vous ne pouvez pas choisir un weekend comme date de début.");
+                instance.clear();
+                return;
+            }
+        }
+
+        if (selectedDates.length === 2) {
+            const start = selectedDates[0];
+            const end = selectedDates[1];
+
+            // Prevent weekend END date
+            if (end.getDay() === 0 || end.getDay() === 6) {
+                alert("Vous ne pouvez pas choisir un weekend comme date de fin.");
+                instance.setDate([start]); // reset end
+                return;
+            }
+
+            // Set hidden inputs
+            document.getElementById('date_debut_value').value = start.toISOString().split('T')[0];
+            document.getElementById('date_fin_value').value = end.toISOString().split('T')[0];
+        }
+    },
+});
+
+
     // Validation
     (function () {
         'use strict';
-        window.addEventListener('load', function () {
+        window.addEventListener('load', () => {
             const forms = document.getElementsByClassName('needs-validation');
             [...forms].forEach(form => {
-                form.addEventListener('submit', function (event) {
+                form.addEventListener('submit', event => {
                     if (!form.checkValidity()) {
                         event.preventDefault();
                         event.stopPropagation();
@@ -104,4 +155,12 @@
         setTimeout(() => window.location.href = link.href, 800);
     }
 </script>
+<style>
+    .flatpickr-disabled-day {
+    background: #f5d7d7 !important;
+    color: #a33 !important;
+    border-radius: 6px;
+}
+
+</style>
 @endsection

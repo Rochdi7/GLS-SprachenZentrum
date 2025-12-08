@@ -47,34 +47,9 @@
                placeholder="Ex: info@gls.ma">
     </div>
 
-    {{-- VIDEO SECTION (9onsol Talks) --}}
-    <hr class="my-4">
-    <h5 class="fw-bold mb-3">Bloc Vidéo 9onsol</h5>
-
-    <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Titre de la vidéo</label>
-        <input type="text" name="video_title"
-               class="form-control"
-               value="{{ old('video_title', $site->video_title ?? '') }}">
-    </div>
-
-    <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Lien YouTube</label>
-        <input type="url" name="video_url"
-               class="form-control"
-               value="{{ old('video_url', $site->video_url ?? '') }}"
-               placeholder="https://youtube.com/...">
-    </div>
-
-    <div class="col-12 mb-3">
-        <label class="form-label fw-bold">Description de la vidéo</label>
-        <textarea name="video_description"
-                  class="form-control"
-                  rows="4">{{ old('video_description', $site->video_description ?? '') }}</textarea>
-    </div>
-
     {{-- STATUS --}}
     <hr class="my-4">
+
     <div class="col-md-3 mb-3">
         <label class="form-label fw-bold">Statut du site</label>
         <select name="is_active" class="form-select">

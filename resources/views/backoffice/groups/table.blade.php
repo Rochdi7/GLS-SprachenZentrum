@@ -9,6 +9,11 @@
                 <th>Enseignant</th>
                 <th>Période</th>
                 <th>Horaire</th>
+
+                {{-- NEW --}}
+                <th>Début</th>
+                <th>Fin</th>
+
                 <th>Création</th>
                 <th>Actions</th>
             </tr>
@@ -49,6 +54,16 @@
                     {{-- HORAIRE --}}
                     <td>{{ $group->time_range }}</td>
 
+                    {{-- DATE DEBUT --}}
+                    <td>
+                        {{ $group->date_debut ? \Carbon\Carbon::parse($group->date_debut)->format('d/m/Y') : '—' }}
+                    </td>
+
+                    {{-- DATE FIN --}}
+                    <td>
+                        {{ $group->date_fin ? \Carbon\Carbon::parse($group->date_fin)->format('d/m/Y') : '—' }}
+                    </td>
+
                     {{-- CREATED --}}
                     <td>{{ $group->created_at->format('Y-m-d') }}</td>
 
@@ -76,7 +91,7 @@
 
             @empty
                 <tr>
-                    <td colspan="9" class="text-center text-muted">
+                    <td colspan="11" class="text-center text-muted">
                         Aucun groupe trouvé.
                     </td>
                 </tr>

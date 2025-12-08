@@ -69,7 +69,7 @@
         </select>
     </div>
 
-    {{-- STATUT ACTIVE / UPCOMING --}}
+    {{-- STATUT --}}
     <div class="col-md-4 mb-3">
         <label class="form-label fw-bold">Statut</label>
         <select name="status" class="form-select" required>
@@ -86,6 +86,47 @@
                value="{{ old('time_range', $group->time_range ?? '') }}"
                placeholder="Ex: 10:00 - 12:30" required>
         <small class="text-muted">La période sera détectée automatiquement.</small>
+    </div>
+
+</div>
+
+
+{{-- ========================================================== --}}
+{{-- ===============  SUIVI DU GROUPE (DATE RANGE) ============ --}}
+{{-- ========================================================== --}}
+
+<div class="row mt-4 pt-3 border-top">
+
+    <h5 class="fw-bold mb-3">📅 Suivi du groupe</h5>
+
+    <div class="col-md-12 mb-3">
+        <label class="form-label fw-bold">Période du groupe (Début → Fin)</label>
+
+        <input 
+            type="text" 
+            id="date_range_picker"
+            class="form-control"
+            placeholder="Sélectionner la période"
+
+            value="
+                @if(old('date_debut') && old('date_fin'))
+                    {{ old('date_debut') }} to {{ old('date_fin') }}
+                @elseif(!empty($group->date_debut) && !empty($group->date_fin))
+                    {{ $group->date_debut }} to {{ $group->date_fin }}
+                @endif
+            "
+        >
+
+        {{-- HIDDEN FIELDS (Sent to Backend) --}}
+        <input type="hidden" name="date_debut" id="date_debut_value"
+               value="{{ old('date_debut', $group->date_debut ?? '') }}">
+
+        <input type="hidden" name="date_fin" id="date_fin_value"
+               value="{{ old('date_fin', $group->date_fin ?? '') }}">
+
+        <small class="text-muted">
+            Les week-ends (samedi et dimanche) sont automatiquement désactivés.
+        </small>
     </div>
 
 </div>
