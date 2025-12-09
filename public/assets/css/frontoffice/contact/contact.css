@@ -1,336 +1,344 @@
 /* =========================================================
-   CONTACT HERO SECTION 
-   ========================================================= */
+CONTACT HERO SECTION
+========================================================= */
 
+/* Fix spacing on mobile – cleaner & safer (no .row override!) */
 @media screen and (max-width: 767px) {
-  .container,
-  .container-fluid,
-  .row {
-    --bs-gutter-x: 0 !important; /* remove side spacing */
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
+.container,
+.container-fluid {
+--bs-gutter-x: 0 !important;
+padding-left: 0 !important;
+padding-right: 0 !important;
+}
 }
 
 /* ===============================
-   CONTACT HERO SECTION (from About)
-   =============================== */
+CONTACT HERO SECTION
+=============================== */
 .hero-section.section.is-no-image {
-  border-bottom-left-radius: 60px;
-  border-bottom-right-radius: 60px;
-  background-image: 
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
-    linear-gradient(225deg, #f9d976 0%, #f39c12 30%, #00b894 65%, #0984e3 100%);
-  margin-top: -40px;
-  padding-top: 120px;
-  padding-bottom: 80px;
-  margin-bottom: 110px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+border-bottom-left-radius: 60px;
+border-bottom-right-radius: 60px;
+background-color: #211e1d;
+margin-top: -40px;
+padding-top: 120px;
+padding-bottom: 80px;
+margin-bottom: 110px;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
 }
 
-/* center alignment */
+/* Center alignment */
 .container.is-hero {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding-top: 2rem;
-  width: 100%;
-  max-width: 1440px;
+text-align: center;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding-top: 2rem;
+width: 100%;
+max-width: 1440px;
 }
 
-/* subtitle */
+/* Subtitle */
 .hero_subtitle {
-  color: #fff;
-  mix-blend-mode: overlay;
-  font-size: 1.75rem;
-  font-weight: 600;
-  margin: 0 0 0.5rem 0;
-  line-height: 1.2;
+color: var(--color-surface);
+mix-blend-mode: overlay;
+font-size: 1.75rem;
+font-weight: 600;
+margin: 0 0 0.5rem 0;
+line-height: 1.2;
 }
 
-/* title */
+/* Title */
 .hero_title {
-  color: #fff;
-  text-wrap: balance;
-  font-size: clamp(2.5rem, 6vw, 5rem);
-  font-weight: 800;
-  margin: 0;
-  line-height: 1.1;
+color: var(--color-surface);
+text-wrap: balance;
+font-size: clamp(2.5rem, 6vw, 5rem);
+font-weight: 800;
+margin: 0;
+line-height: 1.1;
 }
 
 /* ===============================
-   RESPONSIVE FIXES
-   =============================== */
+RESPONSIVE FIXES
+=============================== */
 @media (max-width: 991px) {
-  .hero-section.section.is-no-image {
-    margin-top: -30px;
-    padding-top: 100px;
-    margin-bottom: 200px;
-  }
+.hero-section.section.is-no-image {
+margin-top: -30px;
+padding-top: 100px;
+margin-bottom: 200px;
+}
 }
 
 @media (max-width: 767px) {
-  .location-title {
-    text-align: center !important;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .hero-section.section.is-no-image {
-    margin-top: -25px;
-    padding-top: 90px;
-    margin-bottom: 75px;
-    padding-bottom: 60px;
-  }
-
-  .hero_subtitle {
-    font-size: 1.25rem;
-  }
-
-  .hero_title {
-    font-size: 2rem;
-  }
-}
-
-/* ===============================
-   LOCATION TITLE
-   =============================== */
 .location-title {
-  text-wrap: balance;
-  margin-top: 0;
-  margin-bottom: 0;
-  font-size: 48px;
-  font-weight: 600;
-  line-height: 1;
-  color: var(--off-black) !important; /* Noir solide */
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: unset;
-  background-clip: unset;
+text-align: center !important;
+margin-left: auto;
+margin-right: auto;
 }
 
+.hero-section.section.is-no-image {
+margin-top: -25px;
+padding-top: 90px;
+margin-bottom: 75px;
+padding-bottom: 60px;
+}
 
+.hero_subtitle {
+font-size: 1.25rem;
+}
+
+.hero_title {
+font-size: 2rem;
+}
+}
 
 /* ===============================
-   LOCATIONS CARDS SECTION
-   =============================== */
-   .location-image {
-  object-fit: cover;
-  object-position: 80% center; /* pushes visible area slightly to the right */
-  width: 100%;
-  height: 100%;
-  border-radius: 20px;
-  transition: transform 0.6s ease;
+LOCATION TITLE
+=============================== */
+.location-title {
+margin-top: 0;
+margin-bottom: 0;
+font-size: 48px;
+font-weight: 600;
+line-height: 1;
+color: var(--off-black) !important;
+}
+
+/* ===============================
+LOCATIONS CARDS SECTION
+=============================== */
+.location-image {
+object-fit: cover;
+object-position: 80% center;
+width: 100%;
+height: 100%;
+border-radius: 20px;
+transition: transform 0.6s ease;
 }
 
 .location-image:hover {
-  transform: scale(1.03); /* small zoom on hover for a nice effect */
+transform: scale(1.03);
 }
 
 .locations-carousel-section {
-  border-top-left-radius: 60px;
-  border-top-right-radius: 60px;
-  margin-top: -60px;
-  padding-top: 5rem;
-  padding-bottom: 5rem;
+border-top-left-radius: 60px;
+border-top-right-radius: 60px;
+margin-top: -60px;
+padding-top: 5rem;
+padding-bottom: 5rem;
 }
 
 .map-container {
-  border-radius: 20px;
-  overflow: hidden;
-  height: 100%;
-  aspect-ratio: 1 / 1;
-}
-
-.location-image {
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  border-radius: 20px;
+border-radius: 20px;
+overflow: hidden;
+height: 100%;
+aspect-ratio: 1 / 1;
 }
 
 .location-card {
-  background: #ffffff;
-  border: 1px solid #eee;
-  border-radius: 1.25rem;
-  padding: 1.75rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-  margin-bottom: 1.25rem;
-  opacity: 0;
-  transform: translateY(20px);
+background: #ffffff;
+border: 1px solid #eee;
+border-radius: 1.25rem;
+padding: 1.75rem;
+box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+transition: all 0.3s ease;
+margin-bottom: 1.25rem;
+opacity: 0;
+transform: translateY(20px);
 }
 
 .location-slide.active .location-card {
-  opacity: 1;
-  transform: translateY(0);
+opacity: 1;
+transform: translateY(0);
 }
 
 .location-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+transform: translateY(-5px);
+box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 /* Phone links */
 .location-card .phone {
-  color: #000;
-  font-weight: 600;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  transition: color 0.3s ease;
+color: #000;
+font-weight: 600;
+text-decoration: none;
+display: inline-flex;
+align-items: center;
+transition: color 0.3s ease;
 }
 
 .location-card .phone:hover {
-  color: #d62828;
+color: #d62828;
 }
 
 /* Dots */
 .dots-wrapper {
-  display: flex;
-  gap: 10px;
+display: flex;
+gap: 10px;
 }
 
 .dot {
-  width: 14px;
-  height: 14px;
-  background-color: #d62828;
-  border-radius: 50%;
-  opacity: 0.3;
-  transition: all 0.3s ease;
+width: 14px;
+height: 14px;
+background-color: #d62828;
+border-radius: 50%;
+opacity: 0.3;
+transition: all 0.3s ease;
 }
 
 .dot.active {
-  opacity: 1;
-  transform: scale(1.15);
+opacity: 1;
+transform: scale(1.15);
 }
 
-/* Responsive */
+/* Responsive map */
 @media (max-width: 991px) {
-  .map-container {
-    margin-bottom: 2rem;
-    aspect-ratio: 16 / 9;
-  }
+.map-container {
+margin-bottom: 2rem;
+aspect-ratio: 16 / 9;
 }
-/* Slide container visibility fix */
+}
+
+/* Slides */
 .location-slide {
-  display: none;
-  opacity: 0;
-  visibility: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  transition: opacity 0.6s ease;
+display: none;
+opacity: 0;
+visibility: hidden;
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+transition: opacity 0.6s ease;
 }
 
 .location-slide.active {
-  display: block;
-  position: relative;
-  opacity: 1;
-  visibility: visible;
+display: block;
+position: relative;
+opacity: 1;
+visibility: visible;
 }
 
 /* =========================================================
-   CONTACT FORM STYLING – Brand Red + Black Button
-   ========================================================= */
-
-/* Inputs: border + focus color */
+CONTACT FORM STYLING
+========================================================= */
 .contact-form-section .form-control {
-  border: 1px solid #ccc;
-  border-radius: 0.75rem;
-  padding: 1rem;
-  transition: all 0.3s ease;
+border: 1px solid #ccc;
+border-radius: 0.75rem;
+padding: 1rem;
+transition: all 0.3s ease;
 }
 
 .contact-form-section .form-control:focus {
-  border-color: #d62828 !important;
-  box-shadow: 0 0 0 0.25rem rgba(214, 40, 40, 0.25) !important;
+border-color: #d62828 !important;
+box-shadow: 0 0 0 0.25rem rgba(214, 40, 40, 0.25) !important;
 }
 
-/* Button styling */
 .contact-form-section .btn-success {
-  background-color: #000 !important;
-  color: #fff !important;
-  border: none;
-  transition: all 0.3s ease;
+background-color: #000 !important;
+color: var(--off-white) !important;
+border: none;
+transition: all 0.3s ease;
 }
 
 .contact-form-section .btn-success:hover {
-  background-color: #d62828 !important;
-  color: #fff !important;
-  transform: translateY(-2px);
+background-color: black !important;
+color: #fff !important;
+transform: translateY(-2px);
 }
 
 .contact-form-section .btn-success:active {
-  background-color: #b71c1c !important;
-  transform: scale(0.98);
+background-color: black !important;
+transform: scale(0.98);
 }
+
+/* Full width form fix */
+@media (max-width: 767px) {
+#contact-form .container {
+padding-left: 15px !important;
+padding-right: 15px !important;
+}
+
+#contact-form form {
+width: 100% !important;
+max-width: 100% !important;
+}
+
+#contact-form .form-control {
+width: 100% !important;
+}
+}
+
 /* =========================================================
-   BOOK YOUR CONSULTATION SECTION
+CONSULTATION SECTION
 ========================================================= */
 .consultation-section {
-  position: relative;
-  overflow: hidden;
-  margin-bottom: -100px;
-  padding: 12rem 2rem;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-image: url('/assets/images/contact/book.jpg');
-  z-index: 5;
+position: relative;
+overflow: hidden;
+margin-bottom: -100px;
+padding: 12rem 2rem;
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+background-image: url('/assets/images/contact/book.jpg');
+z-index: 5;
 }
 
-/* darker overlay for better text visibility */
 .consultation-gradient {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55); /* increased opacity */
-  z-index: 1;
+position: absolute;
+inset: 0;
+background: rgba(0, 0, 0, 0.55);
+z-index: 1;
 }
 
-/* keep content above overlay */
 .consultation-section h2,
 .consultation-section p,
 .consultation-section a {
-  position: relative;
-  z-index: 2;
+position: relative;
+z-index: 2;
 }
 
-/* white button with black text */
 .consultation-section .btn {
-  background-color: #fff !important;
-  color: #000 !important;
-  font-weight: 600;
-  border: none;
-  border-radius: 50px;
-  padding: 0.75rem 2rem;
-  transition: all 0.3s ease;
+background-color: #fff !important;
+color: #000 !important;
+font-weight: 600;
+border: none;
+border-radius: 50px;
+padding: 0.75rem 2rem;
+transition: all 0.3s ease;
 }
 
-/* hover effect: black background, white text */
 .consultation-section .btn:hover {
-  background-color: #000 !important;
-  color: #fff !important;
+background-color: #000 !important;
+color: #fff !important;
 }
 
-/* Responsive */
+/* Mobile version */
 @media (max-width: 767px) {
-  .consultation-section {
-    padding: 4rem 1.5rem;
-  }
+.consultation-section {
+padding: 4rem 1.5rem;
+}
 
-  .consultation-section h2 {
-    font-size: 2rem;
-  }
+.consultation-section h2 {
+font-size: 2rem;
+}
 
-  .consultation-section p {
-    font-size: 1rem;
+.consultation-section p {
+font-size: 1rem;
+}
+.map-container img,
+.location-image {
+border-bottom-left-radius: 0 !important;
+border-bottom-right-radius: 0 !important;
+}
+.map-container {
+    border-radius: 0 !important;
   }
+}
+
+/* Container max width override */
+.container {
+max-width: 1460px !important;
 }

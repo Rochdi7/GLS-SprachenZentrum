@@ -16,6 +16,7 @@
 @import url('cooperation.css');
 @import url('info.css');
 @import url('../rtl.css');
+@import url('../animations/reveal.css');
 
 /* =========================================================
    MOBILE DRAWER (GLOBAL STYLE)

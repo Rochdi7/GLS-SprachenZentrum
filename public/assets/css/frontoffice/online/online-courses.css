@@ -12,7 +12,7 @@
 
     margin-bottom: 0;
     margin-top: -64px;
-    padding-top: 80px;
+    padding-top: 1px !important;
     padding-bottom: 0;
     position: relative;
 }
@@ -37,7 +37,9 @@
     padding: 0 4rem 4rem;
     display: flex;
 }
-
+.info {
+    gap: 20px !important;
+}
 /* BADGE LEVEL CIRCLES */
 .couse-card_level.is-big {
     margin-top: -48px;
@@ -256,9 +258,6 @@ img {
     grid-row-gap: 2rem;
   }
 
-  .h-section-subtitle.is-info {
-    font-size: 3rem;
-  }
 }
 
 /* RESPONSIVE – Mobile */
@@ -886,7 +885,16 @@ img {
   .w-richtext-figure-type-video {
     padding-bottom: 56.25%; /* remains 16:9 */
   }
+  .gls-podcast-video {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 16 / 9; /* maintain 16:9 ratio */
+    }
 }
+.gls-podcast-video {
+    max-width: 100%;
+}
+
 /* ================================
    GLS – ONLINE COURSE SECTION
    Two-Column Grid Layout
@@ -1104,4 +1112,21 @@ img {
     padding: 1rem 0;
     font-size: 1.1rem;
   }
+}
+@media screen and (max-width: 479px) {
+    .section {
+        padding: 1rem 1rem !important;
+    }
+}
+/* ============================================
+   FIX — Reduce space between HERO and INFO section
+============================================ */
+
+.container.is-course-hero {
+    margin-bottom: 1rem !important;   /* Avant: 4rem */
+}
+
+.info-section.section.is-online-classes {
+    margin-top: -2rem !important;     /* Avant: -4rem */
+    padding-top: 4rem !important;     /* Avant: 10rem */
 }

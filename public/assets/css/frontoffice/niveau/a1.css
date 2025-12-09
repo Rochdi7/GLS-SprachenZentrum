@@ -5,7 +5,6 @@ align-items: center;
 display: flex;
 }
 
-
 /* SECTION BACKGROUND GRADIENT */
 .intensive-course-gls.section {
 background-image:
@@ -296,8 +295,8 @@ margin-top: .5rem;
 
 /* SECTION BACKGROUND */
 .gls-info-section {
-    background-color: var(--off-white);
-    padding: 6rem 4rem;
+    background-color: var(--yellow) !important;
+    padding: 4rem 2rem;
 }
 
 /* TITLE */
@@ -343,7 +342,7 @@ margin-top: .5rem;
 
 /* CARDS */
 .gls-info-card {
-    background: var(--light--off-white);
+        background-color: var(--off-white);
     padding: 2rem;
     border-radius: 18px;
     display: flex;
@@ -417,6 +416,7 @@ margin-top: .5rem;
 }
 
 .gls-path-title {
+    margin-top: 50px !important;
     font-size: 3rem;
     font-weight: 700;
     line-height: 1.1;
