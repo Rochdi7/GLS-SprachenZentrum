@@ -13,9 +13,15 @@ class BlogPost extends Model implements HasMedia
 
     protected $fillable = [
         'category_id',
-        'title',
+
+        'title_fr',
+        'title_en',
+
         'slug',
-        'content',
+
+        'content_fr',
+        'content_en',
+
         'reading_time',
         'featured',
         'status',
@@ -36,15 +42,38 @@ class BlogPost extends Model implements HasMedia
 
         static::saving(function ($post) {
             if (empty($post->slug)) {
-                $post->slug = Str::slug($post->title);
+                $post->slug = Str::slug($post->title_fr . '-' . uniqid());
             }
         });
     }
 
+    /**
+     * MEDIA LIBRARY
+     */
     public function registerMediaCollections(): void
     {
-        // Single image collection
-        $this->addMediaCollection('blog_images')
-             ->singleFile(); 
+        $this->addMediaCollection('blog_images')->singleFile();
+    }
+
+    /**
+     * 🔥 Accessor multilangue pour le titre
+     */
+    public function getTitleAttribute()
+    {
+        $locale = app()->getLocale();
+        $field = "title_{$locale}";
+
+        return $this->$field ?: $this->title_fr;
+    }
+
+    /**
+     * 🔥 Accessor multilangue pour le contenu
+     */
+    public function getContentAttribute()
+    {
+        $locale = app()->getLocale();
+        $field = "content_{$locale}";
+
+        return $this->$field ?: $this->content_fr;
     }
 }

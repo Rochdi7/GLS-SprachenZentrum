@@ -12,12 +12,15 @@ class Site extends Model implements HasMedia
     use InteractsWithMedia;
 
     protected $fillable = [
-        'name', 'slug', 'city', 'address',
-        'phone', 'email',
-        'subtitle', 'hero_image',
-        'about_title', 'about_subtitle', 'about_content',
-        'offer_title', 'offer_subtitle', 'offer_content',
-        'video_title', 'video_description', 'video_url',
+        'name',
+        'slug',
+        'city',
+        'address',
+        'phone',
+        'email',
+        'video_title',
+        'video_url',
+        'video_description',
         'is_active',
     ];
 
@@ -25,7 +28,7 @@ class Site extends Model implements HasMedia
         'is_active' => 'boolean',
     ];
 
-    // Relationships
+    // Relations
     public function teachers()
     {
         return $this->hasMany(Teacher::class);
@@ -36,7 +39,7 @@ class Site extends Model implements HasMedia
         return $this->hasMany(Group::class);
     }
 
-    // Auto slug + YouTube validation
+    // Auto slug + validation YouTube
     protected static function boot()
     {
         parent::boot();
@@ -45,13 +48,10 @@ class Site extends Model implements HasMedia
             if (empty($site->slug)) {
                 $site->slug = Str::slug($site->name);
             }
-
-            if (!empty($site->video_url) && !self::isYouTubeUrl($site->video_url)) {
-                throw new \Exception("Video URL must be a YouTube link (youtube.com or youtu.be)");
-            }
         });
     }
 
+    // ✅ Validation YouTube manuelle si besoin
     public static function isYouTubeUrl($url)
     {
         return preg_match('/(youtube\.com|youtu\.be)/i', $url);
