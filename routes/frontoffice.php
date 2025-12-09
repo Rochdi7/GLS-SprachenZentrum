@@ -7,6 +7,7 @@ use App\Http\Controllers\Frontoffice\PageController;
 use App\Http\Controllers\Frontoffice\GlsController;
 use App\Http\Controllers\Frontoffice\GroupController;
 use App\Http\Controllers\Frontoffice\BlogController;
+use App\Http\Controllers\Frontoffice\BookingSlotController;
 
 
 // ============================

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use App\Http\Controllers\Api\GroupApiController;
 
 /**
  * =============================
@@ -47,4 +48,17 @@ Route::group([
 
     require __DIR__ . '/frontoffice.php';
 
+});
+
+/**
+ * =============================
+ * API ROUTES FOR FRONTEND AJAX
+ * =============================
+ * (NOT using api.php because user JS calls /api/... directly)
+ */
+Route::prefix('api')->group(function () {
+    Route::get('/groups/dates/{site_id}/{level}', [GroupApiController::class, 'getDates']);
+    Route::get('/centers', function () {
+        return \App\Models\Site::select('id','name','city')->get();
+    });
 });
