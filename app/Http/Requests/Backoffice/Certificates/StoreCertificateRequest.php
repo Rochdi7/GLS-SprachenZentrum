@@ -14,26 +14,25 @@ class StoreCertificateRequest extends FormRequest
     public function rules(): array
     {
         return [
-
-            // Personal Information
+            // Personal
             'last_name'            => 'required|string|max:255',
             'first_name'           => 'required|string|max:255',
             'birth_date'           => 'required|date',
             'birth_place'          => 'nullable|string|max:255',
 
-            // Exam Information
+            // Exam
             'exam_level'           => 'required|string|max:255',
             'exam_date'            => 'required|date',
             'issue_date'           => 'required|date',
             'certificate_number'   => 'required|string|max:255|unique:certificates,certificate_number',
 
-            // Written Exam Scores
+            // Written
             'reading_score'        => 'required|integer|min:0',
             'grammar_score'        => 'required|integer|min:0',
             'listening_score'      => 'required|integer|min:0',
             'writing_score'        => 'required|integer|min:0',
 
-            // Oral Exam Scores
+            // Oral
             'presentation_score'   => 'required|integer|min:0',
             'discussion_score'     => 'required|integer|min:0',
             'problemsolving_score' => 'required|integer|min:0',
@@ -46,12 +45,9 @@ class StoreCertificateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'last_name.required' => 'Le nom de famille est obligatoire.',
-            'first_name.required' => 'Le prénom est obligatoire.',
             'certificate_number.unique' => 'Ce numéro de certificat existe déjà.',
-            'exam_date.required' => 'La date d’examen est obligatoire.',
-            'issue_date.required' => 'La date de délivrance est obligatoire.',
-            'final_result.required' => 'Le résultat final est obligatoire.',
+            'last_name.required'        => 'Le nom de famille est obligatoire.',
+            'first_name.required'       => 'Le prénom est obligatoire.',
         ];
     }
 }
