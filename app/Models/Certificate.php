@@ -8,7 +8,7 @@ class Certificate extends Model
 {
     protected $fillable = [
 
-        // Personal Information
+        // Personal Info
         'last_name',
         'first_name',
         'birth_date',
@@ -20,7 +20,7 @@ class Certificate extends Model
         'issue_date',
         'certificate_number',
 
-        // Written Scores
+        // Written
         'written_total',
         'written_max',
 
@@ -36,7 +36,7 @@ class Certificate extends Model
         'writing_score',
         'writing_max',
 
-        // Oral Scores
+        // Oral
         'oral_total',
         'oral_max',
 
@@ -49,17 +49,15 @@ class Certificate extends Model
         'problemsolving_score',
         'problemsolving_max',
 
-        // Final Result
+        // Final
         'final_result',
     ];
 
     protected $casts = [
-        // dates
         'birth_date'     => 'date',
         'exam_date'      => 'date',
         'issue_date'     => 'date',
 
-        // all numeric scores (int)
         'written_total'        => 'integer',
         'written_max'          => 'integer',
 
@@ -89,55 +87,44 @@ class Certificate extends Model
     ];
 
 
+
     /*
     |--------------------------------------------------------------------------
-    | Accessors (Custom Attributes)
+    |  ACCESSORS
     |--------------------------------------------------------------------------
     */
 
-    // Total maximum possible (written + oral)
     public function getTotalMaxAttribute()
     {
         return $this->written_max + $this->oral_max;
     }
 
-    // Total obtained (written_total + oral_total)
     public function getTotalScoreAttribute()
     {
         return $this->written_total + $this->oral_total;
     }
 
-    //  Percentage global (0–100%)
     public function getTotalPercentageAttribute()
     {
-        if ($this->total_max == 0) {
-            return 0;
-        }
-
-        return round(($this->total_score / $this->total_max) * 100, 2);
+        return $this->total_max == 0
+            ? 0
+            : round(($this->total_score / $this->total_max) * 100, 2);
     }
 
-    //  Written percentage
     public function getWrittenPercentageAttribute()
     {
-        if ($this->written_max == 0) {
-            return 0;
-        }
-
-        return round(($this->written_total / $this->written_max) * 100, 2);
+        return $this->written_max == 0
+            ? 0
+            : round(($this->written_total / $this->written_max) * 100, 2);
     }
 
-    //  Oral percentage
     public function getOralPercentageAttribute()
     {
-        if ($this->oral_max == 0) {
-            return 0;
-        }
-
-        return round(($this->oral_total / $this->oral_max) * 100, 2);
+        return $this->oral_max == 0
+            ? 0
+            : round(($this->oral_total / $this->oral_max) * 100, 2);
     }
 
-    //  Full name
     public function getFullNameAttribute()
     {
         return strtoupper($this->last_name) . ' ' . ucfirst($this->first_name);

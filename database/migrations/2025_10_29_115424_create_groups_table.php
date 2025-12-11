@@ -12,7 +12,6 @@ return new class extends Migration {
 
             // Relations
             $table->foreignId('site_id')->constrained('sites')->cascadeOnDelete();
-
             $table->foreignId('teacher_id')->constrained('teachers')->cascadeOnDelete();
 
             // Default name
@@ -24,7 +23,7 @@ return new class extends Migration {
             $table->string('name_ar')->nullable(); // future
             $table->string('name_de')->nullable(); // future
 
-            // Level
+            // Level (FIXED: A1 → B2 ONLY)
             $table->enum('level', ['A1', 'A2', 'B1', 'B2']);
 
             // Periods
@@ -41,6 +40,12 @@ return new class extends Migration {
             // Indexes
             $table->index('site_id');
             $table->index('teacher_id');
+
+            /********************************************
+             * SUIVI DU GROUPE (new section added)
+             ********************************************/
+            $table->date('date_debut')->nullable();
+            $table->date('date_fin')->nullable();
         });
     }
 
