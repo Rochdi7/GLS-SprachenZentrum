@@ -1,7 +1,16 @@
 <!-- [ Header Topbar ] start -->
 <header class="pc-header">
     <div class="header-wrapper">
-
+        <li class="pc-h-item pc-sidebar-collapse">
+            <a href="#" class="pc-head-link ms-0" id="sidebar-hide">
+                <i class="ti ti-menu-2"></i>
+            </a>
+        </li>
+        <li class="pc-h-item pc-sidebar-popup">
+            <a href="#" class="pc-head-link ms-0" id="mobile-collapse">
+                <i class="ti ti-menu-2"></i>
+            </a>
+        </li>
         <div class="ms-auto">
             <ul class="list-unstyled">
 
@@ -34,7 +43,7 @@
                                     <div class="d-flex align-items-center">
                                         @php
                                             $user = Auth::user();
-$media = $user?->getFirstMedia('profile_photo');
+                                            $media = $user?->getFirstMedia('profile_photo');
                                         @endphp
 
                                         <img class="rounded-circle img-fluid wid-90 img-thumbnail"

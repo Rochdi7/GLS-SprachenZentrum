@@ -8,10 +8,10 @@
             </a>
         </li>
         <li class="pc-h-item pc-sidebar-popup">
-            <a href="#" class="pc-head-link ms-0" id="mobile-collapse">
-                <i class="ti ti-menu-2"></i>
-            </a>
-        </li>
+                    <a href="#" class="pc-head-link ms-0" id="mobile-collapse">
+                        <i class="ti ti-menu-2"></i>
+                    </a>
+                </li>
         <li class="dropdown pc-h-item d-inline-flex d-md-none">
             <a class="pc-head-link dropdown-toggle arrow-none m-0" data-bs-toggle="dropdown" href="#"
                 role="button" aria-haspopup="false" aria-expanded="false">

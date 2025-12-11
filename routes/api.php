@@ -7,40 +7,36 @@ use App\Http\Controllers\Api\GroupApiController;
 use App\Models\Site;
 use App\Models\Group;
 
-
-// ============================
-// GET ACTIVE CENTERS
-// ============================
 Route::get('/centers', function () {
     return Site::select('id', 'name', 'city')
                 ->where('is_active', 1)
                 ->get();
 });
 
+Route::get('/groups/{site_id}', function ($site_id) {
 
-// ============================
-// GET LEVELS FOR CENTER
-// ============================
-Route::get('/center/{site_id}/levels', function ($site_id) {
-    return Group::where('site_id', $site_id)
-                ->select('level')
-                ->distinct()
+    $groups = Group::where('site_id', $site_id)
+                ->where('status', 'active')
+                ->select('id', 'name', 'name_fr', 'level', 'time_range')
                 ->get();
+
+    foreach ($groups as $index => $g) {
+        if ($g->name_fr) {
+            $g->display_name = $g->name_fr;
+        } elseif ($g->name) {
+            $g->display_name = $g->name;
+        } else {
+            $g->display_name = "Groupe " . ($index + 1);
+        }
+    }
+
+    return $groups;
 });
 
+Route::get('/groups/dates/{group_id}', [GroupApiController::class, 'getDates']);
 
-// ============================
-// GET AVAILABLE DATES (Day by day)
-// ============================
-Route::get('/groups/dates/{site_id}/{level}', [GroupApiController::class, 'getDates']);
-
-
-// ============================
-// GET TIME RANGE
-// ============================
-Route::get('/groups/time/{site_id}/{level}', function ($site_id, $level) {
-    $group = Group::where('site_id', $site_id)
-                  ->where('level', $level)
+Route::get('/groups/time/{group_id}', function ($group_id) {
+    $group = Group::where('id', $group_id)
                   ->where('status', 'active')
                   ->select('time_range')
                   ->first();
@@ -50,10 +46,6 @@ Route::get('/groups/time/{site_id}/{level}', function ($site_id, $level) {
     ]);
 });
 
-
-// ============================
-// DEFAULT LARAVEL SANCTUM ROUTE
-// ============================
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
