@@ -10,48 +10,31 @@ class GroupApiController extends Controller
 {
     /**
      * Retourne toutes les dates disponibles (jour par jour)
-     * pour un site + niveau donnés.
+     * pour un groupe donné.
      *
      * - Exclut automatiquement les weekends
-     * - Découpe les périodes date_debut → date_fin
+     * - Découpe date_debut → date_fin
      */
-    public function getDates($site_id, $level)
-{
-    // DEBUG : Afficher les groupes trouvés
-    $groups = Group::where('site_id', $site_id)
-        ->where('level', $level)
-        ->get(['id','date_debut','date_fin']);
+    public function getDates($group_id)
+    {
+        $group = Group::find($group_id);
 
-    if ($groups->isEmpty()) {
-        return response()->json([
-            'error' => 'No groups found for this site/level',
-            'site_id' => $site_id,
-            'level' => $level
-        ]);
-    }
-
-    $days = [];
-
-    foreach ($groups as $group) {
-
-        if (!$group->date_debut || !$group->date_fin) {
-            continue;
+        if (!$group || !$group->date_debut || !$group->date_fin) {
+            return response()->json([]);
         }
 
         $start = Carbon::parse($group->date_debut);
         $end   = Carbon::parse($group->date_fin);
 
+        $availableDates = [];
+
         while ($start->lte($end)) {
             if (!$start->isWeekend()) {
-                $days[] = $start->format('Y-m-d');
+                $availableDates[] = $start->format('Y-m-d');
             }
             $start->addDay();
         }
+
+        return response()->json($availableDates);
     }
-
-    return response()->json($days);
 }
-
-}
-
-
