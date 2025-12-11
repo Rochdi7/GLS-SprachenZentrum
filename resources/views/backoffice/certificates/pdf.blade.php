@@ -3,40 +3,36 @@
 
 <head>
     <meta charset="UTF-8">
+
     <style>
         body {
             font-family: DejaVu Sans, sans-serif;
             font-size: 12px;
             color: #333;
-            margin: 50px;
+            margin: 40px;
         }
 
         .logo {
             width: 120px;
         }
 
-        .header-row {
+        table {
             width: 100%;
+            border-collapse: collapse;
         }
 
         .title {
             text-align: center;
             letter-spacing: 5px;
-            font-size: 24px;
+            font-size: 26px;
             margin-top: 20px;
-            margin-bottom: 5px;
         }
 
         .title2 {
             text-align: center;
-            letter-spacing: 5px;
+            letter-spacing: 4px;
             font-size: 20px;
-            margin-bottom: 50px;
-        }
-
-        .two-cols {
-            width: 100%;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
 
         .col {
@@ -52,14 +48,14 @@
         }
 
         .line {
-            border-bottom: 1px solid #aaa;
-            width: 150px;
+            border-bottom: 1px solid #777;
+            width: 180px;
             margin-bottom: 5px;
         }
 
         .label {
             font-size: 11px;
-            color: #666;
+            color: #555;
         }
 
         .section-title {
@@ -69,39 +65,26 @@
             font-size: 14px;
         }
 
-        .score-row {
-            width: 100%;
-            font-size: 13px;
-            margin-bottom: 4px;
-        }
-
         .score-left {
-            width: 60%;
-            color: #555;
+            font-size: 12px;
         }
 
         .score-right {
-            width: 40%;
             text-align: right;
             font-weight: bold;
+            font-size: 12px;
         }
 
-        .result-row {
-            width: 100%;
-            margin-top: 40px;
+        .result-row td {
+            padding-top: 20px;
             font-size: 14px;
-        }
-
-        .footer-row {
-            width: 100%;
-            margin-top: 60px;
-            font-size: 11px;
         }
 
         .signature-block {
             width: 50%;
             text-align: center;
-            vertical-align: top;
+            margin-top: 50px;
+            font-size: 11px;
         }
 
         .signature-line {
@@ -111,14 +94,13 @@
             margin-left: auto;
             margin-right: auto;
         }
-
     </style>
 </head>
 
 <body>
 
-    {{-- HEADER --}}
-    <table class="header-row">
+    <!-- HEADER -->
+    <table>
         <tr>
             <td>
                 <img src="{{ public_path('assets/images/logo/gls.png') }}" class="logo">
@@ -129,15 +111,13 @@
         </tr>
     </table>
 
-    {{-- TITLE --}}
+    <!-- TITLES -->
     <div class="title">ZERTIFIKAT</div>
     <div class="title2">{{ $certificate->exam_level }}</div>
 
-
-    {{-- TWO COLUMNS: LEFT + RIGHT --}}
-    <table class="two-cols">
+    <!-- PERSONAL INFORMATION -->
+    <table style="margin-bottom: 40px;">
         <tr>
-            {{-- LEFT Person --}}
             <td class="col">
                 <div class="col-title">{{ $certificate->last_name }}</div>
                 <div class="line"></div>
@@ -145,12 +125,11 @@
 
                 <br>
 
-                <div>{{ \Carbon\Carbon::parse($certificate->birth_date)->format('m/d/Y') }}</div>
+                <div>{{ $certificate->birth_date->format('d.m.Y') }}</div>
                 <div class="line"></div>
                 <div class="label">Geburtsdatum</div>
             </td>
 
-            {{-- RIGHT Person --}}
             <td class="col">
                 <div class="col-title">{{ $certificate->first_name }}</div>
                 <div class="line"></div>
@@ -165,40 +144,58 @@
         </tr>
     </table>
 
-    {{-- SCHRIFTLICHE PRÜFUNG --}}
+
+    <!-- WRITTEN EXAM -->
     <div class="section-title">Schriftliche Prüfung</div>
 
-    <table class="score-row">
+    <table>
         <tr>
             <td class="score-left"><strong>Gesamt</strong></td>
-            <td class="score-right">{{ $certificate->written_total }} / 225</td>
+            <td class="score-right">{{ $certificate->written_total }} / {{ $certificate->written_max }}</td>
+        </tr>
+        <tr>
+            <td class="score-left">• Leseverstehen</td>
+            <td class="score-right">{{ $certificate->reading_score }} / {{ $certificate->reading_max }}</td>
+        </tr>
+        <tr>
+            <td class="score-left">• Sprachbausteine</td>
+            <td class="score-right">{{ $certificate->grammar_score }} / {{ $certificate->grammar_max }}</td>
+        </tr>
+        <tr>
+            <td class="score-left">• Hörverstehen</td>
+            <td class="score-right">{{ $certificate->listening_score }} / {{ $certificate->listening_max }}</td>
+        </tr>
+        <tr>
+            <td class="score-left">• Schriftlicher Ausdruck</td>
+            <td class="score-right">{{ $certificate->writing_score }} / {{ $certificate->writing_max }}</td>
         </tr>
     </table>
 
-    <table>
-        <tr><td class="score-left">• Leseverstehen</td><td class="score-right">{{ $certificate->reading_score }} / 75</td></tr>
-        <tr><td class="score-left">• Sprachbausteine</td><td class="score-right">{{ $certificate->grammar_score }} / 30</td></tr>
-        <tr><td class="score-left">• Hörverstehen</td><td class="score-right">{{ $certificate->listening_score }} / 75</td></tr>
-        <tr><td class="score-left">• Schriftlicher Ausdruck</td><td class="score-right">{{ $certificate->writing_score }} / 45</td></tr>
-    </table>
 
-    {{-- MÜNDLICHE PRÜFUNG --}}
+    <!-- ORAL EXAM -->
     <div class="section-title">Mündliche Prüfung</div>
 
-    <table class="score-row">
+    <table>
         <tr>
             <td class="score-left"><strong>Gesamt</strong></td>
-            <td class="score-right">{{ $certificate->oral_total }} / 75</td>
+            <td class="score-right">{{ $certificate->oral_total }} / {{ $certificate->oral_max }}</td>
+        </tr>
+        <tr>
+            <td class="score-left">• Präsentation</td>
+            <td class="score-right">{{ $certificate->presentation_score }} / {{ $certificate->presentation_max }}</td>
+        </tr>
+        <tr>
+            <td class="score-left">• Diskussion</td>
+            <td class="score-right">{{ $certificate->discussion_score }} / {{ $certificate->discussion_max }}</td>
+        </tr>
+        <tr>
+            <td class="score-left">• Problemlösung</td>
+            <td class="score-right">{{ $certificate->problemsolving_score }} / {{ $certificate->problemsolving_max }}</td>
         </tr>
     </table>
 
-    <table>
-        <tr><td class="score-left">• Präsentation</td><td class="score-right">{{ $certificate->presentation_score }} / 25</td></tr>
-        <tr><td class="score-left">• Diskussion</td><td class="score-right">{{ $certificate->discussion_score }} / 25</td></tr>
-        <tr><td class="score-left">• Problemlösung</td><td class="score-right">{{ $certificate->problemsolving_score }} / 25</td></tr>
-    </table>
 
-    {{-- RESULT --}}
+    <!-- RESULT -->
     <table class="result-row">
         <tr>
             <td class="score-left"><strong>Ergebnis</strong></td>
@@ -206,15 +203,16 @@
         </tr>
     </table>
 
-    {{-- EXAM DATES --}}
-    <table style="margin-top:45px;">
+
+    <!-- DATES -->
+    <table style="margin-top: 30px;">
         <tr>
             <td class="score-left">Datum der Prüfung</td>
-            <td class="score-right">{{ \Carbon\Carbon::parse($certificate->exam_date)->format('d.m.Y') }}</td>
+            <td class="score-right">{{ $certificate->exam_date->format('d.m.Y') }}</td>
         </tr>
         <tr>
             <td class="score-left">Datum der Ausstellung</td>
-            <td class="score-right">{{ \Carbon\Carbon::parse($certificate->issue_date)->format('d.m.Y') }}</td>
+            <td class="score-right">{{ $certificate->issue_date->format('d.m.Y') }}</td>
         </tr>
         <tr>
             <td class="score-left">Teilnehmernummer</td>
@@ -222,14 +220,14 @@
         </tr>
     </table>
 
-    {{-- FOOTER SIGNATURE --}}
-    <table class="footer-row">
+
+    <!-- SIGNATURES -->
+    <table style="margin-top: 50px;">
         <tr>
             <td class="signature-block">
                 <div class="signature-line"></div>
                 Geschäftsführer
             </td>
-
             <td class="signature-block">
                 <div class="signature-line"></div>
                 Prüfungszentrum
