@@ -11,8 +11,10 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // Loads resources/views/frontoffice/home.blade.php
-        return view('frontoffice.home');
+        // Load all active GLS centers
+        $sites = \App\Models\Site::where('is_active', true)->get();
+
+        return view('frontoffice.home', compact('sites'));
     }
 
     /**
@@ -23,7 +25,8 @@ class HomeController extends Controller
         // Loads resources/views/frontoffice/about.blade.php
         return view('frontoffice.about');
     }
-    public function FAQ(){
+    public function FAQ()
+    {
         return view('frontoffice.faq');
     }
 }

@@ -16,10 +16,10 @@ class GroupController extends Controller
      */
     public function index()
     {
-        // Load site and teacher relationships
+        // Load relationships
         $groups = Group::with(['site', 'teacher'])
-                        ->latest()
-                        ->paginate(10);
+            ->latest()
+            ->paginate(10);
 
         return view('backoffice.groups.index', compact('groups'));
     }
@@ -40,11 +40,10 @@ class GroupController extends Controller
      */
     public function store(StoreGroupRequest $request)
     {
+        // Create group with all validated fields (including new date fields)
         Group::create($request->validated());
 
-        return redirect()
-            ->route('backoffice.groups.index')
-            ->with('success', 'Le groupe a été créé avec succès.');
+        return redirect()->route('backoffice.groups.index')->with('success', 'Le groupe a été créé avec succès.');
     }
 
     /**
@@ -77,11 +76,10 @@ class GroupController extends Controller
     {
         $group = Group::findOrFail($id);
 
+        // Update group with validated data (including suivi du groupe)
         $group->update($request->validated());
 
-        return redirect()
-            ->route('backoffice.groups.index')
-            ->with('success', 'Le groupe a été mis à jour avec succès.');
+        return redirect()->route('backoffice.groups.index')->with('success', 'Le groupe a été mis à jour avec succès.');
     }
 
     /**
@@ -93,8 +91,30 @@ class GroupController extends Controller
 
         $group->delete();
 
-        return redirect()
-            ->route('backoffice.groups.index')
-            ->with('success', 'Le groupe a été supprimé avec succès.');
+        return redirect()->route('backoffice.groups.index')->with('success', 'Le groupe a été supprimé avec succès.');
+    }
+    public function getDates($site_id, $level)
+    {
+        $groups = Group::where('site_id', $site_id)
+            ->where('level', $level)
+            ->get(['date_debut', 'date_fin']);
+
+        $days = [];
+
+        foreach ($groups as $group) {
+            if ($group->date_debut && $group->date_fin) {
+                $start = \Carbon\Carbon::parse($group->date_debut);
+                $end = \Carbon\Carbon::parse($group->date_fin);
+
+                while ($start->lte($end)) {
+                    if (!$start->isWeekend()) {
+                        $days[] = $start->format('Y-m-d');
+                    }
+                    $start->addDay();
+                }
+            }
+        }
+
+        return response()->json($days);
     }
 }

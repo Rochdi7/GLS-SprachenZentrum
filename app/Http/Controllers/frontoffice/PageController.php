@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Frontoffice;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ContactMessageMail;
 use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use Illuminate\Http\Request;
@@ -128,16 +130,18 @@ class PageController extends Controller
             return redirect()->route('front.certificate.check')->with('certificate_error', 'Aucun certificat trouvé pour ce numéro. Vérifiez le numéro et réessayez.');
         }
 
-        // On ne stocke pas tout l'objet, juste ce qu’on a besoin
+        // Store correct fields
         return redirect()
             ->route('front.certificate.check')
             ->with('certificate_success', [
                 'id' => $certificate->id,
                 'first_name' => $certificate->first_name,
                 'last_name' => $certificate->last_name,
-                'level' => $certificate->level,
+
+                'exam_level' => $certificate->exam_level,
+
                 'exam_date' => $certificate->exam_date,
-                'issued_date' => $certificate->issued_date,
+                'issued_date' => $certificate->issue_date, 
                 'certificate_number' => $certificate->certificate_number,
             ]);
     }
@@ -164,5 +168,24 @@ class PageController extends Controller
     public function courses()
     {
         return view('frontoffice.courses.index');
+    }
+
+    public function contactPost(Request $request)
+    {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email',
+                'subject' => 'required|string|max:255',
+                'message' => 'required|string|min:5',
+            ]);
+
+            // ENVOI EMAIL RÉEL
+            Mail::to('rochdi.karouali1234@gmail.com')->send(new ContactMessageMail($request->all()));
+
+            return back()->with('success', 'Votre message a bien été envoyé ! Merci de nous avoir contactés.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Une erreur est survenue : ' . $e->getMessage());
+        }
     }
 }
