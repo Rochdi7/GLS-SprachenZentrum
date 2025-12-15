@@ -414,12 +414,7 @@
         display: block;
     }
 
-    .available-date {
-        background: #1e88e5 !important;
-        color: white !important;
-        border-radius: 6px !important;
-        font-weight: bold !important;
-    }
+  
 
     /* Force highlight for available dates */
     .flatpickr-day.available-date {
@@ -434,10 +429,4 @@
     .flatpickr-day.available-date:hover {
         background: #0d47a1 !important;
         color: #fff !important;
-    }
-
-    .available-date {
-        background: #4caf50 !important;
-        color: #fff !important;
-        border-radius: 50% !important;
     }
