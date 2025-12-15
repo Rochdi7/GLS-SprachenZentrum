@@ -11,22 +11,24 @@ class GlsInscriptionMail extends Mailable
     use Queueable, SerializesModels;
 
     public $data;
+    public $centre;
+    public $group;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct($data)
+    public function __construct($data, $centre = null, $group = null)
     {
         $this->data = $data;
+        $this->centre = $centre;
+        $this->group = $group;
     }
 
-    /**
-     * Build the message.
-     */
     public function build()
     {
         return $this->subject('Nouvelle inscription GLS')
                     ->view('emails.gls-inscription')
-                    ->with('data', $this->data);
+                    ->with([
+                        'data' => $this->data,
+                        'centre' => $this->centre,
+                        'group' => $this->group,
+                    ]);
     }
 }
