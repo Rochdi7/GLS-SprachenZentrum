@@ -1,0 +1,226 @@
+/* ===============================
+   INTRO SECTION – die Code sommet Style
+   Responsive + Balanced Positioning
+================================ */
+.intro-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+  width: 100%;
+  border-top-left-radius: 60px;
+  border-top-right-radius: 60px;
+  background-image:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    linear-gradient(225deg, #0057ff 0%, #00d98a 40%, #00a06e 70%, #ffd84c 100%);
+  padding-top: 5rem;
+  padding-bottom: 1.5rem;
+  z-index: 5;
+  margin-top: -160px; /* pull closer to hero like die Code sommet */
+}
+
+/* Remove Bootstrap container padding only for this section */
+.intro-section .container {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Gradient overlay (optional) */
+.intro-gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.95;
+}
+
+/* Floating cream card */
+.intro-card {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #fffee8;
+  border-radius: 28px;
+  width: 78%;
+  max-width: 740px;
+  margin-top: -12rem;
+  padding: 2.5rem 3rem 3.5rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+}
+
+/* Logo */
+.intro-logo {
+  display: inline-block;
+  width: 85px;
+  height: auto;
+  margin-top: -1.5rem;
+  margin-bottom: 1.2rem;
+}
+
+/* Typography */
+.intro-section h1 {
+  color: #0b0b0b;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.intro-section p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #444;
+  max-width: 560px;
+  text-align: center;
+  margin: 0 auto 1.5rem;
+}
+
+/* Button */
+.intro-section .btn-success {
+  background-color: #007342;
+  color: var(--light--green);
+  border: none;
+  transition: all 0.3s ease;
+  padding: 0.6rem 1.6rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 50px;
+}
+
+.intro-section .btn-success:hover {
+  background-color: #005d32;
+  transform: translateY(-2px);
+}
+
+/* ===============================
+   RESPONSIVE FIXES (Consistent Layout)
+================================ */
+
+/* Tablets (≤ 991px) */
+@media (max-width: 991px) {
+  .intro-section {
+    padding-top: 4.5rem;
+    margin-top: -120px;
+  }
+
+  .intro-card {
+    width: 88%;
+    margin-top: -160px;
+    padding: 2rem 2rem 3rem;
+    border-radius: 24px;
+  }
+
+  .intro-section h1 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 767px) {
+
+  /* HERO – Move H1 */
+  .hero .hero-title {
+    margin-bottom: 220px !important;
+    position: relative;
+    z-index: 5;
+    display: block;
+  }
+
+  /* HERO – Badges positions mobile */
+  .hero .b-blue {
+      left: 2% !important;
+      top: 18% !important;
+      bottom: auto !important;
+  }
+
+  .hero .b-green {
+      left: 8% !important;
+      bottom: 64% !important;
+      top: auto !important;
+              z-index: 0;
+  }
+
+  .hero .b-orange {
+      right: 11% !important;
+      top: 17% !important;
+      bottom: auto !important;
+  }
+
+  .hero .b-violet {
+      right: 15% !important;
+      bottom: 64% !important;
+      top: auto !important;
+  }
+
+  /* INTRO SECTION */
+  .intro-section {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 3.5rem;
+    margin-top: -250px;
+  }
+
+  .intro-card {
+    width: 94%;
+    margin: 0 auto;
+    margin-top: -140px;
+    padding: 1.75rem 1.5rem 2.5rem;
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .intro-logo {
+    width: 70px;
+    margin-top: -1rem;
+  }
+
+  .intro-section h1 {
+    font-size: 40px !important;
+    max-width: 200px !important;
+    font-weight: 600 !important;
+    line-height: .9 !important;
+    letter-spacing: 0 !important;
+  }
+}
+
+@media (max-width: 479px) {
+
+  .intro-card {
+    width: 92%;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    border-radius: 20px;
+  }
+
+  /* HERO – tighter spacing */
+  .hero .hero-title {
+    margin-bottom: 280px !important;
+  }
+
+  /* HERO – badges tighter */
+  .hero .b-blue {
+    left: 3% !important;
+    top: 13% !important;
+  }
+
+  .hero .b-green {
+    left: 6% !important;
+    bottom: 70% !important;
+            z-index: 0;
+  }
+
+  .hero .b-orange {
+    right: 6% !important;
+    top: 14% !important;
+  }
+
+  .hero .b-violet {
+    right: 13% !important;
+    bottom: 70% !important;
+  }
+}

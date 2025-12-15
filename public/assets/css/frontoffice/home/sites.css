@@ -1,0 +1,250 @@
+/* ===============================
+   GLS – NOS SITES AU MAROC
+================================ */
+.sites-maroc-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6rem 4rem;
+  background: #f8f9fb;
+}
+
+.sites-title {
+  font-size: clamp(2.5rem, 4vw, 3.2rem);
+  font-weight: 700;
+  margin-bottom: .75rem;
+  text-align: center;
+  color: #000;
+}
+
+.sites-subtitle {
+  font-size: 1.1rem;
+  color: #6c757d;
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+/* Grid Layout */
+.sites-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 300px;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1300px;
+}
+
+/* Card Base */
+.site-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.site-card:hover {
+  box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+}
+
+/* Image & MP4 Video */
+.site-image,
+.site-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity .5s;
+}
+
+.site-image { opacity: 1; z-index: 1; }
+.site-video { opacity: 0; z-index: 0; pointer-events: none; }
+
+/* Image & MP4 Video */
+.site-image,
+.site-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity .5s;
+}
+
+.site-image { opacity: 1; z-index: 1; }
+.site-video { opacity: 0; z-index: 0; pointer-events: none; }
+
+/* REMOVE HOVER EFFECT */
+.site-card:hover .site-video {
+  opacity: 0 !important;
+  z-index: 0 !important;
+}
+
+.site-card:hover .site-image {
+  opacity: 1 !important;
+}
+
+
+/* YouTube Wrapper */
+.site-video-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.site-video-wrapper iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  border: 0;
+}
+
+/* Overlay Title */
+.site-overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 1.5rem 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent 70%);
+  text-align: center;
+  z-index: 2;
+}
+
+.site-overlay h3 {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Size Variants */
+.site-card.small { grid-column: span 1; }
+.site-card.wide { grid-column: span 2; }
+
+/* Tablet */
+@media (max-width: 991px) {
+  .sites-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 260px;
+    gap: 1rem;
+  }
+  .site-card.wide { grid-column: span 2; }
+}
+
+/* Mobile */
+@media (max-width: 575px) {
+  .sites-maroc-section { padding: 0; background: #fff; }
+  .site-overlay h3 { font-size: 1.3rem; }
+}
+
+/* Mobile Full Video Cover Fix */
+@media (max-width: 575px) {
+  .site-video-wrapper iframe {
+    width: 260%;
+    height: 260%;
+  }
+}
+
+/* ===============================
+   PLAY BUTTON + RIPPLE ANIMATION
+================================ */
+
+/* Center wrapper */
+.site-video-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* Button core */
+.play-btn {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    background: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: transform .3s ease;
+}
+
+.play-btn:hover {
+    transform: scale(1.08);
+}
+
+/* SVG icon */
+.play-btn svg {
+    width: 30px;
+    fill: #e51e24;
+    position: relative;
+    left: 2px;
+}
+
+/* Ripple Elements (slow premium effect) */
+.play-btn .ripple {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.7);
+    animation: rippleSlow 3.5s infinite ease-out;
+}
+
+/* Delay waves */
+.play-btn .ripple:nth-child(1) { animation-delay: 0s; }
+.play-btn .ripple:nth-child(2) { animation-delay: .8s; }
+.play-btn .ripple:nth-child(3) { animation-delay: 1.6s; }
+
+/* Keyframes slow ripple */
+@keyframes rippleSlow {
+    0%   { transform: scale(1); opacity: .8; }
+    40%  { transform: scale(1.6); opacity: .4; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* ===============================
+   POPUP VIDEO OVERLAY
+================================ */
+
+.video-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.video-popup-container {
+    position: relative;
+    width: 90%;
+    max-width: 1100px;
+}
+
+.video-popup-container iframe {
+    width: 100%;
+    height: 600px;
+    border-radius: 10px;
+}
+
+.video-popup-close {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    font-size: 40px;
+    color: #fff;
+    cursor: pointer;
+}

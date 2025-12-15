@@ -1,0 +1,201 @@
+/* =========================================================
+   REVIEWS CAROUSEL SECTION – with Responsive Title Fix
+   ========================================================= */
+
+   .reviews-carousel-section.section {
+    background-color: black;
+    color: var(--off-white);
+    padding: 4rem 0; /* Minimized vertical padding on section */
+    overflow: hidden; /* CRUCIAL for the carousel effect */
+  }
+  
+  .container.is-reviews-title-block {
+    padding: 0 1.5rem;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  /* ===================================
+     Title & Rating Stars (Desktop)
+  =================================== */
+  .h-section-subtitle.is-reviews {
+    color: white;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    margin-bottom: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+  }
+  
+  /* Align rating block horizontally */
+  .div-block-29 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  
+  .review-stars-title {
+    color: var(--yellow);
+    width: 125px;
+  }
+  
+  /* ===================================
+     Review Cards Layout
+  =================================== */
+  .div-block-28.review-grid-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .review-carousel_track {
+    display: flex;
+    flex-shrink: 0;
+    min-width: 200%; /* Important: needs to be larger than container to scroll/loop */
+    gap: 2rem; /* wider gap for new card width */
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    box-sizing: content-box;
+  }
+  
+  /* ===== Updated Review Card Style ===== */
+  .review-block {
+    background-color: var(--off-white);
+    color: var(--off-black);
+    border-radius: 1rem;
+    flex-flow: column;
+    flex: none;
+    width: 400px;
+    margin-right: 2rem;
+    padding: 2rem;
+    font-size: 16px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-height: 230px; /* ✅ Keeps all cards same height visually */
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .review-block:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  .text-block-9 {
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 0.5em;
+    flex-grow: 1; /* ✅ ensures text expands evenly */
+    overflow: hidden; /* prevents content overflow during animation */
+  }
+  
+  .text-block-10 {
+    font-weight: 600;
+    opacity: 0.33;
+    margin-top: auto;
+  }
+  
+  /* Optional: center stars better */
+  .review-stars {
+    color: var(--yellow);
+    width: 120px;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+  }
+  
+  
+  /* ===================================
+     1. Animation Keyframes
+  =================================== */
+  @keyframes scroll-left {
+    from {
+        transform: translateX(0%);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+  }
+  
+  @keyframes scroll-right {
+    from {
+        transform: translateX(-50%);
+    }
+    to {
+        transform: translateX(0%);
+    }
+  }
+  
+  /* ===================================
+     2. Applying Animations to Tracks
+  =================================== */
+  .is-animating-left {
+    animation: scroll-left 30s linear infinite;
+  }
+  
+  .is-animating-right {
+    animation: scroll-right 30s linear infinite;
+  }
+  
+  /* Pause on hover */
+  .review-carousel_track:hover {
+    animation-play-state: paused;
+  }
+  
+  /* ===================================
+     Mobile Adjustments (max-width: 479px)
+  =================================== */
+  @media screen and (max-width: 479px) {
+    /* Title adjustments */
+    .h-section-subtitle.is-reviews {
+      font-size: 1.75rem;
+      line-height: 1.25;
+      margin-bottom: 0.75rem;
+      padding: 0 0.5rem;
+    }
+  
+    /* Align rating block nicely */
+    .div-block-29 {
+      flex-direction: row;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+  
+    .review-stars-title {
+      width: 100px; /* slightly smaller stars for mobile */
+    }
+  
+    /* Carousel layout */
+    .review-carousel_track {
+        padding-left: 0;
+        padding-right: 0;
+        gap: 0.75rem;
+    }
+  
+    /* Adjusted card size for mobile */
+    .review-block {
+      width: 260px;
+      min-height: 200px; 
+      margin-right: 1rem;
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+    }
+  
+    .div-block-28.review-grid-layout {
+        padding-left: 1rem; 
+        padding-right: 1rem;
+    }
+    .is-animating-left {
+      animation: scroll-left 10s linear infinite; 
+    }
+  
+    .is-animating-right {
+      animation: scroll-right 10s linear infinite;
+    }
+  }
+  

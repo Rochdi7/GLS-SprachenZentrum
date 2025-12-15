@@ -1,0 +1,78 @@
+/* Section Title */
+.learn-more-title {
+    text-wrap: balance;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 3.5rem;
+    line-height: 1;
+    color: var(--off-white);
+  }
+  
+  /* Card Styles */
+  .h-learn-more-card {
+    grid-column-gap: 6rem;
+    grid-row-gap: 6rem;
+    border-radius: var(--radius-small);
+    background-color: var(--off-white);
+    color: var(--off-black);
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem;
+    text-decoration: none;
+    transition: all 0.35s ease;
+    display: flex;
+    height: 100%;
+  }
+  
+  .h-learn-more-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* Smooth Fade-Up Animation on Hover */
+  .h-learn-more-card:hover {
+    animation: fadeInUp 0.4s ease-in forwards;
+  }
+  @keyframes fadeInUp {
+    from {
+      opacity: 0.9;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(-8px);
+    }
+  }
+  
+  /* Icon Circle */
+  .h-learn-more-card_icon {
+    border: 2px solid var(--light--green);
+    border-radius: 10000px;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    display: flex;
+  }
+  
+  /* Card Title + Arrow on same line */
+  .learn-card-bottom {
+    width: 100%;
+  }
+  .learn-card-bottom h3 {
+    color: var(--off-black);
+    line-height: 1.2;
+  }
+  .learn-card-bottom svg {
+    color: var(--off-black);
+    transition: transform 0.3s ease;
+  }
+  .h-learn-more-card:hover .learn-card-bottom svg {
+    transform: translateX(6px);
+  }
+  .lead{
+    color: var(--off-white);
+    font-weight: 500;
+    font-size: 17px;
+  }

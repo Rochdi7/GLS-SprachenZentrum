@@ -1,0 +1,158 @@
+/* ===============================
+   CONTACT SECTION (GLS Morocco)
+================================ */
+.contact-section {
+    padding: 6rem 2rem;
+  }
+  
+  /* Remove Bootstrap default padding only in this section */
+  .contact-section .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* ===============================
+     GRID LAYOUT
+  ================================ */
+  .container.is-2-col-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: stretch;
+  }
+  
+  /* ===============================
+     LEFT CARD (Contact Info)
+  ================================ */
+  .div-block-5-copy {
+    background-color: var(--off-black);
+    color: var(--off-white);
+    border-radius: 28px;
+    padding: 4rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    width: 96%;
+    margin: 0 auto;
+  }
+  
+  .h-section-subtitle {
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--off-white);
+  }
+  
+  .div-block-21 {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+  
+  .text-span {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #d3d3d3;
+    text-transform: uppercase;
+  }
+  
+  .text-block-3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--off-white);
+    line-height: 1.6;
+  }
+  
+  .link-block,
+  .link-block-2 {
+    text-decoration: none;
+    color: var(--off-white);
+  }
+  
+  .link-block:hover .text-block-3,
+  .link-block-2:hover .text-block-3 {
+    text-decoration: underline;
+  }
+  
+  /* ===============================
+     SOCIAL ICONS
+  ================================ */
+  .div-block-20 {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.75rem;
+  }
+  
+  .footer-social-link {
+    font-size: 1.8rem;
+    color: var(--off-white);
+    transition: color 0.3s ease;
+  }
+  
+  .footer-social-link.ig:hover { color: #e4405f; }  /* Instagram */
+  .footer-social-link.fb:hover { color: #1877f2; }  /* Facebook */
+  .footer-social-link.yt:hover { color: #ff0000; }  /* YouTube */
+  .footer-social-link.wa:hover { color: #25d366; }  /* WhatsApp */
+  
+  /* ===============================
+     MAP
+  ================================ */
+  .div-block-7 iframe {
+    width: 96%;
+    height: 100%;
+    border-radius: 28px;
+    border: none;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* ===============================
+     RESPONSIVE FIXES
+  ================================ */
+  @media screen and (max-width: 991px) {
+    .container.is-grid,
+    .container.is-2-col-grid {
+      flex-flow: column;
+      display: flex;
+      gap: 2rem;
+    }
+  
+    .div-block-5-copy {
+      padding: 3rem 2rem;
+    }
+  
+    .div-block-7 iframe {
+      height: 350px;
+    }
+  }
+  
+  @media screen and (max-width: 767px) {
+    .contact-section {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  
+    .div-block-5-copy {
+      width: 94%;
+      margin: 0 auto;
+      padding: 2.5rem 1.75rem;
+      border-radius: 24px;
+    }
+  
+    .div-block-7 iframe {
+      border-radius: 18px;
+      height: 340px;
+    }
+  }
+  
+  @media screen and (max-width: 479px) {
+    .div-block-5-copy {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+  
