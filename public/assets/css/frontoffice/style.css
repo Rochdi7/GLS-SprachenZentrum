@@ -2,25 +2,25 @@
 /* =  FRONT OFFICE MAIN STYLE  = */
 /* ============================= */
 
-/* ===== Import other CSS parts ===== */
 @import url('base.css');
 @import url('header.css');
 @import url('header-mobile.css');
-@import url('hero.css');
-@import url('intro.css');
-@import url('review.css');
-@import url('sites.css');
-@import url('courses.css');
-@import url('learnmore.css');
-@import url('9onsol.css');
-@import url('cooperation.css');
-@import url('info.css');
+
+@import url('/assets/css/frontoffice/home/hero.css');
+@import url('/assets/css/frontoffice/home/intro.css');
+@import url('/assets/css/frontoffice/home/review.css');
+@import url('/assets/css/frontoffice/home/sites.css');
+@import url('/assets/css/frontoffice/home/courses.css');
+@import url('/assets/css/frontoffice/home/learnmore.css');
+@import url('/assets/css/frontoffice/home/9onsol.css');
+@import url('/assets/css/frontoffice/home/cooperation.css');
+@import url('/assets/css/frontoffice/home/info.css');
+
+
 @import url('../rtl.css');
 @import url('../animations/reveal.css');
 
-/* =========================================================
-   MOBILE DRAWER (GLOBAL STYLE)
-   ========================================================= */
+
 .drawer {
   position: fixed;
   left: 0;
