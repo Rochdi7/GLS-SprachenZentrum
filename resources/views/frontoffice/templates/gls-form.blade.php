@@ -20,7 +20,7 @@
                 <div class="progress-steps">
                     <span class="progress-step active" data-step="1" data-number="1">Informations</span>
                     <span class="progress-step" data-step="2" data-number="2">Centre GLS</span>
-                    <span class="progress-step" data-step="3" data-number="3">Niveau</span>
+                    <span class="progress-step" data-step="3" data-number="3">Groupe</span>
                     <span class="progress-step" data-step="4" data-number="4">Préférences</span>
                 </div>
             </div>
@@ -74,8 +74,15 @@
                     </div>
                 </div>
 
-                <!-- STEP 3 — NIVEAU -->
+                 <!-- STEP 3 — GROUP + NIVEAU -->
                 <div class="form-step" data-step="3">
+
+                    <div class="form-group">
+                        <label for="group_id">Groupe <span class="required">*</span></label>
+                        <select id="group_id" name="group_id" required>
+                            <option value="">Sélectionner un groupe</option>
+                        </select>
+                    </div>
 
                     <div class="form-group">
                         <label for="niveau">Niveau d’Allemand <span class="required">*</span></label>
