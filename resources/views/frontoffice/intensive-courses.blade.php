@@ -1,250 +1,257 @@
 @extends('frontoffice.layouts.app')
 
-@section('title', 'Intensive German Courses – A1 to B2')
+@section('title', __('intensive.meta_title'))
 
 {{-- Page-specific stylesheet --}}
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/intensive/intensive-courses.css') }}">
 
 @section('content')
+
     <!-- =========================================================
-         INTENSIVE COURSES – HERO SECTION
+         HERO SECTION
     ========================================================= -->
-    <section class="hero-section section intensive-hero">
-        <div class="container is-hero">
-            <div class="hero_subtitle">
-                Intensive German courses from A1 to B2
+    <section class="hero-section section intensive-hero reveal delay-1">
+        <div class="container is-hero reveal delay-2">
+
+            <div class="hero_subtitle reveal delay-1">
+                {{ __('intensive.hero.subtitle') }}
             </div>
 
-            <h1 class="hero_title">German Intensive Courses GLS</h1>
+            <h1 class="hero_title reveal fade-blur-title delay-2">
+                {{ __('intensive.hero.title') }}
+            </h1>
 
-            <div class="hero-image">
-                <img src="{{ asset('assets/images/intensive-courses/hero.png') }}" alt="Intensive German Courses A1–B2"
-                    class="full-image" loading="lazy" />
+            <div class="hero-image reveal delay-3">
+                <img src="{{ asset('assets/images/intensive-courses/hero.png') }}" alt="{{ __('intensive.hero.img_alt') }}"
+                    class="full-image reveal delay-1" loading="lazy">
+            </div>
 
+        </div>
+    </section>
+
+    <!-- =========================================================
+         RICH TEXT SECTION
+    ========================================================= -->
+    <section class="rich-text-section section reveal delay-1">
+        <div class="container reveal delay-2">
+            <div class="rich-text w-richtext reveal delay-3">
+                {!! __('intensive.rich.p1') !!}
+                {!! __('intensive.rich.p2') !!}
+                {!! __('intensive.rich.p3') !!}
             </div>
         </div>
     </section>
 
     <!-- =========================================================
-         INTENSIVE COURSES – RICH TEXT SECTION
+         COURSES GRID
     ========================================================= -->
-    <section class="rich-text-section section">
-        <div class="container">
-            <div class="rich-text w-richtext">
-                <p>
-                    You’ve decided to take an <strong>intensive German course</strong> in Berlin — a great choice!
-                    What could be more effective than learning German in Germany itself?
-                </p>
-                <p>
-                    The intensive German courses offered by <strong>GLS Sprachenzentrum</strong> in Berlin-Neukölln
-                    are perfect for learners from <strong>A1 to B2 levels</strong>.
-                    Our method combines structured grammar, active conversation, and real-life immersion —
-                    so you don’t just learn German, you start <em>living</em> it.
-                </p>
-                <p>
-                    Whether you’re a beginner or preparing for a professional or academic path,
-                    our intensive courses help you reach your goals quickly and confidently —
-                    with experienced native-speaking teachers and a vibrant international community.
-                </p>
+    <section class="home-courses-section section reveal delay-1">
+        <div class="container is-h-courses reveal delay-2">
+
+            <h2 class="h-section-subtitle-courses reveal fade-blur-title delay-1">
+                {{ __('intensive.courses.section_title') }}
+            </h2>
+
+            <div class="subtitle reveal delay-2">
+                {{ __('intensive.courses.subtitle') }}
             </div>
-        </div>
-    </section>
 
-    <section class="home-courses-section section">
-
-        {{-- 2. German Intensive Courses (A1-B2) --}}
-        <div class="container is-h-courses">
-            <h2 class="h-section-subtitle-courses">German Intensive Courses</h2>
-            {{-- Updated title to reflect the removal of C1 --}}
-            <div class="subtitle">German Language Courses A1–B2</div>
-            <p class="paragraph-2">
-                {{-- Updated course schedule as requested --}}
-                monday to friday 2hm30min per seacnce
+            <p class="paragraph-2 reveal delay-3">
+                {{ __('intensive.courses.schedule') }}
             </p>
 
-            {{-- Grid is now implicitly 4 columns wide on desktop via CSS changes --}}
-            <div class="courses-cards">
-                {{-- A1 Card (Default/Blue) --}}
-                <div class="course-card">
-                    <div class="couse-card_level">
-                        <div class="course-card_level-circle">A</div>
-                        <div class="course-card_level-circle">1</div>
+            <div class="courses-cards reveal delay-1">
+
+                {{-- A1 --}}
+                <div class="course-card reveal delay-2">
+                    <div class="couse-card_level reveal delay-3">
+                        <div class="course-card_level-circle reveal delay-1">A</div>
+                        <div class="course-card_level-circle reveal delay-2">1</div>
                     </div>
-                    <h3 class="course-card_title">Learn<br>German A1</h3>
-                    <div class="course-card_text">Learn German basics.<br>Perfect for getting started!</div>
-                    <a href="#" class="button is-course-card w-button">Learn More</a>
+                    <h3 class="course-card_title reveal fade-blur-title delay-1">{!! __('intensive.courses.a1.title') !!}</h3>
+                    <div class="course-card_text reveal delay-2">
+                        {!! __('intensive.courses.a1.text') !!}
+                    </div>
+                    <a href="{{ route('front.niveaux.a1') }}" class="button is-course-card w-button reveal delay-3">
+                        {{ __('intensive.courses.learn_more') }}
+                    </a>
                 </div>
 
-                {{-- A2 Card (is-green) --}}
-                <div class="course-card is-green">
-                    <div class="couse-card_level">
-                        <div class="course-card_level-circle">A</div>
-                        <div class="course-card_level-circle">2</div>
+                {{-- A2 --}}
+                <div class="course-card is-green reveal delay-3">
+                    <div class="couse-card_level reveal delay-1">
+                        <div class="course-card_level-circle reveal delay-2">A</div>
+                        <div class="course-card_level-circle reveal delay-3">2</div>
                     </div>
-                    <h3 class="course-card_title">Learn<br>German A2</h3>
-                    <div class="course-card_text">Build a solid foundation of the german language.</div>
-                    <a href="#" class="button is-course-card w-button">Learn More</a>
+                    <h3 class="course-card_title reveal fade-blur-title delay-1">{!! __('intensive.courses.a2.title') !!}</h3>
+                    <div class="course-card_text reveal delay-2">
+                        {!! __('intensive.courses.a2.text') !!}
+                    </div>
+                    <a href="{{ route('front.niveaux.a2') }}" class="button is-course-card w-button reveal delay-3">
+                        {{ __('intensive.courses.learn_more') }}
+                    </a>
                 </div>
 
-                {{-- B1 Card (is-purple) --}}
-                <div class="course-card is-purple">
-                    <div class="couse-card_level">
-                        <div class="course-card_level-circle">B</div>
-                        <div class="course-card_level-circle">1</div>
+                {{-- B1 --}}
+                <div class="course-card is-purple reveal delay-1">
+                    <div class="couse-card_level reveal delay-2">
+                        <div class="course-card_level-circle reveal delay-3">B</div>
+                        <div class="course-card_level-circle reveal delay-1">1</div>
                     </div>
-                    <h3 class="course-card_title">Learn<br>German B1</h3>
-                    <div class="course-card_text">Expand your German language knowledge!</div>
-                    <a href="#" class="button is-course-card w-button">Learn More</a>
+                    <h3 class="course-card_title reveal fade-blur-title delay-2">{!! __('intensive.courses.b1.title') !!}</h3>
+                    <div class="course-card_text reveal delay-3">
+                        {!! __('intensive.courses.b1.text') !!}
+                    </div>
+                    <a href="{{ route('front.niveaux.b1') }}" class="button is-course-card w-button reveal delay-1">
+                        {{ __('intensive.courses.learn_more') }}
+                    </a>
                 </div>
 
-                {{-- B2 Card (is-yellow) --}}
-                <div class="course-card is-yellow">
-                    <div class="couse-card_level">
-                        <div class="course-card_level-circle">B</div>
-                        <div class="course-card_level-circle">2</div>
+                {{-- B2 --}}
+                <div class="course-card is-yellow reveal delay-2">
+                    <div class="couse-card_level reveal delay-3">
+                        <div class="course-card_level-circle reveal delay-1">B</div>
+                        <div class="course-card_level-circle reveal delay-2">2</div>
                     </div>
-                    <h3 class="course-card_title">Learn<br>German B2</h3>
-                    <div class="course-card_text">Learn advanced German in our B2 course.</div>
-                    <a href="#" class="button is-course-card w-button">Learn More</a>
+                    <h3 class="course-card_title reveal fade-blur-title delay-1">{!! __('intensive.courses.b2.title') !!}</h3>
+                    <div class="course-card_text reveal delay-2">
+                        {!! __('intensive.courses.b2.text') !!}
+                    </div>
+                    <a href="{{ route('front.niveaux.b2') }}" class="button is-course-card w-button reveal delay-3">
+                        {{ __('intensive.courses.learn_more') }}
+                    </a>
                 </div>
 
-                {{-- C1 Card REMOVED --}}
             </div>
 
         </div>
     </section>
-
-
 
     <!-- =========================================================
-         INTENSIVE COURSES – QUESTIONS & FREE CONSULTATION
+         QUESTIONS + CONSULTATION SECTION
     ========================================================= -->
-    <section class="rich-text-section section">
-        <div class="container">
-            <div class="rich-text w-richtext">
-                <p>
-                    Many students want to learn German but don’t know where to start. They ask:
-                    <em>Do I need prior knowledge? Is there free dossier follow-up? If I get my language certificate, can I
-                        leave Morocco?</em>
-                    This section clarifies how GLS supports you from <strong>A1 to B2</strong> with real guidance.
-                </p>
+    <section class="rich-text-section section reveal delay-1">
+        <div class="container reveal delay-2">
+            <div class="rich-text w-richtext reveal delay-3">
+                {!! __('intensive.questions.intro') !!}
 
-                <p>Here’s what you should know before choosing an intensive course with GLS:</p>
-
-                <ol role="list">
-                    <li><strong>No prior knowledge?</strong> That’s okay. We place you at the right level (A1–B2) and guide
-                        your path step by step.</li>
-                    <li><strong>Free “suivi dossier” (application follow-up)?</strong> Yes — GLS includes free follow-up on
-                        your dossier for enrolled students (appointments, documents, and progress checks).</li>
-                    <li><strong>Language certificate & next steps.</strong> After obtaining your certificate (A1–B2), we
-                        advise on realistic pathways (study, Ausbildung, work)—including timelines and required documents.
-                    </li>
-                    <li><strong>Stress & intensity.</strong> Our intensive format is focused and structured so you progress
-                        quickly without burning out.</li>
+                <ol class="reveal delay-1">
+                    <li class="reveal delay-2">{!! __('intensive.questions.q1') !!}</li>
+                    <li class="reveal delay-3">{!! __('intensive.questions.q2') !!}</li>
+                    <li class="reveal delay-1">{!! __('intensive.questions.q3') !!}</li>
+                    <li class="reveal delay-2">{!! __('intensive.questions.q4') !!}</li>
                 </ol>
 
-                <p>Still unsure? Speak with our team — we’ll explain the process in detail, adapted to your goals.</p>
+                {!! __('intensive.questions.outro') !!}
             </div>
         </div>
     </section>
 
-    <!-- ===============================
-         INLINE CTA SECTION
-    ================================ -->
-    <section class="inline-cta-section my-5">
-        <div class="container">
-            <div class="inline-cta-block mx-auto">
-                <h2 class="heading-4 overlay-text">Book a Free Consultation</h2>
-                <a href="{{ url('/booking-request') }}" class="button is-big is-white w-button">
-                    GLS assistance
+    <!-- =========================================================
+         INLINE CTA
+    ========================================================= -->
+    <section class="inline-cta-section my-5 reveal delay-1">
+        <div class="container reveal delay-2">
+            <div class="inline-cta-block mx-auto reveal delay-3">
+
+                <h2 class="heading-4 overlay-text reveal fade-blur-title delay-1">
+                    {{ __('intensive.cta.title') }}
+                </h2>
+
+                <a href="{{ route('front.contact') }}" class="button is-big is-white w-button reveal delay-2">
+                    {{ __('intensive.cta.button') }}
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         GET STARTED
+    ========================================================= -->
+    <section class="get-started-section section reveal delay-1">
+        <div class="container is-2-col-grid reveal delay-2">
+
+            <div class="get-started-image reveal delay-3">
+                <img src="{{ asset('assets/images/about/subscribe.jpeg') }}" alt="GLS Students"
+                    class="full-image rounded-4 reveal delay-1" loading="lazy">
+            </div>
+
+            <div class="get-started-card reveal delay-2">
+                <div class="box-rich-text w-richtext reveal delay-3">
+                    <h2 class="reveal fade-blur-title delay-1">{{ __('intensive.start.title') }}</h2>
+                    <h3 class="reveal fade-blur-title delay-1">{{ __('intensive.start.subtitle') }}</h3>
+
+                    <p class="reveal delay-2">{!! __('intensive.start.p1') !!}</p>
+                    <p class="reveal delay-3">{!! __('intensive.start.p2') !!}</p>
+                    <p class="reveal delay-1">{!! __('intensive.start.p3') !!}</p>
+                </div>
+
+                <a href="#" class="button w-button reveal delay-2">
+                    {{ __('intensive.start.button') }}
                 </a>
             </div>
+
         </div>
     </section>
 
-    <section class="get-started-section section">
-        <div class="container is-2-col-grid">
+    <!-- =========================================================
+         CONTACT SECTION
+    ========================================================= -->
+    <section class="contact-section section reveal delay-1">
+        <div class="container is-2-col-grid reveal delay-2">
 
-            {{-- ===== Left: Image Block ===== --}}
-            <div class="get-started-image">
-                <img src="{{ asset('assets/images/about/subscribe.jpeg') }}" alt="Students smiling at GLS Sprachenzentrum"
-                    class="full-image rounded-4" loading="lazy">
-            </div>
+            <div class="div-block-5-copy reveal delay-3">
 
-            {{-- ===== Right: Content Block ===== --}}
-            <div class="get-started-card">
-                <div class="box-rich-text w-richtext">
-                    <h2>Get Started Today!</h2>
-                    <h3>Start your German journey with GLS Morocco</h3>
-                    <p>
-                        Begin your path to mastering German at <strong>GLS Sprachenzentrum</strong>.
-                        Our intensive and online courses are open to everyone — from absolute beginners to advanced
-                        learners.
-                    </p>
-                    <p>
-                        Visit one of our centers in <strong>Marrakech, Rabat, Kénitra, Salé, Casablanca,</strong> or
-                        <strong>Agadir</strong>,
-                        and discover the most effective way to learn German in Morocco.
-                    </p>
-                    <p>
-                        Our team is here to guide you — step by step — toward your goals in language, study, and career.
-                    </p>
-                </div>
+                <h2 class="h-section-subtitle reveal fade-blur-title delay-1">
+                    {!! __('intensive.contact.title') !!}
+                </h2>
 
-                <a href="#" class="button w-button">Learn More</a>
-            </div>
-        </div>
-    </section>
+                <div class="div-block-21 reveal delay-2">
 
-    <section class="contact-section section">
-        <div class="container is-2-col-grid">
-
-            {{-- LEFT SIDE: CONTACT CARD --}}
-            <div class="div-block-5-copy">
-                <h2 class="h-section-subtitle">Got Questions?<br>Get in touch!</h2>
-
-                <div class="div-block-21">
-                    <a href="tel:+212669515019" class="link-block">
-                        <div class="text-block-3">
-                            <span class="text-span">CALL US<br></span>+212 6 69 51 50 19
+                    <a href="tel:+212669515019" class="link-block reveal delay-1">
+                        <div class="text-block-3 reveal delay-2">
+                            <span class="text-span reveal delay-3">{{ __('intensive.contact.call') }}<br></span>
+                            +212 6 69 51 50 19
                         </div>
                     </a>
-                    <a href="mailto:info@glssprachenzentrum.ma" class="link-block-2">
-                        <div class="text-block-3">
-                            <span class="text-span">EMAIL US<br></span>info@glssprachenzentrum.ma
+
+                    <a href="mailto:info@glssprachenzentrum.ma" class="link-block-2 reveal delay-3">
+                        <div class="text-block-3 reveal delay-1">
+                            <span class="text-span reveal delay-2">{{ __('intensive.contact.email') }}<br></span>
+                            info@glssprachenzentrum.ma
                         </div>
                     </a>
+
                 </div>
 
-                <div class="text-block-3 visit-block">
-                    <span class="text-span">VISIT US<br></span>
-                    14 Bd de Paris, 1er étage N°8, Casablanca 20000<br>
-                    Avenue Yacoub El Mansour, Immeuble Espace Guéliz, 3ème étage Bureau 28, Marrakech<br>
-                    Avenue Fal Ould Oumeir, Immeuble 77, 1er étage N°1, Agdal, Rabat<br>
-                    Avenue Mohammed V, Bureaux Rania, 7ème étage, Kénitra<br>
-                    Avenue Mohamed V Rue Halima N°12 Diyar, Salé<br>
-                    Av. Massoude Al Wafkaoui, Place des taxis, Hay Essalam, Agadir
+                <div class="text-block-3 visit-block reveal delay-3">
+                    <span class="text-span reveal delay-1">{{ __('intensive.contact.visit') }}</span><br>
+                    {!! __('intensive.contact.addresses') !!}
                 </div>
 
-                <div class="footer-socials-block">
-                    <div class="text-block-3"><span class="text-span">FOLLOW US</span></div>
-                    <div class="div-block-20">
-                        <a href="#" class="footer-social-link ig"><i class="bi bi-instagram"></i></a>
-                        <a href="#" class="footer-social-link fb"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="footer-social-link yt"><i class="bi bi-youtube"></i></a>
-                        <a href="#" class="footer-social-link wa"><i class="bi bi-whatsapp"></i></a>
+                <div class="footer-socials-block reveal delay-1">
+                    <div class="text-block-3 reveal delay-2">
+                        <span class="text-span reveal delay-3">{{ __('intensive.contact.follow') }}</span>
+                    </div>
+
+                    <div class="div-block-20 reveal delay-1">
+                        <a href="#" class="footer-social-link ig reveal delay-2"><i
+                                class="bi bi-instagram"></i></a>
+                        <a href="#" class="footer-social-link fb reveal delay-3"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="footer-social-link yt reveal delay-1"><i class="bi bi-youtube"></i></a>
+                        <a href="#" class="footer-social-link wa reveal delay-2"><i class="bi bi-whatsapp"></i></a>
                     </div>
                 </div>
+
             </div>
 
-            {{-- RIGHT SIDE: MAP --}}
-            <a href="https://maps.app.goo.gl/g4PjrPB7wHQAqrSZA" target="_blank" class="div-block-7">
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3331.744621379457!2d-6.836039!3d33.978558!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda76b6d63b66b1d%3A0x3c6ee0a64f273aa2!2sAgdal%2C%20Rabat!5e0!3m2!1sen!2sma!4v1700000000000"
-                    allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
+            <a href="https://maps.app.goo.gl/g4PjrPB7wHQAqrSZA" target="_blank" class="div-block-7 reveal delay-3">
+                <iframe src="{{ __('intensive.contact.map_url') }}" loading="lazy" allowfullscreen
+                    class="reveal delay-1"></iframe>
             </a>
 
         </div>
     </section>
+
 @endsection
