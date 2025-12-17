@@ -287,6 +287,24 @@
                 </ul>
             </div>
 
+            <div class="dropdown">
+                <button class="btn btn-link dropdown-toggle text-decoration-none" type="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Visa
+                </button>
+
+                <ul class="dropdown-menu">
+
+                    <li>
+                        <a class="dropdown-item"
+                            href="{{ LaravelLocalization::localizeUrl(route('front.studienkollegs')) }}">
+                            Studienkolleg
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+
         </nav>
 
         <!-- LANGUAGE SWITCHER DESKTOP -->
@@ -315,13 +333,7 @@
             <a class="btn btn-primary ms-3" href="#" data-bs-toggle="modal"
                 data-bs-target="#glsEnrollModal">{{ __('header.inscription') }}</a>
         </div>
-<!-- STUDIENKOLLEGS -->
-<div class="nav-item">
-    <a class="btn btn-link text-decoration-none"
-       href="{{ LaravelLocalization::localizeUrl(route('front.studienkollegs')) }}">
-        {{ __('header.studienkollegs') }}
-    </a>
-</div>
+
         <!-- MOBILE BURGER -->
         <div class="menu-toggle d-flex d-lg-none flex-column justify-content-center" id="burger">
             <span></span><span></span><span></span>
