@@ -84,3 +84,9 @@ Route::get('/niveaux/b2', [PageController::class, 'niveauB2'])->name('front.nive
 // FORM SUBMISSION
 // ============================
 Route::post('/gls-inscription', [GlsController::class, 'store'])->name('gls.inscription');
+
+Route::view('/studienkollegs', 'frontoffice.studienkollegs.index')
+    ->name('front.studienkollegs');
+
+Route::view('/studienkollegs/details', 'frontoffice.studienkollegs.show')
+    ->name('front.studienkollegs.show');
