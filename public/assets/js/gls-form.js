@@ -1,4 +1,3 @@
-
 let currentStep = 1;
 const totalSteps = 4;
 
@@ -12,21 +11,19 @@ const errorMessage = document.getElementById('errorMessage');
 const form = document.getElementById('multiStepForm');
 const successMessage = document.getElementById('successMessage');
 
-// Inputs
 const typeCours = document.getElementById("type_cours");
 const centreWrapper = document.getElementById("centreWrapper");
 const centreSelect = document.getElementById("centre");
-const niveauSelect = document.getElementById("niveau");
-const dateInput = document.getElementById("date_start");
 
-// ✅ REQUIRED FIX
+const groupSelect = document.getElementById("group_id");
+const niveauSelect = document.getElementById("niveau");
+
+const dateInput = document.getElementById("date_start");
 const horairePrefereInput = document.getElementById("horaire_prefere");
 
-// Hide the centre dropdown until "presentiel"
 centreWrapper.style.display = "none";
 centreSelect.removeAttribute("required");
 
-// Static levels
 const NIVEAUX = ["A1", "A2", "B1", "B2"];
 function loadStaticLevels() {
     niveauSelect.innerHTML = '<option value="">Sélectionner un niveau</option>';
@@ -38,9 +35,7 @@ loadStaticLevels();
 
 let flatpickrInstance = null;
 
-/* ======================================================
-   LOAD CENTERS
-====================================================== */
+/* ============================== LOAD CENTERS ============================== */
 function loadCenters() {
     centreSelect.innerHTML = "<option>Chargement...</option>";
 
@@ -55,36 +50,54 @@ function loadCenters() {
         .catch(() => centreSelect.innerHTML = "<option>Erreur</option>");
 }
 
-/* ======================================================
-   LOAD AVAILABLE DATES FROM API
-====================================================== */
-function loadAvailableDates() {
+/* ============================== LOAD GROUPS ============================== */
+function loadGroups() {
     const siteId = centreSelect.value;
-    const level = niveauSelect.value;
+    if (!siteId) return;
 
-    if (!siteId || !level) return;
+    groupSelect.innerHTML = "<option>Chargement...</option>";
 
+    fetch(`/api/groups/${siteId}`)
+        .then(res => res.json())
+        .then(groups => {
+            groupSelect.innerHTML = '<option value="">Sélectionner un groupe</option>';
+
+            groups.forEach((g) => {
+                const name = g.display_name; // API returns display_name, never undefined
+
+                groupSelect.innerHTML += `
+                    <option value="${g.id}"
+                        data-level="${g.level}"
+                        data-time="${g.time_range}">
+                        ${name} (${g.time_range})
+                    </option>`;
+            });
+        })
+        .catch(() => groupSelect.innerHTML = "<option>Erreur</option>");
+}
+
+/* ============================== LOAD DATES ============================== */
+function loadDatesForGroup(groupId) {
     dateInput.value = "";
     dateInput.placeholder = "Chargement...";
 
-    fetch(`/api/groups/dates/${siteId}/${level}`)
+    fetch(`/api/groups/dates/${groupId}`)
         .then(res => res.json())
         .then(availableDates => {
+
             if (!availableDates.length) {
                 dateInput.placeholder = "Aucune date disponible";
                 return;
             }
 
-            if (flatpickrInstance) {
-                flatpickrInstance.destroy();
-            }
+            if (flatpickrInstance) flatpickrInstance.destroy();
 
             flatpickrInstance = flatpickr("#date_start", {
                 dateFormat: "Y-m-d",
                 disable: [
                     d => !availableDates.includes(d.toISOString().split("T")[0])
                 ],
-                onDayCreate: function(_, __, ___, dayElem) {
+                onDayCreate(_, __, ___, dayElem) {
                     const date = dayElem.dateObj.toISOString().split("T")[0];
                     if (availableDates.includes(date)) {
                         dayElem.classList.add("available-date");
@@ -96,27 +109,21 @@ function loadAvailableDates() {
         });
 }
 
-/* ======================================================
-   LOAD TIME RANGE (HORRAIRE)
-====================================================== */
-function loadTimeRange() {
-    const siteId = centreSelect.value;
-    const level = niveauSelect.value;
+/* ============================== GROUP SELECT EVENTS ============================== */
+groupSelect.addEventListener("change", () => {
+    const selected = groupSelect.options[groupSelect.selectedIndex];
+    if (!selected.value) return;
 
-    if (!siteId || !level) return;
+    const groupLevel = selected.getAttribute("data-level");
+    niveauSelect.value = groupLevel;
 
-    fetch(`/api/groups/time/${siteId}/${level}`)
-        .then(res => res.json())
-        .then(data => {
-            horairePrefereInput.value = data.time_range
-                ? data.time_range
-                : "Aucun horaire trouvé";
-        });
-}
+    const groupTime = selected.getAttribute("data-time");
+    horairePrefereInput.value = groupTime;
 
-/* ======================================================
-   SHOW/HIDE CENTER BASED ON COURSE TYPE
-====================================================== */
+    loadDatesForGroup(selected.value);
+});
+
+/* ============================== TYPE COURS ============================== */
 typeCours.addEventListener("change", () => {
     if (typeCours.value === "presentiel") {
         centreWrapper.style.display = "block";
@@ -126,21 +133,16 @@ typeCours.addEventListener("change", () => {
         centreWrapper.style.display = "none";
         centreSelect.removeAttribute("required");
         centreSelect.innerHTML = "";
+
+        groupSelect.innerHTML = "";
         dateInput.value = "";
         horairePrefereInput.value = "";
     }
 });
 
-// Reload dates & time when centre or level changes
-centreSelect.addEventListener("change", loadAvailableDates);
-niveauSelect.addEventListener("change", loadAvailableDates);
+centreSelect.addEventListener("change", loadGroups);
 
-centreSelect.addEventListener("change", loadTimeRange);
-niveauSelect.addEventListener("change", loadTimeRange);
-
-/* ======================================================
-   STEP LOGIC
-====================================================== */
+/* ============================== PROGRESS SYSTEM ============================== */
 function updateProgress() {
     const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
     progressFill.style.width = progress + '%';
@@ -174,22 +176,24 @@ function validateStep() {
     return true;
 }
 
-/* ======================================================
-   NEXT BUTTON
-====================================================== */
+/* ============================== NEXT BUTTON ============================== */
 nextBtn.addEventListener("click", () => {
     if (!validateStep()) return;
 
     if (currentStep === totalSteps) {
+
         const formData = new FormData(form);
 
-        fetch("{{ route('gls.inscription') }}", {
+        fetch("/fr/gls-inscription", {
             method: "POST",
-            headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" },
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+            },
             body: formData
         })
         .then(res => res.json())
         .then(data => {
+
             if (data.status === "success") {
                 form.style.display = "none";
                 document.querySelector(".progress-container").style.display = "none";
@@ -197,6 +201,21 @@ nextBtn.addEventListener("click", () => {
                 document.querySelector(".form-header").style.display = "none";
                 successMessage.classList.add("active");
             }
+
+            else if (data.status === "duplicate") {
+                errorMessage.textContent = data.message;
+                errorMessage.classList.add("active");
+            }
+
+            else {
+                errorMessage.textContent = "Une erreur est survenue.";
+                errorMessage.classList.add("active");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            errorMessage.textContent = "Impossible d'envoyer votre inscription.";
+            errorMessage.classList.add("active");
         });
 
         return;
@@ -206,9 +225,7 @@ nextBtn.addEventListener("click", () => {
     updateProgress();
 });
 
-/* ======================================================
-   PREVIOUS BUTTON
-====================================================== */
+/* ============================== PREV BUTTON ============================== */
 prevBtn.addEventListener("click", () => {
     if (currentStep > 1) currentStep--;
     updateProgress();
