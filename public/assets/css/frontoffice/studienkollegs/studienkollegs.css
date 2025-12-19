@@ -8,17 +8,20 @@
 
     --search-bg: repeating-linear-gradient(
         45deg,
-        #fdfdfd,
-        #fdfdfd 1px,
-        #f3f4f6 0,
-        #f3f4f6 50%
+        #fffff9,
+        #000000 1px,
+        #fffff9  0,
+        #fffff9 50%
     );
 }
 
 .studienkollegs-page {
     min-height: 100vh;
     padding: 24px;
-    background: var(--search-bg);
+    background: var(--search-bg, var(--light--off-white));
+}
+body{
+    background-color: #fffff9 !important;
 }
 
 /* =========================================================
@@ -26,7 +29,7 @@
 ========================================================= */
 
 .studienkollegs-filters {
-    background: #ffffff;
+    background-color: var(--light--off-white) !important;
     padding: 16px;
     border-radius: 18px;
     margin-bottom: 24px;
@@ -323,7 +326,7 @@
 }
 
 .studienkolleg-card {
-    background: #ffffff;
+    background: #fffff9;
     border-radius: var(--card-radius-lg);
     padding: 16px;
     height: 280px;
@@ -336,7 +339,6 @@
 
 .studienkolleg-card:hover {
     box-shadow: 0 12px 28px rgba(0,0,0,0.12);
-    transform: translateY(-2px);
 }
 
 /* ---------- CARD HEADER ---------- */
@@ -504,3 +506,5 @@
     color: #9ca3af;
     cursor: not-allowed;
 }
+
+

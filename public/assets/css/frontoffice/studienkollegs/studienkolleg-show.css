@@ -344,7 +344,16 @@
 
 @media (max-width: 992px) {
     .content-grid {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .content-sidebar {
+        order: 1;
+    }
+
+    .content-main {
+        order: 2;
     }
 
     .hero-overlay {
@@ -422,6 +431,40 @@
 
     .studienkolleg-location {
         font-size: 15px;
+    }
+    /* Hero title */
+    .hero-overlay h1 {
+        font-size: 26px;
+        line-height: 1.25;
+        margin-bottom: 20px;
+    }
+
+    /* Actions wrapper */
+    .hero-actions {
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+    }
+
+    /* Apply + Favorite buttons */
+    .hero-actions .btn-primary,
+    .hero-actions .btn-outline {
+        width: 100%;
+        padding: 14px 18px;
+        font-size: 15px;
+        border-radius: 14px;
+        justify-content: center;
+        text-align: center;
+    }
+
+    /* Outline button icon spacing */
+    .hero-actions .btn-outline i {
+        font-size: 16px;
+    }
+
+    /* Hero overlay padding */
+    .hero-overlay {
+        padding: 28px 22px;
     }
 }
 
