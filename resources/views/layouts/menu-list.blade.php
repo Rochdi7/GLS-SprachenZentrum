@@ -6,11 +6,12 @@
 </li>
 <!-- DASHBOARD -->
 <li class="pc-item">
-    <a href="#" class="pc-link">
+    <a href="{{ route('dashboard') }}" class="pc-link">
         <span class="pc-micon"><i class="ph-duotone ph-gauge"></i></span>
         <span class="pc-mtext">Dashboard</span>
     </a>
 </li>
+
 <!-- BLOG CATEGORIES -->
 <li class="pc-item">
     <a href="{{ route('backoffice.blog.categories.index') }}" class="pc-link">
@@ -59,3 +60,12 @@
     </a>
 </li>
 
+<!-- STUDIENKOLLEGS -->
+<li class="pc-item">
+    <a href="{{ route('backoffice.studienkollegs.index') }}" class="pc-link">
+        <span class="pc-micon">
+            <i class="ph-duotone ph-graduation-cap"></i>
+        </span>
+        <span class="pc-mtext">Studienkollegs</span>
+    </a>
+</li>

@@ -32,21 +32,22 @@
                     </td>
                     <td class="text-end">
                         <a href="{{ route('backoffice.studienkollegs.edit', $item) }}"
-                           class="btn btn-sm btn-outline-primary">
-                            Modifier
+                            class="avtar avtar-xs btn-link-secondary me-2" title="Modifier">
+                            <i class="ti ti-edit f-20"></i>
                         </a>
 
-                        <form action="{{ route('backoffice.studienkollegs.destroy', $item) }}"
-                              method="POST"
-                              class="d-inline">
+                        <form action="{{ route('backoffice.studienkollegs.destroy', $item) }}" method="POST"
+                            class="d-inline-block">
                             @csrf
                             @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger"
-                                    onclick="return confirm('Supprimer ce Studienkolleg ?')">
-                                Supprimer
+
+                            <button type="submit" class="avtar avtar-xs btn-link-secondary border-0 bg-transparent p-0"
+                                onclick="return confirm('Supprimer ce Studienkolleg ?')" title="Supprimer">
+                                <i class="ti ti-trash f-20"></i>
                             </button>
                         </form>
                     </td>
+
                 </tr>
             @endforeach
         </tbody>
