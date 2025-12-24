@@ -1,154 +1,156 @@
 /* =========================================================
-   FOOTER STYLESHEET (GLS Sprachenzentrum)
-   ========================================================= */
+FOOTER STYLESHEET (GLS Sprachenzentrum)
+========================================================= */
 
 .site-footer {
-    background-color: #211e1d;
-    color: #fff;
-    border-top-left-radius: 50px;
-    border-top-right-radius: 50px;
-    overflow: hidden;
-    position: relative;
-    z-index: 10;
-    font-family: "Now", sans-serif;
+background-color: #211e1d;
+color: #fff;
+border-top-left-radius: 50px;
+border-top-right-radius: 50px;
+overflow: hidden;
+position: relative;
+z-index: 10;
+font-family: "Now", sans-serif;
 }
 
 /* =========================================================
-   FOOTER INTRO SECTION
-   ========================================================= */
+FOOTER INTRO SECTION
+========================================================= */
 .footer-intro {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    gap: 2rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+width: 100%;
+gap: 2rem;
 }
 
 .footer-intro img {
-    height: 170px;
-    width: auto;
+height: 170px;
+width: auto;
 }
 
 .footer-intro p {
-    color: var(--color-surface);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: 0;
-    flex: 1;
-    max-width: 450px;
+color: var(--color-surface);
+font-size: 0.95rem;
+line-height: 1.6;
+margin-bottom: 0;
+flex: 1;
+max-width: 450px;
 }
 
 /* =========================================================
-   FOOTER TITLES
-   ========================================================= */
+FOOTER TITLES
+========================================================= */
 .footer-title {
-    font-weight: 700;
-    color: var(--color-surface); /* UPDATED */
-    margin-bottom: 1.5rem;
-    font-size: 1.1rem;
-    letter-spacing: 0.3px;
+font-weight: 700;
+color: var(--color-surface); /* UPDATED */
+margin-bottom: 1.5rem;
+font-size: 1.1rem;
+letter-spacing: 0.3px;
 }
 
 /* =========================================================
-   FOOTER LINKS
-   ========================================================= */
+FOOTER LINKS
+========================================================= */
 .footer-links li {
-    margin-bottom: 10px;
+margin-bottom: 10px;
 }
-
+.mt-md-0{
+color: var(--dark--off-white);
+}
 .footer-links a,
 .footer-small-link {
-    color: var(--dark--off-white); /* UPDATED */
-    font-size: 14px;
-    /* line-height: 1.2; */
-    text-decoration: none;
-    display: block;
-    text-wrap: balance;
-    transition: color .2s ease;
+color: var(--dark--off-white); /* UPDATED */
+font-size: 14px;
+/* line-height: 1.2; */
+text-decoration: none;
+display: block;
+text-wrap: balance;
+transition: color .2s ease;
 }
 
 .footer-links a:hover,
 .footer-small-link:hover {
-    color: var(--dark--yellow); /* UPDATED (#bc9600) */
+color: var(--dark--yellow); /* UPDATED (#bc9600) */
 }
 
 /* If using big-link class */
 .footer-big-link {
-    font-weight: 700;
-    line-height: 1.1;
-    display: block;
-    text-decoration: none;
-    font-size: 1.05rem;
-    margin-bottom: 1.2rem;
-    color: var(--color-surface);
+font-weight: 700;
+line-height: 1.1;
+display: block;
+text-decoration: none;
+font-size: 1.05rem;
+margin-bottom: 1.2rem;
+color: var(--color-surface);
 }
 
 /* indentation */
 .footer-indent {
-    padding-left: 1rem;
+padding-left: 1rem;
 }
 
 /* =========================================================
-   FOOTER COLUMNS
-   ========================================================= */
+FOOTER COLUMNS
+========================================================= */
 .footer-columns {
-    margin-top: 2.5rem !important;
-    padding-top: 2.5rem !important;
-    border-color: #2a2725 !important;
+margin-top: 2.5rem !important;
+padding-top: 2.5rem !important;
+border-color: #2a2725 !important;
 }
 
 .footer-columns .col-md-3 {
-    padding-left: 25px;
-    padding-right: 25px;
+padding-left: 25px;
+padding-right: 25px;
 }
 
 /* =========================================================
-   FOOTER BOTTOM
-   ========================================================= */
+FOOTER BOTTOM
+========================================================= */
 .footer-bottom {
-    background-color: #181615;
-    color: #ccc;
-    margin-top: 2rem;
+background-color: #181615;
+color: #ccc;
+margin-top: 2rem;
 }
 
 .footer-bottom a {
-    color: var(--dark--off-white); /* match */
-    text-decoration: none;
-    transition: color .2s ease;
+color: var(--dark--off-white); /* match */
+text-decoration: none;
+transition: color .2s ease;
 }
 
 .footer-bottom a:hover {
-    color: var(--dark--yellow);
+color: var(--dark--yellow);
 }
 
 .footer-legal {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
+display: flex;
+gap: 2rem;
+flex-wrap: wrap;
 }
 
 /* =========================================================
-   RESPONSIVE
-   ========================================================= */
+RESPONSIVE
+========================================================= */
 @media (max-width: 768px) {
 
-    .footer-intro {
-        flex-direction: column;
-        text-align: center;
-    }
+.footer-intro {
+flex-direction: column;
+text-align: center;
+}
 
-    .footer-intro img {
-        height: 120px;
-        margin-top: 1rem;
-    }
+.footer-intro img {
+height: 120px;
+margin-top: 1rem;
+}
 
-    .footer-legal {
-        justify-content: center;
-        text-align: center;
-        gap: 1rem;
-    }
+.footer-legal {
+justify-content: center;
+text-align: center;
+gap: 1rem;
+}
 
-    .footer-columns .col-6 {
-        margin-bottom: 2.5rem;
-    }
+.footer-columns .col-6 {
+margin-bottom: 2.5rem;
+}
 }
