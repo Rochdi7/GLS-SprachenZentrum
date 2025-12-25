@@ -76,8 +76,9 @@
                                         </span>
                                         <span class="blog-meta-dot">•</span>
                                         <span class="blog-meta-item">
-                                            {{ $featured->updated_at->diffForHumans() }}
+                                            {{ optional($featured->updated_at ?? $featured->created_at)->diffForHumans() }}
                                         </span>
+
                                     </div>
                                 </div>
 

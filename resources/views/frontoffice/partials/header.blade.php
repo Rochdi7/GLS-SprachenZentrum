@@ -330,7 +330,7 @@
                 </div>
             </div>
 
-            <a class="btn btn-primary ms-3" href="#" data-bs-toggle="modal"
+            <a class="btn btn-p ms-3" href="#" data-bs-toggle="modal"
                 data-bs-target="#glsEnrollModal">{{ __('header.inscription') }}</a>
         </div>
 
