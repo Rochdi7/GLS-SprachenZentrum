@@ -13,6 +13,10 @@ class GroupController extends Controller
         // Get site
         $site = Site::where('slug', $slug)->firstOrFail();
 
+        // Extract view name from slug
+        // gls-marrakech → marrakech
+        $view = str_replace('gls-', '', $slug);
+
         // Get groups
         $groups = Group::with('teacher')
             ->where('site_id', $site->id)
@@ -21,7 +25,11 @@ class GroupController extends Controller
             ->get()
             ->groupBy('period_label');
 
-        // Return the site page dynamically
-        return view('frontoffice.sites.' . $slug, compact('site', 'groups'));
+        // Check if view exists (security)
+        if (!view()->exists("frontoffice.sites.$view")) {
+            abort(404);
+        }
+
+        return view("frontoffice.sites.$view", compact('site', 'groups'));
     }
 }
