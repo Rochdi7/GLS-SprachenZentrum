@@ -216,9 +216,8 @@
   max-width: 1440px;
   padding: 4rem 3rem;
   border-radius: var(--radius-mid);
-  background-image:
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
-    linear-gradient(225deg, #0057ff 0%, #00d98a 40%, #00a06e 70%, #ffd84c 100%);
+  background-color: rgb(33, 30, 29);
+
   color: var(--off-white);
   margin-inline: auto;
   gap: 2rem;
@@ -236,8 +235,8 @@
 
 /* Overlay style (added for hero-like look) */
 .overlay-text {
-  color: #fff;
-  mix-blend-mode: overlay;
+  color: var(--off-white);
+  /* mix-blend-mode: overlay; */
   text-shadow:
     0 2px 10px rgba(0, 0, 0, 0.25),
     0 0 40px rgba(255, 255, 255, 0.1);
@@ -246,7 +245,7 @@
 
 /* Button base */
 .button {
-  background-color: white;
+  background-color: var(--off-white);
   color: var(--off-white);
   text-align: center;
   border-radius: 8rem;
@@ -268,11 +267,12 @@
 
 .button.is-white {
   padding: 0.75rem 2rem;
-  background-color: white;
+  background-color: var(--off-white);
   color: var(--off-black);
 }
 .button.is-white:hover{
-  background-color: black;
+  background-color: var(--off-white);
+  color: black;
 }
 .w-button {
   color: #fff;
