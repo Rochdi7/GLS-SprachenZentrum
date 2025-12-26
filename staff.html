@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Staff - Voyage Merzouga</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-3xl mx-auto space-y-6">
+        
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="briefcase" class="text-indigo-600"></i>
+                        Staff Voyage GLS Merzouga
+                    </h1>
+                    <p class="text-slate-500 text-sm mt-1">Liste des organisateurs</p>
+                </div>
+                
+                <div class="flex gap-2">
+                    <button onclick="exportToExcel()" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm cursor-pointer">
+                        <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+                        Excel
+                    </button>
+                    <button onclick="exportToPDF()" class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm cursor-pointer">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                        PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <p class="text-slate-500 text-sm font-medium uppercase tracking-wider mb-3">Ajouter Staff</p>
+                <form id="addStaffForm" class="flex gap-2">
+                    <input type="text" id="staffName" placeholder="Nom complet" class="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" required>
+                    
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-slate-500 text-sm font-medium uppercase tracking-wider">Total Staff</p>
+                    <h3 class="text-4xl font-bold text-slate-800 mt-1" id="staffCountDisplay">0</h3>
+                </div>
+                <div class="p-4 rounded-full bg-indigo-50 text-indigo-600">
+                    <i data-lucide="users" class="w-8 h-8"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                <h2 class="font-semibold text-slate-800">Liste des Présents</h2>
+                <button onclick="clearList()" class="text-xs text-red-500 hover:text-red-700 underline cursor-pointer">Tout effacer</button>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-50 text-slate-500 font-medium">
+                        <tr>
+                            <th class="px-6 py-3 w-16">#</th>
+                            <th class="px-6 py-3">Nom & Prénom</th>
+                            <th class="px-6 py-3 text-right w-24">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staffTableBody" class="divide-y divide-slate-100">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const STORAGE_KEY = 'gls_merzouga_staff_v2';
+
+        // State
+        let staffList = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+        // Elements
+        const form = document.getElementById('addStaffForm');
+        const nameInput = document.getElementById('staffName');
+        const countDisplay = document.getElementById('staffCountDisplay');
+        const tableBody = document.getElementById('staffTableBody');
+
+        // Initial Render
+        render();
+
+        // Add Staff
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = nameInput.value.trim();
+            if (!name) return;
+
+            // Check duplicate
+            if (staffList.some(s => s.name.toLowerCase() === name.toLowerCase())) {
+                alert('Ce membre est déjà dans la liste.');
+                return;
+            }
+
+            const newMember = { id: Date.now(), name: name };
+            staffList.push(newMember);
+            saveAndRender();
+            nameInput.value = '';
+            nameInput.focus();
+        });
+
+        // Remove Staff
+        function removeStaff(id) {
+            if (confirm('Supprimer ce membre du staff ?')) {
+                staffList = staffList.filter(s => s.id !== id);
+                saveAndRender();
+            }
+        }
+
+        // Clear All
+        function clearList() {
+            if (staffList.length > 0 && confirm('Voulez-vous vraiment effacer toute la liste ?')) {
+                staffList = [];
+                saveAndRender();
+            }
+        }
+
+        function saveAndRender() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(staffList));
+            render();
+        }
+
+        function render() {
+            countDisplay.textContent = staffList.length;
+            tableBody.innerHTML = '';
+            
+            if (staffList.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-slate-400 italic">Aucun membre staff pour le moment.</td></tr>`;
+            } else {
+                staffList.forEach((member, index) => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-slate-50 transition-colors';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 text-slate-400 font-mono">${index + 1}</td>
+                        <td class="px-6 py-4 font-medium text-slate-800 text-lg">${escapeHtml(member.name)}</td>
+                        <td class="px-6 py-4 text-right">
+                            <button onclick="removeStaff(${member.id})" class="text-slate-300 hover:text-red-500 transition-colors cursor-pointer">
+                                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+            lucide.createIcons();
+        }
+
+        // ==========================================
+        //  STYLED EXCEL EXPORT (NAVY BLUE HEADER - EXACT COPY)
+        // ==========================================
+        function exportToExcel() {
+            if(staffList.length === 0) { alert("Liste vide"); return; }
+
+            // 1. Prepare Data
+            const headers = ["#", "Nom du Membre"];
+            const data = staffList.map((s, index) => [index + 1, s.name]);
+
+            // Add Header Row
+            data.unshift(headers);
+            
+            // Add Count Row at bottom
+            data.push(["", ""]); 
+            data.push(["TOTAL STAFF :", staffList.length]);
+
+            // 2. Create Workbook
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+
+            // 3. Define Styles (SAME AS STUDENT VERSION)
+            const navyHeaderStyle = {
+                fill: { fgColor: { rgb: "000080" } }, // Navy Blue
+                font: { name: "Arial", sz: 12, color: { rgb: "FFFFFF" }, bold: true },
+                alignment: { horizontal: "center", vertical: "center", wrapText: true },
+                border: {
+                    top: { style: "thin", color: { auto: 1 } },
+                    bottom: { style: "thin", color: { auto: 1 } },
+                    left: { style: "thin", color: { auto: 1 } },
+                    right: { style: "thin", color: { auto: 1 } }
+                }
+            };
+
+            const normalCellStyle = {
+                font: { name: "Arial", sz: 11 },
+                alignment: { horizontal: "left", vertical: "center" },
+                border: {
+                    top: { style: "thin", color: {rgb: "CCCCCC"} },
+                    bottom: { style: "thin", color: {rgb: "CCCCCC"} },
+                    left: { style: "thin", color: {rgb: "CCCCCC"} },
+                    right: { style: "thin", color: {rgb: "CCCCCC"} }
+                }
+            };
+
+            const totalRowStyle = {
+                fill: { fgColor: { rgb: "F0F0F0" } },
+                font: { name: "Arial", sz: 12, bold: true },
+                alignment: { horizontal: "left", vertical: "center" },
+                border: { top: { style: "medium" } }
+            };
+
+            // 4. Apply Styles
+            const range = XLSX.utils.decode_range(ws['!ref']);
+            for (let R = range.s.r; R <= range.e.r; ++R) {
+                for (let C = range.s.c; C <= range.e.c; ++C) {
+                    const cell_address = XLSX.utils.encode_cell({ r: R, c: C });
+                    if (!ws[cell_address]) continue;
+
+                    if (R === 0) {
+                        ws[cell_address].s = navyHeaderStyle;
+                    } else if (R === range.e.r) {
+                        ws[cell_address].s = totalRowStyle;
+                    } else if (ws[cell_address].v !== "") {
+                        ws[cell_address].s = normalCellStyle;
+                    }
+                }
+            }
+
+            // Set Column Widths
+            ws['!cols'] = [
+                { wch: 10 }, // Index
+                { wch: 40 }  // Name
+            ];
+
+            // Set Row Heights
+            ws['!rows'] = [];
+            ws['!rows'][0] = { hpt: 30 }; // Header
+            for(let i = 1; i < data.length; i++) {
+                ws['!rows'][i] = { hpt: 25 }; 
+            }
+
+            // 5. Download
+            XLSX.utils.book_append_sheet(wb, ws, "Staff");
+            XLSX.writeFile(wb, "Liste_Staff_GLS_Merzouga.xlsx");
+        }
+
+        // ==========================================
+        //  PROFESSIONAL PDF EXPORT (SAME DESIGN AS STUDENTS)
+        // ==========================================
+        function exportToPDF() {
+            if(staffList.length === 0) { alert("Liste vide"); return; }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Title
+            doc.setFontSize(18);
+            doc.setTextColor(0, 0, 128); // Navy Blue
+            doc.text("Liste Staff - Voyage Merzouga", 14, 22);
+
+            // Subtitle info
+            doc.setFontSize(11);
+            doc.setTextColor(100);
+            doc.text(`Généré le : ${new Date().toLocaleDateString('fr-FR')}`, 14, 30);
+            doc.text(`Total Staff : ${staffList.length}`, 14, 36);
+
+            // Table Data
+            const tableRows = staffList.map((s, index) => [
+                index + 1,
+                s.name
+            ]);
+
+            // Generate Table (Using exact same styles as student version)
+            doc.autoTable({
+                startY: 45,
+                head: [['#', 'Nom Complet']],
+                body: tableRows,
+                theme: 'grid', // Keeps the grid lines
+                headStyles: { 
+                    fillColor: [0, 0, 128], // Navy Blue Background
+                    textColor: [255, 255, 255], // White Text
+                    fontStyle: 'bold'
+                },
+                styles: {
+                    fontSize: 10,
+                    cellPadding: 3,
+                    textColor: [0, 0, 0]
+                },
+                columnStyles: {
+                    0: { cellWidth: 20, halign: 'center' },
+                    1: { cellWidth: 'auto' }
+                },
+                foot: [['', `TOTAL STAFF: ${staffList.length}`]],
+                footStyles: {
+                    fillColor: [240, 240, 240],
+                    textColor: [0, 0, 0],
+                    fontStyle: 'bold'
+                }
+            });
+
+            // Save
+            doc.save("Liste_Staff_Merzouga.pdf");
+        }
+
+        function escapeHtml(text) {
+            if (!text) return text;
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+    </script>
+</body>
+</html>

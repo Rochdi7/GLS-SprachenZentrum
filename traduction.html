@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLS - Suivi des Traductions</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom Blue Theme to replace Purple */
+        .theme-blue-text { color: #2563eb; }
+        .theme-blue-bg { background-color: #2563eb; }
+        .theme-blue-border { border-color: #2563eb; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div class="flex items-center gap-4">
+                    <img src="assets/gls-noir.png" alt="GLS Logo" class="h-12 w-auto object-contain">
+                    <div class="h-10 w-px bg-slate-200 mx-2"></div>
+                    <div>
+                        <h1 class="text-xl font-bold text-slate-800">Gestion des Traductions</h1>
+                        <p class="text-slate-500 text-xs">Portail Interne Maroc-Allemagne</p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col md:flex-row gap-4 items-end md:items-center">
+                    <div class="bg-blue-50 p-2 rounded-lg border border-blue-100 flex items-center gap-2">
+                        <label class="text-xs font-semibold text-blue-800 uppercase">Prix/Page (DH):</label>
+                        <input type="number" id="defaultPrice" value="200" class="w-16 bg-white border border-blue-200 rounded px-2 py-1 text-sm font-bold text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="flex gap-2 border-l pl-4 border-slate-200">
+                        <button onclick="downloadBackup()" title="Sauvegarder les données" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                        </button>
+                        
+                        <label title="Restaurer une sauvegarde" class="flex items-center gap-2 bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer">
+                            <i data-lucide="upload" class="w-4 h-4"></i>
+                            <input type="file" id="backupInput" accept=".json" class="hidden" onchange="loadBackup(this)">
+                        </label>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button onclick="exportToExcel()" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer">
+                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Excel
+                        </button>
+                        <button onclick="exportToPDF()" class="flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer">
+                            <i data-lucide="file-text" class="w-4 h-4"></i> PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide mb-4 flex items-center gap-2">
+                <i data-lucide="plus-circle" class="w-4 h-4 text-blue-600"></i> Nouvelle Commande
+            </h3>
+            <form id="addOrderForm" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                
+                <div class="md:col-span-3 space-y-1">
+                    <label class="text-xs font-medium text-slate-500">Nom Étudiant</label>
+                    <input type="text" id="studentName" placeholder="Ex: Ahmed Alami" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" required>
+                </div>
+                
+                <div class="md:col-span-3 space-y-1">
+                    <label class="text-xs font-medium text-slate-500">Type de Documents</label>
+                    <input type="text" id="docType" placeholder="Ex: Bac, Relevés" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                </div>
+
+                <div class="md:col-span-1 space-y-1">
+                    <label class="text-xs font-medium text-slate-500">Pages</label>
+                    <input type="number" id="pageCount" value="1" min="1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm font-bold text-center" required>
+                </div>
+
+                <div class="md:col-span-2 space-y-1">
+                    <label class="text-xs font-medium text-slate-500">Date Dépôt</label>
+                    <input type="date" id="dateReceived" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm text-slate-600">
+                </div>
+
+                <div class="md:col-span-3">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex justify-center items-center gap-2 cursor-pointer">
+                        <i data-lucide="save" class="w-4 h-4"></i> Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
+                        <tr>
+                            <th class="px-6 py-3 w-10">#</th>
+                            <th class="px-6 py-3">Étudiant</th>
+                            <th class="px-6 py-3">Documents</th>
+                            <th class="px-6 py-3 text-center">Qté</th>
+                            <th class="px-6 py-3 text-right">Coût</th>
+                            <th class="px-6 py-3">Date Dépôt</th>
+                            <th class="px-6 py-3 w-40">Date Remise (Réelle)</th>
+                            <th class="px-6 py-3 text-center">Statut</th>
+                            <th class="px-6 py-3 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody" class="divide-y divide-slate-100">
+                    </tbody>
+                    <tfoot class="bg-slate-50 font-bold text-slate-800">
+                        <tr>
+                            <td colspan="4" class="px-6 py-3 text-right text-slate-500 uppercase text-xs">Total Global</td>
+                            <td class="px-6 py-3 text-right text-blue-700" id="grandTotalDisplay">0 DH</td>
+                            <td colspan="4"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIG ---
+        const STORAGE_KEY = 'gls_translations_v2_simple';
+        let orders = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        
+        const form = document.getElementById('addOrderForm');
+        const defaultPriceInput = document.getElementById('defaultPrice');
+        const tableBody = document.getElementById('ordersTableBody');
+        const grandTotalDisplay = document.getElementById('grandTotalDisplay');
+        const dateReceivedInput = document.getElementById('dateReceived');
+
+        dateReceivedInput.valueAsDate = new Date();
+
+        render();
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('studentName').value.trim();
+            const docType = document.getElementById('docType').value.trim() || "Documents divers";
+            const count = parseInt(document.getElementById('pageCount').value);
+            const pricePerDoc = parseInt(defaultPriceInput.value);
+            const receivedDateStr = document.getElementById('dateReceived').value;
+            
+            const newOrder = {
+                id: Date.now(),
+                student: name,
+                docType: docType,
+                count: count,
+                pricePerDoc: pricePerDoc,
+                totalCost: count * pricePerDoc,
+                dateReceived: receivedDateStr,
+                dateHandedOver: '', 
+                status: 'pending' 
+            };
+
+            orders.push(newOrder);
+            saveAndRender();
+            
+            document.getElementById('studentName').value = '';
+            document.getElementById('docType').value = '';
+            document.getElementById('pageCount').value = '1';
+            document.getElementById('studentName').focus();
+        });
+
+        function updateStatus(id) {
+            const order = orders.find(o => o.id === id);
+            if(order.status === 'pending') order.status = 'translator'; 
+            else if(order.status === 'translator') {
+                order.status = 'delivered'; 
+                if(!order.dateHandedOver) order.dateHandedOver = new Date().toISOString().split('T')[0];
+            } 
+            else order.status = 'pending';
+            saveAndRender();
+        }
+
+        function updateHandoverDate(id, dateValue) {
+            const order = orders.find(o => o.id === id);
+            if(order) {
+                order.dateHandedOver = dateValue;
+                saveAndRender();
+            }
+        }
+
+        function deleteOrder(id) {
+            if(confirm("Supprimer cette commande ?")) {
+                orders = orders.filter(o => o.id !== id);
+                saveAndRender();
+            }
+        }
+
+        function saveAndRender() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+            render();
+        }
+
+        function downloadBackup() {
+            if(orders.length === 0) return alert("Aucune donnée à sauvegarder.");
+            const dataStr = JSON.stringify(orders, null, 2);
+            const blob = new Blob([dataStr], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `GLS_Backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        }
+
+        function loadBackup(input) {
+            const file = input.files[0];
+            if(!file) return;
+            if(!confirm("Écraser les données actuelles ?")) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if(Array.isArray(data)) {
+                        orders = data;
+                        saveAndRender();
+                        alert("Données restaurées !");
+                    }
+                } catch(err) { alert("Erreur de fichier."); }
+            };
+            reader.readAsText(file);
+        }
+
+        function render() {
+            tableBody.innerHTML = '';
+            let total = 0;
+            if (orders.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="9" class="px-6 py-8 text-center text-slate-400 italic">Aucune donnée disponible.</td></tr>`;
+            }
+
+            orders.sort((a, b) => new Date(b.dateReceived) - new Date(a.dateReceived));
+
+            orders.forEach((order, index) => {
+                total += order.totalCost;
+                let statusBadge, statusColor;
+                
+                switch(order.status) {
+                    case 'pending':
+                        statusBadge = 'Reçu (GLS)';
+                        statusColor = 'bg-slate-100 text-slate-600 border border-slate-200';
+                        break;
+                    case 'translator':
+                        statusBadge = 'Chez Traducteur';
+                        statusColor = 'bg-amber-100 text-amber-700 border border-amber-200';
+                        break;
+                    case 'delivered':
+                        statusBadge = 'Rendu à l\'étudiant';
+                        statusColor = 'bg-blue-100 text-blue-700 border border-blue-200 font-bold';
+                        break;
+                }
+
+                const dReceived = order.dateReceived ? new Date(order.dateReceived).toLocaleDateString('fr-FR') : '-';
+
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-50 transition-colors';
+                row.innerHTML = `
+                    <td class="px-6 py-3 text-slate-400 text-xs">${index + 1}</td>
+                    <td class="px-6 py-3 font-medium text-slate-800">${order.student}</td>
+                    <td class="px-6 py-3 text-slate-600 text-xs">${order.docType}</td>
+                    <td class="px-6 py-3 text-center font-bold text-slate-700">${order.count}</td>
+                    <td class="px-6 py-3 text-right font-mono font-medium text-blue-600">${order.totalCost} DH</td>
+                    <td class="px-6 py-3 text-xs text-slate-500">${dReceived}</td>
+                    <td class="px-6 py-3">
+                        <input type="date" class="w-full text-xs border border-slate-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500"
+                            onchange="updateHandoverDate(${order.id}, this.value)" value="${order.dateHandedOver || ''}">
+                    </td>
+                    <td class="px-6 py-3 text-center">
+                        <button onclick="updateStatus(${order.id})" class="px-3 py-1.5 rounded-full text-xs cursor-pointer transition-all ${statusColor} hover:brightness-95 w-36">
+                            ${statusBadge}
+                        </button>
+                    </td>
+                    <td class="px-6 py-3 text-center">
+                        <button onclick="deleteOrder(${order.id})" class="text-slate-300 hover:text-red-500 transition-colors">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            grandTotalDisplay.textContent = total.toLocaleString() + ' DH';
+            lucide.createIcons();
+        }
+
+        function exportToExcel() {
+            const data = [["Etudiant", "Documents", "Pages", "Total (DH)", "Dépôt", "Remise", "Statut"]];
+            orders.forEach(o => data.push([o.student, o.docType, o.count, o.totalCost, o.dateReceived, o.dateHandedOver || "-", o.status]));
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, "GLS_Traductions");
+            XLSX.writeFile(wb, "Suivi_GLS.xlsx");
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("Rapport de Traductions GLS", 14, 20);
+            const tableData = orders.map(o => [o.student, o.docType, `${o.totalCost} DH`, o.dateReceived, o.dateHandedOver || "-", o.status]);
+            doc.autoTable({
+                startY: 30,
+                head: [['Etudiant', 'Type', 'Total', 'Reçu', 'Remis', 'Statut']],
+                body: tableData,
+                headStyles: { fillColor: [37, 99, 235] }
+            });
+            doc.save("Traductions_GLS.pdf");
+        }
+    </script>
+</body>
+</html>

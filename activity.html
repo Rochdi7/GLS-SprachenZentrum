@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Voyage Merzouga GLS</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto space-y-6">
+        
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="map-pin" class="text-orange-500"></i>
+                        Voyage Merzouga GLS Marrakech
+                    </h1>
+                    <div class="flex items-center gap-4 text-slate-500 mt-2 text-sm">
+                        <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-4 h-4"></i> 12, 13, 14</span>
+                        <span class="flex items-center gap-1"><i data-lucide="banknote" class="w-4 h-4"></i> Prix : 900 DH</span>
+                    </div>
+                </div>
+                
+                <div class="flex gap-2">
+                    <button onclick="exportToExcel()" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm cursor-pointer">
+                        <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+                        Excel
+                    </button>
+                    <button onclick="exportToPDF()" class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm cursor-pointer">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                        PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div id="capacityCard" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between transition-colors duration-300">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-slate-500 text-sm font-medium uppercase tracking-wider">Capacité</p>
+                        <h3 class="text-3xl font-bold mt-1 text-slate-800" id="studentCountDisplay">
+                            0 <span class="text-lg text-slate-400 font-normal">/ 20</span>
+                        </h3>
+                    </div>
+                    <div id="capacityIconBg" class="p-3 rounded-full bg-blue-50 text-blue-600">
+                        <i data-lucide="users" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full mt-4 overflow-hidden">
+                    <div id="progressBar" class="h-full bg-blue-500 transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <p class="text-xs text-slate-500 mt-2 text-right" id="spotsLeftText">20 places restantes</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-slate-500 text-sm font-medium uppercase tracking-wider">Total Collecté</p>
+                        <h3 class="text-3xl font-bold text-emerald-600 mt-1">
+                            <span id="totalCollectedDisplay">0</span> <span class="text-sm font-normal text-slate-500">DH</span>
+                        </h3>
+                    </div>
+                    <div class="p-3 rounded-full bg-emerald-50 text-emerald-600">
+                        <i data-lucide="banknote" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-slate-500">
+                    Total Potentiel : <span id="potentialTotalDisplay">0</span> DH
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden">
+                <div id="editModeIndicator" class="absolute top-0 left-0 w-full h-1 bg-orange-500 hidden"></div>
+                <p class="text-slate-500 text-sm font-medium uppercase tracking-wider mb-3 flex justify-between">
+                    <span id="formTitle">Inscription Rapide</span>
+                    <button id="cancelButton" onclick="cancelEdit()" class="text-xs text-red-500 hover:text-red-700 font-bold hidden cursor-pointer">ANNULER</button>
+                </p>
+                <form id="addStudentForm" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="studentName" placeholder="Nom complet" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" required>
+                        <input type="tel" id="studentPhone" placeholder="Tél (06...)" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="number" id="amountPaid" placeholder="Montant" value="900" class="w-1/2 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" required>
+                        <button type="submit" id="addButton" class="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors cursor-pointer">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span id="btnText">Ajouter</span>
+                        </button>
+                    </div>
+                </form>
+                <div id="errorMessage" class="mt-2 flex items-center gap-1 text-red-500 text-xs hidden">
+                    <i data-lucide="alert-circle" class="w-3 h-3"></i>
+                    <span id="errorText"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <h2 class="font-semibold text-slate-800">Étudiants Inscrits</h2>
+                
+                <div class="flex bg-slate-100 p-1 rounded-lg">
+                    <button onclick="setFilter('all')" id="btnAll" class="px-3 py-1.5 text-xs font-medium rounded-md transition-all shadow-sm bg-white text-slate-800">
+                        Tous
+                    </button>
+                    <button onclick="setFilter('partial')" id="btnPartial" class="px-3 py-1.5 text-xs font-medium rounded-md transition-all text-slate-500 hover:text-slate-700">
+                        Partiels
+                    </button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-50 text-slate-500 font-medium">
+                        <tr>
+                            <th class="px-6 py-3 w-12">#</th>
+                            <th class="px-6 py-3">Nom</th>
+                            <th class="px-6 py-3">Téléphone</th>
+                            <th class="px-6 py-3">Statut</th>
+                            <th class="px-6 py-3 text-right">Montant Payé</th>
+                            <th class="px-6 py-3 text-center w-24">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody" class="divide-y divide-slate-100">
+                        </tbody>
+                    <tfoot id="tableFooter" class="bg-slate-50 font-semibold text-slate-800 hidden">
+                        </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const MAX_STUDENTS = 20;
+        const TICKET_PRICE = 900;
+        const STORAGE_KEY = 'gls_merzouga_students_v3'; 
+
+        // State
+        let students = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        // Migration helper
+        students = students.map(s => ({...s, phone: s.phone || ''}));
+        
+        let currentFilter = 'all';
+        let editingId = null; // Track if we are editing
+
+        // Elements
+        const form = document.getElementById('addStudentForm');
+        const nameInput = document.getElementById('studentName');
+        const phoneInput = document.getElementById('studentPhone');
+        const amountInput = document.getElementById('amountPaid');
+        const addButton = document.getElementById('addButton');
+        const btnText = document.getElementById('btnText');
+        const errorMsg = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const tableBody = document.getElementById('studentsTableBody');
+        const tableFooter = document.getElementById('tableFooter');
+        
+        // Edit Mode Elements
+        const cancelButton = document.getElementById('cancelButton');
+        const formTitle = document.getElementById('formTitle');
+        const editModeIndicator = document.getElementById('editModeIndicator');
+
+        // Stats Elements
+        const countDisplay = document.getElementById('studentCountDisplay');
+        const spotsLeftText = document.getElementById('spotsLeftText');
+        const progressBar = document.getElementById('progressBar');
+        const totalCollectedDisplay = document.getElementById('totalCollectedDisplay');
+        const potentialTotalDisplay = document.getElementById('potentialTotalDisplay');
+        const capacityCard = document.getElementById('capacityCard');
+        const capacityIconBg = document.getElementById('capacityIconBg');
+
+        // Initial Render
+        render();
+
+        // Filter Function
+        function setFilter(type) {
+            currentFilter = type;
+            const btnAll = document.getElementById('btnAll');
+            const btnPartial = document.getElementById('btnPartial');
+            const activeClass = "bg-white text-slate-800 shadow-sm";
+            const inactiveClass = "text-slate-500 hover:text-slate-700";
+
+            if (type === 'all') {
+                btnAll.className = `px-3 py-1.5 text-xs font-medium rounded-md transition-all ${activeClass}`;
+                btnPartial.className = `px-3 py-1.5 text-xs font-medium rounded-md transition-all ${inactiveClass}`;
+            } else {
+                btnAll.className = `px-3 py-1.5 text-xs font-medium rounded-md transition-all ${inactiveClass}`;
+                btnPartial.className = `px-3 py-1.5 text-xs font-medium rounded-md transition-all ${activeClass}`;
+            }
+            render();
+        }
+
+        // ==========================
+        //  EDIT MODE FUNCTIONS
+        // ==========================
+        function startEdit(id) {
+            const student = students.find(s => s.id === id);
+            if (!student) return;
+
+            editingId = id;
+            
+            // Populate form
+            nameInput.value = student.name;
+            phoneInput.value = student.phone || '';
+            amountInput.value = student.paid;
+            
+            // UI Changes
+            formTitle.textContent = "Modification en cours...";
+            formTitle.className = "text-orange-600 font-bold uppercase tracking-wider text-sm";
+            btnText.textContent = "Mettre à jour";
+            addButton.className = "flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-medium transition-colors cursor-pointer";
+            cancelButton.classList.remove('hidden');
+            editModeIndicator.classList.remove('hidden');
+
+            // Scroll to form
+            nameInput.focus();
+            form.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            editingId = null;
+            resetFormUI();
+        }
+
+        function resetFormUI() {
+            nameInput.value = '';
+            phoneInput.value = '';
+            amountInput.value = '900';
+            
+            formTitle.textContent = "Inscription Rapide";
+            formTitle.className = "text-slate-500 text-sm font-medium uppercase tracking-wider mb-3";
+            
+            btnText.textContent = "Ajouter";
+            addButton.className = "flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors cursor-pointer";
+            
+            cancelButton.classList.add('hidden');
+            editModeIndicator.classList.add('hidden');
+            hideError();
+        }
+
+        // Form Submit Handler
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            hideError();
+
+            const name = nameInput.value.trim();
+            const phone = phoneInput.value.trim();
+            const amount = Number(amountInput.value);
+
+            if (!name) {
+                showError('Veuillez entrer un nom d\'étudiant.');
+                return;
+            }
+
+            // === UPDATE EXISTING (EDIT MODE) ===
+            if (editingId) {
+                const studentIndex = students.findIndex(s => s.id === editingId);
+                if (studentIndex !== -1) {
+                    students[studentIndex].name = name;
+                    students[studentIndex].phone = phone;
+                    students[studentIndex].paid = amount;
+                    
+                    saveAndRender();
+                    cancelEdit(); // Reset UI
+                    return;
+                }
+            }
+
+            // === CREATE NEW (NORMAL MODE) ===
+            
+            // Check duplicates
+            const existingIndex = students.findIndex(s => s.name.toLowerCase() === name.toLowerCase());
+            if (existingIndex !== -1) {
+                // Duplicate Logic (Add funds)
+                const student = students[existingIndex];
+                if (student.paid >= TICKET_PRICE && amount > 0) {
+                    if(!confirm(`${student.name} a déjà payé ${student.paid} DH. Voulez-vous ajouter ${amount} DH de plus ?`)) return;
+                }
+                student.paid += amount;
+                if(phone) student.phone = phone; // Update phone if provided
+                saveAndRender();
+                resetFormUI();
+            } else {
+                // Create New
+                if (students.length >= MAX_STUDENTS) {
+                    showError('Capacité maximale (20) atteinte.');
+                    return;
+                }
+
+                const newStudent = {
+                    id: Date.now(),
+                    name: name,
+                    phone: phone,
+                    paid: amount,
+                    dateRegistered: new Date().toLocaleDateString('fr-FR')
+                };
+
+                students.push(newStudent);
+                saveAndRender();
+                resetFormUI();
+            }
+        });
+
+        function removeStudent(id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?')) {
+                students = students.filter(s => s.id !== id);
+                if (editingId === id) cancelEdit();
+                saveAndRender();
+            }
+        }
+
+        function saveAndRender() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
+            render();
+        }
+
+        function render() {
+            let displayedStudents = students;
+            if (currentFilter === 'partial') {
+                displayedStudents = students.filter(s => s.paid < TICKET_PRICE);
+            }
+
+            tableBody.innerHTML = '';
+            
+            if (displayedStudents.length === 0) {
+                const emptyMsg = currentFilter === 'partial' 
+                    ? "Aucun paiement partiel trouvé." 
+                    : "Aucun étudiant inscrit pour le moment.";
+                
+                tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-slate-400 italic">${emptyMsg}</td></tr>`;
+                tableFooter.classList.add('hidden');
+            } else {
+                tableFooter.classList.remove('hidden');
+                
+                displayedStudents.forEach((student, index) => {
+                    const isPaidFull = student.paid >= TICKET_PRICE;
+                    const remaining = TICKET_PRICE - student.paid;
+                    
+                    const statusBadge = isPaidFull 
+                        ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Payé</span>`
+                        : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">Partiel <span class="opacity-75">(-${remaining})</span></span>`;
+
+                    const row = document.createElement('tr');
+                    // Highlight row being edited
+                    if (editingId === student.id) {
+                        row.className = 'bg-orange-50 border-l-4 border-orange-500 transition-colors';
+                    } else {
+                        row.className = 'hover:bg-slate-50 transition-colors border-l-4 border-transparent';
+                    }
+
+                    row.innerHTML = `
+                        <td class="px-6 py-3 text-slate-400 font-mono">${index + 1}</td>
+                        <td class="px-6 py-3 font-medium text-slate-800">${escapeHtml(student.name)}</td>
+                        <td class="px-6 py-3 text-slate-600 font-mono text-xs">${escapeHtml(student.phone || '-')}</td>
+                        <td class="px-6 py-3">${statusBadge}</td>
+                        <td class="px-6 py-3 text-right font-mono text-slate-600">${student.paid} DH</td>
+                        <td class="px-6 py-3 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <button onclick="startEdit(${student.id})" class="text-slate-400 hover:text-orange-500 transition-colors p-1 cursor-pointer" title="Modifier">
+                                    <i data-lucide="pencil" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="removeStudent(${student.id})" class="text-slate-400 hover:text-red-500 transition-colors p-1 cursor-pointer" title="Supprimer">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                // Footer Logic
+                if (currentFilter === 'partial') {
+                    const totalRemaining = displayedStudents.reduce((sum, s) => sum + (TICKET_PRICE - s.paid), 0);
+                    tableFooter.innerHTML = `<tr><td colspan="4" class="px-6 py-3 text-right text-slate-500">RESTE À RECOUVRER</td><td class="px-6 py-3 text-right font-mono text-amber-600 font-bold">-${totalRemaining} DH</td><td></td></tr>`;
+                } else {
+                    const totalCollected = students.reduce((sum, s) => sum + s.paid, 0);
+                    tableFooter.innerHTML = `<tr><td colspan="4" class="px-6 py-3 text-right text-slate-800">TOTAL COLLECTÉ</td><td class="px-6 py-3 text-right font-mono text-emerald-600 font-bold">${totalCollected} DH</td><td></td></tr>`;
+                }
+            }
+
+            // Global Stats
+            const count = students.length;
+            const total = students.reduce((sum, s) => sum + s.paid, 0);
+            const isFull = count >= MAX_STUDENTS;
+            const percentage = (count / MAX_STUDENTS) * 100;
+
+            countDisplay.innerHTML = `${count} <span class="text-lg text-slate-400 font-normal">/ ${MAX_STUDENTS}</span>`;
+            spotsLeftText.textContent = `${MAX_STUDENTS - count} places restantes`;
+            progressBar.style.width = `${percentage}%`;
+            totalCollectedDisplay.textContent = total.toLocaleString();
+            potentialTotalDisplay.textContent = (count * TICKET_PRICE).toLocaleString();
+
+            if (isFull) {
+                capacityCard.classList.add('bg-red-50', 'border-red-200');
+                countDisplay.classList.add('text-red-600');
+                capacityIconBg.classList.add('bg-red-100', 'text-red-600');
+                progressBar.classList.add('bg-red-500');
+            } else {
+                capacityCard.classList.remove('bg-red-50', 'border-red-200');
+                countDisplay.classList.remove('text-red-600');
+                capacityIconBg.classList.remove('bg-red-100', 'text-red-600');
+                progressBar.classList.remove('bg-red-500');
+            }
+
+            lucide.createIcons();
+        }
+
+        // ==========================================
+        //  STYLED EXCEL EXPORT (NAVY BLUE HEADER)
+        // ==========================================
+        function exportToExcel() {
+            // 1. Prepare Data
+            const headers = ["Nom", "Téléphone", "Statut", "Payé (DH)", "Reste (DH)", "Date"];
+            const data = students.map(s => {
+                const remaining = Math.max(0, TICKET_PRICE - s.paid);
+                return [
+                    s.name,
+                    s.phone || "-",
+                    s.paid >= TICKET_PRICE ? "Payé" : "Partiel",
+                    s.paid,
+                    remaining,
+                    s.dateRegistered
+                ];
+            });
+
+            // Add Header Row
+            data.unshift(headers);
+
+            // Add Total Row
+            const totalCollected = students.reduce((sum, s) => sum + s.paid, 0);
+            data.push(["", "", "", "TOTAL : " + totalCollected, "", ""]);
+
+            // 2. Create Workbook
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+
+            // 3. Define Styles
+            const navyHeaderStyle = {
+                fill: { fgColor: { rgb: "000080" } }, // Navy Blue
+                font: { name: "Arial", sz: 12, color: { rgb: "FFFFFF" }, bold: true }, // White Bold Text 12pt
+                alignment: { horizontal: "center", vertical: "center", wrapText: true },
+                border: {
+                    top: { style: "thin", color: { auto: 1 } },
+                    bottom: { style: "thin", color: { auto: 1 } },
+                    left: { style: "thin", color: { auto: 1 } },
+                    right: { style: "thin", color: { auto: 1 } }
+                }
+            };
+
+            const normalCellStyle = {
+                font: { name: "Arial", sz: 11 }, // Arial 11pt
+                alignment: { horizontal: "left", vertical: "center" },
+                border: {
+                    top: { style: "thin", color: {rgb: "CCCCCC"} },
+                    bottom: { style: "thin", color: {rgb: "CCCCCC"} },
+                    left: { style: "thin", color: {rgb: "CCCCCC"} },
+                    right: { style: "thin", color: {rgb: "CCCCCC"} }
+                }
+            };
+
+            const totalRowStyle = {
+                fill: { fgColor: { rgb: "F0F0F0" } }, // Light Gray
+                font: { name: "Arial", sz: 12, bold: true },
+                alignment: { horizontal: "right", vertical: "center" },
+                border: { top: { style: "medium" } }
+            };
+
+            // 4. Apply Styles to Cells
+            const range = XLSX.utils.decode_range(ws['!ref']);
+            for (let R = range.s.r; R <= range.e.r; ++R) {
+                for (let C = range.s.c; C <= range.e.c; ++C) {
+                    const cell_address = XLSX.utils.encode_cell({ r: R, c: C });
+                    if (!ws[cell_address]) continue;
+
+                    // Header Row (Row 0)
+                    if (R === 0) {
+                        ws[cell_address].s = navyHeaderStyle;
+                    } 
+                    // Last Row (Total)
+                    else if (R === range.e.r) {
+                        ws[cell_address].s = totalRowStyle;
+                    } 
+                    // Normal Data
+                    else {
+                        ws[cell_address].s = normalCellStyle;
+                    }
+                }
+            }
+
+            // Set Column Widths (Optimized)
+            ws['!cols'] = [
+                { wch: 30 }, // Nom
+                { wch: 15 }, // Téléphone
+                { wch: 15 }, // Statut
+                { wch: 15 }, // Payé
+                { wch: 15 }, // Reste
+                { wch: 20 }  // Date
+            ];
+
+            // Set Row Heights
+            ws['!rows'] = [];
+            ws['!rows'][0] = { hpt: 30 }; // Header height
+            for(let i = 1; i < data.length; i++) {
+                ws['!rows'][i] = { hpt: 25 }; // Data row height
+            }
+            ws['!rows'][data.length - 1] = { hpt: 30 };
+
+            // 5. Append Sheet and Download
+            XLSX.utils.book_append_sheet(wb, ws, "GLS Trip");
+            XLSX.writeFile(wb, "Voyage_GLS_Merzouga_Marrakech.xlsx");
+        }
+
+        // ==========================================
+        //  PROFESSIONAL PDF EXPORT
+        // ==========================================
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Title
+            doc.setFontSize(18);
+            doc.setTextColor(0, 0, 128); // Navy Blue
+            doc.text("Inscription Voyage Merzouga GLS Marrakech", 14, 22);
+
+            // Subtitle info
+            doc.setFontSize(11);
+            doc.setTextColor(100);
+            doc.text(`Généré le : ${new Date().toLocaleDateString('fr-FR')} ${new Date().toLocaleTimeString('fr-FR')}`, 14, 30);
+            doc.text(`Total Étudiants : ${students.length} / 20`, 14, 36);
+
+            // Table Data
+            const tableRows = students.map((s, index) => {
+                const remaining = Math.max(0, TICKET_PRICE - s.paid);
+                return [
+                    index + 1,
+                    s.name,
+                    s.phone || "-",
+                    s.paid >= TICKET_PRICE ? "Payé" : "Partiel",
+                    `${s.paid} DH`,
+                    remaining > 0 ? `${remaining} DH` : "-",
+                    s.dateRegistered
+                ];
+            });
+
+            // Calculate Total
+            const totalCollected = students.reduce((sum, s) => sum + s.paid, 0);
+
+            // Generate Table
+            doc.autoTable({
+                startY: 45,
+                head: [['#', 'Nom', 'Tél', 'Statut', 'Payé', 'Reste', 'Date']],
+                body: tableRows,
+                theme: 'grid',
+                headStyles: { 
+                    fillColor: [0, 0, 128], // Navy Blue Background
+                    textColor: [255, 255, 255], // White Text
+                    fontStyle: 'bold'
+                },
+                styles: {
+                    fontSize: 9,
+                    cellPadding: 3
+                },
+                foot: [['', '', '', 'TOTAL', `${totalCollected} DH`, '', '']],
+                footStyles: {
+                    fillColor: [240, 240, 240],
+                    textColor: [0, 0, 0],
+                    fontStyle: 'bold'
+                }
+            });
+
+            // Save
+            doc.save("Rapport_Merzouga_GLS_Marrakech.pdf");
+        }
+
+        function showError(msg) { errorText.textContent = msg; errorMsg.classList.remove('hidden'); }
+        function hideError() { errorMsg.classList.add('hidden'); }
+        function escapeHtml(text) { if (!text) return text; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+    </script>
+</body>
+</html>
