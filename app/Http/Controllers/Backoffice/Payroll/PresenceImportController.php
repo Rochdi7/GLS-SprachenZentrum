@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Backoffice\Payroll;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backoffice\Payroll\StorePresenceImportRequest;
-use App\Http\Requests\Backoffice\Payroll\UpdateStudentCategoryRequest;
+use App\Http\Requests\Backoffice\Payroll\UpdateStudentWeekAmountRequest;
 use App\Models\Group;
 use App\Models\PresenceImport;
 use App\Models\PresenceImportStudent;
@@ -50,7 +50,7 @@ class PresenceImportController extends Controller
         $request->validate(['file' => 'required|file|mimes:xlsx,xls,csv|max:10240']);
 
         $rawData = \Maatwebsite\Excel\Facades\Excel::toArray(
-            new \App\Imports\PresenceExcelImport(),
+            new \App\Imports\PresenceExcelImport,
             $request->file('file')
         );
 
@@ -58,8 +58,8 @@ class PresenceImportController extends Controller
         $preview = array_slice($rows, 0, 5); // First 5 rows
 
         return response()->json([
-            'total_rows'   => count($rows),
-            'total_cols'   => count($rows[0] ?? []),
+            'total_rows' => count($rows),
+            'total_cols' => count($rows[0] ?? []),
             'first_5_rows' => $preview,
         ]);
     }
@@ -115,20 +115,18 @@ class PresenceImportController extends Controller
     }
 
     /**
-     * Update a student's category override.
+     * Override (or clear) one of a student's 4 weekly amounts.
+     * Pass an empty `amount` to clear the override and revert to auto.
      */
-    public function updateCategory(UpdateStudentCategoryRequest $request, PresenceImportStudent $student)
+    public function updateStudentWeek(UpdateStudentWeekAmountRequest $request, PresenceImportStudent $student)
     {
-        $override = $request->category_override;
+        $week = (int) $request->validated('week');
+        $amount = $request->validated('amount');
+        $amount = $amount === null || $amount === '' ? null : (float) $amount;
 
-        // If override matches auto-calculated category, clear it
-        if ($override === $student->category) {
-            $override = null;
-        }
+        $this->importService->overrideStudentWeek($student, $week, $amount);
 
-        $this->importService->updateStudentCategory($student, $override);
-
-        return back()->with('success', "Catégorie de {$student->student_name} mise à jour.");
+        return back()->with('success', "Semaine {$week} de {$student->student_name} mise à jour.");
     }
 
     /**
@@ -152,7 +150,7 @@ class PresenceImportController extends Controller
     {
         $summary = $import->paymentSummary;
 
-        if (!$summary) {
+        if (! $summary) {
             return back()->with('error', 'Aucun résumé de paiement trouvé.');
         }
 

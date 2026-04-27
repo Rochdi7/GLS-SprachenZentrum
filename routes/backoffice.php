@@ -339,8 +339,8 @@ Route::prefix('backoffice')
                         // Delete import
                         Route::delete('/import/{import}', [PresenceImportController::class, 'destroy'])->middleware('permission:presence.delete')->name('import.destroy');
 
-                        // Update student category override
-                        Route::patch('/student/{student}/category', [PresenceImportController::class, 'updateCategory'])->middleware('permission:presence.edit')->name('student.category');
+                        // Override a student's weekly amount (week 1-4)
+                        Route::patch('/student/{student}/week', [PresenceImportController::class, 'updateStudentWeek'])->middleware('permission:presence.edit')->name('student.week');
 
                         // Approve payment
                         Route::post('/import/{import}/approve', [PresenceImportController::class, 'approve'])->middleware('permission:presence.edit')->name('import.approve');
@@ -360,9 +360,12 @@ Route::prefix('backoffice')
             ->group(function () {
                 Route::get('/', [WeeklyReportController::class, 'index'])->middleware('permission:weekly_reports.view')->name('index');
                 Route::post('/', [WeeklyReportController::class, 'store'])->middleware('permission:weekly_reports.create')->name('store');
-                Route::delete('/{weeklyReport}', [WeeklyReportController::class, 'destroy'])->middleware('permission:weekly_reports.delete')->name('destroy');
                 Route::get('/events', [WeeklyReportController::class, 'events'])->middleware('permission:weekly_reports.view')->name('events');
+                Route::get('/for-day', [WeeklyReportController::class, 'forDay'])->middleware('permission:weekly_reports.view')->name('for_day');
+                Route::post('/batch-sync', [WeeklyReportController::class, 'batchSync'])->middleware('permission:weekly_reports.create')->name('batch_sync');
                 Route::get('/export-pdf', [WeeklyReportController::class, 'exportPdf'])->middleware('permission:weekly_reports.view')->name('export_pdf');
+                Route::post('/{weeklyReport}', [WeeklyReportController::class, 'update'])->middleware('permission:weekly_reports.edit')->name('update');
+                Route::delete('/{weeklyReport}', [WeeklyReportController::class, 'destroy'])->middleware('permission:weekly_reports.delete')->name('destroy');
             });
 
         /*

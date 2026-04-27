@@ -6,16 +6,34 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * One student row from a presence import.
- * Tracks daily attendance, computed category, and weighted payment amount.
+ *
+ * Payment model: weekly flat-rate.
+ * Each calendar week (1..4), if the student has >= weekly_threshold present days,
+ * the prof earns base_price * weekly_rate_percent (default 25%) for that student-week.
+ * A human can override the per-week amount via week_N_amount_override.
  */
 class PresenceImportStudent extends Model
 {
+    public const WEEKS = [1, 2, 3, 4];
+
     protected $fillable = [
         'presence_import_id',
         'row_number',
         'student_name',
         'total_present',
         'total_absent',
+        'week_1_presence',
+        'week_2_presence',
+        'week_3_presence',
+        'week_4_presence',
+        'week_1_amount',
+        'week_2_amount',
+        'week_3_amount',
+        'week_4_amount',
+        'week_1_amount_override',
+        'week_2_amount_override',
+        'week_3_amount_override',
+        'week_4_amount_override',
         'active_quarters',
         'category',
         'category_override',
@@ -27,39 +45,45 @@ class PresenceImportStudent extends Model
 
     protected $casts = [
         'weighted_amount' => 'decimal:2',
-        'raw_data'        => 'array',
+        'week_1_amount' => 'decimal:2',
+        'week_2_amount' => 'decimal:2',
+        'week_3_amount' => 'decimal:2',
+        'week_4_amount' => 'decimal:2',
+        'week_1_amount_override' => 'decimal:2',
+        'week_2_amount_override' => 'decimal:2',
+        'week_3_amount_override' => 'decimal:2',
+        'week_4_amount_override' => 'decimal:2',
+        'raw_data' => 'array',
     ];
 
     /* ------------------------------------------------------------------ */
-    /*  Category constants                                                 */
+    /*  Legacy category constants (kept for backwards compatibility)        */
     /* ------------------------------------------------------------------ */
 
-    public const CATEGORY_FULL          = 'full';
+    public const CATEGORY_FULL = 'full';
+
     public const CATEGORY_THREE_QUARTER = 'three_quarter';
-    public const CATEGORY_HALF          = 'half';
-    public const CATEGORY_QUARTER       = 'quarter';
-    public const CATEGORY_ZERO          = 'zero';
 
-    /**
-     * Fraction values for each category.
-     */
+    public const CATEGORY_HALF = 'half';
+
+    public const CATEGORY_QUARTER = 'quarter';
+
+    public const CATEGORY_ZERO = 'zero';
+
     public const CATEGORY_FRACTIONS = [
-        self::CATEGORY_FULL          => 1.00,
+        self::CATEGORY_FULL => 1.00,
         self::CATEGORY_THREE_QUARTER => 0.75,
-        self::CATEGORY_HALF          => 0.50,
-        self::CATEGORY_QUARTER       => 0.25,
-        self::CATEGORY_ZERO          => 0.00,
+        self::CATEGORY_HALF => 0.50,
+        self::CATEGORY_QUARTER => 0.25,
+        self::CATEGORY_ZERO => 0.00,
     ];
 
-    /**
-     * Human-readable labels (French).
-     */
     public const CATEGORY_LABELS = [
-        self::CATEGORY_FULL          => 'Complet',
+        self::CATEGORY_FULL => 'Complet',
         self::CATEGORY_THREE_QUARTER => '3/4',
-        self::CATEGORY_HALF          => '1/2',
-        self::CATEGORY_QUARTER       => '1/4',
-        self::CATEGORY_ZERO          => 'Zéro',
+        self::CATEGORY_HALF => '1/2',
+        self::CATEGORY_QUARTER => '1/4',
+        self::CATEGORY_ZERO => 'Zéro',
     ];
 
     /* ------------------------------------------------------------------ */
@@ -77,31 +101,46 @@ class PresenceImportStudent extends Model
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Helpers                                                            */
+    /*  Weekly helpers                                                     */
     /* ------------------------------------------------------------------ */
 
-    /**
-     * Get the effective category (override takes priority).
-     */
-    public function getEffectiveCategory(): string
+    public function getWeekPresence(int $week): int
     {
-        return $this->category_override ?? $this->category;
+        return (int) ($this->{"week_{$week}_presence"} ?? 0);
     }
 
-    /**
-     * Get the fraction for the effective category.
-     */
-    public function getFraction(): float
+    public function getWeekAutoAmount(int $week): float
     {
-        return self::CATEGORY_FRACTIONS[$this->getEffectiveCategory()] ?? 0.0;
+        return (float) ($this->{"week_{$week}_amount"} ?? 0);
     }
 
-    /**
-     * Get the human label for the effective category.
-     */
-    public function getCategoryLabel(): string
+    public function getWeekOverride(int $week): ?float
     {
-        return self::CATEGORY_LABELS[$this->getEffectiveCategory()] ?? '—';
+        $v = $this->{"week_{$week}_amount_override"};
+
+        return $v === null ? null : (float) $v;
+    }
+
+    public function getWeekEffectiveAmount(int $week): float
+    {
+        $override = $this->getWeekOverride($week);
+
+        return $override !== null ? $override : $this->getWeekAutoAmount($week);
+    }
+
+    public function isWeekOverridden(int $week): bool
+    {
+        return $this->getWeekOverride($week) !== null;
+    }
+
+    public function getTotalAmount(): float
+    {
+        $total = 0.0;
+        foreach (self::WEEKS as $w) {
+            $total += $this->getWeekEffectiveAmount($w);
+        }
+
+        return $total;
     }
 
     public function isCancelled(): bool

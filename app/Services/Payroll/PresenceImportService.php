@@ -53,46 +53,46 @@ class PresenceImportService
                 $debug = $parsed['debug'] ?? 'N/A';
                 $dateCols = count($parsed['date_columns'] ?? []);
                 throw new \RuntimeException(
-                    "Aucun étudiant trouvé dans le fichier. "
-                    . "Colonnes de dates détectées: {$dateCols}. "
-                    . "Diagnostic: {$debug}"
+                    'Aucun étudiant trouvé dans le fichier. '
+                    ."Colonnes de dates détectées: {$dateCols}. "
+                    ."Diagnostic: {$debug}"
                 );
             }
 
             // 4. Create the import record
             $import = PresenceImport::create([
-                'group_id'            => $group->id,
-                'version'             => $nextVersion,
-                'month'               => $month->copy()->startOfMonth(),
-                'date_start'          => $parsed['date_start'],
-                'date_end'            => $parsed['date_end'],
-                'total_days'          => $parsed['total_days'],
+                'group_id' => $group->id,
+                'version' => $nextVersion,
+                'month' => $month->copy()->startOfMonth(),
+                'date_start' => $parsed['date_start'],
+                'date_end' => $parsed['date_end'],
+                'total_days' => $parsed['total_days'],
                 'payment_per_student' => $paymentPerStudent,
-                'file_name'           => $fileName,
-                'file_path'           => $filePath,
-                'notes'               => $notes,
-                'imported_by'         => $importedBy,
+                'file_name' => $fileName,
+                'file_path' => $filePath,
+                'notes' => $notes,
+                'imported_by' => $importedBy,
             ]);
 
             // 5. Persist each student and their daily presence records
             foreach ($parsed['students'] as $studentData) {
                 $student = PresenceImportStudent::create([
                     'presence_import_id' => $import->id,
-                    'row_number'         => $studentData['row_number'],
-                    'student_name'       => $studentData['student_name'],
-                    'total_present'      => $studentData['total_present'],
-                    'total_absent'       => $studentData['total_absent'],
-                    'status'             => $studentData['auto_status'] ?? 'active',
-                    'row_color'          => $studentData['row_color'] ?? null,
-                    'raw_data'           => $studentData['raw_data'],
+                    'row_number' => $studentData['row_number'],
+                    'student_name' => $studentData['student_name'],
+                    'total_present' => $studentData['total_present'],
+                    'total_absent' => $studentData['total_absent'],
+                    'status' => $studentData['auto_status'] ?? 'active',
+                    'row_color' => $studentData['row_color'] ?? null,
+                    'raw_data' => $studentData['raw_data'],
                 ]);
 
                 foreach ($studentData['presence'] as $record) {
                     PresenceRecord::create([
                         'presence_import_student_id' => $student->id,
-                        'date'                       => $record['date'],
-                        'status'                     => $record['status'],
-                        'raw_value'                  => $record['raw_value'],
+                        'date' => $record['date'],
+                        'status' => $record['status'],
+                        'raw_value' => $record['raw_value'],
                     ]);
                 }
             }
@@ -105,16 +105,13 @@ class PresenceImportService
     }
 
     /**
-     * Update a student's category override and recalculate payment.
+     * Manually override (or clear) one of the student's 4 weekly amounts,
+     * then recompute the import totals.
      */
-    public function updateStudentCategory(PresenceImportStudent $student, ?string $categoryOverride): void
+    public function overrideStudentWeek(PresenceImportStudent $student, int $week, ?float $amount): void
     {
-        DB::transaction(function () use ($student, $categoryOverride) {
-            $student->update(['category_override' => $categoryOverride]);
-
-            // Recalculate the entire import summary
-            $import = $student->presenceImport;
-            $this->calculator->calculate($import);
+        DB::transaction(function () use ($student, $week, $amount) {
+            $this->calculator->overrideStudentWeek($student, $week, $amount);
         });
     }
 

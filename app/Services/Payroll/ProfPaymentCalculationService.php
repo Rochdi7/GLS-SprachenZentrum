@@ -8,207 +8,168 @@ use App\Models\PresencePaymentSummary;
 use Carbon\Carbon;
 
 /**
- * Calculates professor payment based on student attendance data.
+ * Per-week flat-rate professor payment calculator.
  *
- * Algorithm (from EXPLAIN.md):
- * 1. Divide the month into 4 quarters (weeks)
- * 2. For each student, count active quarters (at least 1 present day in the quarter)
- * 3. Map active quarters to a category (full, three_quarter, half, quarter, zero)
- * 4. Calculate weighted amount: floor(base_price × fraction)
- * 5. Sum all weighted amounts = professor payment
+ * For each student × each of the 4 weeks:
+ *   - count present days in that week
+ *   - if count >= weekly_threshold (default 3) → student-week earns
+ *     base_price × weekly_rate_percent (default 25% → e.g. 500 → 125 DH)
+ *   - else 0 DH
+ * Per-week amounts are stored on the student row and can be manually
+ * overridden by a responsable (week_N_amount_override).
+ *
+ * Total prof payment = sum of effective amounts across all student-weeks.
  */
 class ProfPaymentCalculationService
 {
-    /**
-     * Calculate payment for all students in an import.
-     * Updates student records and creates/updates the payment summary.
-     */
     public function calculate(PresenceImport $import): PresencePaymentSummary
     {
-        $basePrice = $import->getEffectivePaymentPerStudent() ?? 0;
+        $basePrice = (float) ($import->getEffectivePaymentPerStudent() ?? 0);
+        $threshold = $import->getThreshold();
+        $unitAmount = $import->getWeeklyUnitAmount();
 
-        $counts = [
-            'full'          => 0,
-            'three_quarter' => 0,
-            'half'          => 0,
-            'quarter'       => 0,
-            'zero'          => 0,
-        ];
-        $totalPayment = 0;
+        $totalPayment = 0.0;
+        $qualifiedWeeks = 0;
+        $unqualifiedWeeks = 0;
         $totalActiveStudents = 0;
 
         $import->load('students.records');
 
+        // Build the canonical 4-week buckets for this import period
+        $weekMap = $this->buildWeekMap($import->date_start, $import->date_end);
+
         foreach ($import->students as $student) {
-            // Cancelled/transferred students with NO attendance → force zero
-            // Those who attended before leaving are classified normally
-            if ($student->isCancelled() || $student->isTransferred()) {
-                $hasAttendance = $student->records->where('status', 'present')->isNotEmpty();
-                if (! $hasAttendance) {
-                    $student->update([
-                        'active_quarters' => 0,
-                        'category'        => PresenceImportStudent::CATEGORY_ZERO,
-                        'weighted_amount' => 0,
-                    ]);
-                    $counts['zero']++;
-                    continue;
+            // Group present dates by ISO week
+            $presentByIsoWeek = $student->records
+                ->where('status', 'present')
+                ->groupBy(fn ($r) => Carbon::parse($r->date)->isoWeek());
+
+            $weekCounts = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            foreach ($weekMap as $isoWeek => $bucket) {
+                if ($presentByIsoWeek->has($isoWeek)) {
+                    $weekCounts[$bucket] += $presentByIsoWeek->get($isoWeek)->count();
                 }
-                // Fall through to normal calculation for those with attendance
             }
 
-            // Get all presence records for this student
-            $presentDates = $student->records
-                ->where('status', 'present')
-                ->pluck('date')
-                ->map(fn($d) => Carbon::parse($d))
-                ->sort()
-                ->values();
+            $isInactive = ($student->isCancelled() || $student->isTransferred())
+                && $student->records->where('status', 'present')->isEmpty();
 
-            // Count active quarters
-            $activeQuarters = $this->countActiveQuarters(
-                $presentDates,
-                $import->date_start,
-                $import->date_end,
-                $import->total_days
-            );
+            $updates = [];
+            $studentTotal = 0.0;
+            $studentQualified = false;
 
-            // Map to category
-            $category = $this->mapQuartersToCategory($activeQuarters);
+            foreach ([1, 2, 3, 4] as $w) {
+                $count = $isInactive ? 0 : $weekCounts[$w];
+                $auto = ($count >= $threshold) ? $unitAmount : 0.0;
+                $override = $student->{"week_{$w}_amount_override"};
+                $effective = $override !== null ? (float) $override : $auto;
 
-            // Calculate weighted amount (exact multiplication, no floor rounding)
-            $fraction = PresenceImportStudent::CATEGORY_FRACTIONS[$category];
-            $weightedAmount = round($basePrice * $fraction, 2);
+                $updates["week_{$w}_presence"] = $count;
+                $updates["week_{$w}_amount"] = $auto;
 
-            // Check for manual override
-            $effectiveCategory = $student->category_override ?? $category;
-            $effectiveFraction = PresenceImportStudent::CATEGORY_FRACTIONS[$effectiveCategory];
-            $effectiveAmount = round($basePrice * $effectiveFraction, 2);
+                if ($count >= $threshold) {
+                    $qualifiedWeeks++;
+                    $studentQualified = true;
+                } else {
+                    $unqualifiedWeeks++;
+                }
 
-            $student->update([
-                'active_quarters' => $activeQuarters,
-                'category'        => $category,
-                'weighted_amount' => $effectiveAmount,
-            ]);
+                $studentTotal += $effective;
+            }
 
-            $counts[$effectiveCategory]++;
-            $totalPayment += $effectiveAmount;
+            // Keep legacy fields populated so old views/exports still render
+            $activeQuarters = collect($weekCounts)->filter(fn ($c) => $c > 0)->count();
+            $updates['active_quarters'] = $activeQuarters;
+            $updates['category'] = $this->mapQuartersToLegacyCategory($activeQuarters);
+            $updates['weighted_amount'] = round($studentTotal, 2);
 
-            if ($effectiveCategory !== PresenceImportStudent::CATEGORY_ZERO) {
+            $student->update($updates);
+
+            $totalPayment += $studentTotal;
+            if ($studentQualified) {
                 $totalActiveStudents++;
             }
         }
 
-        // Create or update payment summary
-        $summary = PresencePaymentSummary::updateOrCreate(
+        // Legacy category counts (still useful for at-a-glance breakdowns)
+        $counts = $this->countLegacyCategories($import);
+
+        return PresencePaymentSummary::updateOrCreate(
             ['presence_import_id' => $import->id],
             [
-                'base_price'          => $basePrice,
-                'count_full'          => $counts['full'],
+                'base_price' => $basePrice,
+                'weekly_unit_amount' => $unitAmount,
+                'count_full' => $counts['full'],
                 'count_three_quarter' => $counts['three_quarter'],
-                'count_half'          => $counts['half'],
-                'count_quarter'       => $counts['quarter'],
-                'count_zero'          => $counts['zero'],
-                'total_students'      => $totalActiveStudents,
-                'total_payment'       => $totalPayment,
+                'count_half' => $counts['half'],
+                'count_quarter' => $counts['quarter'],
+                'count_zero' => $counts['zero'],
+                'count_qualified_weeks' => $qualifiedWeeks,
+                'count_unqualified_weeks' => $unqualifiedWeeks,
+                'total_students' => $totalActiveStudents,
+                'total_payment' => round($totalPayment, 2),
             ]
         );
-
-        return $summary;
     }
 
     /**
-     * Recalculate a single student's weighted amount after a category override.
+     * Override (or clear) a single student-week amount, then recompute totals.
      */
-    public function recalculateStudent(PresenceImportStudent $student, float $basePrice): void
+    public function overrideStudentWeek(PresenceImportStudent $student, int $week, ?float $amount): void
     {
-        $effectiveCategory = $student->getEffectiveCategory();
-        $fraction = PresenceImportStudent::CATEGORY_FRACTIONS[$effectiveCategory];
-        $weightedAmount = round($basePrice * $fraction, 2);
-
-        $student->update(['weighted_amount' => $weightedAmount]);
-    }
-
-    /**
-     * Count how many weeks the student was active in.
-     *
-     * Uses actual Mon-Fri weeks (ISO week numbers) to match
-     * how responsables manually classify students.
-     * If there are 5+ ISO weeks, the last partial week is merged into week 4.
-     * A student is "active" in a week if they have >= 1 present day.
-     *
-     * @param  \Illuminate\Support\Collection  $presentDates  Dates where student was present
-     * @param  Carbon|string                    $dateStart     First class day
-     * @param  Carbon|string                    $dateEnd       Last class day
-     * @param  int                              $totalDays     Total class days
-     * @return int  Number of active weeks (0-4)
-     */
-    private function countActiveQuarters($presentDates, $dateStart, $dateEnd, int $totalDays): int
-    {
-        if ($presentDates->isEmpty() || $totalDays === 0) {
-            return 0;
+        if (! in_array($week, [1, 2, 3, 4], true)) {
+            throw new \InvalidArgumentException("Week must be 1-4, got {$week}");
         }
 
-        // Group present dates by ISO week number
-        $presentByWeek = $presentDates->groupBy(fn($d) => Carbon::parse($d)->isoWeek());
+        $student->update(["week_{$week}_amount_override" => $amount]);
 
-        // Build the list of weeks that exist in the period (from date_start to date_end)
+        $import = $student->presenceImport;
+        $this->calculate($import);
+    }
+
+    /**
+     * Map the ISO week numbers spanned by date_start..date_end onto buckets 1..4.
+     * Extra ISO weeks (when month spans 5+) are merged into bucket 4.
+     */
+    private function buildWeekMap($dateStart, $dateEnd): array
+    {
         $start = Carbon::parse($dateStart);
         $end = Carbon::parse($dateEnd);
-        $allWeeks = collect();
+        $weeks = collect();
         $cursor = $start->copy();
         while ($cursor->lte($end)) {
-            $allWeeks->push($cursor->isoWeek());
+            $weeks->push($cursor->isoWeek());
             $cursor->addDay();
         }
-        $weekNumbers = $allWeeks->unique()->values();
+        $weekNumbers = $weeks->unique()->values()->all();
 
-        // If more than 4 weeks, merge the extras into week 4
-        // (e.g., a lone Monday at month-end merges with the previous week)
-        if ($weekNumbers->count() > 4) {
-            $mainWeeks = $weekNumbers->take(4);
-            $extraWeeks = $weekNumbers->slice(4);
-
-            // Merge extra weeks' presence into the last main week
-            $lastMainWeek = $mainWeeks->last();
-            foreach ($extraWeeks as $extraWk) {
-                if ($presentByWeek->has($extraWk)) {
-                    $merged = collect($presentByWeek->get($lastMainWeek, collect()))
-                        ->merge($presentByWeek->get($extraWk));
-                    $presentByWeek->put($lastMainWeek, $merged);
-                    $presentByWeek->forget($extraWk);
-                }
-            }
-            $weekNumbers = $mainWeeks;
+        $map = [];
+        foreach ($weekNumbers as $idx => $isoWeek) {
+            $bucket = min($idx + 1, 4); // 5th+ week merges into bucket 4
+            $map[$isoWeek] = $bucket;
         }
 
-        // Count weeks where the student had at least 1 present day
-        $activeWeeks = 0;
-        foreach ($weekNumbers as $wk) {
-            if ($presentByWeek->has($wk) && $presentByWeek->get($wk)->isNotEmpty()) {
-                $activeWeeks++;
-            }
-        }
-
-        return min($activeWeeks, 4);
+        return $map;
     }
 
-    /**
-     * Map number of active quarters to a category.
-     *
-     * 4 quarters → full
-     * 3 quarters → three_quarter
-     * 2 quarters → half
-     * 1 quarter  → quarter
-     * 0 quarters → zero
-     */
-    private function mapQuartersToCategory(int $activeQuarters): string
+    private function mapQuartersToLegacyCategory(int $activeQuarters): string
     {
         return match ($activeQuarters) {
-            4       => PresenceImportStudent::CATEGORY_FULL,
-            3       => PresenceImportStudent::CATEGORY_THREE_QUARTER,
-            2       => PresenceImportStudent::CATEGORY_HALF,
-            1       => PresenceImportStudent::CATEGORY_QUARTER,
+            4 => PresenceImportStudent::CATEGORY_FULL,
+            3 => PresenceImportStudent::CATEGORY_THREE_QUARTER,
+            2 => PresenceImportStudent::CATEGORY_HALF,
+            1 => PresenceImportStudent::CATEGORY_QUARTER,
             default => PresenceImportStudent::CATEGORY_ZERO,
         };
+    }
+
+    private function countLegacyCategories(PresenceImport $import): array
+    {
+        $counts = ['full' => 0, 'three_quarter' => 0, 'half' => 0, 'quarter' => 0, 'zero' => 0];
+        foreach ($import->students()->get() as $student) {
+            $counts[$student->category] = ($counts[$student->category] ?? 0) + 1;
+        }
+
+        return $counts;
     }
 }

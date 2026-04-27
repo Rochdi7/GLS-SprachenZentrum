@@ -18,6 +18,8 @@ class PresenceImport extends Model
         'date_end',
         'total_days',
         'payment_per_student',
+        'weekly_threshold',
+        'weekly_rate_percent',
         'file_name',
         'file_path',
         'notes',
@@ -25,11 +27,32 @@ class PresenceImport extends Model
     ];
 
     protected $casts = [
-        'month'               => 'date',
-        'date_start'          => 'date',
-        'date_end'            => 'date',
+        'month' => 'date',
+        'date_start' => 'date',
+        'date_end' => 'date',
         'payment_per_student' => 'decimal:2',
+        'weekly_rate_percent' => 'decimal:2',
     ];
+
+    public const DEFAULT_WEEKLY_THRESHOLD = 3;
+
+    public const DEFAULT_WEEKLY_RATE_PERCENT = 25.00;
+
+    /**
+     * Per-week unit amount: base_price * weekly_rate_percent / 100
+     */
+    public function getWeeklyUnitAmount(): float
+    {
+        $base = (float) ($this->getEffectivePaymentPerStudent() ?? 0);
+        $pct = (float) ($this->weekly_rate_percent ?? self::DEFAULT_WEEKLY_RATE_PERCENT);
+
+        return round($base * $pct / 100, 2);
+    }
+
+    public function getThreshold(): int
+    {
+        return (int) ($this->weekly_threshold ?? self::DEFAULT_WEEKLY_THRESHOLD);
+    }
 
     /* ------------------------------------------------------------------ */
     /*  Relationships                                                      */
@@ -82,14 +105,14 @@ class PresenceImport extends Model
         $days = $this->total_days % 5;
 
         if ($days === 0) {
-            return $weeks . ' semaine' . ($weeks > 1 ? 's' : '');
+            return $weeks.' semaine'.($weeks > 1 ? 's' : '');
         }
 
         if ($weeks === 0) {
-            return $days . ' jour' . ($days > 1 ? 's' : '');
+            return $days.' jour'.($days > 1 ? 's' : '');
         }
 
-        return $weeks . ' semaine' . ($weeks > 1 ? 's' : '') . ' + ' . $days . ' jour' . ($days > 1 ? 's' : '');
+        return $weeks.' semaine'.($weeks > 1 ? 's' : '').' + '.$days.' jour'.($days > 1 ? 's' : '');
     }
 
     /**

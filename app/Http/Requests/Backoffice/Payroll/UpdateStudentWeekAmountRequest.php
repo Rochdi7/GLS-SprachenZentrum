@@ -4,7 +4,7 @@ namespace App\Http\Requests\Backoffice\Payroll;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateStudentCategoryRequest extends FormRequest
+class UpdateStudentWeekAmountRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,7 +14,8 @@ class UpdateStudentCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_override' => ['nullable', 'in:full,three_quarter,half,quarter,zero'],
+            'week' => ['required', 'integer', 'between:1,4'],
+            'amount' => ['nullable', 'numeric', 'min:0', 'max:99999.99'],
         ];
     }
 }

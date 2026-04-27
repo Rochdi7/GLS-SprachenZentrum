@@ -39,7 +39,9 @@
             line-height: 1.35;
         }
         .report-entry .t-name { font-weight: bold; color: #1e3a5f; font-size: 8.5px; margin-bottom: 1px; }
+        .report-entry .t-group { display: inline-block; background: #fff3cd; color: #856404; font-size: 7.5px; font-weight: bold; padding: 1px 4px; border-radius: 3px; margin-bottom: 2px; }
         .report-entry .t-notes { color: #444; word-wrap: break-word; overflow-wrap: break-word; }
+        .report-entry .t-attach { color: #d9534f; font-size: 7.5px; margin-top: 2px; font-style: italic; }
         .empty-cell { color: #bbb; font-style: italic; font-size: 8px; }
 
         /* ===== Page 2: Detail table ===== */
@@ -62,10 +64,12 @@
             overflow-wrap: break-word;
         }
         table.detail tr:nth-child(even) { background: #f8fafc; }
-        .col-teacher { width: 18%; }
-        .col-date { width: 10%; text-align: center; }
-        .col-jour { width: 12%; text-align: center; }
-        .col-notes { width: 60%; }
+        .col-teacher { width: 16%; }
+        .col-date { width: 9%; text-align: center; }
+        .col-jour { width: 10%; text-align: center; }
+        .col-group { width: 13%; }
+        .col-notes { width: 52%; }
+        .col-group .gpill { display: inline-block; background: #fff3cd; color: #856404; font-size: 8px; font-weight: bold; padding: 2px 6px; border-radius: 3px; }
 
         .footer { margin-top: 15px; text-align: center; font-size: 8px; color: #aaa; border-top: 1px solid #e2e8f0; padding-top: 6px; }
     </style>
@@ -95,7 +99,13 @@
                         @forelse ($dayReports as $report)
                             <div class="report-entry">
                                 <div class="t-name">{{ $report->teacher->name }}</div>
-                                <div class="t-notes">{{ $report->notes }}</div>
+                                @if ($report->group)
+                                    <div class="t-group">{{ $report->group->name }}</div>
+                                @endif
+                                <div class="t-notes">{!! nl2br(e($report->notes)) !!}</div>
+                                @if ($report->attachment_path)
+                                    <div class="t-attach">PDF joint : {{ $report->attachment_original_name ?? 'document.pdf' }}</div>
+                                @endif
                             </div>
                         @empty
                             <span class="empty-cell">Aucun rapport</span>
@@ -124,6 +134,7 @@
                 <th class="col-teacher">Enseignant</th>
                 <th class="col-date">Date</th>
                 <th class="col-jour">Jour</th>
+                <th class="col-group">Groupe</th>
                 <th class="col-notes">Notes / Activités</th>
             </tr>
         </thead>
@@ -136,7 +147,21 @@
                         @endif
                         <td class="col-date">{{ $report->report_date->format('d/m') }}</td>
                         <td class="col-jour">{{ ucfirst($report->report_date->translatedFormat('l')) }}</td>
-                        <td class="col-notes">{{ $report->notes }}</td>
+                        <td class="col-group">
+                            @if ($report->group)
+                                <span class="gpill">{{ $report->group->name }}</span>
+                            @else
+                                <span style="color:#aaa;">—</span>
+                            @endif
+                        </td>
+                        <td class="col-notes">
+                            {!! nl2br(e($report->notes)) !!}
+                            @if ($report->attachment_path)
+                                <div style="color:#d9534f; font-size:8px; font-style:italic; margin-top:2px;">
+                                    PDF joint : {{ $report->attachment_original_name ?? 'document.pdf' }}
+                                </div>
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             @endforeach

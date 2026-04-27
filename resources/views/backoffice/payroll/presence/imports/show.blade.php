@@ -17,10 +17,91 @@
         .presence-cell.present { background-color: #d4edda; color: #155724; }
         .presence-cell.absent { background-color: #f8d7da; color: #721c24; }
         .presence-cell.no_data { background-color: #f8f9fa; color: #6c757d; }
-        .category-badge { font-size: 0.85rem; }
         .summary-card .display-6 { font-size: 2rem; }
-        .category-row { cursor: pointer; transition: background-color 0.15s; }
-        .category-row:hover { background-color: #e8f4fd !important; }
+        .week-cell { min-width: 130px; }
+        .week-cell .week-presence {
+            font-size: 0.7rem;
+            color: #6c757d;
+            display: block;
+            text-align: center;
+            margin-bottom: 2px;
+        }
+        .week-cell .week-presence.qualified { color: #198754; font-weight: 600; }
+        .week-cell .week-presence.unqualified { color: #dc3545; }
+        .week-amount-input {
+            text-align: right;
+            font-weight: 600;
+        }
+        .week-amount-input.is-overridden { border-color: #ffc107; background-color: #fff8e1; }
+
+        /* Scrollable attendance table */
+        .attendance-scroll {
+            max-height: 70vh;
+            overflow: auto;
+            position: relative;
+        }
+        .attendance-scroll table { margin-bottom: 0; }
+
+        /* Sticky header row */
+        .attendance-scroll thead th {
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            background-color: #f8f9fa;
+        }
+
+        /* Sticky left columns: # and Étudiant */
+        .attendance-scroll th.col-sticky-num,
+        .attendance-scroll td.col-sticky-num {
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            background-color: #fff;
+            min-width: 40px;
+        }
+        .attendance-scroll th.col-sticky-name,
+        .attendance-scroll td.col-sticky-name {
+            position: sticky;
+            left: 40px;
+            z-index: 2;
+            background-color: #fff;
+            min-width: 200px;
+            box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.15);
+        }
+        .attendance-scroll thead th.col-sticky-num,
+        .attendance-scroll thead th.col-sticky-name {
+            z-index: 4;
+            background-color: #f8f9fa;
+        }
+
+        /* Sticky right column: Total */
+        .attendance-scroll th.col-sticky-total,
+        .attendance-scroll td.col-sticky-total {
+            position: sticky;
+            right: 0;
+            z-index: 2;
+            background-color: #fff;
+            min-width: 110px;
+            box-shadow: -2px 0 4px -2px rgba(0, 0, 0, 0.15);
+        }
+        .attendance-scroll thead th.col-sticky-total {
+            z-index: 4;
+            background-color: #f8f9fa;
+        }
+
+        /* Sticky footer row */
+        .attendance-scroll tfoot td {
+            position: sticky;
+            bottom: 0;
+            z-index: 3;
+            background-color: #fff3cd;
+        }
+        .attendance-scroll tfoot td.col-sticky-num,
+        .attendance-scroll tfoot td.col-sticky-name,
+        .attendance-scroll tfoot td.col-sticky-total {
+            z-index: 5;
+            background-color: #fff3cd;
+        }
     </style>
 @endsection
 
@@ -39,9 +120,12 @@
     @endif
 
     @php
-        $summary = $import->paymentSummary;
-        $rate = $import->getEffectivePaymentPerStudent() ?? 0;
-        $allDates = $import->students
+        $summary    = $import->paymentSummary;
+        $rate       = $import->getEffectivePaymentPerStudent() ?? 0;
+        $unitAmount = $import->getWeeklyUnitAmount();
+        $threshold  = $import->getThreshold();
+        $ratePct    = (float) ($import->weekly_rate_percent ?? \App\Models\PresenceImport::DEFAULT_WEEKLY_RATE_PERCENT);
+        $allDates   = $import->students
             ->flatMap(fn($s) => $s->records->pluck('date'))
             ->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))
             ->unique()
@@ -69,7 +153,13 @@
                                 <div class="col-auto"><strong>Mois:</strong> {{ $import->month->translatedFormat('F Y') }}</div>
                                 <div class="col-auto"><strong>Période:</strong> {{ $import->date_start->format('d/m') }} — {{ $import->date_end->format('d/m/Y') }}</div>
                                 <div class="col-auto"><strong>Semaines:</strong> <span class="badge bg-light-info">{{ $import->total_weeks_label }}</span></div>
-                                <div class="col-auto"><strong>Taux:</strong> {{ number_format($rate, 2) }} DH/étudiant</div>
+                                <div class="col-auto"><strong>Taux mensuel:</strong> {{ number_format($rate, 2) }} DH</div>
+                                <div class="col-auto">
+                                    <strong>Règle:</strong>
+                                    {{ number_format($ratePct, 0) }}% / sem
+                                    = <span class="text-success fw-bold">{{ number_format($unitAmount, 2) }} DH</span>
+                                    si ≥ {{ $threshold }} présences
+                                </div>
                             </div>
                             @if($import->notes)
                                 <div class="mt-2"><em>{{ $import->notes }}</em></div>
@@ -106,190 +196,69 @@
 
     {{-- Payment Summary Cards --}}
     @if($summary)
+        @php
+            $weekTotals = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            $weekQualified = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            foreach ($import->students as $s) {
+                foreach ([1,2,3,4] as $w) {
+                    $weekTotals[$w] += $s->getWeekEffectiveAmount($w);
+                    if ($s->getWeekPresence($w) >= $threshold) {
+                        $weekQualified[$w]++;
+                    }
+                }
+            }
+        @endphp
+
         <div class="row mb-3">
-            <div class="col-md-2">
-                <div class="card summary-card text-center">
-                    <div class="card-body py-3">
-                        <div class="display-6 text-success">{{ $summary->count_full }}</div>
-                        <small class="text-muted">Complet<br>{{ number_format(floor($rate * 1.00), 0) }} DH</small>
+            @foreach([1,2,3,4] as $w)
+                <div class="col-md-2">
+                    <div class="card summary-card text-center">
+                        <div class="card-body py-3">
+                            <div class="display-6 text-primary">S{{ $w }}</div>
+                            <small class="text-muted d-block">
+                                {{ $weekQualified[$w] }} étudiant{{ $weekQualified[$w] > 1 ? 's' : '' }} qualifié{{ $weekQualified[$w] > 1 ? 's' : '' }}
+                            </small>
+                            <strong class="d-block mt-1">{{ number_format($weekTotals[$w], 2) }} DH</strong>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endforeach
             <div class="col-md-2">
                 <div class="card summary-card text-center">
                     <div class="card-body py-3">
-                        <div class="display-6 text-info">{{ $summary->count_three_quarter }}</div>
-                        <small class="text-muted">3/4<br>{{ number_format(floor($rate * 0.75), 0) }} DH</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="card summary-card text-center">
-                    <div class="card-body py-3">
-                        <div class="display-6 text-warning">{{ $summary->count_half }}</div>
-                        <small class="text-muted">1/2<br>{{ number_format(floor($rate * 0.50), 0) }} DH</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="card summary-card text-center">
-                    <div class="card-body py-3">
-                        <div class="display-6 text-secondary">{{ $summary->count_quarter }}</div>
-                        <small class="text-muted">1/4<br>{{ number_format(floor($rate * 0.25), 0) }} DH</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="card summary-card text-center">
-                    <div class="card-body py-3">
-                        <div class="display-6 text-danger">{{ $summary->count_zero }}</div>
-                        <small class="text-muted">Zéro<br>0 DH</small>
+                        <div class="display-6 text-info">{{ $summary->total_students }}</div>
+                        <small class="text-muted">Étudiants actifs<br>(≥1 sem qualifiée)</small>
                     </div>
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="card summary-card text-center bg-light-primary">
                     <div class="card-body py-3">
-                        <div class="display-6 fw-bold">{{ number_format($summary->total_payment, 0) }}</div>
+                        <div class="display-6 fw-bold">{{ number_format($summary->total_payment, 2) }}</div>
                         <small class="fw-bold">TOTAL DH</small>
                     </div>
                 </div>
             </div>
         </div>
-
-        {{-- Calculation Breakdown --}}
-        @php
-            // Group students by their effective category
-            $studentsByCategory = $import->students->groupBy(fn($s) => $s->getEffectiveCategory());
-
-            $lines = [
-                ['full',          'Complet (1/1)', $summary->count_full,          floor($rate * 1.00)],
-                ['three_quarter', '3/4',           $summary->count_three_quarter, floor($rate * 0.75)],
-                ['half',          '1/2',           $summary->count_half,          floor($rate * 0.50)],
-                ['quarter',       '1/4',           $summary->count_quarter,       floor($rate * 0.25)],
-                ['zero',          'Zéro',          $summary->count_zero,          0],
-            ];
-        @endphp
-
-        <div class="row mb-3">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Calcul du paiement</h5>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-sm table-hover" style="max-width: 600px;">
-                            <thead>
-                                <tr>
-                                    <th>Catégorie</th>
-                                    <th class="text-end">Nombre</th>
-                                    <th class="text-end">Montant unitaire</th>
-                                    <th class="text-end">Sous-total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($lines as [$catKey, $label, $count, $unitAmount])
-                                    @if($count > 0)
-                                        <tr role="button"
-                                            class="category-row"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal-{{ $catKey }}"
-                                            title="Cliquez pour voir les étudiants">
-                                            <td>
-                                                {{ $label }}
-                                                <i class="ph-duotone ph-eye ms-1 text-muted" style="font-size:0.8rem"></i>
-                                            </td>
-                                            <td class="text-end">{{ $count }}</td>
-                                            <td class="text-end">{{ number_format($unitAmount, 0) }} DH</td>
-                                            <td class="text-end">{{ number_format($count * $unitAmount, 0) }} DH</td>
-                                        </tr>
-                                    @endif
-                                @endforeach
-                            </tbody>
-                            <tfoot>
-                                <tr class="table-warning fw-bold">
-                                    <td>Total</td>
-                                    <td class="text-end">{{ $summary->total_students }}</td>
-                                    <td></td>
-                                    <td class="text-end">{{ number_format($summary->total_payment, 2) }} DH</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Modals for each category --}}
-        @foreach($lines as [$catKey, $label, $count, $unitAmount])
-            @if($count > 0)
-                <div class="modal fade" id="modal-{{ $catKey }}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-scrollable">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">
-                                    {{ $label }} — {{ $count }} étudiant{{ $count > 1 ? 's' : '' }}
-                                </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body p-0">
-                                <table class="table table-sm table-striped mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th class="ps-3">#</th>
-                                            <th>Etudiant</th>
-                                            <th class="text-center">P</th>
-                                            <th class="text-center">A</th>
-                                            <th class="text-center">Quarters</th>
-                                            <th class="text-end pe-3">Montant</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach(($studentsByCategory[$catKey] ?? collect())->sortBy('student_name')->values() as $idx => $student)
-                                            <tr>
-                                                <td class="ps-3">{{ $idx + 1 }}</td>
-                                                <td>
-                                                    <strong>{{ $student->student_name }}</strong>
-                                                    @if($student->category_override)
-                                                        <span class="badge bg-warning ms-1" title="Catégorie modifiée manuellement">modifié</span>
-                                                    @endif
-                                                </td>
-                                                <td class="text-center text-success fw-bold">{{ $student->total_present }}</td>
-                                                <td class="text-center text-danger fw-bold">{{ $student->total_absent }}</td>
-                                                <td class="text-center">{{ $student->active_quarters }}/4</td>
-                                                <td class="text-end pe-3 fw-bold">{{ number_format($student->weighted_amount, 0) }} DH</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="modal-footer bg-light">
-                                <div class="w-100 d-flex justify-content-between align-items-center">
-                                    <span class="text-muted">{{ $count }} x {{ number_format($unitAmount, 0) }} DH</span>
-                                    <strong class="fs-5">{{ number_format($count * $unitAmount, 0) }} DH</strong>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
-        @endforeach
     @endif
 
-    {{-- Students Attendance Table --}}
+    {{-- Students Attendance + Weekly Amounts Table --}}
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h5>Détail de présence — {{ $import->students->count() }} étudiants</h5>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Détail de présence — {{ $import->students->count() }} étudiants</h5>
+                    <small class="text-muted">
+                        Modifiez un montant hebdo manuellement (laisser vide = auto).
+                    </small>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered">
+                <div class="card-body p-0">
+                    <div class="attendance-scroll">
+                        <table class="table table-sm table-bordered align-middle">
                             <thead class="table-light">
                                 <tr>
-                                    <th style="min-width: 40px">#</th>
-                                    <th style="min-width: 180px">Etudiant</th>
+                                    <th class="col-sticky-num">#</th>
+                                    <th class="col-sticky-name">Etudiant</th>
                                     @foreach($allDates as $date)
                                         @php $d = \Carbon\Carbon::parse($date); @endphp
                                         <th class="presence-cell" title="{{ $d->format('d/m/Y') }}">
@@ -299,21 +268,20 @@
                                     @endforeach
                                     <th class="text-center" style="min-width: 50px">P</th>
                                     <th class="text-center" style="min-width: 50px">A</th>
-                                    <th class="text-center" style="min-width: 50px">Q</th>
-                                    <th style="min-width: 100px">Catégorie</th>
-                                    <th class="text-end" style="min-width: 90px">Montant</th>
+                                    @foreach([1,2,3,4] as $w)
+                                        <th class="week-cell text-center">Sem {{ $w }}</th>
+                                    @endforeach
+                                    <th class="col-sticky-total text-end">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($import->students->sortBy('row_number') as $student)
                                     @php
                                         $recordsByDate = $student->records->keyBy(fn($r) => $r->date->format('Y-m-d'));
-                                        $effectiveCat = $student->getEffectiveCategory();
-                                        $isOverridden = $student->category_override !== null;
                                     @endphp
                                     <tr>
-                                        <td>{{ $student->row_number }}</td>
-                                        <td>
+                                        <td class="col-sticky-num">{{ $student->row_number }}</td>
+                                        <td class="col-sticky-name">
                                             <strong>{{ $student->student_name }}</strong>
                                             @if($student->isCancelled())
                                                 <span class="badge bg-danger ms-1">Annulé</span>
@@ -335,34 +303,53 @@
                                         @endforeach
                                         <td class="text-center fw-bold text-success">{{ $student->total_present }}</td>
                                         <td class="text-center fw-bold text-danger">{{ $student->total_absent }}</td>
-                                        <td class="text-center">{{ $student->active_quarters }}/4</td>
-                                        <td>
-                                            <form action="{{ route('backoffice.payroll.presence.student.category', $student) }}"
-                                                  method="POST" class="d-inline">
-                                                @csrf @method('PATCH')
-                                                <select name="category_override"
-                                                        class="form-select form-select-sm category-badge {{ $isOverridden ? 'border-warning' : '' }}"
-                                                        onchange="this.form.submit()"
-                                                        style="width: 110px">
-                                                    <option value="" {{ !$isOverridden ? 'selected' : '' }}>
-                                                        {{ \App\Models\PresenceImportStudent::CATEGORY_LABELS[$student->category] }} (auto)
-                                                    </option>
-                                                    @foreach(\App\Models\PresenceImportStudent::CATEGORY_LABELS as $catKey => $catLabel)
-                                                        @if($catKey !== $student->category)
-                                                            <option value="{{ $catKey }}" {{ $student->category_override === $catKey ? 'selected' : '' }}>
-                                                                {{ $catLabel }}
-                                                            </option>
-                                                        @endif
-                                                    @endforeach
-                                                </select>
-                                            </form>
-                                        </td>
-                                        <td class="text-end fw-bold">
-                                            {{ number_format($student->weighted_amount, 0) }} DH
+                                        @foreach([1,2,3,4] as $w)
+                                            @php
+                                                $count       = $student->getWeekPresence($w);
+                                                $qualified   = $count >= $threshold;
+                                                $effective   = $student->getWeekEffectiveAmount($w);
+                                                $isOverride  = $student->isWeekOverridden($w);
+                                            @endphp
+                                            <td class="week-cell">
+                                                <span class="week-presence {{ $qualified ? 'qualified' : 'unqualified' }}">
+                                                    {{ $count }} présence{{ $count > 1 ? 's' : '' }}
+                                                    {{ $qualified ? '✓' : '✗' }}
+                                                </span>
+                                                <form action="{{ route('backoffice.payroll.presence.student.week', $student) }}"
+                                                      method="POST" class="m-0">
+                                                    @csrf @method('PATCH')
+                                                    <input type="hidden" name="week" value="{{ $w }}">
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" step="0.01" min="0"
+                                                               name="amount"
+                                                               value="{{ number_format($effective, 2, '.', '') }}"
+                                                               class="form-control form-control-sm week-amount-input {{ $isOverride ? 'is-overridden' : '' }}"
+                                                               title="{{ $isOverride ? 'Modifié manuellement — laisser vide pour revenir au calcul auto' : 'Calcul automatique' }}"
+                                                               onchange="this.form.submit()">
+                                                        <span class="input-group-text px-1" style="font-size:0.75rem">DH</span>
+                                                    </div>
+                                                </form>
+                                            </td>
+                                        @endforeach
+                                        <td class="col-sticky-total text-end fw-bold">
+                                            {{ number_format($student->getTotalAmount(), 2) }} DH
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
+                            @if($summary)
+                                <tfoot>
+                                    <tr class="table-warning fw-bold">
+                                        <td class="col-sticky-num"></td>
+                                        <td class="col-sticky-name text-end">Total</td>
+                                        <td colspan="{{ 2 + $allDates->count() }}" class="text-end">—</td>
+                                        @foreach([1,2,3,4] as $w)
+                                            <td class="text-end">{{ number_format($weekTotals[$w] ?? 0, 2) }} DH</td>
+                                        @endforeach
+                                        <td class="col-sticky-total text-end">{{ number_format($summary->total_payment, 2) }} DH</td>
+                                    </tr>
+                                </tfoot>
+                            @endif
                         </table>
                     </div>
                 </div>

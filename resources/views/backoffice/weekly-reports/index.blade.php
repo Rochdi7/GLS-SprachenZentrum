@@ -108,6 +108,164 @@
         white-space: nowrap;
         min-width: 0;
     }
+    .report-chip .pdf-icon {
+        color: #d9534f;
+        flex-shrink: 0;
+        font-size: 0.95rem;
+        line-height: 1;
+    }
+    .report-chip .group-badge {
+        background: #fff3cd;
+        color: #856404;
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 1px 6px;
+        border-radius: 8px;
+        white-space: nowrap;
+        flex-shrink: 0;
+        max-width: 90px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .attachment-existing {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        font-size: 0.85rem;
+    }
+    .attachment-existing a {
+        color: #4680ff;
+        text-decoration: none;
+        font-weight: 500;
+        word-break: break-all;
+        flex: 1;
+        min-width: 0;
+    }
+    .attachment-existing a:hover { text-decoration: underline; }
+
+    /* ===== Multi-row modal ===== */
+    #reportModal .modal-header { padding: 14px 18px; align-items: flex-start; }
+    #reportModal .modal-header .btn-close { margin: 4px 0 0 auto; padding: 8px; flex-shrink: 0; }
+    #reportModal .modal-title { font-size: 1.05rem; font-weight: 600; }
+    #reportModal #modalDateLabel { font-size: 0.78rem; text-transform: capitalize; }
+    #reportModal .modal-body { scroll-behavior: smooth; }
+
+    .note-row {
+        position: relative;
+        border: 1px solid #e3e7ec;
+        border-radius: 8px;
+        padding: 14px 16px 14px 16px;
+        margin-bottom: 14px;
+        background: #fafbfc;
+        transition: background .15s, border-color .15s;
+    }
+    .note-row:hover { background: #f5f7fa; border-color: #cfd6df; }
+    .note-row .row-number {
+        position: absolute;
+        top: -9px;
+        left: 14px;
+        background: #4680ff;
+        color: #fff;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 2px 9px;
+        border-radius: 10px;
+        letter-spacing: .3px;
+    }
+    .note-row .btn-remove-row {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: none;
+        background: transparent;
+        color: #adb5bd;
+        font-size: 12px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background .15s, color .15s;
+        padding: 0;
+    }
+    .note-row .btn-remove-row:hover { background: #fee2e2; color: #b91c1c; }
+    .note-row .btn-remove-row i { font-size: 13px; }
+
+    .note-row .form-label { font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: #495057; }
+    .note-row .form-control,
+    .note-row .form-select { font-size: 0.85rem; }
+    .note-row textarea { resize: vertical; min-height: 70px; }
+    .note-row .file-hint { font-size: 0.7rem; color: #adb5bd; margin-top: 2px; display: block; }
+    .note-row .existing-pdf {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.78rem;
+        margin-bottom: 6px;
+        padding: 6px 9px;
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 4px;
+    }
+    .note-row .existing-pdf a { color: #4680ff; text-decoration: none; word-break: break-all; flex: 1; min-width: 0; }
+    .note-row .existing-pdf a:hover { text-decoration: underline; }
+
+    .btn-add-row {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #4680ff;
+        color: #fff;
+        border: none;
+        padding: 7px 14px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background .15s, transform .1s;
+        white-space: nowrap;
+    }
+    .btn-add-row:hover { background: #3a6fd6; }
+    .btn-add-row:active { transform: translateY(1px); }
+    .btn-add-row i { font-size: 0.95rem; line-height: 1; }
+
+    .btn-add-row-ghost {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: transparent;
+        color: #4680ff;
+        border: 1.5px dashed #4680ff;
+        padding: 7px 16px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background .15s;
+    }
+    .btn-add-row-ghost:hover { background: #eef3ff; }
+    .btn-add-row-ghost i { font-size: 0.95rem; }
+
+    #emptyRowsHint {
+        text-align: center;
+        color: #adb5bd;
+        font-style: italic;
+        padding: 30px 10px;
+        border: 2px dashed #e9ecef;
+        border-radius: 8px;
+    }
+
+    @media (max-width: 575.98px) {
+        .btn-add-row { padding: 6px 10px; font-size: 0.78rem; }
+        .note-row { padding: 14px 12px; }
+    }
 
     /* ===== Mobile: Stacked Day Cards (<992px) ===== */
     .mobile-days { display: none; }
@@ -348,16 +506,22 @@
                                     @endphp
                                     <td class="{{ $isToday ? 'today' : '' }}"
                                         data-date="{{ $key }}"
-                                        onclick="openAddModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}')">
+                                        onclick="openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}')">
 
                                         <div class="day-number">{{ $day->format('d') }}</div>
                                         <button class="btn-add-day" title="Ajouter rapport">+</button>
 
                                         @foreach ($dayReports as $report)
                                             <div class="report-chip"
-                                                 onclick="event.stopPropagation(); openEditModal({{ $report->id }}, {{ $report->teacher_id }}, '{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}', {{ json_encode($report->notes) }})">
+                                                 onclick="event.stopPropagation(); openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}')">
                                                 <span class="teacher-name">{{ $report->teacher->name }}</span>
+                                                @if ($report->group)
+                                                    <span class="group-badge" title="{{ $report->group->name }}">{{ $report->group->name }}</span>
+                                                @endif
                                                 <span class="notes-preview">{{ Str::limit($report->notes, 40) }}</span>
+                                                @if ($report->attachment_path)
+                                                    <i class="ph-duotone ph-file-pdf pdf-icon" title="PDF joint"></i>
+                                                @endif
                                             </div>
                                         @endforeach
                                     </td>
@@ -380,17 +544,23 @@
                             <div class="day-card-header">
                                 <span class="day-label">{{ $day->locale('fr')->isoFormat('dddd D MMM') }}</span>
                                 <button class="btn-add-mobile"
-                                        onclick="event.stopPropagation(); openAddModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}')"
+                                        onclick="event.stopPropagation(); openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}')"
                                         title="Ajouter rapport">+</button>
                             </div>
                             <div class="day-card-body"
-                                 onclick="openAddModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}')">
+                                 onclick="openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}')">
 
                                 @forelse ($dayReports as $report)
                                     <div class="report-chip"
-                                         onclick="event.stopPropagation(); openEditModal({{ $report->id }}, {{ $report->teacher_id }}, '{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}', {{ json_encode($report->notes) }})">
+                                         onclick="event.stopPropagation(); openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}')">
                                         <span class="teacher-name">{{ $report->teacher->name }}</span>
+                                        @if ($report->group)
+                                            <span class="group-badge" title="{{ $report->group->name }}">{{ $report->group->name }}</span>
+                                        @endif
                                         <span class="notes-preview">{{ Str::limit($report->notes, 80) }}</span>
+                                        @if ($report->attachment_path)
+                                            <i class="ph-duotone ph-file-pdf pdf-icon" title="PDF joint"></i>
+                                        @endif
                                     </div>
                                 @empty
                                     <span class="empty-label">Aucun rapport — toucher pour ajouter</span>
@@ -405,55 +575,65 @@
     </div>
 </div>
 
-{{-- ==================== MODAL: Add / Edit Report ==================== --}}
+{{-- ==================== MODAL: Day Reports (multi-row list) ==================== --}}
 <div class="modal fade" id="reportModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable modal-fullscreen-md-down">
         <div class="modal-content">
-            <form id="reportForm" method="POST" action="{{ route('backoffice.weekly_reports.store') }}">
+            <form id="reportForm" method="POST" action="{{ route('backoffice.weekly_reports.batch_sync') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="report_date" id="modalDate">
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Ajouter un rapport</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <div class="d-flex flex-column">
+                        <h5 class="modal-title mb-0" id="modalTitle">Rapports du jour</h5>
+                        <small class="text-muted" id="modalDateLabel"></small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body">
-                    <p class="text-muted mb-3" id="modalDateLabel"></p>
-
-                    <div class="mb-3">
-                        <label for="teacher_id" class="form-label">Enseignant</label>
-                        <select name="teacher_id" id="teacher_id" class="form-select form-select-lg" required>
-                            <option value="">— Sélectionner un enseignant —</option>
-                            @foreach ($teachers as $teacher)
-                                <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
-                            @endforeach
-                        </select>
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <span class="text-muted" style="font-size:.85rem;">
+                            <i class="ph-duotone ph-list-checks me-1"></i>
+                            <span id="rowsCountLabel">0 note(s)</span>
+                        </span>
+                        <button type="button" class="btn-add-row" onclick="addRow()">
+                            <i class="ph-duotone ph-plus"></i> Ajouter une note
+                        </button>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="notes" class="form-label">Notes / Activités</label>
-                        <textarea name="notes" id="notes" class="form-control" rows="5"
-                                  placeholder="Décrivez ce que l'enseignant fera ce jour..." required></textarea>
+                    <div id="rowsContainer"></div>
+
+                    <div id="emptyRowsHint">
+                        Aucune note pour ce jour.<br>
+                        Cliquez sur <strong>« Ajouter une note »</strong> pour commencer.
+                    </div>
+
+                    <div class="text-center mt-3" id="addRowFooter" style="display:none;">
+                        <button type="button" class="btn btn-add-row-ghost" onclick="addRow()">
+                            <i class="ph-duotone ph-plus"></i> Ajouter une autre note
+                        </button>
                     </div>
                 </div>
 
-                <div class="modal-footer d-flex justify-content-between">
-                    <div>
-                        <button type="button" class="btn btn-danger btn-sm d-none" id="btnDelete"
-                                onclick="deleteReport()">
-                            <i class="ph-duotone ph-trash"></i> Supprimer
-                        </button>
-                    </div>
-                    <div>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-primary">Enregistrer</button>
-                    </div>
+                <div class="modal-footer d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ph-duotone ph-floppy-disk"></i> Enregistrer
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+{{-- Hidden teacher options (used by JS to clone dropdowns) --}}
+<template id="teacherOptionsTpl">
+    <option value="">— Sélectionner un enseignant —</option>
+    @foreach ($teachers as $teacher)
+        <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+    @endforeach
+</template>
 
 {{-- ==================== MODAL: Full Month Calendar ==================== --}}
 <div class="modal fade" id="monthModal" tabindex="-1">
@@ -496,44 +676,162 @@
 @section('scripts')
 <script>
     const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
-    let currentReportId = null;
+    const FOR_DAY_URL = '{{ route('backoffice.weekly_reports.for_day') }}';
+    const TEACHER_GROUPS = @json($teacherGroupsMap);
+    const rowsContainer = document.getElementById('rowsContainer');
+    const emptyHint = document.getElementById('emptyRowsHint');
+    let rowCounter = 0;
 
-    function openAddModal(date, label) {
-        currentReportId = null;
-        document.getElementById('modalTitle').textContent = 'Ajouter un rapport';
-        document.getElementById('modalDate').value = date;
-        document.getElementById('modalDateLabel').textContent = label;
-        document.getElementById('teacher_id').value = '';
-        document.getElementById('notes').value = '';
-        document.getElementById('btnDelete').classList.add('d-none');
-        reportModal.show();
+    function escapeAttr(s) {
+        return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     }
 
-    function openEditModal(id, teacherId, date, label, notes) {
-        currentReportId = id;
-        document.getElementById('modalTitle').textContent = 'Modifier le rapport';
-        document.getElementById('modalDate').value = date;
-        document.getElementById('modalDateLabel').textContent = label;
-        const sel = document.getElementById('teacher_id');
-        sel.value = String(teacherId);
-        // Fallback: if value didn't match, find by content
-        if (!sel.value) {
-            for (const opt of sel.options) {
-                if (opt.value == teacherId) { sel.selectedIndex = opt.index; break; }
-            }
+    function teacherOptionsHtml(selectedId) {
+        const tpl = document.getElementById('teacherOptionsTpl').innerHTML;
+        if (selectedId === undefined || selectedId === null || selectedId === '') return tpl;
+        const target = `<option value="${selectedId}"`;
+        return tpl.replace(target, `${target} selected`);
+    }
+
+    function groupOptionsHtml(teacherId, selectedGroupId) {
+        let html = '<option value="">— Aucun groupe / général —</option>';
+        if (!teacherId) return html;
+        const groups = TEACHER_GROUPS[teacherId] || [];
+        for (const g of groups) {
+            const sel = (selectedGroupId && String(selectedGroupId) === String(g.id)) ? ' selected' : '';
+            html += `<option value="${g.id}"${sel}>${escapeAttr(g.label)}</option>`;
         }
-        document.getElementById('notes').value = notes;
-        document.getElementById('btnDelete').classList.remove('d-none');
-        reportModal.show();
+        return html;
     }
 
-    function deleteReport() {
-        if (!currentReportId) return;
-        if (!confirm('Supprimer ce rapport ?')) return;
+    function onTeacherChange(selectEl) {
+        const row = selectEl.closest('.note-row');
+        if (!row) return;
+        const groupSel = row.querySelector('select.group-select');
+        if (!groupSel) return;
+        groupSel.innerHTML = groupOptionsHtml(selectEl.value, null);
+    }
 
-        const form = document.getElementById('deleteForm');
-        form.action = '{{ url("backoffice/weekly-reports") }}/' + currentReportId;
-        form.submit();
+    function buildRow(report) {
+        const idx = rowCounter++;
+        const r = report || {};
+        const hasPdf = !!r.attachment_url;
+        const idInput = r.id ? `<input type="hidden" name="rows[${idx}][id]" value="${r.id}">` : '';
+
+        const existingPdf = hasPdf
+            ? `<div class="existing-pdf">
+                   <i class="ph-duotone ph-file-pdf" style="color:#d9534f; font-size:1.2rem;"></i>
+                   <a href="${escapeAttr(r.attachment_url)}" target="_blank" rel="noopener">${escapeAttr(r.attachment_name || 'Voir le PDF')}</a>
+                   <div class="form-check form-check-inline mb-0 ms-2">
+                       <input class="form-check-input" type="checkbox" name="rows[${idx}][remove_attachment]" id="remove_${idx}" value="1">
+                       <label class="form-check-label" for="remove_${idx}" style="font-size:.78rem;">Supprimer</label>
+                   </div>
+               </div>`
+            : '';
+
+        const pdfLabel = hasPdf ? 'Remplacer le PDF (optionnel)' : 'Joindre un fichier PDF (optionnel)';
+
+        const row = document.createElement('div');
+        row.className = 'note-row';
+        row.dataset.rowIndex = idx;
+        row.innerHTML = `
+            <span class="row-number">Note #${idx + 1}</span>
+            <button type="button" class="btn-remove-row" title="Supprimer cette note" onclick="removeRow(this)">
+                <i class="ph-duotone ph-x"></i>
+            </button>
+            ${idInput}
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <label class="form-label">Enseignant</label>
+                    <select name="rows[${idx}][teacher_id]" class="form-select form-select-sm teacher-select" required onchange="onTeacherChange(this)">
+                        ${teacherOptionsHtml(r.teacher_id)}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Groupe (optionnel)</label>
+                    <select name="rows[${idx}][group_id]" class="form-select form-select-sm group-select">
+                        ${groupOptionsHtml(r.teacher_id, r.group_id)}
+                    </select>
+                </div>
+                <div class="col-12 mt-1">
+                    <label class="form-label">Notes / Activités</label>
+                    <textarea name="rows[${idx}][notes]" class="form-control form-control-sm" rows="3"
+                              placeholder="Décrivez l'activité..." required>${escapeAttr(r.notes || '')}</textarea>
+                </div>
+                <div class="col-12 mt-2">
+                    ${existingPdf}
+                    <label class="form-label">${pdfLabel}</label>
+                    <input type="file" name="rows[${idx}][attachment]" class="form-control form-control-sm" accept="application/pdf">
+                    <span class="file-hint">PDF uniquement — 10 Mo max.</span>
+                </div>
+            </div>
+        `;
+        return row;
+    }
+
+    function refreshRowNumbers() {
+        const rows = rowsContainer.querySelectorAll('.note-row');
+        rows.forEach((row, i) => {
+            const label = row.querySelector('.row-number');
+            if (label) label.textContent = `Note #${i + 1}`;
+        });
+        emptyHint.style.display = rows.length === 0 ? 'block' : 'none';
+        const footer = document.getElementById('addRowFooter');
+        if (footer) footer.style.display = rows.length > 0 ? 'block' : 'none';
+        const counter = document.getElementById('rowsCountLabel');
+        if (counter) counter.textContent = `${rows.length} note${rows.length > 1 ? 's' : ''}`;
+    }
+
+    function addRow(report) {
+        const newRow = buildRow(report);
+        rowsContainer.appendChild(newRow);
+        refreshRowNumbers();
+
+        // Scroll the modal body to the new row (only when user clicks "Ajouter")
+        if (!report) {
+            requestAnimationFrame(() => {
+                const modalBody = document.querySelector('#reportModal .modal-body');
+                if (modalBody) {
+                    modalBody.scrollTo({
+                        top: modalBody.scrollHeight,
+                        behavior: 'smooth',
+                    });
+                }
+                const firstSelect = newRow.querySelector('select.teacher-select');
+                if (firstSelect) firstSelect.focus({ preventScroll: true });
+            });
+        }
+    }
+
+    function removeRow(btn) {
+        const row = btn.closest('.note-row');
+        if (row) row.remove();
+        refreshRowNumbers();
+    }
+
+    async function openDayModal(date, label) {
+        rowCounter = 0;
+        rowsContainer.innerHTML = '';
+        document.getElementById('modalDate').value = date;
+        document.getElementById('modalDateLabel').textContent = label;
+        emptyHint.style.display = 'block';
+        emptyHint.innerHTML = '<i class="ph-duotone ph-spinner"></i> Chargement...';
+        reportModal.show();
+
+        try {
+            const res = await fetch(`${FOR_DAY_URL}?date=${encodeURIComponent(date)}`, {
+                headers: { 'Accept': 'application/json' },
+                credentials: 'same-origin',
+            });
+            if (res.ok) {
+                const json = await res.json();
+                (json.reports || []).forEach(r => addRow(r));
+            }
+        } catch (e) { /* ignore */ }
+
+        emptyHint.innerHTML = 'Aucune note pour ce jour.<br>Cliquez sur <strong>« Ajouter une note »</strong> pour commencer.';
+        if (rowsContainer.children.length === 0) addRow();
+        refreshRowNumbers();
     }
 
     // ==================== Month Modal ====================
@@ -631,9 +929,10 @@
             const max = 3;
             for (let i = 0; i < Math.min(list.length, max); i++) {
                 const r = list[i];
+                const pdfMark = r.attachment_url ? ' 📎' : '';
                 chipsHtml += `<div class="mg-chip" title="${escapeHtml(r.teacher_name)} — ${escapeHtml(r.notes)}">`
                     + `<span class="tn">${escapeHtml(r.teacher_name)}</span> `
-                    + `<span>${escapeHtml(r.notes)}</span></div>`;
+                    + `<span>${escapeHtml(r.notes)}${pdfMark}</span></div>`;
             }
             if (list.length > max) {
                 chipsHtml += `<div class="mg-more">+${list.length - max} autre${list.length - max > 1 ? 's' : ''}</div>`;
