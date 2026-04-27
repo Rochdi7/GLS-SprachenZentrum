@@ -148,11 +148,22 @@
     .attachment-existing a:hover { text-decoration: underline; }
 
     /* ===== Multi-row modal ===== */
+    #reportModal .modal-dialog { max-height: calc(100vh - 1rem); }
+    #reportModal .modal-content { max-height: calc(100vh - 2rem); display: flex; flex-direction: column; overflow: hidden; }
+    #reportModal #reportForm { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+    #reportModal .modal-header,
+    #reportModal .modal-footer { flex: 0 0 auto; }
+    #reportModal .modal-body {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        min-height: 0;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
     #reportModal .modal-header { padding: 14px 18px; align-items: flex-start; }
     #reportModal .modal-header .btn-close { margin: 4px 0 0 auto; padding: 8px; flex-shrink: 0; }
     #reportModal .modal-title { font-size: 1.05rem; font-weight: 600; }
     #reportModal #modalDateLabel { font-size: 0.78rem; text-transform: capitalize; }
-    #reportModal .modal-body { scroll-behavior: smooth; }
 
     .note-row {
         position: relative;
