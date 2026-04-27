@@ -779,8 +779,8 @@
                 </div>
                 <div class="col-12 mt-1">
                     <label class="form-label">Notes / Activités</label>
-                    <textarea name="rows[${idx}][notes]" class="form-control form-control-sm" rows="3"
-                              placeholder="Décrivez l'activité..." required>${escapeAttr(r.notes || '')}</textarea>
+                    <textarea name="rows[${idx}][notes]" class="form-control form-control-sm note-textarea" rows="3"
+                              placeholder="Décrivez l'activité..." required style="display:block; width:100%; min-height:70px;"></textarea>
                 </div>
                 <div class="col-12 mt-2">
                     ${existingPdf}
@@ -790,6 +790,11 @@
                 </div>
             </div>
         `;
+
+        // Set the textarea value via property (safer than HTML interpolation for multi-line content)
+        const ta = row.querySelector('textarea.note-textarea');
+        if (ta) ta.value = r.notes || '';
+
         return row;
     }
 
