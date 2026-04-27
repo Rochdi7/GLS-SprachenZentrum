@@ -213,6 +213,14 @@ class WeeklyReportController extends Controller
      */
     public function batchSync(Request $request)
     {
+        // Detect when POST exceeds php.ini limits (silent payload truncation)
+        if (empty($_POST) && empty($_FILES) && $request->server('CONTENT_LENGTH') > 0) {
+            $maxPost = ini_get('post_max_size');
+            return back()
+                ->withErrors(['rows' => "La taille des données envoyées dépasse la limite du serveur (post_max_size = {$maxPost}). Réduisez la taille des PDFs ou contactez l'administrateur."])
+                ->withInput();
+        }
+
         $data = $request->validate([
             'report_date'                  => 'required|date',
             'rows'                         => 'array',
@@ -238,69 +246,79 @@ class WeeklyReportController extends Controller
             }
         }
 
-        $rows = $data['rows'] ?? [];
-        $reportDate = $data['report_date'];
-        $keepIds = [];
+        try {
+            $rows = $data['rows'] ?? [];
+            $reportDate = $data['report_date'];
+            $keepIds = [];
 
-        foreach ($rows as $row) {
-            if (!empty($row['id'])) {
-                $report = WeeklyReport::where('id', $row['id'])
-                    ->whereDate('report_date', $reportDate)
-                    ->first();
+            foreach ($rows as $row) {
+                if (!empty($row['id'])) {
+                    $report = WeeklyReport::where('id', $row['id'])
+                        ->whereDate('report_date', $reportDate)
+                        ->first();
 
-                if (!$report) continue;
+                    if (!$report) continue;
 
-                $report->teacher_id = $row['teacher_id'];
-                $report->group_id = $row['group_id'] ?? null;
-                $report->notes = $row['notes'];
+                    $report->teacher_id = $row['teacher_id'];
+                    $report->group_id = $row['group_id'] ?? null;
+                    $report->notes = $row['notes'];
 
-                if (!empty($row['remove_attachment']) && $report->attachment_path) {
-                    Storage::disk('public')->delete($report->attachment_path);
-                    $report->attachment_path = null;
-                    $report->attachment_original_name = null;
-                }
-
-                if (isset($row['attachment']) && $row['attachment']) {
-                    if ($report->attachment_path) {
+                    if (!empty($row['remove_attachment']) && $report->attachment_path) {
                         Storage::disk('public')->delete($report->attachment_path);
+                        $report->attachment_path = null;
+                        $report->attachment_original_name = null;
                     }
-                    $file = $row['attachment'];
-                    $report->attachment_path = $file->store('weekly-reports', 'public');
-                    $report->attachment_original_name = $file->getClientOriginalName();
+
+                    if (isset($row['attachment']) && $row['attachment']) {
+                        if ($report->attachment_path) {
+                            Storage::disk('public')->delete($report->attachment_path);
+                        }
+                        $file = $row['attachment'];
+                        $report->attachment_path = $file->store('weekly-reports', 'public');
+                        $report->attachment_original_name = $file->getClientOriginalName();
+                    }
+
+                    $report->save();
+                    $keepIds[] = $report->id;
+                } else {
+                    $payload = [
+                        'teacher_id'  => $row['teacher_id'],
+                        'group_id'    => $row['group_id'] ?? null,
+                        'report_date' => $reportDate,
+                        'notes'       => $row['notes'],
+                        'created_by'  => auth()->id(),
+                    ];
+
+                    if (isset($row['attachment']) && $row['attachment']) {
+                        $file = $row['attachment'];
+                        $payload['attachment_path'] = $file->store('weekly-reports', 'public');
+                        $payload['attachment_original_name'] = $file->getClientOriginalName();
+                    }
+
+                    $created = WeeklyReport::create($payload);
+                    $keepIds[] = $created->id;
                 }
+            }
 
-                $report->save();
-                $keepIds[] = $report->id;
-            } else {
-                $payload = [
-                    'teacher_id'  => $row['teacher_id'],
-                    'group_id'    => $row['group_id'] ?? null,
-                    'report_date' => $reportDate,
-                    'notes'       => $row['notes'],
-                    'created_by'  => auth()->id(),
-                ];
+            // Delete reports for that day that were removed in the modal
+            $toDelete = WeeklyReport::whereDate('report_date', $reportDate)
+                ->when(!empty($keepIds), fn ($q) => $q->whereNotIn('id', $keepIds))
+                ->get();
 
-                if (isset($row['attachment']) && $row['attachment']) {
-                    $file = $row['attachment'];
-                    $payload['attachment_path'] = $file->store('weekly-reports', 'public');
-                    $payload['attachment_original_name'] = $file->getClientOriginalName();
+            foreach ($toDelete as $report) {
+                if ($report->attachment_path) {
+                    Storage::disk('public')->delete($report->attachment_path);
                 }
-
-                $created = WeeklyReport::create($payload);
-                $keepIds[] = $created->id;
+                $report->delete();
             }
-        }
-
-        // Delete reports for that day that were removed in the modal
-        $toDelete = WeeklyReport::whereDate('report_date', $reportDate)
-            ->when(!empty($keepIds), fn ($q) => $q->whereNotIn('id', $keepIds))
-            ->get();
-
-        foreach ($toDelete as $report) {
-            if ($report->attachment_path) {
-                Storage::disk('public')->delete($report->attachment_path);
-            }
-            $report->delete();
+        } catch (\Throwable $e) {
+            \Log::error('WeeklyReport batchSync failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()
+                ->withErrors(['rows' => "Erreur lors de l'enregistrement : " . $e->getMessage()])
+                ->withInput();
         }
 
         return back()->with('success', 'Rapports enregistrés avec succès.');

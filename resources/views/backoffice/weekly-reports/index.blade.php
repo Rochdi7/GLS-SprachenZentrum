@@ -454,6 +454,19 @@
     </div>
 @endif
 
+{{-- Validation errors banner (surfaces backend validation failures so saves don't fail silently) --}}
+@if ($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+        <strong><i class="ph-duotone ph-warning-circle me-1"></i> Erreur d'enregistrement :</strong>
+        <ul class="mb-0 mt-1">
+            @foreach ($errors->all() as $err)
+                <li>{{ $err }}</li>
+            @endforeach
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
 <div class="row">
     <div class="col-12">
         <div class="card">
