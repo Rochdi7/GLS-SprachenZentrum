@@ -755,45 +755,133 @@
 
         const pdfLabel = hasPdf ? 'Remplacer le PDF (optionnel)' : 'Joindre un fichier PDF (optionnel)';
 
+        // Build row using DOM API rather than innerHTML to avoid third-party sanitizers
+        // (browser extensions / CSP) that strip <textarea> from innerHTML strings.
         const row = document.createElement('div');
         row.className = 'note-row';
         row.dataset.rowIndex = idx;
-        row.innerHTML = `
-            <span class="row-number">Note #${idx + 1}</span>
-            <button type="button" class="btn-remove-row" title="Supprimer cette note" onclick="removeRow(this)">
-                <i class="ph-duotone ph-x"></i>
-            </button>
-            ${idInput}
-            <div class="row g-2">
-                <div class="col-md-6">
-                    <label class="form-label">Enseignant</label>
-                    <select name="rows[${idx}][teacher_id]" class="form-select form-select-sm teacher-select" required onchange="onTeacherChange(this)">
-                        ${teacherOptionsHtml(r.teacher_id)}
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Groupe (optionnel)</label>
-                    <select name="rows[${idx}][group_id]" class="form-select form-select-sm group-select">
-                        ${groupOptionsHtml(r.teacher_id, r.group_id)}
-                    </select>
-                </div>
-                <div class="col-12 mt-1">
-                    <label class="form-label">Notes / Activités</label>
-                    <textarea name="rows[${idx}][notes]" class="form-control form-control-sm note-textarea" rows="3"
-                              placeholder="Décrivez l'activité..." required style="display:block; width:100%; min-height:70px;"></textarea>
-                </div>
-                <div class="col-12 mt-2">
-                    ${existingPdf}
-                    <label class="form-label">${pdfLabel}</label>
-                    <input type="file" name="rows[${idx}][attachment]" class="form-control form-control-sm" accept="application/pdf">
-                    <span class="file-hint">PDF uniquement — 10 Mo max.</span>
-                </div>
-            </div>
-        `;
 
-        // Set the textarea value via property (safer than HTML interpolation for multi-line content)
-        const ta = row.querySelector('textarea.note-textarea');
-        if (ta) ta.value = r.notes || '';
+        // Top: row label + remove button
+        const rowNumber = document.createElement('span');
+        rowNumber.className = 'row-number';
+        rowNumber.textContent = `Note #${idx + 1}`;
+        row.appendChild(rowNumber);
+
+        const btnRemove = document.createElement('button');
+        btnRemove.type = 'button';
+        btnRemove.className = 'btn-remove-row';
+        btnRemove.title = 'Supprimer cette note';
+        btnRemove.innerHTML = '<i class="ph-duotone ph-x"></i>';
+        btnRemove.addEventListener('click', () => removeRow(btnRemove));
+        row.appendChild(btnRemove);
+
+        // Hidden id input for existing reports
+        if (r.id) {
+            const idIn = document.createElement('input');
+            idIn.type = 'hidden';
+            idIn.name = `rows[${idx}][id]`;
+            idIn.value = r.id;
+            row.appendChild(idIn);
+        }
+
+        // Grid container
+        const grid = document.createElement('div');
+        grid.className = 'row g-2';
+        row.appendChild(grid);
+
+        // -- Teacher select --
+        const colT = document.createElement('div');
+        colT.className = 'col-md-6';
+        colT.innerHTML = '<label class="form-label">Enseignant</label>';
+        const teacherSel = document.createElement('select');
+        teacherSel.name = `rows[${idx}][teacher_id]`;
+        teacherSel.className = 'form-select form-select-sm teacher-select';
+        teacherSel.required = true;
+        teacherSel.addEventListener('change', () => onTeacherChange(teacherSel));
+        teacherSel.innerHTML = teacherOptionsHtml(r.teacher_id);
+        colT.appendChild(teacherSel);
+        grid.appendChild(colT);
+
+        // -- Group select --
+        const colG = document.createElement('div');
+        colG.className = 'col-md-6';
+        colG.innerHTML = '<label class="form-label">Groupe (optionnel)</label>';
+        const groupSel = document.createElement('select');
+        groupSel.name = `rows[${idx}][group_id]`;
+        groupSel.className = 'form-select form-select-sm group-select';
+        groupSel.innerHTML = groupOptionsHtml(r.teacher_id, r.group_id);
+        colG.appendChild(groupSel);
+        grid.appendChild(colG);
+
+        // -- Notes textarea (built via DOM API to bypass innerHTML sanitizers) --
+        const colN = document.createElement('div');
+        colN.className = 'col-12 mt-1';
+        const notesLabel = document.createElement('label');
+        notesLabel.className = 'form-label';
+        notesLabel.textContent = 'Notes / Activités';
+        colN.appendChild(notesLabel);
+        const ta = document.createElement('textarea');
+        ta.name = `rows[${idx}][notes]`;
+        ta.className = 'form-control form-control-sm note-textarea';
+        ta.rows = 3;
+        ta.placeholder = "Décrivez l'activité...";
+        ta.required = true;
+        ta.style.display = 'block';
+        ta.style.width = '100%';
+        ta.style.minHeight = '70px';
+        ta.value = r.notes || '';
+        colN.appendChild(ta);
+        grid.appendChild(colN);
+
+        // -- File attachment --
+        const colF = document.createElement('div');
+        colF.className = 'col-12 mt-2';
+        if (hasPdf) {
+            const pdfBlock = document.createElement('div');
+            pdfBlock.className = 'existing-pdf';
+            const pdfIcon = document.createElement('i');
+            pdfIcon.className = 'ph-duotone ph-file-pdf';
+            pdfIcon.style.cssText = 'color:#d9534f; font-size:1.2rem;';
+            pdfBlock.appendChild(pdfIcon);
+            const pdfLink = document.createElement('a');
+            pdfLink.href = r.attachment_url;
+            pdfLink.target = '_blank';
+            pdfLink.rel = 'noopener';
+            pdfLink.textContent = r.attachment_name || 'Voir le PDF';
+            pdfBlock.appendChild(pdfLink);
+            const checkWrap = document.createElement('div');
+            checkWrap.className = 'form-check form-check-inline mb-0 ms-2';
+            const checkInput = document.createElement('input');
+            checkInput.type = 'checkbox';
+            checkInput.className = 'form-check-input';
+            checkInput.name = `rows[${idx}][remove_attachment]`;
+            checkInput.id = `remove_${idx}`;
+            checkInput.value = '1';
+            checkWrap.appendChild(checkInput);
+            const checkLabel = document.createElement('label');
+            checkLabel.className = 'form-check-label';
+            checkLabel.htmlFor = `remove_${idx}`;
+            checkLabel.style.fontSize = '.78rem';
+            checkLabel.textContent = 'Supprimer';
+            checkWrap.appendChild(checkLabel);
+            pdfBlock.appendChild(checkWrap);
+            colF.appendChild(pdfBlock);
+        }
+        const fileLabel = document.createElement('label');
+        fileLabel.className = 'form-label';
+        fileLabel.textContent = pdfLabel;
+        colF.appendChild(fileLabel);
+        const fileIn = document.createElement('input');
+        fileIn.type = 'file';
+        fileIn.name = `rows[${idx}][attachment]`;
+        fileIn.className = 'form-control form-control-sm';
+        fileIn.accept = 'application/pdf';
+        colF.appendChild(fileIn);
+        const fileHint = document.createElement('span');
+        fileHint.className = 'file-hint';
+        fileHint.textContent = 'PDF uniquement — 10 Mo max.';
+        colF.appendChild(fileHint);
+        grid.appendChild(colF);
 
         return row;
     }
