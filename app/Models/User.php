@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -66,6 +67,28 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         return $this->belongsTo(Site::class);
     }
 
+    /**
+     * Additional centres a user can access. The "primary" one in `site_id` is
+     * always included via accessibleSiteIds() — the pivot lists every centre
+     * the user can see/manage.
+     */
+    public function sites(): BelongsToMany
+    {
+        return $this->belongsToMany(Site::class, 'site_user')->withTimestamps();
+    }
+
+    /**
+     * IDs of every centre this user is affected to (primary + pivot), de-duped.
+     */
+    public function accessibleSiteIds(): array
+    {
+        $ids = $this->sites()->pluck('sites.id')->all();
+        if ($this->site_id) {
+            $ids[] = $this->site_id;
+        }
+        return array_values(array_unique(array_map('intval', $ids)));
+    }
+
     public function schedules(): HasMany
     {
         return $this->hasMany(UserSchedule::class);
@@ -93,6 +116,23 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         if ($this->hasRole('Super Admin')) {
             return true;
         }
-        return $siteId !== null && $this->site_id === $siteId && $this->isCenterAdmin();
+        if ($siteId === null || ! $this->isCenterAdmin()) {
+            return false;
+        }
+        return in_array((int) $siteId, $this->accessibleSiteIds(), true);
+    }
+
+    /**
+     * Read-only: true if this user is affected to the given centre (primary or pivot).
+     */
+    public function canAccessSite(?int $siteId): bool
+    {
+        if ($this->hasRole('Super Admin')) {
+            return true;
+        }
+        if ($siteId === null) {
+            return false;
+        }
+        return in_array((int) $siteId, $this->accessibleSiteIds(), true);
     }
 }

@@ -10,11 +10,20 @@ class WeeklyReport extends Model
     protected $fillable = [
         'teacher_id',
         'group_id',
+        'skill',
         'report_date',
         'notes',
         'attachment_path',
         'attachment_original_name',
         'created_by',
+    ];
+
+    public const SKILLS = [
+        'lesen'      => 'Lesen',
+        'hoeren'     => 'Hören',
+        'grammatik'  => 'Grammatik',
+        'schreiben'  => 'Schreiben',
+        'sprechen'   => 'Sprechen',
     ];
 
     protected $casts = [

@@ -16,6 +16,7 @@ use App\Http\Controllers\Backoffice\TeacherController;
 use App\Http\Controllers\Backoffice\GroupController;
 use App\Http\Controllers\Backoffice\LevelFollowupController;
 use App\Http\Controllers\Backoffice\CertificateController;
+use App\Http\Controllers\Backoffice\AttestationController;
 use App\Http\Controllers\Backoffice\QuizController;
 use App\Http\Controllers\Backoffice\QuizQuestionController;
 use App\Http\Controllers\Backoffice\HelpController;
@@ -179,6 +180,27 @@ Route::prefix('backoffice')
 
                 // PDF EXPORT
                 Route::get('/{certificate}/pdf', [CertificateController::class, 'pdf'])->middleware('permission:certificates.view')->name('pdf');
+            });
+
+        /*
+        |----------------------------------------------------------------------
+        | ATTESTATIONS DE PARTICIPATION (Teilnahmebestätigung)
+        |----------------------------------------------------------------------
+        */
+        Route::prefix('attestations')
+            ->name('attestations.')
+            ->group(function () {
+                Route::get('/', [AttestationController::class, 'index'])->middleware('permission:attestations.view')->name('index');
+                Route::get('/create', [AttestationController::class, 'create'])->middleware('permission:attestations.create')->name('create');
+                Route::post('/', [AttestationController::class, 'store'])->middleware('permission:attestations.create')->name('store');
+
+                Route::get('/group/{group}/levels', [AttestationController::class, 'groupLevels'])->middleware('permission:attestations.view')->name('group_levels');
+
+                Route::get('/{attestation}/edit', [AttestationController::class, 'edit'])->middleware('permission:attestations.edit')->name('edit');
+                Route::put('/{attestation}', [AttestationController::class, 'update'])->middleware('permission:attestations.edit')->name('update');
+                Route::delete('/{attestation}', [AttestationController::class, 'destroy'])->middleware('permission:attestations.delete')->name('destroy');
+
+                Route::get('/{attestation}/pdf', [AttestationController::class, 'pdf'])->middleware('permission:attestations.view')->name('pdf');
             });
 
         /*
@@ -364,6 +386,8 @@ Route::prefix('backoffice')
                 Route::get('/for-day', [WeeklyReportController::class, 'forDay'])->middleware('permission:weekly_reports.view')->name('for_day');
                 Route::post('/batch-sync', [WeeklyReportController::class, 'batchSync'])->middleware('permission:weekly_reports.create')->name('batch_sync');
                 Route::get('/export-pdf', [WeeklyReportController::class, 'exportPdf'])->middleware('permission:weekly_reports.view')->name('export_pdf');
+                Route::get('/export-single-pdf', [WeeklyReportController::class, 'exportSinglePdf'])->middleware('permission:weekly_reports.view')->name('export_single_pdf');
+                Route::get('/show', [WeeklyReportController::class, 'show'])->middleware('permission:weekly_reports.view')->name('show');
                 Route::post('/{weeklyReport}', [WeeklyReportController::class, 'update'])->middleware('permission:weekly_reports.edit')->name('update');
                 Route::delete('/{weeklyReport}', [WeeklyReportController::class, 'destroy'])->middleware('permission:weekly_reports.delete')->name('destroy');
             });

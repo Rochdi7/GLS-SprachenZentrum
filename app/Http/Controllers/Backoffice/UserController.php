@@ -13,7 +13,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with(['roles', 'site'])->latest()->get();
+        $users = User::with(['roles', 'site', 'sites'])->latest()->get();
 
         return view('backoffice.users.index', compact('users'));
     }
@@ -35,12 +35,14 @@ class UserController extends Controller
             return back()->with('error', 'Seul un Super Admin peut attribuer le rôle Super Admin.');
         }
 
+        [$primarySiteId, $siteIds] = $this->resolveSites($validated);
+
         $user = User::create([
             'name'              => $validated['name'],
             'email'             => $validated['email'],
             'password'          => $validated['password'],
             'phone'             => $validated['phone'] ?? null,
-            'site_id'           => $validated['site_id'] ?? null,
+            'site_id'           => $primarySiteId,
             'staff_role'        => $validated['staff_role'] ?? null,
             'hired_at'          => $validated['hired_at'] ?? null,
             'is_active'         => $request->boolean('is_active', true),
@@ -49,6 +51,7 @@ class UserController extends Controller
         ]);
 
         $user->assignRole($validated['role']);
+        $user->sites()->sync($siteIds);
 
         return redirect()
             ->route('backoffice.users.index')
@@ -57,7 +60,7 @@ class UserController extends Controller
 
     public function edit(string $id)
     {
-        $user  = User::findOrFail($id);
+        $user  = User::with('sites')->findOrFail($id);
         $roles = $this->availableRoles();
         $sites = Site::where('is_active', true)->orderBy('name')->get();
         $staffRoles = User::STAFF_ROLES;
@@ -74,11 +77,13 @@ class UserController extends Controller
             return back()->with('error', 'Seul un Super Admin peut attribuer le rôle Super Admin.');
         }
 
+        [$primarySiteId, $siteIds] = $this->resolveSites($validated);
+
         $userData = [
             'name'        => $validated['name'],
             'email'       => $validated['email'],
             'phone'       => $validated['phone'] ?? null,
-            'site_id'     => $validated['site_id'] ?? null,
+            'site_id'     => $primarySiteId,
             'staff_role'  => $validated['staff_role'] ?? null,
             'hired_at'    => $validated['hired_at'] ?? null,
             'is_active'   => $request->boolean('is_active'),
@@ -91,6 +96,7 @@ class UserController extends Controller
 
         $user->update($userData);
         $user->syncRoles([$validated['role']]);
+        $user->sites()->sync($siteIds);
 
         return redirect()
             ->route('backoffice.users.index')
@@ -123,11 +129,43 @@ class UserController extends Controller
             'role'        => 'required|string|exists:roles,name',
             'phone'       => 'nullable|string|max:50',
             'site_id'     => 'nullable|exists:sites,id',
+            'site_ids'    => 'nullable|array',
+            'site_ids.*'  => 'integer|exists:sites,id',
             'staff_role'  => ['nullable', Rule::in(User::STAFF_ROLES)],
             'hired_at'    => 'nullable|date',
             'is_active'   => 'nullable|boolean',
             'staff_notes' => 'nullable|string|max:2000',
         ]);
+    }
+
+    /**
+     * Reconcile the single primary `site_id` and the multi-centre `site_ids[]`.
+     *
+     * Behaviour: the union of both is what the user can access; the primary is
+     * either the explicit `site_id` (if still present in the multi list) or
+     * the first selected site. Returns [primarySiteId|null, list<int>].
+     */
+    private function resolveSites(array $validated): array
+    {
+        $multi = collect($validated['site_ids'] ?? [])
+            ->map(fn ($v) => (int) $v)
+            ->filter()
+            ->unique()
+            ->values();
+
+        $primary = isset($validated['site_id']) && $validated['site_id'] !== null && $validated['site_id'] !== ''
+            ? (int) $validated['site_id']
+            : null;
+
+        if ($primary === null && $multi->isNotEmpty()) {
+            $primary = (int) $multi->first();
+        }
+
+        if ($primary !== null && ! $multi->contains($primary)) {
+            $multi->push($primary);
+        }
+
+        return [$primary, $multi->all()];
     }
 
     private function availableRoles()

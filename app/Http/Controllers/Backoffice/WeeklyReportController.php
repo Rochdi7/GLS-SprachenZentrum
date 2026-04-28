@@ -174,9 +174,108 @@ class WeeklyReportController extends Controller
 
         $pdf = Pdf::loadView('backoffice.pdf.weekly-report', compact(
             'weekDays', 'weekStart', 'weekEnd', 'reports', 'reportsByTeacher'
-        ))->setPaper('A4', 'landscape');
+        ))
+            ->setPaper('A4', 'landscape')
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isPhpEnabled', true);
 
         $filename = 'rapport_semaine_' . $weekStart->format('Y-m-d') . '_' . $weekEnd->format('Y-m-d') . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Show a detail page for a single (teacher, group?, date) tuple — opened by the eye button.
+     */
+    public function show(Request $request)
+    {
+        $data = $request->validate([
+            'date'       => 'required|date',
+            'teacher_id' => 'required|exists:teachers,id',
+            'group_id'   => 'nullable|integer|exists:groups,id',
+        ]);
+
+        $reports = WeeklyReport::with(['teacher', 'group'])
+            ->whereDate('report_date', $data['date'])
+            ->where('teacher_id', $data['teacher_id'])
+            ->when(true, function ($q) use ($data) {
+                $gid = $data['group_id'] ?? null;
+                if ($gid === null || $gid === '') {
+                    $q->whereNull('group_id');
+                } else {
+                    $q->where('group_id', $gid);
+                }
+            })
+            ->orderBy('skill')
+            ->orderBy('created_at')
+            ->get();
+
+        if ($reports->isEmpty()) {
+            return redirect()
+                ->route('backoffice.weekly_reports.index', ['week' => $data['date']])
+                ->with('error', 'Aucun rapport trouvé pour cette sélection.');
+        }
+
+        $teacher = $reports->first()->teacher;
+        $group = $reports->first()->group;
+        $date = Carbon::parse($data['date']);
+
+        $exportParams = [
+            'date'       => $data['date'],
+            'teacher_id' => $data['teacher_id'],
+        ];
+        if (!empty($data['group_id'])) {
+            $exportParams['group_id'] = $data['group_id'];
+        }
+
+        return view('backoffice.weekly-reports.show', compact(
+            'reports', 'teacher', 'group', 'date', 'exportParams'
+        ));
+    }
+
+    /**
+     * Export a single (teacher, group?, date) detail as PDF — used by the "eye" button in the modal.
+     */
+    public function exportSinglePdf(Request $request)
+    {
+        $data = $request->validate([
+            'date'       => 'required|date',
+            'teacher_id' => 'required|exists:teachers,id',
+            'group_id'   => 'nullable|integer|exists:groups,id',
+        ]);
+
+        $reports = WeeklyReport::with(['teacher', 'group'])
+            ->whereDate('report_date', $data['date'])
+            ->where('teacher_id', $data['teacher_id'])
+            ->when(array_key_exists('group_id', $data), function ($q) use ($data) {
+                $gid = $data['group_id'] ?? null;
+                if ($gid === null || $gid === '') {
+                    $q->whereNull('group_id');
+                } else {
+                    $q->where('group_id', $gid);
+                }
+            })
+            ->orderBy('skill')
+            ->orderBy('created_at')
+            ->get();
+
+        if ($reports->isEmpty()) {
+            return back()->with('error', 'Aucun rapport trouvé pour cette sélection.');
+        }
+
+        $teacher = $reports->first()->teacher;
+        $group = $reports->first()->group;
+        $date = Carbon::parse($data['date']);
+
+        $pdf = Pdf::loadView('backoffice.pdf.weekly-report-single', compact(
+            'reports', 'teacher', 'group', 'date'
+        ))
+            ->setPaper('A4', 'portrait')
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isPhpEnabled', true);
+
+        $slug = str()->slug($teacher->name) . ($group ? '_' . str()->slug($group->name) : '');
+        $filename = 'rapport_' . $slug . '_' . $date->format('Y-m-d') . '.pdf';
 
         return $pdf->download($filename);
     }
@@ -197,6 +296,7 @@ class WeeklyReportController extends Controller
                 'teacher_id'      => $r->teacher_id,
                 'group_id'        => $r->group_id,
                 'group_label'     => $r->group?->name,
+                'skill'           => $r->skill,
                 'notes'           => $r->notes,
                 'attachment_url'  => $r->attachment_url,
                 'attachment_name' => $r->attachment_original_name,
@@ -227,6 +327,7 @@ class WeeklyReportController extends Controller
             'rows.*.id'                    => 'nullable|integer|exists:weekly_reports,id',
             'rows.*.teacher_id'            => 'required|exists:teachers,id',
             'rows.*.group_id'              => 'nullable|integer|exists:groups,id',
+            'rows.*.skill'                 => 'nullable|string|in:' . implode(',', array_keys(WeeklyReport::SKILLS)),
             'rows.*.notes'                 => 'required|string|max:5000',
             'rows.*.remove_attachment'     => 'nullable|boolean',
             'rows.*.attachment'            => 'nullable|file|mimes:pdf|max:10240',
@@ -261,6 +362,7 @@ class WeeklyReportController extends Controller
 
                     $report->teacher_id = $row['teacher_id'];
                     $report->group_id = $row['group_id'] ?? null;
+                    $report->skill = $row['skill'] ?? null;
                     $report->notes = $row['notes'];
 
                     if (!empty($row['remove_attachment']) && $report->attachment_path) {
@@ -284,6 +386,7 @@ class WeeklyReportController extends Controller
                     $payload = [
                         'teacher_id'  => $row['teacher_id'],
                         'group_id'    => $row['group_id'] ?? null,
+                        'skill'       => $row['skill'] ?? null,
                         'report_date' => $reportDate,
                         'notes'       => $row['notes'],
                         'created_by'  => auth()->id(),

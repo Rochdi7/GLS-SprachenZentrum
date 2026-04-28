@@ -21,10 +21,15 @@
     {{-- EMAIL --}}
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Email <span class="text-danger">*</span></label>
-        <input type="email" name="email"
+        {{-- type="text" + pattern: tolerate non-ASCII local parts (e.g. réception@gls.ma) --}}
+        <input type="text" name="email"
                class="form-control"
                value="{{ old('email', $user->email ?? '') }}"
                placeholder="email@exemple.com"
+               pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+               title="Adresse email valide (les caractères accentués sont autorisés)"
+               inputmode="email"
+               autocomplete="email"
                required>
     </div>
 
@@ -89,10 +94,10 @@
         </p>
     </div>
 
-    {{-- SITE --}}
+    {{-- PRIMARY SITE --}}
     <div class="col-md-4 mb-3">
-        <label class="form-label fw-bold">Centre affecté</label>
-        <select name="site_id" class="form-select">
+        <label class="form-label fw-bold">Centre principal</label>
+        <select name="site_id" class="form-select" id="user_primary_site">
             <option value="">— Aucun —</option>
             @foreach($sites as $site)
                 <option value="{{ $site->id }}"
@@ -101,7 +106,51 @@
                 </option>
             @endforeach
         </select>
+        <small class="text-muted">Centre par défaut affiché dans les filtres et exports.</small>
     </div>
+
+    {{-- ADDITIONAL CENTRES (multi) --}}
+    @php
+        $assignedSiteIds = collect(old('site_ids', isset($user) ? $user->sites->pluck('id')->all() : []))
+            ->map(fn ($v) => (int) $v)
+            ->all();
+    @endphp
+    <div class="col-md-8 mb-3">
+        <label class="form-label fw-bold">Centres affectés (accès multi-centres)</label>
+        <select name="site_ids[]" class="form-select" id="user_sites_multi" multiple size="6">
+            @foreach($sites as $site)
+                <option value="{{ $site->id }}"
+                    {{ in_array((int) $site->id, $assignedSiteIds, true) ? 'selected' : '' }}>
+                    {{ $site->name }}
+                </option>
+            @endforeach
+        </select>
+        <small class="text-muted">
+            Maintenez <kbd>Ctrl</kbd> (ou <kbd>⌘</kbd>) pour sélectionner plusieurs centres.
+            L'utilisateur verra les données de chacun des centres cochés.
+        </small>
+    </div>
+
+    <script>
+        // Keep the primary site inside the multi list automatically.
+        (function () {
+            var primary = document.getElementById('user_primary_site');
+            var multi   = document.getElementById('user_sites_multi');
+            if (!primary || !multi) return;
+
+            primary.addEventListener('change', function () {
+                if (!primary.value) return;
+                var found = false;
+                for (var i = 0; i < multi.options.length; i++) {
+                    if (multi.options[i].value === primary.value) {
+                        multi.options[i].selected = true;
+                        found = true;
+                    }
+                }
+                // (No-op when not found — multi is filled from the same $sites list.)
+            });
+        })();
+    </script>
 
     {{-- STAFF ROLE --}}
     <div class="col-md-4 mb-3">

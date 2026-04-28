@@ -209,10 +209,78 @@
     .note-row .btn-remove-row:hover { background: #fee2e2; color: #b91c1c; }
     .note-row .btn-remove-row i { font-size: 13px; }
 
+    .note-row .btn-eye-row {
+        position: absolute;
+        top: 10px;
+        right: 38px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        font-size: 12px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background .15s, color .15s;
+        padding: 0;
+    }
+    .note-row .btn-eye-row:hover { background: #e0f2fe; color: #0284c7; }
+    .note-row .btn-eye-row i { font-size: 14px; }
+
     .note-row .form-label { font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: #495057; }
     .note-row .form-control,
     .note-row .form-select { font-size: 0.85rem; }
     .note-row textarea { resize: vertical; min-height: 70px; }
+
+    /* ===== Skills grid mode (multi-group teachers) ===== */
+    .skills-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .skill-block {
+        display: grid;
+        grid-template-columns: 110px 1fr;
+        gap: 10px;
+        align-items: start;
+    }
+    .skill-block .skill-label {
+        background: #1e3a5f;
+        color: #fff;
+        font-size: .72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        padding: 6px 8px;
+        border-radius: 4px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 50px;
+    }
+    .skill-block > *:not(.skill-label) {
+        grid-column: 2;
+    }
+    .skill-block .skill-notes,
+    .skill-block .skill-attachment {
+        font-size: .78rem;
+    }
+    .skill-block .existing-pdf {
+        padding: 3px 6px;
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 3px;
+    }
+    .mode-skills .row-number { background: #f59e0b; }
+    @media (max-width: 575.98px) {
+        .skill-block { grid-template-columns: 80px 1fr; gap: 6px; }
+        .skill-block .skill-label { font-size: .65rem; padding: 4px 5px; min-height: 44px; }
+    }
     .note-row .file-hint { font-size: 0.7rem; color: #adb5bd; margin-top: 2px; display: block; }
     .note-row .existing-pdf {
         display: flex;
@@ -272,6 +340,25 @@
         border: 2px dashed #e9ecef;
         border-radius: 8px;
     }
+    #emptyRowsHint.is-loading { border-style: solid; border-color: #e0e7ff; background: #f8faff; }
+    #emptyRowsHint.is-loading .loading-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-style: normal;
+        color: #4680ff;
+        font-weight: 500;
+    }
+    .loading-spinner {
+        width: 22px;
+        height: 22px;
+        border: 3px solid #e0e7ff;
+        border-top-color: #4680ff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (max-width: 575.98px) {
         .btn-add-row { padding: 6px 10px; font-size: 0.78rem; }
@@ -680,8 +767,10 @@
                         Aujourd'hui
                     </button>
                 </div>
-                <div id="monthLoading" class="text-center text-muted py-3 d-none">
-                    <i class="ph-duotone ph-spinner"></i> Chargement...
+                <div id="monthLoading" class="text-center py-3 d-none">
+                    <span class="loading-wrap" style="display:inline-flex; align-items:center; gap:10px; color:#4680ff; font-weight:500;">
+                        <span class="loading-spinner"></span> Chargement…
+                    </span>
                 </div>
                 <div class="month-grid" id="monthGrid"></div>
             </div>
@@ -702,6 +791,7 @@
     const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
     const FOR_DAY_URL = '{{ route('backoffice.weekly_reports.for_day') }}';
     const TEACHER_GROUPS = @json($teacherGroupsMap);
+    const SKILLS = @json(\App\Models\WeeklyReport::SKILLS);
     const rowsContainer = document.getElementById('rowsContainer');
     const emptyHint = document.getElementById('emptyRowsHint');
     let rowCounter = 0;
@@ -728,15 +818,55 @@
         return html;
     }
 
+    function teacherHasMultipleGroups(teacherId) {
+        if (!teacherId) return false;
+        const groups = TEACHER_GROUPS[teacherId] || [];
+        return groups.length > 1;
+    }
+
     function onTeacherChange(selectEl) {
         const row = selectEl.closest('.note-row');
         if (!row) return;
         const groupSel = row.querySelector('select.group-select');
-        if (!groupSel) return;
-        groupSel.innerHTML = groupOptionsHtml(selectEl.value, null);
+        if (groupSel) {
+            groupSel.innerHTML = groupOptionsHtml(selectEl.value, null);
+        }
+
+        // If the teacher has multiple groups and the row is currently in simple mode,
+        // upgrade it to skills mode (grid). And vice-versa.
+        const isSimple = row.classList.contains('mode-simple');
+        const shouldBeMulti = teacherHasMultipleGroups(selectEl.value);
+        if (isSimple && shouldBeMulti) {
+            const replacement = buildSkillsRow({
+                teacher_id: selectEl.value,
+                group_id: null,
+                skills: {},
+            });
+            row.replaceWith(replacement);
+            refreshRowNumbers();
+            return;
+        }
+        if (!isSimple && !shouldBeMulti) {
+            const replacement = buildSimpleRow({
+                teacher_id: selectEl.value,
+                group_id: null,
+                notes: '',
+            });
+            row.replaceWith(replacement);
+            refreshRowNumbers();
+            return;
+        }
     }
 
+    // Decide which builder to use based on the teacher's groups count.
     function buildRow(report) {
+        const r = report || {};
+        const isMulti = teacherHasMultipleGroups(r.teacher_id);
+        return isMulti ? buildSkillsRow(r) : buildSimpleRow(r);
+    }
+
+    // ===== Simple row (single-group teacher OR teacher not yet selected) =====
+    function buildSimpleRow(report) {
         const idx = rowCounter++;
         const r = report || {};
         const hasPdf = !!r.attachment_url;
@@ -758,7 +888,7 @@
         // Build row using DOM API rather than innerHTML to avoid third-party sanitizers
         // (browser extensions / CSP) that strip <textarea> from innerHTML strings.
         const row = document.createElement('div');
-        row.className = 'note-row';
+        row.className = 'note-row mode-simple';
         row.dataset.rowIndex = idx;
 
         // Top: row label + remove button
@@ -766,6 +896,17 @@
         rowNumber.className = 'row-number';
         rowNumber.textContent = `Note #${idx + 1}`;
         row.appendChild(rowNumber);
+
+        // Eye button (only if saved — has an id)
+        if (r.id) {
+            const btnEye = document.createElement('button');
+            btnEye.type = 'button';
+            btnEye.className = 'btn-eye-row';
+            btnEye.title = 'Voir le détail / Exporter en PDF';
+            btnEye.innerHTML = '<i class="ph-duotone ph-eye"></i>';
+            btnEye.addEventListener('click', () => openDetailFromRow(row));
+            row.appendChild(btnEye);
+        }
 
         const btnRemove = document.createElement('button');
         btnRemove.type = 'button';
@@ -886,17 +1027,155 @@
         return row;
     }
 
+    // ===== Skills row (multi-group teacher) =====
+    // `report` shape: { teacher_id, group_id, skills: { lesen: {id, notes, attachment_url, attachment_name}, ... } }
+    function buildSkillsRow(report) {
+        const idx = rowCounter++;
+        const r = report || {};
+        const skillsData = r.skills || {};
+
+        const row = document.createElement('div');
+        row.className = 'note-row mode-skills';
+        row.dataset.rowIndex = idx;
+
+        // Header: row label + remove button
+        const rowNumber = document.createElement('span');
+        rowNumber.className = 'row-number';
+        rowNumber.textContent = `Groupe #${idx + 1}`;
+        row.appendChild(rowNumber);
+
+        // Eye button (only if at least one skill is saved)
+        const anySaved = Object.values(skillsData).some(s => s && s.id);
+        if (anySaved) {
+            const btnEye = document.createElement('button');
+            btnEye.type = 'button';
+            btnEye.className = 'btn-eye-row';
+            btnEye.title = 'Voir le détail / Exporter en PDF';
+            btnEye.innerHTML = '<i class="ph-duotone ph-eye"></i>';
+            btnEye.addEventListener('click', () => openDetailFromRow(row));
+            row.appendChild(btnEye);
+        }
+
+        const btnRemove = document.createElement('button');
+        btnRemove.type = 'button';
+        btnRemove.className = 'btn-remove-row';
+        btnRemove.title = 'Supprimer ce groupe';
+        btnRemove.innerHTML = '<i class="ph-duotone ph-x"></i>';
+        btnRemove.addEventListener('click', () => removeRow(btnRemove));
+        row.appendChild(btnRemove);
+
+        // Top: teacher + group selectors
+        const topGrid = document.createElement('div');
+        topGrid.className = 'row g-2';
+        row.appendChild(topGrid);
+
+        const colT = document.createElement('div');
+        colT.className = 'col-md-6';
+        colT.innerHTML = '<label class="form-label">Enseignant</label>';
+        const teacherSel = document.createElement('select');
+        teacherSel.className = 'form-select form-select-sm teacher-select';
+        teacherSel.required = true;
+        teacherSel.innerHTML = teacherOptionsHtml(r.teacher_id);
+        teacherSel.addEventListener('change', () => onTeacherChange(teacherSel));
+        colT.appendChild(teacherSel);
+        topGrid.appendChild(colT);
+
+        const colG = document.createElement('div');
+        colG.className = 'col-md-6';
+        colG.innerHTML = '<label class="form-label">Groupe</label>';
+        const groupSel = document.createElement('select');
+        groupSel.className = 'form-select form-select-sm group-select';
+        groupSel.required = true;
+        groupSel.innerHTML = groupOptionsHtml(r.teacher_id, r.group_id);
+        colG.appendChild(groupSel);
+        topGrid.appendChild(colG);
+
+        // Skills container
+        const skillsWrap = document.createElement('div');
+        skillsWrap.className = 'skills-grid mt-3';
+        row.appendChild(skillsWrap);
+
+        Object.entries(SKILLS).forEach(([skillKey, skillLabel]) => {
+            const skillData = skillsData[skillKey] || {};
+            const block = document.createElement('div');
+            block.className = 'skill-block';
+            block.dataset.skill = skillKey;
+
+            // Header label
+            const headLabel = document.createElement('div');
+            headLabel.className = 'skill-label';
+            headLabel.textContent = skillLabel;
+            block.appendChild(headLabel);
+
+            // Hidden id input if updating existing skill report
+            if (skillData.id) {
+                const idIn = document.createElement('input');
+                idIn.type = 'hidden';
+                idIn.className = 'skill-id-input';
+                idIn.value = skillData.id;
+                block.appendChild(idIn);
+            }
+
+            // Textarea
+            const ta = document.createElement('textarea');
+            ta.className = 'form-control form-control-sm skill-notes';
+            ta.rows = 2;
+            ta.placeholder = `Activité ${skillLabel}...`;
+            ta.value = skillData.notes || '';
+            ta.style.minHeight = '50px';
+            block.appendChild(ta);
+
+            // Existing PDF + checkbox
+            if (skillData.attachment_url) {
+                const pdfBlock = document.createElement('div');
+                pdfBlock.className = 'existing-pdf mt-1';
+                pdfBlock.style.fontSize = '.7rem';
+                const pdfLink = document.createElement('a');
+                pdfLink.href = skillData.attachment_url;
+                pdfLink.target = '_blank';
+                pdfLink.rel = 'noopener';
+                pdfLink.innerHTML = '<i class="ph-duotone ph-file-pdf" style="color:#d9534f;"></i> ' + (skillData.attachment_name || 'PDF');
+                pdfBlock.appendChild(pdfLink);
+                const removeChk = document.createElement('label');
+                removeChk.style.cssText = 'margin-left:8px; font-size:.7rem; cursor:pointer;';
+                const removeIn = document.createElement('input');
+                removeIn.type = 'checkbox';
+                removeIn.className = 'skill-remove-attachment';
+                removeIn.style.marginRight = '3px';
+                removeChk.appendChild(removeIn);
+                removeChk.appendChild(document.createTextNode('Supprimer'));
+                pdfBlock.appendChild(removeChk);
+                block.appendChild(pdfBlock);
+            }
+
+            // File input
+            const fileIn = document.createElement('input');
+            fileIn.type = 'file';
+            fileIn.className = 'form-control form-control-sm skill-attachment mt-1';
+            fileIn.accept = 'application/pdf';
+            fileIn.style.fontSize = '.72rem';
+            block.appendChild(fileIn);
+
+            skillsWrap.appendChild(block);
+        });
+
+        return row;
+    }
+
     function refreshRowNumbers() {
         const rows = rowsContainer.querySelectorAll('.note-row');
         rows.forEach((row, i) => {
             const label = row.querySelector('.row-number');
-            if (label) label.textContent = `Note #${i + 1}`;
+            if (label) {
+                const prefix = row.classList.contains('mode-skills') ? 'Groupe' : 'Note';
+                label.textContent = `${prefix} #${i + 1}`;
+            }
         });
         emptyHint.style.display = rows.length === 0 ? 'block' : 'none';
         const footer = document.getElementById('addRowFooter');
         if (footer) footer.style.display = rows.length > 0 ? 'block' : 'none';
         const counter = document.getElementById('rowsCountLabel');
-        if (counter) counter.textContent = `${rows.length} note${rows.length > 1 ? 's' : ''}`;
+        if (counter) counter.textContent = `${rows.length} entrée${rows.length > 1 ? 's' : ''}`;
     }
 
     function addRow(report) {
@@ -926,13 +1205,98 @@
         refreshRowNumbers();
     }
 
+    // ==================== Eye button → navigate to show page ====================
+    const SHOW_URL = '{{ route('backoffice.weekly_reports.show') }}';
+
+    function openDetailFromRow(rowEl) {
+        const date = document.getElementById('modalDate').value;
+        const teacherSel = rowEl.querySelector('select.teacher-select');
+        const groupSel = rowEl.querySelector('select.group-select');
+        const teacherId = teacherSel ? teacherSel.value : '';
+        const groupId = groupSel ? groupSel.value : '';
+
+        if (!teacherId) {
+            alert('Veuillez sélectionner un enseignant.');
+            return;
+        }
+
+        const params = new URLSearchParams({ date, teacher_id: teacherId });
+        if (groupId) params.set('group_id', groupId);
+        window.open(`${SHOW_URL}?${params.toString()}`, '_blank');
+    }
+
+    // Before submission, expand each skills row into N rows (one per non-empty skill block)
+    // so the backend's `rows[i][skill]` validation receives them in the expected shape.
+    document.getElementById('reportForm').addEventListener('submit', function (ev) {
+        const form = this;
+        // Remove any name attributes added in a previous submit attempt
+        form.querySelectorAll('[data-skill-flat="1"]').forEach(el => el.remove());
+
+        let flatIdx = 0;
+
+        // Renumber simple rows starting at 0
+        form.querySelectorAll('.note-row.mode-simple').forEach(row => {
+            const inputs = row.querySelectorAll('[name^="rows["]');
+            inputs.forEach(inp => {
+                inp.name = inp.name.replace(/^rows\[\d+\]/, `rows[${flatIdx}]`);
+            });
+            flatIdx++;
+        });
+
+        // Expand skill rows
+        form.querySelectorAll('.note-row.mode-skills').forEach(row => {
+            const teacherId = row.querySelector('select.teacher-select')?.value || '';
+            const groupId = row.querySelector('select.group-select')?.value || '';
+
+            row.querySelectorAll('.skill-block').forEach(block => {
+                const skillKey = block.dataset.skill;
+                const notes = block.querySelector('.skill-notes')?.value?.trim() || '';
+                const idInput = block.querySelector('.skill-id-input');
+                const fileInput = block.querySelector('.skill-attachment');
+                const removeChk = block.querySelector('.skill-remove-attachment');
+                const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+                const wantsRemove = removeChk && removeChk.checked;
+                const existingId = idInput ? idInput.value : '';
+
+                // Skip empty skills with no existing record (nothing to save / nothing to delete)
+                if (!notes && !hasFile && !existingId) return;
+
+                // Build flat hidden inputs that batchSync expects
+                const append = (name, value) => {
+                    const inp = document.createElement('input');
+                    inp.type = 'hidden';
+                    inp.dataset.skillFlat = '1';
+                    inp.name = name;
+                    inp.value = value;
+                    form.appendChild(inp);
+                };
+
+                if (existingId) append(`rows[${flatIdx}][id]`, existingId);
+                append(`rows[${flatIdx}][teacher_id]`, teacherId);
+                append(`rows[${flatIdx}][group_id]`, groupId);
+                append(`rows[${flatIdx}][skill]`, skillKey);
+                append(`rows[${flatIdx}][notes]`, notes);
+                if (wantsRemove) append(`rows[${flatIdx}][remove_attachment]`, '1');
+
+                if (hasFile) {
+                    // File inputs must stay in place (can't be cloned). Rename them in-place.
+                    fileInput.dataset.skillFlat = '1';
+                    fileInput.name = `rows[${flatIdx}][attachment]`;
+                }
+
+                flatIdx++;
+            });
+        });
+    });
+
     async function openDayModal(date, label) {
         rowCounter = 0;
         rowsContainer.innerHTML = '';
         document.getElementById('modalDate').value = date;
         document.getElementById('modalDateLabel').textContent = label;
         emptyHint.style.display = 'block';
-        emptyHint.innerHTML = '<i class="ph-duotone ph-spinner"></i> Chargement...';
+        emptyHint.classList.add('is-loading');
+        emptyHint.innerHTML = '<span class="loading-wrap"><span class="loading-spinner"></span> Chargement…</span>';
         reportModal.show();
 
         try {
@@ -942,10 +1306,48 @@
             });
             if (res.ok) {
                 const json = await res.json();
-                (json.reports || []).forEach(r => addRow(r));
+                const reports = json.reports || [];
+
+                // Group reports by (teacher_id, group_id). For multi-group teachers,
+                // a single row should contain all 5 skills. For single-group / no-group,
+                // each report becomes its own simple row.
+                const buckets = new Map();
+                const simpleReports = [];
+
+                for (const r of reports) {
+                    const isMulti = teacherHasMultipleGroups(r.teacher_id);
+                    if (isMulti && r.skill) {
+                        const key = `${r.teacher_id}::${r.group_id || ''}`;
+                        if (!buckets.has(key)) {
+                            buckets.set(key, {
+                                teacher_id: r.teacher_id,
+                                group_id: r.group_id,
+                                skills: {},
+                            });
+                        }
+                        buckets.get(key).skills[r.skill] = {
+                            id: r.id,
+                            notes: r.notes,
+                            attachment_url: r.attachment_url,
+                            attachment_name: r.attachment_name,
+                        };
+                    } else {
+                        simpleReports.push(r);
+                    }
+                }
+
+                // Render skills rows first (one per teacher+group bucket), then simple rows
+                for (const bucket of buckets.values()) {
+                    rowsContainer.appendChild(buildSkillsRow(bucket));
+                }
+                for (const r of simpleReports) {
+                    rowsContainer.appendChild(buildSimpleRow(r));
+                }
+                refreshRowNumbers();
             }
         } catch (e) { /* ignore */ }
 
+        emptyHint.classList.remove('is-loading');
         emptyHint.innerHTML = 'Aucune note pour ce jour.<br>Cliquez sur <strong>« Ajouter une note »</strong> pour commencer.';
         if (rowsContainer.children.length === 0) addRow();
         refreshRowNumbers();

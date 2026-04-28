@@ -31,8 +31,12 @@ class ScheduleController extends Controller
         $staffQuery = User::query()->whereNotNull('staff_role')->where('is_active', true);
 
         if (! $authUser->hasRole('Super Admin')) {
-            // Regular admin: limited to their own site
-            $staffQuery->where('site_id', $authUser->site_id);
+            // Regular admin: limited to centres they are affected to (primary + extras)
+            $accessibleSiteIds = $authUser->accessibleSiteIds();
+            $staffQuery->where(function ($q) use ($accessibleSiteIds) {
+                $q->whereIn('site_id', $accessibleSiteIds)
+                  ->orWhereHas('sites', fn ($sq) => $sq->whereIn('sites.id', $accessibleSiteIds));
+            });
         }
         $staff = $staffQuery->orderBy('name')->get();
 
@@ -42,7 +46,7 @@ class ScheduleController extends Controller
         if (! $isAdmin) {
             $query->where('user_id', $authUser->id);
         } elseif (! $authUser->hasRole('Super Admin')) {
-            $query->where('site_id', $authUser->site_id);
+            $query->whereIn('site_id', $authUser->accessibleSiteIds());
         }
 
         if ($isAdmin) {
@@ -120,7 +124,11 @@ class ScheduleController extends Controller
         if ($isAdmin) {
             $q = User::whereNotNull('staff_role')->where('is_active', true);
             if (! $authUser->hasRole('Super Admin')) {
-                $q->where('site_id', $authUser->site_id);
+                $accessibleSiteIds = $authUser->accessibleSiteIds();
+                $q->where(function ($qq) use ($accessibleSiteIds) {
+                    $qq->whereIn('site_id', $accessibleSiteIds)
+                       ->orWhereHas('sites', fn ($sq) => $sq->whereIn('sites.id', $accessibleSiteIds));
+                });
             }
             $staffOptions = $q->orderBy('name')->get();
         }
@@ -372,7 +380,11 @@ class ScheduleController extends Controller
     {
         if ($auth->id === $target->id) return;               // self
         if ($auth->hasRole('Super Admin')) return;           // super
-        if ($auth->isCenterAdmin() && $auth->site_id && $auth->site_id === $target->site_id) return;
+        if ($auth->isCenterAdmin()) {
+            // Manager can manage any user that shares at least one centre with them.
+            $shared = array_intersect($auth->accessibleSiteIds(), $target->accessibleSiteIds());
+            if (! empty($shared)) return;
+        }
         abort(403, 'Vous ne pouvez pas gérer le planning de cet utilisateur.');
     }
 }

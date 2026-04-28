@@ -5,6 +5,7 @@
         || request()->routeIs('backoffice.teachers.*')
         || request()->routeIs('backoffice.groups.*')
         || request()->routeIs('backoffice.certificates.*')
+        || request()->routeIs('backoffice.attestations.*')
         || request()->routeIs('backoffice.studienkollegs.*')
         || request()->routeIs('backoffice.quizzes.*');
     $admissionsOpen = request()->routeIs('backoffice.applications.*') || request()->routeIs('backoffice.leads.*');
@@ -57,7 +58,7 @@
 </li>
 @endcanany
 
-@canany(['sites.view', 'teachers.view', 'groups.view', 'certificates.view', 'studienkollegs.view', 'quizzes.view'])
+@canany(['sites.view', 'teachers.view', 'groups.view', 'certificates.view', 'attestations.view', 'studienkollegs.view', 'quizzes.view'])
 <li class="pc-item pc-hasmenu {{ $schoolOpen ? 'pc-trigger' : '' }}">
     <a href="#!" class="pc-link">
         <span class="pc-micon"><i class="ph-duotone ph-buildings"></i></span>
@@ -90,6 +91,13 @@
         <li class="pc-item {{ request()->routeIs('backoffice.certificates.*') ? 'active' : '' }}">
             <a href="{{ route('backoffice.certificates.index') }}" class="pc-link {{ request()->routeIs('backoffice.certificates.*') ? 'active' : '' }}">
                 <span class="pc-mtext">Certificats</span>
+            </a>
+        </li>
+        @endcan
+        @can('attestations.view')
+        <li class="pc-item {{ request()->routeIs('backoffice.attestations.*') ? 'active' : '' }}">
+            <a href="{{ route('backoffice.attestations.index') }}" class="pc-link {{ request()->routeIs('backoffice.attestations.*') ? 'active' : '' }}">
+                <span class="pc-mtext">Attestations</span>
             </a>
         </li>
         @endcan

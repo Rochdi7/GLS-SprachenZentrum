@@ -4,55 +4,167 @@
     <meta charset="UTF-8">
     <title>Rapport Semaine — {{ $weekStart->format('d/m/Y') }} au {{ $weekEnd->format('d/m/Y') }}</title>
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 10px; color: #333; margin: 15px; }
-        .header { text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #1e3a5f; }
-        .header img { height: 45px; margin-bottom: 8px; }
-        .header h1 { font-size: 16px; color: #1e3a5f; margin: 0; }
-        .header h2 { font-size: 11px; color: #666; margin: 4px 0 0; font-weight: normal; }
+        @page { margin: 30mm 10mm 18mm 10mm; }
+        body { font-family: DejaVu Sans, sans-serif; font-size: 9.5px; color: #333; margin: 0; }
 
-        /* ===== Page 1: Calendar grid ===== */
-        table.calendar { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
-        table.calendar th {
-            background: #1e3a5f;
-            color: white;
-            padding: 6px 4px;
+        /* ===== Fixed header on every page ===== */
+        .page-header {
+            position: fixed;
+            top: -25mm;
+            left: 0;
+            right: 0;
+            height: 23mm;
             text-align: center;
+            border-bottom: 2px solid #1e3a5f;
+            padding-bottom: 3mm;
+        }
+        .page-header img { height: 30px; margin-bottom: 2px; }
+        .page-header h1 { font-size: 13px; color: #1e3a5f; margin: 0; line-height: 1.2; }
+        .page-header h2 { font-size: 9px; color: #666; margin: 3px 0 0; font-weight: normal; line-height: 1.2; }
+
+        /* ===== Fixed footer on every page ===== */
+        .page-footer {
+            position: fixed;
+            bottom: -14mm;
+            left: 0;
+            right: 0;
+            height: 10mm;
+            text-align: center;
+            font-size: 7.5px;
+            color: #aaa;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 4px;
+        }
+        .page-footer .pn:before { content: counter(page); }
+        .page-footer .pt:before { content: counter(pages); }
+
+        /* ===== Section title (used at top of each page section) ===== */
+        .section-title {
+            background: #1e3a5f;
+            color: #fff;
+            text-align: center;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            border-radius: 3px;
+        }
+
+        /* ===== Page 1: Per-day list (stacked, one block per day) ===== */
+        .day-block {
+            margin-bottom: 8px;
+            border: 1px solid #dde2e8;
+            border-radius: 3px;
+        }
+        .day-block .day-head {
+            background: #1e3a5f;
+            color: #fff;
+            padding: 5px 10px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .day-block .day-body { padding: 6px 8px; }
+        .day-block .empty {
+            color: #adb5bd;
+            font-style: italic;
             font-size: 9px;
+            padding: 4px 0;
+        }
+
+        /* ===== Per-teacher pivot inside a day ===== */
+        table.day-pivot {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8.5px;
+            table-layout: fixed;
+        }
+        table.day-pivot th {
+            background: #f8fafc;
+            color: #1e3a5f;
+            border: 1px solid #e2e8f0;
+            padding: 4px 5px;
+            font-size: 8px;
+            font-weight: bold;
+            text-align: left;
             text-transform: uppercase;
             letter-spacing: 0.3px;
-            width: 20%;
         }
-        table.calendar td {
-            border: 1px solid #dde2e8;
-            vertical-align: top;
-            padding: 6px;
-            width: 20%;
-        }
-        .day-num { font-weight: bold; font-size: 11px; margin-bottom: 5px; color: #1e3a5f; }
-        .report-entry {
-            background: #f0f4ff;
-            border-left: 2px solid #4680ff;
-            border-radius: 3px;
+        table.day-pivot td {
+            border: 1px solid #e2e8f0;
             padding: 4px 5px;
-            margin-bottom: 4px;
-            font-size: 8px;
-            line-height: 1.35;
+            vertical-align: top;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
-        .report-entry .t-name { font-weight: bold; color: #1e3a5f; font-size: 8.5px; margin-bottom: 1px; }
-        .report-entry .t-group { display: inline-block; background: #fff3cd; color: #856404; font-size: 7.5px; font-weight: bold; padding: 1px 4px; border-radius: 3px; margin-bottom: 2px; }
-        .report-entry .t-notes { color: #444; word-wrap: break-word; overflow-wrap: break-word; }
-        .report-entry .t-attach { color: #d9534f; font-size: 7.5px; margin-top: 2px; font-style: italic; }
-        .empty-cell { color: #bbb; font-style: italic; font-size: 8px; }
+        .col-tn { width: 18%; }
+        .col-grp { width: 14%; }
+        .col-skl { width: 10%; }
+        .col-ntx { width: 50%; }
+        .col-pdf { width: 8%; text-align: center; }
 
-        /* ===== Page 2: Detail table ===== */
+        .gpill {
+            display: inline-block;
+            background: #fff3cd;
+            color: #856404;
+            font-size: 8px;
+            font-weight: bold;
+            padding: 1px 5px;
+            border-radius: 3px;
+        }
+        .skill-pill {
+            display: inline-block;
+            background: #e6f0ff;
+            color: #1e3a5f;
+            font-size: 8px;
+            font-weight: bold;
+            padding: 1px 5px;
+            border-radius: 3px;
+        }
+        .pdf-icon { color: #d9534f; font-size: 9px; font-weight: bold; }
+        .pdf-name { display: block; color: #888; font-size: 7px; word-break: break-all; }
+
+        .footer {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 7.5px;
+            color: #aaa;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 5px;
+        }
+
+        /* ===== Page 2+: Per-teacher detail ===== */
         .page-break { page-break-before: always; }
-        table.detail { width: 100%; border-collapse: collapse; margin-top: 10px; table-layout: fixed; }
-        table.detail th {
+
+        .teacher-section {
+            margin-bottom: 8px;
+            page-break-before: always;
+        }
+        .teacher-section.first-teacher { page-break-before: auto; }
+        .teacher-section h3 {
+            font-size: 11px;
+            color: #fff;
             background: #1e3a5f;
-            color: white;
-            padding: 5px 6px;
+            padding: 5px 10px;
+            margin: 0 0 0;
+            border-radius: 3px 3px 0 0;
+        }
+        table.detail {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8.5px;
+            table-layout: fixed;
+        }
+        table.detail th {
+            background: #f1f5f9;
+            color: #1e3a5f;
+            border: 1px solid #cbd5e1;
+            padding: 4px 6px;
+            font-size: 8px;
             text-align: left;
-            font-size: 9px;
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
@@ -64,111 +176,150 @@
             overflow-wrap: break-word;
         }
         table.detail tr:nth-child(even) { background: #f8fafc; }
-        .col-teacher { width: 16%; }
-        .col-date { width: 9%; text-align: center; }
-        .col-jour { width: 10%; text-align: center; }
-        .col-group { width: 13%; }
-        .col-notes { width: 52%; }
-        .col-group .gpill { display: inline-block; background: #fff3cd; color: #856404; font-size: 8px; font-weight: bold; padding: 2px 6px; border-radius: 3px; }
-
-        .footer { margin-top: 15px; text-align: center; font-size: 8px; color: #aaa; border-top: 1px solid #e2e8f0; padding-top: 6px; }
+        .d-date { width: 9%; text-align: center; }
+        .d-jour { width: 11%; text-align: center; }
+        .d-group { width: 14%; }
+        .d-skill { width: 11%; }
+        .d-notes { width: 47%; }
+        .d-pdf { width: 8%; text-align: center; }
     </style>
 </head>
 <body>
-    {{-- ==================== PAGE 1: Calendar Grid ==================== --}}
-    <div class="header">
+
+    {{-- ===== Fixed header (repeats on every page) ===== --}}
+    <div class="page-header">
         <img src="{{ public_path('assets/images/logo/gls.png') }}" alt="GLS">
         <h1>Rapport Semaine — Enseignants</h1>
         <h2>{{ $weekStart->translatedFormat('l d F Y') }} — {{ $weekEnd->translatedFormat('l d F Y') }}</h2>
     </div>
 
-    <table class="calendar">
-        <thead>
-            <tr>
-                @foreach ($weekDays as $day)
-                    <th>{{ ucfirst($day->translatedFormat('l')) }} {{ $day->format('d/m') }}</th>
-                @endforeach
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                @foreach ($weekDays as $day)
-                    @php $key = $day->format('Y-m-d'); $dayReports = $reports[$key] ?? collect(); @endphp
-                    <td>
-                        <div class="day-num">{{ $day->format('d') }}</div>
-                        @forelse ($dayReports as $report)
-                            <div class="report-entry">
-                                <div class="t-name">{{ $report->teacher->name }}</div>
-                                @if ($report->group)
-                                    <div class="t-group">{{ $report->group->name }}</div>
-                                @endif
-                                <div class="t-notes">{!! nl2br(e($report->notes)) !!}</div>
-                                @if ($report->attachment_path)
-                                    <div class="t-attach">PDF joint : {{ $report->attachment_original_name ?? 'document.pdf' }}</div>
-                                @endif
-                            </div>
-                        @empty
-                            <span class="empty-cell">Aucun rapport</span>
-                        @endforelse
-                    </td>
-                @endforeach
-            </tr>
-        </tbody>
-    </table>
-
-    <div class="footer">GLS Sprachzentrum — Rapport généré le {{ now()->format('d/m/Y à H:i') }}</div>
-
-    {{-- ==================== PAGE 2: Detail Table ==================== --}}
-    @if ($reportsByTeacher->isNotEmpty())
-    <div class="page-break"></div>
-
-    <div class="header">
-        <img src="{{ public_path('assets/images/logo/gls.png') }}" alt="GLS">
-        <h1>Détail des Rapports — Enseignants</h1>
-        <h2>{{ $weekStart->translatedFormat('l d F Y') }} — {{ $weekEnd->translatedFormat('l d F Y') }}</h2>
+    {{-- ===== Fixed footer (repeats on every page) ===== --}}
+    <div class="page-footer">
+        GLS Sprachzentrum — Rapport généré le {{ now()->format('d/m/Y à H:i') }}
+        &nbsp;·&nbsp; Page <span class="pn"></span> / <span class="pt"></span>
     </div>
 
-    <table class="detail">
-        <thead>
-            <tr>
-                <th class="col-teacher">Enseignant</th>
-                <th class="col-date">Date</th>
-                <th class="col-jour">Jour</th>
-                <th class="col-group">Groupe</th>
-                <th class="col-notes">Notes / Activités</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($reportsByTeacher as $teacherName => $teacherReports)
-                @foreach ($teacherReports as $report)
-                    <tr>
-                        @if ($loop->first)
-                            <td class="col-teacher" style="font-weight:bold;" rowspan="{{ $teacherReports->count() }}">{{ $teacherName }}</td>
-                        @endif
-                        <td class="col-date">{{ $report->report_date->format('d/m') }}</td>
-                        <td class="col-jour">{{ ucfirst($report->report_date->translatedFormat('l')) }}</td>
-                        <td class="col-group">
-                            @if ($report->group)
-                                <span class="gpill">{{ $report->group->name }}</span>
-                            @else
-                                <span style="color:#aaa;">—</span>
-                            @endif
-                        </td>
-                        <td class="col-notes">
-                            {!! nl2br(e($report->notes)) !!}
-                            @if ($report->attachment_path)
-                                <div style="color:#d9534f; font-size:8px; font-style:italic; margin-top:2px;">
-                                    PDF joint : {{ $report->attachment_original_name ?? 'document.pdf' }}
-                                </div>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            @endforeach
-        </tbody>
-    </table>
+    {{-- ==================== PAGE 1: Per-Day Summary ==================== --}}
+    <div class="section-title">Résumé par jour</div>
 
-    <div class="footer">GLS Sprachzentrum — Rapport généré le {{ now()->format('d/m/Y à H:i') }}</div>
+    @foreach ($weekDays as $day)
+        @php
+            $key = $day->format('Y-m-d');
+            $dayReports = $reports[$key] ?? collect();
+        @endphp
+        <div class="day-block">
+            <div class="day-head">
+                {{ ucfirst($day->translatedFormat('l')) }} {{ $day->format('d/m/Y') }}
+                @if ($dayReports->isNotEmpty())
+                    <span style="float:right; font-weight:normal; font-size:8.5px;">
+                        {{ $dayReports->count() }} entrée{{ $dayReports->count() > 1 ? 's' : '' }}
+                    </span>
+                @endif
+            </div>
+            <div class="day-body">
+                @if ($dayReports->isEmpty())
+                    <div class="empty">Aucun rapport pour ce jour.</div>
+                @else
+                    <table class="day-pivot">
+                        <thead>
+                            <tr>
+                                <th class="col-tn">Enseignant</th>
+                                <th class="col-grp">Groupe</th>
+                                <th class="col-skl">Compétence</th>
+                                <th class="col-ntx">Notes / Activités</th>
+                                <th class="col-pdf">PDF</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($dayReports as $report)
+                                <tr>
+                                    <td class="col-tn"><strong>{{ $report->teacher->name }}</strong></td>
+                                    <td class="col-grp">
+                                        @if ($report->group)
+                                            <span class="gpill">{{ $report->group->name }}</span>
+                                        @else
+                                            <span style="color:#bbb;">—</span>
+                                        @endif
+                                    </td>
+                                    <td class="col-skl">
+                                        @if ($report->skill)
+                                            <span class="skill-pill">{{ \App\Models\WeeklyReport::SKILLS[$report->skill] ?? $report->skill }}</span>
+                                        @else
+                                            <span style="color:#bbb;">—</span>
+                                        @endif
+                                    </td>
+                                    <td class="col-ntx">{!! nl2br(e($report->notes)) !!}</td>
+                                    <td class="col-pdf">
+                                        @if ($report->attachment_path)
+                                            <span class="pdf-icon">PDF</span>
+                                            <span class="pdf-name">{{ $report->attachment_original_name ?? '—' }}</span>
+                                        @else
+                                            <span style="color:#bbb;">—</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
+            </div>
+        </div>
+    @endforeach
+
+    {{-- ==================== PAGE 2+: Per-Teacher Detail (one page per teacher) ==================== --}}
+    @if ($reportsByTeacher->isNotEmpty())
+        <div class="page-break"></div>
+        <div class="section-title">Détail par Enseignant</div>
+
+        @foreach ($reportsByTeacher as $teacherName => $teacherReports)
+            <div class="teacher-section {{ $loop->first ? 'first-teacher' : '' }}">
+                <h3>{{ $teacherName }} <span style="float:right; font-weight:normal; font-size:9px;">{{ $teacherReports->count() }} rapport{{ $teacherReports->count() > 1 ? 's' : '' }}</span></h3>
+                <table class="detail">
+                    <thead>
+                        <tr>
+                            <th class="d-date">Date</th>
+                            <th class="d-jour">Jour</th>
+                            <th class="d-group">Groupe</th>
+                            <th class="d-skill">Compétence</th>
+                            <th class="d-notes">Notes / Activités</th>
+                            <th class="d-pdf">PDF</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($teacherReports as $report)
+                            <tr>
+                                <td class="d-date">{{ $report->report_date->format('d/m') }}</td>
+                                <td class="d-jour">{{ ucfirst($report->report_date->translatedFormat('l')) }}</td>
+                                <td class="d-group">
+                                    @if ($report->group)
+                                        <span class="gpill">{{ $report->group->name }}</span>
+                                    @else
+                                        <span style="color:#bbb;">—</span>
+                                    @endif
+                                </td>
+                                <td class="d-skill">
+                                    @if ($report->skill)
+                                        <span class="skill-pill">{{ \App\Models\WeeklyReport::SKILLS[$report->skill] ?? $report->skill }}</span>
+                                    @else
+                                        <span style="color:#bbb;">—</span>
+                                    @endif
+                                </td>
+                                <td class="d-notes">{!! nl2br(e($report->notes)) !!}</td>
+                                <td class="d-pdf">
+                                    @if ($report->attachment_path)
+                                        <span class="pdf-icon">PDF</span>
+                                        <span class="pdf-name">{{ $report->attachment_original_name ?? '—' }}</span>
+                                    @else
+                                        <span style="color:#bbb;">—</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endforeach
     @endif
+
 </body>
 </html>

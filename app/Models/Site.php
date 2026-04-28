@@ -45,6 +45,14 @@ class Site extends Model implements HasMedia
         return $this->hasMany(User::class)->whereNotNull('staff_role');
     }
 
+    /**
+     * All users (any role) affected to this centre via the multi-site pivot.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'site_user')->withTimestamps();
+    }
+
     // BC alias
     public function employees()
     {

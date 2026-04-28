@@ -31,10 +31,27 @@
                     </td>
 
                     <td>
-                        @if($user->site)
-                            <span class="badge bg-light-info">{{ $user->site->name }}</span>
-                        @else
+                        @php
+                            $primaryId = $user->site_id;
+                            $allSites  = $user->sites ?? collect();
+                            // Show primary first, then any extra centres
+                            $primary   = $user->site;
+                            $extras    = $allSites->reject(fn ($s) => (int) $s->id === (int) $primaryId);
+                        @endphp
+
+                        @if(!$primary && $extras->isEmpty())
                             <span class="text-muted">—</span>
+                        @else
+                            @if($primary)
+                                <span class="badge bg-light-info" title="Centre principal">
+                                    {{ $primary->name }}
+                                </span>
+                            @endif
+                            @foreach($extras as $extra)
+                                <span class="badge bg-light-secondary" title="Centre additionnel">
+                                    {{ $extra->name }}
+                                </span>
+                            @endforeach
                         @endif
                     </td>
 
