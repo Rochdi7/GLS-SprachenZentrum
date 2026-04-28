@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice\Encaissement;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Models\Site;
 use App\Services\Encaissement\EncaissementAnalyticsService;
@@ -9,6 +10,8 @@ use Illuminate\Http\Request;
 
 class EncaissementDashboardController extends Controller
 {
+    use ScopesToUserSites;
+
     public function __construct(
         private EncaissementAnalyticsService $analytics
     ) {}
@@ -35,10 +38,17 @@ class EncaissementDashboardController extends Controller
             : $year;
 
         $siteId = $request->get('site_id');
+        $sid = $this->resolveRequestedSiteId($siteId ? (int) $siteId : null);
 
-        $sid = $siteId ? (int) $siteId : null;
+        // Non-admin users without an explicit centre selection: lock to their first centre
+        // so analytics don't leak data from centres they're not affected to.
+        if (! $this->userSeesAllSites() && $sid === null) {
+            $allowed = auth()->user()->accessibleSiteIds();
+            $sid = $allowed[0] ?? null;
+        }
+
         $data = $this->analytics->getDashboardData($sid, $period);
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
 
         // Chart data
         $monthlyEvolution = $this->analytics->getMonthlyEvolution($sid, 12);
@@ -61,8 +71,10 @@ class EncaissementDashboardController extends Controller
         if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $month)) {
             $month = now()->format('Y-m');
         }
-        $siteId = $request->get('site_id');
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $siteId = $this->resolveRequestedSiteId(
+            $request->filled('site_id') ? (int) $request->site_id : null
+        );
+        $sites = $this->accessibleSites();
 
         $rentabilite = null;
         $history = [];
@@ -75,7 +87,17 @@ class EncaissementDashboardController extends Controller
             $monthlyEvolution = $this->analytics->getMonthlyEvolution((int) $siteId, 12);
         }
 
-        $comparison = $this->analytics->compareSites($month);
+        // Centre comparison — restricted to accessible centres for non-admins.
+        $allComparison = $this->analytics->compareSites($month);
+        if ($this->userSeesAllSites()) {
+            $comparison = $allComparison;
+        } else {
+            $allowed = auth()->user()->accessibleSiteIds();
+            $comparison = array_values(array_filter(
+                $allComparison,
+                fn ($r) => in_array((int) ($r['site_id'] ?? $r->site_id ?? 0), $allowed, true)
+            ));
+        }
 
         return view('backoffice.encaissements.rentabilite', compact(
             'sites', 'month', 'siteId', 'rentabilite', 'history', 'comparison', 'monthlyEvolution'
@@ -91,13 +113,18 @@ class EncaissementDashboardController extends Controller
         if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $month)) {
             $month = now()->format('Y-m');
         }
-        $siteId = $request->get('site_id');
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
-
-        $operators = $this->analytics->getOperatorPerformance(
-            $siteId ? (int) $siteId : null,
-            $month
+        $siteId = $this->resolveRequestedSiteId(
+            $request->filled('site_id') ? (int) $request->site_id : null
         );
+        $sites = $this->accessibleSites();
+
+        // Non-admin users without an explicit centre: default to first centre
+        if (! $this->userSeesAllSites() && $siteId === null) {
+            $allowed = auth()->user()->accessibleSiteIds();
+            $siteId = $allowed[0] ?? null;
+        }
+
+        $operators = $this->analytics->getOperatorPerformance($siteId, $month);
 
         return view('backoffice.encaissements.operators', compact('sites', 'month', 'siteId', 'operators'));
     }

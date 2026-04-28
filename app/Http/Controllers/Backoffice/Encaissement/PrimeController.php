@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice\Encaissement;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Models\Prime;
 use App\Models\Site;
@@ -11,13 +12,20 @@ use Illuminate\Http\Request;
 
 class PrimeController extends Controller
 {
+    use ScopesToUserSites;
+
     public function index(Request $request)
     {
         $query = Prime::with(['user', 'site', 'approvedBy'])
             ->orderByDesc('month');
 
-        if ($request->filled('site_id')) {
-            $query->where('site_id', $request->site_id);
+        $this->scopeToUserSites($query);
+
+        $requestedSiteId = $this->resolveRequestedSiteId(
+            $request->filled('site_id') ? (int) $request->site_id : null
+        );
+        if ($requestedSiteId) {
+            $query->where('site_id', $requestedSiteId);
         }
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->user_id);
@@ -33,7 +41,7 @@ class PrimeController extends Controller
         }
 
         $primes = $query->paginate(50)->withQueryString();
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
         $employees = User::whereNotNull('staff_role')->where('is_active', true)->orderBy('name')->get();
 
         // Stats

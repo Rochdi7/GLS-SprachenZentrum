@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice\Encaissement;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backoffice\Encaissement\StoreSiteExpenseRequest;
 use App\Models\SiteExpense;
@@ -10,12 +11,19 @@ use Illuminate\Http\Request;
 
 class SiteExpenseController extends Controller
 {
+    use ScopesToUserSites;
+
     public function index(Request $request)
     {
         $query = SiteExpense::with('site')->orderByDesc('month');
 
-        if ($request->filled('site_id')) {
-            $query->where('site_id', $request->site_id);
+        $this->scopeToUserSites($query);
+
+        $requestedSiteId = $this->resolveRequestedSiteId(
+            $request->filled('site_id') ? (int) $request->site_id : null
+        );
+        if ($requestedSiteId) {
+            $query->where('site_id', $requestedSiteId);
         }
         if ($request->filled('type')) {
             $query->where('type', $request->type);
@@ -25,14 +33,14 @@ class SiteExpenseController extends Controller
         }
 
         $expenses = $query->paginate(50)->withQueryString();
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
 
         return view('backoffice.encaissements.expenses.index', compact('expenses', 'sites'));
     }
 
     public function create()
     {
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
 
         return view('backoffice.encaissements.expenses.create', compact('sites'));
     }
@@ -48,7 +56,7 @@ class SiteExpenseController extends Controller
 
     public function edit(SiteExpense $expense)
     {
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
 
         return view('backoffice.encaissements.expenses.edit', compact('expense', 'sites'));
     }

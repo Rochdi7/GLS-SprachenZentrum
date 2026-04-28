@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 use App\Http\Controllers\Backoffice\DashboardController;
+use App\Http\Controllers\Backoffice\StaffDashboardController;
 use App\Http\Controllers\Backoffice\ProfileController;
 use App\Http\Controllers\Backoffice\BlogCategoryController;
 use App\Http\Controllers\Backoffice\BlogPostController;
@@ -65,8 +66,14 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware('permission:dashboard.view')
     ->name('dashboard');
 
-/* Optional dynamic pages (avoid profile conflict) */
-Route::get('/dashboard/{routeName}/{name?}', [DashboardController::class, 'pageView'])->where('routeName', '^(?!profile).*$')->middleware('permission:dashboard.view');
+/* Staff dashboard (centre-scoped — for non-Admin/Super Admin roles) */
+Route::get('/dashboard/staff', [StaffDashboardController::class, 'index'])
+    ->name('backoffice.dashboard.staff');
+
+/* Optional dynamic pages (avoid profile/staff conflict) */
+Route::get('/dashboard/{routeName}/{name?}', [DashboardController::class, 'pageView'])
+    ->where('routeName', '^(?!profile|staff).*$')
+    ->middleware('permission:dashboard.view');
 
 /*
 |--------------------------------------------------------------------------
@@ -210,6 +217,7 @@ Route::prefix('backoffice')
         */
         Route::prefix('studienkollegs')
             ->name('studienkollegs.')
+            ->middleware('role:Super Admin|Admin')
             ->group(function () {
                 Route::get('/', [\App\Http\Controllers\Backoffice\StudienkollegController::class, 'index'])->middleware('permission:studienkollegs.view')->name('index');
                 Route::get('/create', [\App\Http\Controllers\Backoffice\StudienkollegController::class, 'create'])->middleware('permission:studienkollegs.create')->name('create');
@@ -221,6 +229,7 @@ Route::prefix('backoffice')
 
         Route::prefix('quizzes')
             ->name('quizzes.')
+            ->middleware('role:Super Admin|Admin')
             ->group(function () {
                 Route::get('/', [QuizController::class, 'index'])->middleware('permission:quizzes.view')->name('index');
                 Route::get('/create', [QuizController::class, 'create'])->middleware('permission:quizzes.create')->name('create');
@@ -245,6 +254,7 @@ Route::prefix('backoffice')
         */
         Route::prefix('leads')
             ->name('leads.')
+            ->middleware('role:Super Admin|Admin')
             ->group(function () {
                 Route::get('/', [LeadController::class, 'index'])->middleware('permission:leads.view')->name('index');
                 Route::get('/statistiques', [LeadController::class, 'stats'])->middleware('permission:lead_stats.view')->name('stats');
@@ -260,6 +270,7 @@ Route::prefix('backoffice')
         */
         Route::prefix('applications')
             ->name('applications.')
+            ->middleware('role:Super Admin|Admin')
             ->group(function () {
                 Route::get('/', [BackofficeGroupApplicationController::class, 'index'])->middleware('permission:applications.view')->name('index');
                 Route::get('/create', [BackofficeGroupApplicationController::class, 'create'])->middleware('permission:applications.create')->name('create');
@@ -369,6 +380,9 @@ Route::prefix('backoffice')
 
                         // Recalculate payment
                         Route::post('/import/{import}/recalculate', [PresenceImportController::class, 'recalculate'])->middleware('permission:presence.edit')->name('import.recalculate');
+
+                        // Export import as Excel (for sending to manager)
+                        Route::get('/import/{import}/export', [PresenceImportController::class, 'export'])->middleware('permission:presence.view')->name('import.export');
                     });
             });
 

@@ -29,6 +29,13 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Branch: only Super Admin / Admin see the global dashboard.
+        // Other staff get a centre-scoped dashboard.
+        $auth = auth()->user();
+        if ($auth && ! $auth->hasAnyRole(['Super Admin', 'Admin'])) {
+            return redirect()->route('backoffice.dashboard.staff');
+        }
+
         $now = Carbon::now();
 
         /* ===============================

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice\Encaissement;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backoffice\Encaissement\ImportEncaissementRequest;
 use App\Models\EncaissementImport;
@@ -11,6 +12,8 @@ use Illuminate\Http\Request;
 
 class EncaissementImportController extends Controller
 {
+    use ScopesToUserSites;
+
     public function __construct(
         private EncaissementImportService $importService
     ) {}
@@ -23,15 +26,20 @@ class EncaissementImportController extends Controller
         $query = EncaissementImport::with(['site', 'importedBy'])
             ->orderByDesc('created_at');
 
-        if ($request->filled('site_id')) {
-            $query->where('site_id', $request->site_id);
+        $this->scopeToUserSites($query);
+
+        $requestedSiteId = $this->resolveRequestedSiteId(
+            $request->filled('site_id') ? (int) $request->site_id : null
+        );
+        if ($requestedSiteId) {
+            $query->where('site_id', $requestedSiteId);
         }
         if ($request->filled('month')) {
             $query->where('month', $request->month);
         }
 
         $imports = $query->paginate(30)->withQueryString();
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
 
         return view('backoffice.encaissements.imports.index', compact('imports', 'sites'));
     }
@@ -41,7 +49,7 @@ class EncaissementImportController extends Controller
      */
     public function create()
     {
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
 
         return view('backoffice.encaissements.imports.create', compact('sites'));
     }
@@ -58,7 +66,7 @@ class EncaissementImportController extends Controller
             $request->school_year,
         );
 
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
         $site = Site::findOrFail($request->site_id);
 
         // Store file temporarily for the confirm step

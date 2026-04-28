@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Models\Consultation;
 use App\Models\GlsInscription;
@@ -12,19 +13,31 @@ use Illuminate\Support\Carbon;
 
 class LeadController extends Controller
 {
+    use ScopesToUserSites;
+
     public function index(Request $request)
     {
         $tab = $request->get('tab', 'consultations');
         $centreFilter = $request->get('centre', 'all');
 
-        // Get all active sites for the filter dropdown (exclude "Online" site — handled separately as "En ligne")
-        $sites = Site::where('is_active', true)
-            ->where('slug', 'not like', '%online%')
-            ->orderBy('name')->get();
+        // Get sites for the filter dropdown (exclude "Online" — handled separately as "En ligne")
+        $sites = $this->accessibleSites()
+            ->reject(fn ($s) => str_contains(strtolower($s->slug ?? $s->name), 'online'))
+            ->values();
 
         // Build queries with optional centre filter
         $inscriptionsQuery = GlsInscription::with('site')->latest();
         $applicationsQuery = GroupApplication::with(['group.site'])->latest();
+
+        // Apply centre access scope (non-admins see only their affected centres)
+        $allowedSiteIds = $this->accessibleSiteIds();
+        if ($allowedSiteIds !== null) {
+            // Inscriptions: `centre` = site_id (0 = online). Allow online + accessible.
+            $inscriptionsQuery->where(function ($q) use ($allowedSiteIds) {
+                $q->whereIn('centre', $allowedSiteIds)->orWhere('centre', 0)->orWhere('type_cours', 'en_ligne');
+            });
+            $applicationsQuery->whereHas('group', fn ($q) => $q->whereIn('site_id', $allowedSiteIds));
+        }
 
         if ($centreFilter !== 'all') {
             if ($centreFilter === 'online') {
@@ -34,10 +47,15 @@ class LeadController extends Controller
                 // Applications don't have online, so return empty
                 $applicationsQuery->whereRaw('1 = 0');
             } else {
-                $inscriptionsQuery->where('centre', $centreFilter);
-                $applicationsQuery->whereHas('group', function ($q) use ($centreFilter) {
-                    $q->where('site_id', $centreFilter);
-                });
+                $resolved = $this->resolveRequestedSiteId((int) $centreFilter);
+                if ($resolved === null) {
+                    // Requested a centre the user can't access → empty result
+                    $inscriptionsQuery->whereRaw('1 = 0');
+                    $applicationsQuery->whereRaw('1 = 0');
+                } else {
+                    $inscriptionsQuery->where('centre', $resolved);
+                    $applicationsQuery->whereHas('group', fn ($q) => $q->where('site_id', $resolved));
+                }
             }
         }
 
@@ -64,9 +82,10 @@ class LeadController extends Controller
     public function stats(Request $request)
     {
         $centreFilter = $request->get('centre', 'all');
-        $sites = Site::where('is_active', true)
-            ->where('slug', 'not like', '%online%')
-            ->orderBy('name')->get();
+        $sites = $this->accessibleSites()
+            ->reject(fn ($s) => str_contains(strtolower($s->slug ?? $s->name), 'online'))
+            ->values();
+        $allowedSiteIds = $this->accessibleSiteIds();
 
         // Counts per centre
         $centreCounts = GlsInscription::selectRaw('centre, COUNT(*) as total')
@@ -86,6 +105,14 @@ class LeadController extends Controller
             $appQuery = GroupApplication::whereYear('created_at', $date->year)
                 ->whereMonth('created_at', $date->month);
 
+            // First apply centre-access scope for non-admins
+            if ($allowedSiteIds !== null) {
+                $inscQuery->where(function ($q) use ($allowedSiteIds) {
+                    $q->whereIn('centre', $allowedSiteIds)->orWhere('centre', 0)->orWhere('type_cours', 'en_ligne');
+                });
+                $appQuery->whereHas('group', fn ($q) => $q->whereIn('site_id', $allowedSiteIds));
+            }
+
             if ($centreFilter !== 'all') {
                 if ($centreFilter === 'online') {
                     $inscQuery->where(function ($q) {
@@ -93,10 +120,14 @@ class LeadController extends Controller
                     });
                     $appQuery->whereRaw('1 = 0');
                 } else {
-                    $inscQuery->where('centre', $centreFilter);
-                    $appQuery->whereHas('group', function ($q) use ($centreFilter) {
-                        $q->where('site_id', $centreFilter);
-                    });
+                    $resolved = $this->resolveRequestedSiteId((int) $centreFilter);
+                    if ($resolved === null) {
+                        $inscQuery->whereRaw('1 = 0');
+                        $appQuery->whereRaw('1 = 0');
+                    } else {
+                        $inscQuery->where('centre', $resolved);
+                        $appQuery->whereHas('group', fn ($q) => $q->where('site_id', $resolved));
+                    }
                 }
             }
 

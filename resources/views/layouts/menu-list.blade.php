@@ -101,24 +101,27 @@
             </a>
         </li>
         @endcan
-        @can('studienkollegs.view')
-        <li class="pc-item {{ request()->routeIs('backoffice.studienkollegs.*') ? 'active' : '' }}">
-            <a href="{{ route('backoffice.studienkollegs.index') }}" class="pc-link {{ request()->routeIs('backoffice.studienkollegs.*') ? 'active' : '' }}">
-                <span class="pc-mtext">Studienkollegs</span>
-            </a>
-        </li>
-        @endcan
-        @can('quizzes.view')
-        <li class="pc-item {{ request()->routeIs('backoffice.quizzes.*') ? 'active' : '' }}">
-            <a href="{{ route('backoffice.quizzes.index') }}" class="pc-link {{ request()->routeIs('backoffice.quizzes.*') ? 'active' : '' }}">
-                <span class="pc-mtext">Quizzes (QCM)</span>
-            </a>
-        </li>
-        @endcan
+        @hasanyrole('Super Admin|Admin')
+            @can('studienkollegs.view')
+            <li class="pc-item {{ request()->routeIs('backoffice.studienkollegs.*') ? 'active' : '' }}">
+                <a href="{{ route('backoffice.studienkollegs.index') }}" class="pc-link {{ request()->routeIs('backoffice.studienkollegs.*') ? 'active' : '' }}">
+                    <span class="pc-mtext">Studienkollegs</span>
+                </a>
+            </li>
+            @endcan
+            @can('quizzes.view')
+            <li class="pc-item {{ request()->routeIs('backoffice.quizzes.*') ? 'active' : '' }}">
+                <a href="{{ route('backoffice.quizzes.index') }}" class="pc-link {{ request()->routeIs('backoffice.quizzes.*') ? 'active' : '' }}">
+                    <span class="pc-mtext">Quizzes (QCM)</span>
+                </a>
+            </li>
+            @endcan
+        @endhasanyrole
     </ul>
 </li>
 @endcanany
 
+@hasanyrole('Super Admin|Admin')
 @canany(['applications.view', 'leads.view', 'lead_stats.view'])
 <li class="pc-item pc-hasmenu {{ $admissionsOpen ? 'pc-trigger' : '' }}">
     <a href="#!" class="pc-link">
@@ -151,6 +154,7 @@
     </ul>
 </li>
 @endcanany
+@endhasanyrole
 
 @can('payroll.view')
 <li class="pc-item pc-hasmenu {{ $payrollOpen ? 'pc-trigger' : '' }}">

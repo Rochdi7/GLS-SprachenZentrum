@@ -16,23 +16,24 @@ class StoreAttestationRequest extends FormRequest
         return [
             'last_name'          => 'required|string|max:255',
             'first_name'         => 'required|string|max:255',
-            'birth_date'         => 'required|date',
-            'birth_place'        => 'required|string|max:255',
+            'birth_date'         => 'nullable|date',
+            'birth_place'        => 'nullable|string|max:255',
 
             'group_id'           => 'required|exists:groups,id',
             'level'              => 'required|in:A1,A2,B1,B2,C1',
 
-            'course_start_date'  => 'required|date',
-            'course_end_date'    => 'required|date|after_or_equal:course_start_date',
+            'course_start_date'  => 'nullable|date',
+            'course_end_date'    => 'nullable|date',
 
-            'niveau_start_date'  => 'required|date',
-            'niveau_end_date'    => 'required|date|after_or_equal:niveau_start_date',
+            'niveau_start_date'  => 'nullable|date',
+            'niveau_end_date'    => 'nullable|date',
 
             'fees_status'        => 'required|in:full,partial',
 
             'stufe_index'        => 'required|integer|min:1|max:9',
             'stufe_total'        => 'required|integer|min:1|max:9',
             'erfolg'             => 'required|string|max:50',
+            'language'           => 'required|in:de_fr,de,fr,en',
 
             'city'               => 'nullable|string|max:120',
             'issue_date'         => 'required|date',

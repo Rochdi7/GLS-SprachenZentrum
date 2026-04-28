@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Models\Site;
 use App\Models\User;
@@ -14,12 +15,14 @@ use Illuminate\Support\Facades\DB;
 
 class WhatsAppCampaignController extends Controller
 {
+    use ScopesToUserSites;
+
     public function __construct(private readonly CampaignRuntime $runtime) {}
 
     public function index(Request $request)
     {
-        // Default filter to the logged-in user's centre unless they explicitly
-        // chose another filter (including "all" via ?site_id=all).
+        // Default filter to the logged-in user's primary centre unless they
+        // explicitly chose another filter (including "all" via ?site_id=all).
         $userSiteId = auth()->user()->site_id ?? null;
         if ($request->has('site_id')) {
             $siteId = $request->input('site_id');
@@ -27,18 +30,28 @@ class WhatsAppCampaignController extends Controller
             $siteId = $userSiteId ? (string) $userSiteId : '';
         }
 
-        $campaigns = WhatsAppCampaign::with(['user', 'site'])
-            ->when($siteId !== null && $siteId !== '' && $siteId !== 'all', function ($q) use ($siteId) {
-                if ($siteId === 'none') {
-                    $q->whereNull('site_id');
-                } else {
-                    $q->where('site_id', $siteId);
-                }
-            })
-            ->latest()
-            ->get();
+        $query = WhatsAppCampaign::with(['user', 'site'])->latest();
 
-        $sites = Site::orderBy('name')->get(['id', 'name']);
+        // Non-admin users: hard-scope to centres they're affected to.
+        $this->scopeToUserSites($query);
+
+        // Apply explicit site_id filter — but only if the user can access it.
+        if ($siteId !== null && $siteId !== '' && $siteId !== 'all') {
+            if ($siteId === 'none') {
+                $query->whereNull('site_id');
+            } else {
+                $resolved = $this->resolveRequestedSiteId((int) $siteId);
+                if ($resolved !== null) {
+                    $query->where('site_id', $resolved);
+                } elseif (! $this->userSeesAllSites()) {
+                    // Asked a centre they can't see → empty results
+                    $query->whereRaw('1 = 0');
+                }
+            }
+        }
+
+        $campaigns = $query->get();
+        $sites = $this->accessibleSites();
 
         return view('backoffice.whatsapp_campaigns.index', compact('campaigns', 'sites', 'siteId'));
     }
@@ -137,7 +150,7 @@ class WhatsAppCampaignController extends Controller
 
     public function create()
     {
-        $sites = Site::orderBy('name')->get(['id', 'name']);
+        $sites = $this->accessibleSites();
         return view('backoffice.whatsapp_campaigns.create', compact('sites'));
     }
 

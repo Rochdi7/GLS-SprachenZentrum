@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice\Encaissement;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backoffice\Encaissement\StoreEncaissementRequest;
 use App\Models\Encaissement;
@@ -11,6 +12,8 @@ use Illuminate\Http\Request;
 
 class EncaissementController extends Controller
 {
+    use ScopesToUserSites;
+
     /**
      * List encaissements with filters.
      */
@@ -20,9 +23,15 @@ class EncaissementController extends Controller
             ->orderByDesc('collected_at')
             ->orderByDesc('id');
 
+        // Centre access scope (Super Admin / Admin: no scope; others: pivot)
+        $this->scopeToUserSites($query);
+
         // Filters
-        if ($request->filled('site_id')) {
-            $query->where('site_id', $request->site_id);
+        $requestedSiteId = $this->resolveRequestedSiteId(
+            $request->filled('site_id') ? (int) $request->site_id : null
+        );
+        if ($requestedSiteId) {
+            $query->where('site_id', $requestedSiteId);
         }
         if ($request->filled('payment_method')) {
             $query->where('payment_method', $request->payment_method);
@@ -52,7 +61,7 @@ class EncaissementController extends Controller
         }
 
         $encaissements = $query->paginate(50)->withQueryString();
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
 
         // Quick totals for current filters
         $totals = (clone $query)->getQuery();
@@ -66,7 +75,7 @@ class EncaissementController extends Controller
      */
     public function create()
     {
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
         $employees = User::whereNotNull('staff_role')->where('is_active', true)->orderBy('name')->get();
 
         return view('backoffice.encaissements.create', compact('sites', 'employees'));
@@ -102,7 +111,14 @@ class EncaissementController extends Controller
      */
     public function edit(Encaissement $encaissement)
     {
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        // Block users that aren't allowed to manage this centre.
+        abort_unless(
+            $this->userSeesAllSites() ||
+            in_array((int) $encaissement->site_id, auth()->user()->accessibleSiteIds(), true),
+            403
+        );
+
+        $sites = $this->accessibleSites();
         $employees = User::whereNotNull('staff_role')->where('is_active', true)->orderBy('name')->get();
 
         return view('backoffice.encaissements.edit', compact('encaissement', 'sites', 'employees'));

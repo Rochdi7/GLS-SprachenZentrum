@@ -44,11 +44,19 @@ class ProfPaymentCalculationService
                 ->where('status', 'present')
                 ->groupBy(fn ($r) => Carbon::parse($r->date)->isoWeek());
 
+            // Per-bucket counts, with each ISO week capped at 5 working days
+            // (Mon-Fri only — the school doesn't operate weekends, so a week
+            //  can never legitimately have more than 5 presences). When the
+            //  month spills over into a 5th ISO week, those days are folded
+            //  into bucket 4 but the cap prevents the total from exceeding 5.
             $weekCounts = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
             foreach ($weekMap as $isoWeek => $bucket) {
                 if ($presentByIsoWeek->has($isoWeek)) {
                     $weekCounts[$bucket] += $presentByIsoWeek->get($isoWeek)->count();
                 }
+            }
+            foreach ($weekCounts as $b => $c) {
+                $weekCounts[$b] = min($c, 5);
             }
 
             $isInactive = ($student->isCancelled() || $student->isTransferred())

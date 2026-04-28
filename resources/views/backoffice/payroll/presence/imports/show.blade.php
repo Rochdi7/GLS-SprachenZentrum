@@ -165,27 +165,31 @@
                                 <div class="mt-2"><em>{{ $import->notes }}</em></div>
                             @endif
                         </div>
-                        <div>
+                        <div class="d-flex flex-wrap gap-2 align-items-center justify-content-end ms-3">
                             @if(!$summary?->isApproved())
                                 <form action="{{ route('backoffice.payroll.presence.import.approve', $import) }}"
-                                      method="POST" class="d-inline"
+                                      method="POST"
                                       onsubmit="return confirm('Approuver ce paiement ?')">
                                     @csrf
-                                    <button class="btn btn-success btn-sm">
+                                    <button class="btn btn-success btn-sm d-inline-flex align-items-center">
                                         <i class="ph-duotone ph-check-circle me-1"></i> Approuver
                                     </button>
                                 </form>
                             @endif
                             <form action="{{ route('backoffice.payroll.presence.import.recalculate', $import) }}"
-                                  method="POST" class="d-inline">
+                                  method="POST">
                                 @csrf
-                                <button class="btn btn-warning btn-sm">
+                                <button class="btn btn-warning btn-sm d-inline-flex align-items-center">
                                     <i class="ph-duotone ph-arrow-clockwise me-1"></i> Recalculer
                                 </button>
                             </form>
+                            <a href="{{ route('backoffice.payroll.presence.import.export', $import) }}"
+                               class="btn btn-info btn-sm d-inline-flex align-items-center">
+                                <i class="ph-duotone ph-file-xls me-1"></i> Exporter Excel
+                            </a>
                             <a href="{{ route('backoffice.payroll.presence.group.imports', $group) }}"
-                               class="btn btn-outline-secondary btn-sm">
-                                Historique
+                               class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center">
+                                <i class="ph-duotone ph-clock-counter-clockwise me-1"></i> Historique
                             </a>
                         </div>
                     </div>
@@ -262,7 +266,7 @@
                                     @foreach($allDates as $date)
                                         @php $d = \Carbon\Carbon::parse($date); @endphp
                                         <th class="presence-cell" title="{{ $d->format('d/m/Y') }}">
-                                            <small>{{ mb_strtoupper(mb_substr($d->translatedFormat('D'), 0, 2)) }}</small>
+                                            <small>{{ mb_strtoupper(mb_substr($d->isoFormat('dd'), 0, 2)) }}</small>
                                             <br>{{ $d->format('d') }}
                                         </th>
                                     @endforeach

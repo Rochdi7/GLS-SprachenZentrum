@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Models\Teacher;
 use App\Models\WeeklyReport;
@@ -12,14 +13,27 @@ use Carbon\Carbon;
 
 class WeeklyReportController extends Controller
 {
+    use ScopesToUserSites;
+
     /**
      * Calendar view — default to current week.
      */
     public function index(Request $request)
     {
-        $teachers = Teacher::with(['groups' => function ($q) {
+        $teachersQuery = Teacher::with(['groups' => function ($q) {
             $q->orderBy('name');
-        }])->orderBy('name')->get();
+        }])->orderBy('name');
+
+        // Non-admins: only teachers tied to their accessible centres
+        $allowedSiteIds = $this->accessibleSiteIds();
+        if ($allowedSiteIds !== null) {
+            if (empty($allowedSiteIds)) {
+                $teachersQuery->whereRaw('1 = 0');
+            } else {
+                $teachersQuery->whereIn('site_id', $allowedSiteIds);
+            }
+        }
+        $teachers = $teachersQuery->get();
 
         // Build a JS-friendly map: { teacherId: [{id, label}, ...] }
         $teacherGroupsMap = $teachers->mapWithKeys(function ($t) {
@@ -38,10 +52,19 @@ class WeeklyReportController extends Controller
             $weekDays->push($date->copy()->addDays($i));
         }
 
-        $reports = WeeklyReport::with(['teacher', 'group'])
+        $reportsQuery = WeeklyReport::with(['teacher', 'group'])
             ->whereBetween('report_date', [$weekDays->first(), $weekDays->last()])
-            ->orderBy('created_at')
-            ->get()
+            ->orderBy('created_at');
+
+        if ($allowedSiteIds !== null) {
+            if (empty($allowedSiteIds)) {
+                $reportsQuery->whereRaw('1 = 0');
+            } else {
+                $reportsQuery->whereHas('teacher', fn ($q) => $q->whereIn('site_id', $allowedSiteIds));
+            }
+        }
+
+        $reports = $reportsQuery->get()
             ->groupBy(fn ($r) => $r->report_date->format('Y-m-d'));
 
         return view('backoffice.weekly-reports.index', compact('teachers', 'teacherGroupsMap', 'weekDays', 'reports', 'date'));

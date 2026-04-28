@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backoffice\Groups\StoreGroupRequest;
 use App\Http\Requests\Backoffice\Groups\UpdateGroupRequest;
@@ -16,14 +17,16 @@ use App\Models\GroupApplication;
 
 class GroupController extends Controller
 {
+    use ScopesToUserSites;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $groups = Group::with(['site', 'teacher'])
-            ->latest()
-            ->get();
+        $query = Group::with(['site', 'teacher'])->latest();
+        $this->scopeToUserSites($query);
+        $groups = $query->get();
 
         return view('backoffice.groups.index', compact('groups'));
     }
@@ -33,7 +36,7 @@ class GroupController extends Controller
      */
     public function create()
     {
-        $sites = Site::orderBy('name')->get();
+        $sites = $this->accessibleSites();
         $teachers = Teacher::orderBy('name')->get();
 
         return view('backoffice.groups.create', compact('sites', 'teachers'));
@@ -69,7 +72,14 @@ class GroupController extends Controller
     {
         $group = Group::findOrFail($id);
 
-        $sites = Site::orderBy('name')->get();
+        // Non-admins can only edit groups in their accessible centres
+        abort_unless(
+            $this->userSeesAllSites() ||
+            in_array((int) $group->site_id, auth()->user()->accessibleSiteIds(), true),
+            403
+        );
+
+        $sites = $this->accessibleSites();
         $teachers = Teacher::orderBy('name')->get();
 
         return view('backoffice.groups.edit', compact('group', 'sites', 'teachers'));

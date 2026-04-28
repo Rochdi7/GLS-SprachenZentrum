@@ -25,13 +25,13 @@
 
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Date de naissance (geboren am)</label>
-        <input type="date" name="birth_date" class="form-control" required
+        <input type="date" name="birth_date" class="form-control"
                value="{{ old('birth_date', isset($att->birth_date) ? $att->birth_date->format('Y-m-d') : '') }}">
     </div>
 
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Lieu de naissance (geboren in)</label>
-        <input type="text" name="birth_place" class="form-control" required
+        <input type="text" name="birth_place" class="form-control"
                value="{{ old('birth_place', $att->birth_place ?? '') }}">
     </div>
 
@@ -63,34 +63,40 @@
 
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Niveau (sélectionné)</label>
-        {{-- data-choices-init=true tells the global Choices.js initializer to skip this select; we manage our own instance below. --}}
-        <select name="level" id="att-level-select" class="form-select" required data-choices-init="true">
-            <option value="">— Choisissez d'abord un groupe —</option>
+        @php
+            $selectedLevel = old('level', $att->level ?? '');
+            $staticLevels = ['A1', 'A2', 'B1', 'B2'];
+        @endphp
+        <select name="level" id="att-level-select" class="form-select" required>
+            <option value="">— Sélectionner un niveau —</option>
+            @foreach($staticLevels as $lvl)
+                <option value="{{ $lvl }}" {{ $selectedLevel === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
+            @endforeach
         </select>
-        <small class="text-muted">Les niveaux et leurs périodes proviennent du Suivi niveau.</small>
+        <small class="text-muted">Les dates de début/fin sont récupérées depuis le Suivi niveau du groupe sélectionné.</small>
     </div>
 
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Début du cours (vom)</label>
-        <input type="date" name="course_start_date" id="att-course-start" class="form-control" required
+        <input type="date" name="course_start_date" id="att-course-start" class="form-control"
                value="{{ old('course_start_date', isset($att->course_start_date) ? $att->course_start_date->format('Y-m-d') : '') }}">
     </div>
 
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Fin du cours (bis)</label>
-        <input type="date" name="course_end_date" id="att-course-end" class="form-control" required
+        <input type="date" name="course_end_date" id="att-course-end" class="form-control"
                value="{{ old('course_end_date', isset($att->course_end_date) ? $att->course_end_date->format('Y-m-d') : '') }}">
     </div>
 
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Début du niveau</label>
-        <input type="date" name="niveau_start_date" id="att-niveau-start" class="form-control" required
+        <input type="date" name="niveau_start_date" id="att-niveau-start" class="form-control"
                value="{{ old('niveau_start_date', isset($att->niveau_start_date) ? $att->niveau_start_date->format('Y-m-d') : '') }}">
     </div>
 
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Fin du niveau</label>
-        <input type="date" name="niveau_end_date" id="att-niveau-end" class="form-control" required
+        <input type="date" name="niveau_end_date" id="att-niveau-end" class="form-control"
                value="{{ old('niveau_end_date', isset($att->niveau_end_date) ? $att->niveau_end_date->format('Y-m-d') : '') }}">
     </div>
 
@@ -177,6 +183,26 @@
     </div>
 
     {{-- ============================================================ --}}
+    {{--   LANGUE DE L'ATTESTATION                                    --}}
+    {{-- ============================================================ --}}
+    <div class="col-12 mt-3">
+        <h5 class="mb-3 fw-bold">Langue du document</h5>
+    </div>
+
+    <div class="col-md-12 mb-3">
+        <label class="form-label fw-bold">Modèle linguistique</label>
+        <select name="language" class="form-select" required>
+            @foreach($languageOptions as $value => $label)
+                <option value="{{ $value }}"
+                        {{ old('language', $att->language ?? 'de_fr') === $value ? 'selected' : '' }}>
+                    {{ $label }}
+                </option>
+            @endforeach
+        </select>
+        <small class="text-muted">Bilingue = format officiel GLS (DE+FR). Les autres modèles affichent une seule langue.</small>
+    </div>
+
+    {{-- ============================================================ --}}
     {{--   SIGNATURE                                                  --}}
     {{-- ============================================================ --}}
     <div class="col-12 mt-3">
@@ -220,46 +246,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let cachedLevels     = [];
     let hoursPerSession  = parseFloat(hoursDisplay.value) || null;
 
-    // Local Choices.js instance for the level select (so we can update its choices after AJAX).
-    // Wait one tick so the global initializer (DOMContentLoaded handler) has run on other selects.
-    let levelChoices = null;
-    function initLevelChoices() {
-        if (typeof Choices === 'undefined') return;
-        if (levelChoices) return;
-        levelChoices = new Choices(levelSelect, {
-            searchEnabled: true,
-            searchPlaceholderValue: 'Rechercher...',
-            itemSelectText: '',
-            noResultsText: 'Aucun résultat',
-            shouldSort: false,
-            allowHTML: false,
-        });
-    }
-    initLevelChoices();
-
-    function setLevelOptions(items, selectedValue) {
-        // items: [{ value, label }]
-        if (levelChoices) {
-            levelChoices.clearStore();
-            levelChoices.setChoices(items, 'value', 'label', true);
-            if (selectedValue) {
-                levelChoices.setChoiceByValue(String(selectedValue));
-            }
-        } else {
-            // Fallback if Choices.js failed to load
-            let html = '';
-            items.forEach(function (it) {
-                html += '<option value="' + it.value + '"'
-                      + (selectedValue && String(selectedValue) === String(it.value) ? ' selected' : '')
-                      + '>' + it.label + '</option>';
-            });
-            levelSelect.innerHTML = html;
-        }
-    }
-
     function fetchGroupLevels(groupId) {
         if (!groupId) {
-            setLevelOptions([{ value: '', label: '— Choisissez d\'abord un groupe —' }], '');
             cachedLevels = [];
             return;
         }
@@ -288,19 +276,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     cityInput.value = data.group.site_name;
                 }
 
-                // Build level options
-                const items = [{ value: '', label: '— Sélectionner un niveau —' }];
-                cachedLevels.forEach(function (lvl) {
-                    items.push({
-                        value: lvl.level,
-                        label: lvl.level + ' (' + (lvl.start_date || '?') + ' → ' + (lvl.end_date || '?') + ')'
-                    });
-                });
-
-                const preselect = groupSelect.dataset.selectedLevel;
-                setLevelOptions(items, preselect || '');
-
-                if (preselect) {
+                // If a level is already selected (edit / old()), auto-fill its date range from Suivi niveau.
+                if (levelSelect.value) {
                     onLevelChange(/* keepPreselectedDates */ true);
                 }
 
@@ -308,7 +285,6 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(err => {
                 console.error('Failed to fetch group levels', err);
-                levelSelect.innerHTML = '<option value="">Erreur de chargement</option>';
             });
     }
 
@@ -317,10 +293,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!value) return;
 
         const lvl = cachedLevels.find(function (l) { return l.level === value; });
-        if (!lvl) return;
 
-        const start = lvl.start_date;
-        const end   = lvl.end_date;
+        // Falls back gracefully if the group has no Suivi niveau entry for the chosen level.
+        const start = lvl ? lvl.start_date : null;
+        const end   = lvl ? lvl.end_date   : null;
 
         if (keepPreselectedDates) {
             // On edit reload, use the saved values if present.

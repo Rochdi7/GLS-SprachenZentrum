@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice\Encaissement;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Models\ExpenseImport;
 use App\Models\Site;
@@ -10,6 +11,8 @@ use Illuminate\Http\Request;
 
 class ExpenseImportController extends Controller
 {
+    use ScopesToUserSites;
+
     public function __construct(
         private ExpenseImportService $importService
     ) {}
@@ -19,22 +22,27 @@ class ExpenseImportController extends Controller
         $query = ExpenseImport::with(['site', 'importedBy'])
             ->orderByDesc('created_at');
 
-        if ($request->filled('site_id')) {
-            $query->where('site_id', $request->site_id);
+        $this->scopeToUserSites($query);
+
+        $requestedSiteId = $this->resolveRequestedSiteId(
+            $request->filled('site_id') ? (int) $request->site_id : null
+        );
+        if ($requestedSiteId) {
+            $query->where('site_id', $requestedSiteId);
         }
         if ($request->filled('month')) {
             $query->where('month', $request->month);
         }
 
         $imports = $query->paginate(30)->withQueryString();
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
 
         return view('backoffice.encaissements.expenses.imports', compact('imports', 'sites'));
     }
 
     public function create()
     {
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
 
         return view('backoffice.encaissements.expenses.import-create', compact('sites'));
     }

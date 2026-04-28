@@ -23,6 +23,13 @@ class AttestationController extends Controller
         'teilgenommen'       => 'teilgenommen (participation régulière)',
     ];
 
+    private const LANGUAGE_OPTIONS = [
+        'de_fr' => 'Bilingue (Allemand / Français)',
+        'de'    => 'Allemand uniquement',
+        'fr'    => 'Français uniquement',
+        'en'    => 'Anglais uniquement',
+    ];
+
     public function index()
     {
         $attestations = Attestation::with('group.site')->latest()->get();
@@ -33,8 +40,9 @@ class AttestationController extends Controller
     public function create()
     {
         return view('backoffice.attestations.create', [
-            'groups'        => $this->groupsForSelect(),
-            'erfolgOptions' => self::ERFOLG_OPTIONS,
+            'groups'           => $this->groupsForSelect(),
+            'erfolgOptions'    => self::ERFOLG_OPTIONS,
+            'languageOptions'  => self::LANGUAGE_OPTIONS,
         ]);
     }
 
@@ -53,9 +61,10 @@ class AttestationController extends Controller
         $attestation = Attestation::findOrFail($id);
 
         return view('backoffice.attestations.edit', [
-            'attestation'   => $attestation,
-            'groups'        => $this->groupsForSelect(),
-            'erfolgOptions' => self::ERFOLG_OPTIONS,
+            'attestation'      => $attestation,
+            'groups'           => $this->groupsForSelect(),
+            'erfolgOptions'    => self::ERFOLG_OPTIONS,
+            'languageOptions'  => self::LANGUAGE_OPTIONS,
         ]);
     }
 
@@ -117,8 +126,15 @@ class AttestationController extends Controller
     {
         $attestation = Attestation::with('group.site')->findOrFail($id);
 
-        $pdf = Pdf::loadView('backoffice.attestations.pdf', [
+        // Bilingue par défaut → vue principale.
+        // Mono-langue → vue dédiée (de / fr / en) qui mutualise un partial _content.
+        $view = $attestation->language === 'de_fr'
+            ? 'backoffice.attestations.pdf'
+            : 'backoffice.attestations.pdf-single';
+
+        $pdf = Pdf::loadView($view, [
                 'attestation' => $attestation,
+                'lang'        => $attestation->language,
             ])
             ->setPaper('a4')
             ->setOption('isHtml5ParserEnabled', true)
@@ -160,11 +176,16 @@ class AttestationController extends Controller
         $group = Group::with('site')->findOrFail($data['group_id']);
         $hoursPerSession = $group->site?->getCourseDuration() ?? 2.5;
 
-        $niveauStart = Carbon::parse($data['niveau_start_date']);
-        $niveauEnd   = Carbon::parse($data['niveau_end_date']);
-
         $data['hours_per_session'] = $hoursPerSession;
-        $data['units_45min']       = self::computeUnits($niveauStart, $niveauEnd, $hoursPerSession);
+
+        // Calcul auto des unités uniquement si les deux dates du niveau sont fournies.
+        if (!empty($data['niveau_start_date']) && !empty($data['niveau_end_date'])) {
+            $niveauStart = Carbon::parse($data['niveau_start_date']);
+            $niveauEnd   = Carbon::parse($data['niveau_end_date']);
+            $data['units_45min'] = self::computeUnits($niveauStart, $niveauEnd, $hoursPerSession);
+        } else {
+            $data['units_45min'] = 0;
+        }
 
         // Si la ville n'est pas définie, on tente le centre
         if (empty($data['city'])) {

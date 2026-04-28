@@ -30,6 +30,7 @@ class Attestation extends Model
         'stufe_index',
         'stufe_total',
         'erfolg',
+        'language',
 
         'city',
         'issue_date',

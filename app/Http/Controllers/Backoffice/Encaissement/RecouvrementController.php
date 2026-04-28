@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice\Encaissement;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Models\Site;
 use App\Services\Encaissement\PrimeCalculationService;
@@ -9,6 +10,8 @@ use Illuminate\Http\Request;
 
 class RecouvrementController extends Controller
 {
+    use ScopesToUserSites;
+
     public function __construct(
         private PrimeCalculationService $primeService
     ) {}
@@ -31,10 +34,20 @@ class RecouvrementController extends Controller
             $periodMonths = $defaultPeriodMonths;
         }
 
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
 
-        // Get state for each center (with period)
-        $states = $this->primeService->getAllCentersRecoveryState($month, $periodMonths);
+        // Get state for each center (with period) — then filter to accessible ones
+        $allStates = $this->primeService->getAllCentersRecoveryState($month, $periodMonths);
+
+        if ($this->userSeesAllSites()) {
+            $states = $allStates;
+        } else {
+            $allowed = auth()->user()->accessibleSiteIds();
+            $states = array_values(array_filter(
+                $allStates,
+                fn ($s) => in_array((int) ($s['site_id'] ?? 0), $allowed, true)
+            ));
+        }
 
         // Prime suggestions for each center (with period)
         $suggestions = [];

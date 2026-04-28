@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice\Payroll;
 
+use App\Exports\PresenceImportExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backoffice\Payroll\StorePresenceImportRequest;
 use App\Http\Requests\Backoffice\Payroll\UpdateStudentWeekAmountRequest;
@@ -11,6 +12,8 @@ use App\Models\PresenceImportStudent;
 use App\Services\Payroll\PresenceImportService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PresenceImportController extends Controller
 {
@@ -170,5 +173,19 @@ class PresenceImportController extends Controller
         $this->importService->recalculate($import);
 
         return back()->with('success', 'Paiement recalculé.');
+    }
+
+    /**
+     * Download the import as a formatted Excel file.
+     */
+    public function export(PresenceImport $import)
+    {
+        $import->load(['group.teacher', 'students.records', 'paymentSummary']);
+
+        $groupSlug = Str::slug($import->group?->name ?? 'groupe');
+        $month = $import->month?->format('Y-m') ?? now()->format('Y-m');
+        $filename = "paiement-prof-{$groupSlug}-{$month}-v{$import->version}.xlsx";
+
+        return Excel::download(new PresenceImportExport($import), $filename);
     }
 }
