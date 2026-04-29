@@ -36,8 +36,10 @@ class PresenceImportService
         ?float $paymentPerStudent = null,
         ?string $notes = null,
         ?int $importedBy = null,
+        ?Carbon $dateStart = null,
+        ?Carbon $dateEnd = null,
     ): PresenceImport {
-        return DB::transaction(function () use ($group, $file, $month, $paymentPerStudent, $notes, $importedBy) {
+        return DB::transaction(function () use ($group, $file, $month, $paymentPerStudent, $notes, $importedBy, $dateStart, $dateEnd) {
 
             // 1. Store the uploaded file
             $fileName = $file->getClientOriginalName();
@@ -46,8 +48,8 @@ class PresenceImportService
             // 2. Determine next version number for this group
             $nextVersion = ($group->presenceImports()->max('version') ?? 0) + 1;
 
-            // 3. Parse the Excel file
-            $parsed = $this->parser->parse($file, $month);
+            // 3. Parse the Excel file (period overrides come from the form)
+            $parsed = $this->parser->parse($file, $month, $dateStart, $dateEnd);
 
             if (empty($parsed['students'])) {
                 $debug = $parsed['debug'] ?? 'N/A';

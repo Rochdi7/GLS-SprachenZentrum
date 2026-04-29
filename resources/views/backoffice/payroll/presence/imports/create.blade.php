@@ -69,8 +69,27 @@
                                 <input type="month" name="month"
                                        class="form-control"
                                        value="{{ old('month') }}"
-                                       required>
-                                <small class="text-muted">Le mois couvert par cette feuille de présence</small>
+                                       required id="month-input">
+                                <small class="text-muted">Le mois de référence pour ce paiement</small>
+                            </div>
+
+                            {{-- Period --}}
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Période <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="date" name="date_start"
+                                           class="form-control"
+                                           value="{{ old('date_start') }}"
+                                           required id="date-start-input"
+                                           placeholder="Début">
+                                    <span class="input-group-text">→</span>
+                                    <input type="date" name="date_end"
+                                           class="form-control"
+                                           value="{{ old('date_end') }}"
+                                           required id="date-end-input"
+                                           placeholder="Fin">
+                                </div>
+                                <small class="text-muted">Période réelle couverte par la feuille (peut chevaucher 2 mois)</small>
                             </div>
 
                             {{-- Auto-populated info --}}
@@ -183,6 +202,21 @@
         });
 
         document.getElementById('group-select').dispatchEvent(new Event('change'));
+
+        // Auto-fill the period from the chosen month, if the period is empty.
+        const monthInput = document.getElementById('month-input');
+        const dateStartInput = document.getElementById('date-start-input');
+        const dateEndInput = document.getElementById('date-end-input');
+        monthInput.addEventListener('change', function () {
+            const v = this.value; // YYYY-MM
+            if (!v) return;
+            const [y, m] = v.split('-').map(Number);
+            const first = `${y}-${String(m).padStart(2,'0')}-01`;
+            const lastDay = new Date(y, m, 0).getDate();
+            const last = `${y}-${String(m).padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`;
+            if (!dateStartInput.value) dateStartInput.value = first;
+            if (!dateEndInput.value) dateEndInput.value = last;
+        });
 
         // Debug form — AJAX submit
         document.getElementById('debug-form').addEventListener('submit', function(e) {

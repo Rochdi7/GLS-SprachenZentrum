@@ -74,6 +74,8 @@ class PresenceImportController extends Controller
     {
         $group = Group::findOrFail($request->group_id);
         $month = Carbon::createFromFormat('Y-m', $request->month)->startOfMonth();
+        $dateStart = Carbon::parse($request->date_start)->startOfDay();
+        $dateEnd = Carbon::parse($request->date_end)->startOfDay();
 
         try {
             $import = $this->importService->import(
@@ -83,6 +85,8 @@ class PresenceImportController extends Controller
                 paymentPerStudent: $request->payment_per_student,
                 notes: $request->notes,
                 importedBy: auth()->id(),
+                dateStart: $dateStart,
+                dateEnd: $dateEnd,
             );
         } catch (\RuntimeException $e) {
             return back()->withInput()->with('error', $e->getMessage());

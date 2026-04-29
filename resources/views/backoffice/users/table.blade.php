@@ -42,16 +42,18 @@
                         @if(!$primary && $extras->isEmpty())
                             <span class="text-muted">—</span>
                         @else
-                            @if($primary)
-                                <span class="badge bg-light-info" title="Centre principal">
-                                    {{ $primary->name }}
-                                </span>
-                            @endif
-                            @foreach($extras as $extra)
-                                <span class="badge bg-light-secondary" title="Centre additionnel">
-                                    {{ $extra->name }}
-                                </span>
-                            @endforeach
+                            <div class="d-flex flex-wrap gap-1">
+                                @if($primary)
+                                    <span class="badge bg-light-info" title="Centre principal">
+                                        {{ $primary->name }}
+                                    </span>
+                                @endif
+                                @foreach($extras as $extra)
+                                    <span class="badge bg-light-secondary" title="Centre additionnel">
+                                        {{ $extra->name }}
+                                    </span>
+                                @endforeach
+                            </div>
                         @endif
                     </td>
 
