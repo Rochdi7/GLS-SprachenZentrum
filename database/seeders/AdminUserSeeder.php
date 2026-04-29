@@ -10,7 +10,8 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $admins = [
+        // Old seeder users keep Super Admin role
+        $superAdmins = [
             'rochdi.karouali@glszentrum.com' => 'Rochdi Karouali',
             'amine.rafik@glszentrum.com' => 'Amine Rafik',
             'rafik@glszentrum.com' => 'Rafik',
@@ -19,7 +20,39 @@ class AdminUserSeeder extends Seeder
             'ichrak.fakroune@glszentrum.com' => 'Ichrak Fakroune',
         ];
 
-        foreach ($admins as $email => $name) {
+        $admins = [
+            'yassine.ouledlaghzal@glszentrum.com' => 'Yassine Ouled Laghzal',
+            'maria.jelloul@glszentrum.com' => 'Maria Jelloul',
+            'elmehdi.bakhach@glszentrum.com' => 'El Mehdi Bakhach',
+            'yassine.elbadaoui@glszentrum.com' => 'Yassine Elbadaoui',
+        ];
+
+        $receptions = [
+            'ahmed.khadimerrahman@glszentrum.com' => 'Ahmed Khadimerrahman',
+            'amal.laamiri@glszentrum.com' => 'Amal Laamiri',
+            'hafsa.elkhatabi@glszentrum.com' => 'Hafsa Elkhatabi',
+            'hamza.dahbany@glszentrum.com' => 'Hamza Dahbany',
+            'ikram.boussila@glszentrum.com' => 'Ikram Boussila',
+            'khaoula.elghanoui@glszentrum.com' => 'Khaoula El Ghanoui',
+            'latifa.abouelfath@glszentrum.com' => 'Latifa Abouelfath',
+            'loubna.elkhalfi@glszentrum.com' => 'Loubna El Khalfi',
+            'mehdi.joundi@glszentrum.com' => 'Mehdi Joundi',
+            'mouna.zakri@glszentrum.com' => 'Mouna Zakri',
+            'mustapha.benlmekki@glszentrum.com' => 'Mustapha Benlmekki',
+            'oumnya.salim@glszentrum.com' => 'Oumnya Salim',
+            'rihab.riad@glszentrum.com' => 'Rihab Riad',
+            'saad.soutafi@glszentrum.com' => 'Saad Soutafi',
+            'sara.grija@glszentrum.com' => 'Sara Grija',
+        ];
+
+        $this->createUsersWithRole($superAdmins, 'Super Admin');
+        $this->createUsersWithRole($admins, 'Admin');
+        $this->createUsersWithRole($receptions, 'Reception');
+    }
+
+    private function createUsersWithRole(array $users, string $role): void
+    {
+        foreach ($users as $email => $name) {
             $user = User::firstOrCreate(
                 ['email' => $email],
                 [
@@ -29,9 +62,8 @@ class AdminUserSeeder extends Seeder
                 ]
             );
 
-            // Assign Super Admin role
-            if (! $user->hasRole('Super Admin')) {
-                $user->assignRole('Super Admin');
+            if (! $user->hasRole($role)) {
+                $user->assignRole($role);
             }
         }
     }
