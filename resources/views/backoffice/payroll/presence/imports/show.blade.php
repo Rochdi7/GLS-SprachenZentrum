@@ -187,6 +187,10 @@
                                class="btn btn-info btn-sm d-inline-flex align-items-center">
                                 <i class="ph-duotone ph-file-xls me-1"></i> Exporter Excel
                             </a>
+                            <a href="{{ route('backoffice.payroll.presence.import.edit', ['group' => $group->id, 'import' => $import->id]) }}"
+                               class="btn btn-outline-warning btn-sm d-inline-flex align-items-center">
+                                <i class="ph-duotone ph-pencil-simple me-1"></i> Modifier
+                            </a>
                             <a href="{{ route('backoffice.payroll.presence.group.imports', $group) }}"
                                class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center">
                                 <i class="ph-duotone ph-clock-counter-clockwise me-1"></i> Historique

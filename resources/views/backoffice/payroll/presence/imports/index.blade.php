@@ -108,6 +108,10 @@
                                                class="btn btn-sm btn-outline-primary" title="Voir">
                                                 <i class="ph-duotone ph-eye"></i>
                                             </a>
+                                            <a href="{{ route('backoffice.payroll.presence.import.edit', ['group' => $group->id, 'import' => $import->id]) }}"
+                                               class="btn btn-sm btn-outline-warning" title="Modifier">
+                                                <i class="ph-duotone ph-pencil-simple"></i>
+                                            </a>
                                             <form action="{{ route('backoffice.payroll.presence.import.destroy', $import) }}"
                                                   method="POST" class="d-inline"
                                                   onsubmit="return confirm('Supprimer cet import ?')">

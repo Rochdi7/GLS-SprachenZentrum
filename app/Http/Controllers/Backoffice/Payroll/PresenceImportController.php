@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backoffice\Payroll;
 use App\Exports\PresenceImportExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backoffice\Payroll\StorePresenceImportRequest;
+use App\Http\Requests\Backoffice\Payroll\UpdatePresenceImportRequest;
 use App\Http\Requests\Backoffice\Payroll\UpdateStudentWeekAmountRequest;
 use App\Models\Group;
 use App\Models\PresenceImport;
@@ -119,6 +120,45 @@ class PresenceImportController extends Controller
         $import->load(['students.records', 'paymentSummary', 'importedBy']);
 
         return view('backoffice.payroll.presence.imports.show', compact('group', 'import'));
+    }
+
+    /**
+     * Edit form for an existing import.
+     */
+    public function edit(Group $group, PresenceImport $import)
+    {
+        $import->load('importedBy');
+
+        return view('backoffice.payroll.presence.imports.edit', compact('group', 'import'));
+    }
+
+    /**
+     * Persist changes to an existing import.
+     * The Excel file is optional — if not uploaded, the existing students/records are kept.
+     */
+    public function update(UpdatePresenceImportRequest $request, Group $group, PresenceImport $import)
+    {
+        $month = Carbon::createFromFormat('Y-m', $request->month)->startOfMonth();
+        $dateStart = Carbon::parse($request->date_start)->startOfDay();
+        $dateEnd = Carbon::parse($request->date_end)->startOfDay();
+
+        try {
+            $this->importService->update(
+                import: $import,
+                month: $month,
+                dateStart: $dateStart,
+                dateEnd: $dateEnd,
+                paymentPerStudent: $request->payment_per_student,
+                notes: $request->notes,
+                file: $request->file('file'),
+            );
+        } catch (\RuntimeException $e) {
+            return back()->withInput()->with('error', $e->getMessage());
+        }
+
+        return redirect()
+            ->route('backoffice.payroll.presence.import.show', ['group' => $group->id, 'import' => $import->id])
+            ->with('success', "Import v{$import->version} mis à jour.");
     }
 
     /**

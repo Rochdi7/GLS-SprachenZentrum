@@ -385,6 +385,10 @@ Route::prefix('backoffice')
                         // Import detail
                         Route::get('/group/{group}/import/{import}', [PresenceImportController::class, 'show'])->middleware('permission:presence.view')->name('import.show');
 
+                        // Edit import (form + submit)
+                        Route::get('/group/{group}/import/{import}/edit', [PresenceImportController::class, 'edit'])->middleware('permission:presence.edit')->name('import.edit');
+                        Route::put('/group/{group}/import/{import}', [PresenceImportController::class, 'update'])->middleware('permission:presence.edit')->name('import.update');
+
                         // Delete import
                         Route::delete('/import/{import}', [PresenceImportController::class, 'destroy'])->middleware('permission:presence.delete')->name('import.destroy');
 

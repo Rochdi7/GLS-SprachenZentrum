@@ -107,6 +107,88 @@ class PresenceImportService
     }
 
     /**
+     * Update an existing import. If a new file is uploaded, it replaces the
+     * old students/records and the period is re-parsed; otherwise only the
+     * metadata (month, dates, rate, notes) is updated and totals recomputed.
+     */
+    public function update(
+        PresenceImport $import,
+        Carbon $month,
+        Carbon $dateStart,
+        Carbon $dateEnd,
+        ?float $paymentPerStudent = null,
+        ?string $notes = null,
+        ?UploadedFile $file = null,
+    ): PresenceImport {
+        return DB::transaction(function () use ($import, $month, $dateStart, $dateEnd, $paymentPerStudent, $notes, $file) {
+
+            $updates = [
+                'month' => $month->copy()->startOfMonth(),
+                'date_start' => $dateStart,
+                'date_end' => $dateEnd,
+                'payment_per_student' => $paymentPerStudent,
+                'notes' => $notes,
+            ];
+
+            if ($file !== null) {
+                // Re-parse the new file
+                $parsed = $this->parser->parse($file, $month, $dateStart, $dateEnd);
+
+                if (empty($parsed['students'])) {
+                    $debug = $parsed['debug'] ?? 'N/A';
+                    $dateCols = count($parsed['date_columns'] ?? []);
+                    throw new \RuntimeException(
+                        'Aucun étudiant trouvé dans le fichier. '
+                        ."Colonnes de dates détectées: {$dateCols}. "
+                        ."Diagnostic: {$debug}"
+                    );
+                }
+
+                // Store the new file (keep old one — versioned snapshot policy)
+                $updates['file_name'] = $file->getClientOriginalName();
+                $updates['file_path'] = $file->store('payroll/presence', 'local');
+                $updates['date_start'] = $parsed['date_start'] ?? $dateStart;
+                $updates['date_end'] = $parsed['date_end'] ?? $dateEnd;
+                $updates['total_days'] = $parsed['total_days'];
+
+                // Wipe and rebuild students + records
+                $import->students()->delete();
+
+                $import->update($updates);
+
+                foreach ($parsed['students'] as $studentData) {
+                    $student = PresenceImportStudent::create([
+                        'presence_import_id' => $import->id,
+                        'row_number' => $studentData['row_number'],
+                        'student_name' => $studentData['student_name'],
+                        'total_present' => $studentData['total_present'],
+                        'total_absent' => $studentData['total_absent'],
+                        'status' => $studentData['auto_status'] ?? 'active',
+                        'row_color' => $studentData['row_color'] ?? null,
+                        'raw_data' => $studentData['raw_data'],
+                    ]);
+
+                    foreach ($studentData['presence'] as $record) {
+                        PresenceRecord::create([
+                            'presence_import_student_id' => $student->id,
+                            'date' => $record['date'],
+                            'status' => $record['status'],
+                            'raw_value' => $record['raw_value'],
+                        ]);
+                    }
+                }
+            } else {
+                // No new file — keep students/records, just refresh metadata.
+                $import->update($updates);
+            }
+
+            $this->calculator->calculate($import->fresh());
+
+            return $import->fresh();
+        });
+    }
+
+    /**
      * Manually override (or clear) one of the student's 4 weekly amounts,
      * then recompute the import totals.
      */
