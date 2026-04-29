@@ -827,11 +827,9 @@
     }
 
     function teacherHasMultipleGroups(teacherId) {
-        if (!teacherId) return false;
-        const groups = TEACHER_GROUPS[teacherId] || [];
-        // Use the 5-skill grid for any teacher that has at least one group.
-        // Only fall back to the simple-notes mode when the teacher has no groups at all.
-        return groups.length >= 1;
+        // Always use the 6-skill grid (Lesen, Hören, Grammatik, Schreiben, Sprechen, Activités).
+        // The simple-notes mode is no longer used — every row is a structured skill grid.
+        return true;
     }
 
     function onTeacherChange(selectEl) {
@@ -1322,40 +1320,39 @@
                 const json = await res.json();
                 const reports = json.reports || [];
 
-                // Group reports by (teacher_id, group_id). For multi-group teachers,
-                // a single row should contain all 5 skills. For single-group / no-group,
-                // each report becomes its own simple row.
+                // Group every report by (teacher_id, group_id) — one card per bucket.
+                // Legacy reports without a `skill` (free-text notes from the old UI)
+                // are migrated into the "Activités" cell of the same bucket so nothing
+                // is lost when an admin reopens that day.
                 const buckets = new Map();
-                const simpleReports = [];
 
                 for (const r of reports) {
-                    const isMulti = teacherHasMultipleGroups(r.teacher_id);
-                    if (isMulti && r.skill) {
-                        const key = `${r.teacher_id}::${r.group_id || ''}`;
-                        if (!buckets.has(key)) {
-                            buckets.set(key, {
-                                teacher_id: r.teacher_id,
-                                group_id: r.group_id,
-                                skills: {},
-                            });
-                        }
-                        buckets.get(key).skills[r.skill] = {
+                    const key = `${r.teacher_id}::${r.group_id || ''}`;
+                    if (!buckets.has(key)) {
+                        buckets.set(key, {
+                            teacher_id: r.teacher_id,
+                            group_id: r.group_id,
+                            skills: {},
+                        });
+                    }
+                    const bucket = buckets.get(key);
+                    const skillKey = r.skill || 'aktivitaet';
+                    // If two legacy notes collide on the same skill cell, append.
+                    if (bucket.skills[skillKey]) {
+                        bucket.skills[skillKey].notes =
+                            (bucket.skills[skillKey].notes || '') + '\n' + (r.notes || '');
+                    } else {
+                        bucket.skills[skillKey] = {
                             id: r.id,
                             notes: r.notes,
                             attachment_url: r.attachment_url,
                             attachment_name: r.attachment_name,
                         };
-                    } else {
-                        simpleReports.push(r);
                     }
                 }
 
-                // Render skills rows first (one per teacher+group bucket), then simple rows
                 for (const bucket of buckets.values()) {
                     rowsContainer.appendChild(buildSkillsRow(bucket));
-                }
-                for (const r of simpleReports) {
-                    rowsContainer.appendChild(buildSimpleRow(r));
                 }
                 refreshRowNumbers();
             }
