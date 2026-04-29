@@ -796,6 +796,14 @@
     const emptyHint = document.getElementById('emptyRowsHint');
     let rowCounter = 0;
 
+    // Event delegation: any change on a teacher-select inside the modal swaps modes.
+    // This survives Choices.js wrapping and any other dynamic select handling.
+    rowsContainer.addEventListener('change', function (ev) {
+        if (ev.target && ev.target.classList && ev.target.classList.contains('teacher-select')) {
+            onTeacherChange(ev.target);
+        }
+    });
+
     function escapeAttr(s) {
         return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     }
@@ -821,7 +829,9 @@
     function teacherHasMultipleGroups(teacherId) {
         if (!teacherId) return false;
         const groups = TEACHER_GROUPS[teacherId] || [];
-        return groups.length > 1;
+        // Use the 5-skill grid for any teacher that has at least one group.
+        // Only fall back to the simple-notes mode when the teacher has no groups at all.
+        return groups.length >= 1;
     }
 
     function onTeacherChange(selectEl) {
@@ -1082,11 +1092,15 @@
 
         const colG = document.createElement('div');
         colG.className = 'col-md-6';
-        colG.innerHTML = '<label class="form-label">Groupe</label>';
+        colG.innerHTML = '<label class="form-label">Groupe (optionnel)</label>';
         const groupSel = document.createElement('select');
         groupSel.className = 'form-select form-select-sm group-select';
-        groupSel.required = true;
         groupSel.innerHTML = groupOptionsHtml(r.teacher_id, r.group_id);
+        // Auto-select the only group when the teacher has exactly one
+        const teacherGroups = TEACHER_GROUPS[r.teacher_id] || [];
+        if (!r.group_id && teacherGroups.length === 1) {
+            groupSel.value = String(teacherGroups[0].id);
+        }
         colG.appendChild(groupSel);
         topGrid.appendChild(colG);
 
