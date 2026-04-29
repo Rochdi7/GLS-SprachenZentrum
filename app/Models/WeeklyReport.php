@@ -24,6 +24,7 @@ class WeeklyReport extends Model
         'grammatik'  => 'Grammatik',
         'schreiben'  => 'Schreiben',
         'sprechen'   => 'Sprechen',
+        'aktivitaet' => 'Activités',
     ];
 
     protected $casts = [
