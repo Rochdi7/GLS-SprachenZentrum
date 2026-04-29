@@ -274,6 +274,12 @@
                                                     {{ $report->attachment_original_name ?? 'document.pdf' }}
                                                 </a>
                                             @endif
+                                            @foreach ($report->attachments as $att)
+                                                <a href="{{ $att->url }}" target="_blank" rel="noopener" class="pdf-attached">
+                                                    <i class="ph-duotone ph-file-pdf"></i>
+                                                    {{ $att->original_name ?? 'document.pdf' }}
+                                                </a>
+                                            @endforeach
                                         @else
                                             <span class="empty-skill">— Aucune activité enregistrée pour cette compétence —</span>
                                         @endif
@@ -292,6 +298,12 @@
                                     {{ $report->attachment_original_name ?? 'document.pdf' }}
                                 </a>
                             @endif
+                            @foreach ($report->attachments as $att)
+                                <a href="{{ $att->url }}" target="_blank" rel="noopener" class="pdf-attached">
+                                    <i class="ph-duotone ph-file-pdf"></i>
+                                    {{ $att->original_name ?? 'document.pdf' }}
+                                </a>
+                            @endforeach
                         </div>
                     @endforeach
                 @else

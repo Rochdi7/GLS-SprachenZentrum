@@ -277,6 +277,8 @@
         border-radius: 3px;
     }
     .mode-skills .row-number { background: #f59e0b; }
+    .skill-attachments-list { display: flex; flex-direction: column; gap: 2px; }
+    .skill-attachment-row a:hover { text-decoration: underline; }
     @media (max-width: 575.98px) {
         .skill-block { grid-template-columns: 80px 1fr; gap: 6px; }
         .skill-block .skill-label { font-size: .65rem; padding: 4px 5px; min-height: 44px; }
@@ -1137,32 +1139,62 @@
             ta.style.minHeight = '50px';
             block.appendChild(ta);
 
-            // Existing PDF + checkbox
-            if (skillData.attachment_url) {
-                const pdfBlock = document.createElement('div');
-                pdfBlock.className = 'existing-pdf mt-1';
-                pdfBlock.style.fontSize = '.7rem';
-                const pdfLink = document.createElement('a');
-                pdfLink.href = skillData.attachment_url;
-                pdfLink.target = '_blank';
-                pdfLink.rel = 'noopener';
-                pdfLink.innerHTML = '<i class="ph-duotone ph-file-pdf" style="color:#d9534f;"></i> ' + (skillData.attachment_name || 'PDF');
-                pdfBlock.appendChild(pdfLink);
-                const removeChk = document.createElement('label');
-                removeChk.style.cssText = 'margin-left:8px; font-size:.7rem; cursor:pointer;';
-                const removeIn = document.createElement('input');
-                removeIn.type = 'checkbox';
-                removeIn.className = 'skill-remove-attachment';
-                removeIn.style.marginRight = '3px';
-                removeChk.appendChild(removeIn);
-                removeChk.appendChild(document.createTextNode('Supprimer'));
-                pdfBlock.appendChild(removeChk);
-                block.appendChild(pdfBlock);
+            // Existing attachments list (multi-file). Each row shows the file name + a
+            // checkbox that, when ticked, marks the attachment for deletion on save.
+            const attachments = Array.isArray(skillData.attachments) ? skillData.attachments : [];
+
+            // Backward compat: if the row only has the legacy single-file fields
+            // (skillData.attachment_url) and no attachments[] yet, surface it as one entry.
+            if (attachments.length === 0 && skillData.attachment_url) {
+                attachments.push({
+                    id: null, // null = legacy single-file, removal goes through skill-remove-attachment
+                    url: skillData.attachment_url,
+                    name: skillData.attachment_name || 'PDF',
+                    legacy: true,
+                });
             }
 
-            // File input
+            if (attachments.length > 0) {
+                const list = document.createElement('div');
+                list.className = 'skill-attachments-list mt-1';
+                for (const att of attachments) {
+                    const row = document.createElement('div');
+                    row.className = 'skill-attachment-row';
+                    row.style.cssText = 'display:flex; align-items:center; gap:6px; padding:3px 6px; background:#fff; border:1px solid #e9ecef; border-radius:3px; margin-bottom:3px; font-size:.7rem;';
+
+                    const link = document.createElement('a');
+                    link.href = att.url;
+                    link.target = '_blank';
+                    link.rel = 'noopener';
+                    link.style.cssText = 'flex:1; min-width:0; word-break:break-all; color:#4680ff; text-decoration:none;';
+                    link.innerHTML = '<i class="ph-duotone ph-file-pdf" style="color:#d9534f;"></i> ' + escapeAttr(att.name);
+                    row.appendChild(link);
+
+                    const removeWrap = document.createElement('label');
+                    removeWrap.style.cssText = 'display:inline-flex; align-items:center; gap:3px; margin:0; font-size:.7rem; cursor:pointer; color:#b91c1c;';
+                    const removeIn = document.createElement('input');
+                    removeIn.type = 'checkbox';
+                    if (att.legacy) {
+                        // Legacy single-file: drives the old skill-remove-attachment path
+                        removeIn.className = 'skill-remove-attachment';
+                    } else {
+                        removeIn.className = 'skill-remove-attachment-id';
+                        removeIn.dataset.attachmentId = att.id;
+                    }
+                    removeIn.style.margin = '0';
+                    removeWrap.appendChild(removeIn);
+                    removeWrap.appendChild(document.createTextNode('Suppr.'));
+                    row.appendChild(removeWrap);
+
+                    list.appendChild(row);
+                }
+                block.appendChild(list);
+            }
+
+            // Multi-file input — user can pick several PDFs at once and pick again to add more.
             const fileIn = document.createElement('input');
             fileIn.type = 'file';
+            fileIn.multiple = true;
             fileIn.className = 'form-control form-control-sm skill-attachment mt-1';
             fileIn.accept = 'application/pdf';
             fileIn.style.fontSize = '.72rem';
@@ -1265,13 +1297,15 @@
                 const notes = block.querySelector('.skill-notes')?.value?.trim() || '';
                 const idInput = block.querySelector('.skill-id-input');
                 const fileInput = block.querySelector('.skill-attachment');
-                const removeChk = block.querySelector('.skill-remove-attachment');
+                const legacyRemoveChk = block.querySelector('.skill-remove-attachment');
+                const removeIdChks = block.querySelectorAll('.skill-remove-attachment-id:checked');
                 const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
-                const wantsRemove = removeChk && removeChk.checked;
+                const wantsLegacyRemove = legacyRemoveChk && legacyRemoveChk.checked;
+                const wantsAnyAttachmentRemoval = wantsLegacyRemove || removeIdChks.length > 0;
                 const existingId = idInput ? idInput.value : '';
 
                 // Skip empty skills with no existing record (nothing to save / nothing to delete)
-                if (!notes && !hasFile && !existingId) return;
+                if (!notes && !hasFile && !existingId && !wantsAnyAttachmentRemoval) return;
 
                 // Build flat hidden inputs that batchSync expects
                 const append = (name, value) => {
@@ -1288,12 +1322,18 @@
                 append(`rows[${flatIdx}][group_id]`, groupId);
                 append(`rows[${flatIdx}][skill]`, skillKey);
                 append(`rows[${flatIdx}][notes]`, notes);
-                if (wantsRemove) append(`rows[${flatIdx}][remove_attachment]`, '1');
+                if (wantsLegacyRemove) append(`rows[${flatIdx}][remove_attachment]`, '1');
+
+                // Multi-file: per-attachment removal ids
+                removeIdChks.forEach(chk => {
+                    append(`rows[${flatIdx}][remove_attachment_ids][]`, chk.dataset.attachmentId);
+                });
 
                 if (hasFile) {
-                    // File inputs must stay in place (can't be cloned). Rename them in-place.
+                    // File input must stay in place (can't be cloned). Rename it to the
+                    // multi-file payload key — `multiple` already collects all selected PDFs.
                     fileInput.dataset.skillFlat = '1';
-                    fileInput.name = `rows[${flatIdx}][attachment]`;
+                    fileInput.name = `rows[${flatIdx}][attachments][]`;
                 }
 
                 flatIdx++;

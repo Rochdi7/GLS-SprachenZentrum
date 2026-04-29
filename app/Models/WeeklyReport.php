@@ -46,6 +46,12 @@ class WeeklyReport extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function attachments()
+    {
+        return $this->hasMany(WeeklyReportAttachment::class, 'weekly_report_id')
+            ->orderBy('created_at');
+    }
+
     public function getAttachmentUrlAttribute(): ?string
     {
         return $this->attachment_path

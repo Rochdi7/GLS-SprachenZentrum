@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Models\Teacher;
 use App\Models\WeeklyReport;
+use App\Models\WeeklyReportAttachment;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -153,6 +154,9 @@ class WeeklyReportController extends Controller
         if ($weeklyReport->attachment_path) {
             Storage::disk('public')->delete($weeklyReport->attachment_path);
         }
+        foreach ($weeklyReport->attachments as $att) {
+            Storage::disk('public')->delete($att->path);
+        }
 
         $weeklyReport->delete();
 
@@ -180,14 +184,14 @@ class WeeklyReportController extends Controller
         $weekStart = $weekDays->first();
         $weekEnd = $weekDays->last();
 
-        $reports = WeeklyReport::with(['teacher', 'group'])
+        $reports = WeeklyReport::with(['teacher', 'group', 'attachments'])
             ->whereBetween('report_date', [$weekStart, $weekEnd])
             ->orderBy('report_date')
             ->orderBy('created_at')
             ->get()
             ->groupBy(fn ($r) => $r->report_date->format('Y-m-d'));
 
-        $reportsByTeacher = WeeklyReport::with(['teacher', 'group'])
+        $reportsByTeacher = WeeklyReport::with(['teacher', 'group', 'attachments'])
             ->whereBetween('report_date', [$weekStart, $weekEnd])
             ->orderBy('report_date')
             ->orderBy('created_at')
@@ -218,7 +222,7 @@ class WeeklyReportController extends Controller
             'group_id'   => 'nullable|integer|exists:groups,id',
         ]);
 
-        $reports = WeeklyReport::with(['teacher', 'group'])
+        $reports = WeeklyReport::with(['teacher', 'group', 'attachments'])
             ->whereDate('report_date', $data['date'])
             ->where('teacher_id', $data['teacher_id'])
             ->when(true, function ($q) use ($data) {
@@ -267,7 +271,7 @@ class WeeklyReportController extends Controller
             'group_id'   => 'nullable|integer|exists:groups,id',
         ]);
 
-        $reports = WeeklyReport::with(['teacher', 'group'])
+        $reports = WeeklyReport::with(['teacher', 'group', 'attachments'])
             ->whereDate('report_date', $data['date'])
             ->where('teacher_id', $data['teacher_id'])
             ->when(array_key_exists('group_id', $data), function ($q) use ($data) {
@@ -310,7 +314,7 @@ class WeeklyReportController extends Controller
     {
         $request->validate(['date' => 'required|date']);
 
-        $reports = WeeklyReport::with(['teacher', 'group'])
+        $reports = WeeklyReport::with(['teacher', 'group', 'attachments'])
             ->whereDate('report_date', $request->date)
             ->orderBy('created_at')
             ->get()
@@ -321,8 +325,15 @@ class WeeklyReportController extends Controller
                 'group_label'     => $r->group?->name,
                 'skill'           => $r->skill,
                 'notes'           => $r->notes,
+                // Legacy single-file (kept for back-compat with old data not yet migrated)
                 'attachment_url'  => $r->attachment_url,
                 'attachment_name' => $r->attachment_original_name,
+                // New multi-file array
+                'attachments'     => $r->attachments->map(fn ($a) => [
+                    'id'   => $a->id,
+                    'url'  => $a->url,
+                    'name' => $a->original_name ?: 'PDF',
+                ])->values(),
             ]);
 
         return response()->json(['reports' => $reports]);
@@ -345,15 +356,21 @@ class WeeklyReportController extends Controller
         }
 
         $data = $request->validate([
-            'report_date'                  => 'required|date',
-            'rows'                         => 'array',
-            'rows.*.id'                    => 'nullable|integer|exists:weekly_reports,id',
-            'rows.*.teacher_id'            => 'required|exists:teachers,id',
-            'rows.*.group_id'              => 'nullable|integer|exists:groups,id',
-            'rows.*.skill'                 => 'nullable|string|in:' . implode(',', array_keys(WeeklyReport::SKILLS)),
-            'rows.*.notes'                 => 'required|string|max:5000',
-            'rows.*.remove_attachment'     => 'nullable|boolean',
-            'rows.*.attachment'            => 'nullable|file|mimes:pdf|max:10240',
+            'report_date'                       => 'required|date',
+            'rows'                              => 'array',
+            'rows.*.id'                         => 'nullable|integer|exists:weekly_reports,id',
+            'rows.*.teacher_id'                 => 'required|exists:teachers,id',
+            'rows.*.group_id'                   => 'nullable|integer|exists:groups,id',
+            'rows.*.skill'                      => 'nullable|string|in:' . implode(',', array_keys(WeeklyReport::SKILLS)),
+            'rows.*.notes'                      => 'required|string|max:5000',
+            // Legacy single-file fields (kept for backward compat with old payloads)
+            'rows.*.remove_attachment'          => 'nullable|boolean',
+            'rows.*.attachment'                 => 'nullable|file|mimes:pdf|max:10240',
+            // New multi-file fields
+            'rows.*.attachments'                => 'nullable|array',
+            'rows.*.attachments.*'              => 'file|mimes:pdf|max:10240',
+            'rows.*.remove_attachment_ids'      => 'nullable|array',
+            'rows.*.remove_attachment_ids.*'    => 'integer|exists:weekly_report_attachments,id',
         ]);
 
         // Enforce: each group must belong to the selected teacher
@@ -404,6 +421,30 @@ class WeeklyReportController extends Controller
                     }
 
                     $report->save();
+
+                    // Multi-file: remove specific existing attachments
+                    if (!empty($row['remove_attachment_ids'])) {
+                        $toRemove = WeeklyReportAttachment::where('weekly_report_id', $report->id)
+                            ->whereIn('id', $row['remove_attachment_ids'])
+                            ->get();
+                        foreach ($toRemove as $att) {
+                            Storage::disk('public')->delete($att->path);
+                            $att->delete();
+                        }
+                    }
+
+                    // Multi-file: add newly uploaded files
+                    if (!empty($row['attachments']) && is_array($row['attachments'])) {
+                        foreach ($row['attachments'] as $file) {
+                            if (!$file) continue;
+                            WeeklyReportAttachment::create([
+                                'weekly_report_id' => $report->id,
+                                'path'             => $file->store('weekly-reports', 'public'),
+                                'original_name'    => $file->getClientOriginalName(),
+                            ]);
+                        }
+                    }
+
                     $keepIds[] = $report->id;
                 } else {
                     $payload = [
@@ -422,6 +463,19 @@ class WeeklyReportController extends Controller
                     }
 
                     $created = WeeklyReport::create($payload);
+
+                    // Multi-file: attach all uploaded files to the new report
+                    if (!empty($row['attachments']) && is_array($row['attachments'])) {
+                        foreach ($row['attachments'] as $file) {
+                            if (!$file) continue;
+                            WeeklyReportAttachment::create([
+                                'weekly_report_id' => $created->id,
+                                'path'             => $file->store('weekly-reports', 'public'),
+                                'original_name'    => $file->getClientOriginalName(),
+                            ]);
+                        }
+                    }
+
                     $keepIds[] = $created->id;
                 }
             }
@@ -434,6 +488,10 @@ class WeeklyReportController extends Controller
             foreach ($toDelete as $report) {
                 if ($report->attachment_path) {
                     Storage::disk('public')->delete($report->attachment_path);
+                }
+                // Delete files for multi-attachments (FK cascade removes DB rows but not files)
+                foreach ($report->attachments as $att) {
+                    Storage::disk('public')->delete($att->path);
                 }
                 $report->delete();
             }
@@ -461,19 +519,23 @@ class WeeklyReportController extends Controller
         ]);
 
         $reports = WeeklyReport::with(['teacher', 'group'])
+            ->withCount('attachments')
             ->whereBetween('report_date', [$request->start, $request->end])
             ->orderBy('created_at')
             ->get()
             ->map(fn ($r) => [
-                'id'             => $r->id,
-                'teacher_id'     => $r->teacher_id,
-                'teacher_name'   => $r->teacher->name,
-                'group_id'       => $r->group_id,
-                'group_name'     => $r->group?->name,
-                'report_date'    => $r->report_date->format('Y-m-d'),
-                'notes'          => $r->notes,
-                'attachment_url' => $r->attachment_url,
-                'attachment_name'=> $r->attachment_original_name,
+                'id'                => $r->id,
+                'teacher_id'        => $r->teacher_id,
+                'teacher_name'      => $r->teacher->name,
+                'group_id'          => $r->group_id,
+                'group_name'        => $r->group?->name,
+                'report_date'       => $r->report_date->format('Y-m-d'),
+                'notes'             => $r->notes,
+                // Calendar uses attachment_url just to display a 📎 icon. Surface true
+                // whenever the report has any attached file (legacy single OR multi).
+                'attachment_url'    => $r->attachment_url ?: ($r->attachments_count > 0 ? '#' : null),
+                'attachment_name'   => $r->attachment_original_name,
+                'attachments_count' => $r->attachments_count,
             ]);
 
         return response()->json($reports);

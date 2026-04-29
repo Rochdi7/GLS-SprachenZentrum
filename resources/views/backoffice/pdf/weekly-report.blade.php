@@ -250,10 +250,14 @@
                                     </td>
                                     <td class="col-ntx">{!! nl2br(e($report->notes)) !!}</td>
                                     <td class="col-pdf">
+                                        @php $hasAny = $report->attachment_path || $report->attachments->isNotEmpty(); @endphp
                                         @if ($report->attachment_path)
-                                            <span class="pdf-icon">PDF</span>
-                                            <span class="pdf-name">{{ $report->attachment_original_name ?? '—' }}</span>
-                                        @else
+                                            <div><span class="pdf-icon">PDF</span> <span class="pdf-name">{{ $report->attachment_original_name ?? '—' }}</span></div>
+                                        @endif
+                                        @foreach ($report->attachments as $att)
+                                            <div><span class="pdf-icon">PDF</span> <span class="pdf-name">{{ $att->original_name ?? '—' }}</span></div>
+                                        @endforeach
+                                        @if (!$hasAny)
                                             <span style="color:#bbb;">—</span>
                                         @endif
                                     </td>
@@ -306,10 +310,14 @@
                                 </td>
                                 <td class="d-notes">{!! nl2br(e($report->notes)) !!}</td>
                                 <td class="d-pdf">
+                                    @php $hasAny = $report->attachment_path || $report->attachments->isNotEmpty(); @endphp
                                     @if ($report->attachment_path)
-                                        <span class="pdf-icon">PDF</span>
-                                        <span class="pdf-name">{{ $report->attachment_original_name ?? '—' }}</span>
-                                    @else
+                                        <div><span class="pdf-icon">PDF</span> <span class="pdf-name">{{ $report->attachment_original_name ?? '—' }}</span></div>
+                                    @endif
+                                    @foreach ($report->attachments as $att)
+                                        <div><span class="pdf-icon">PDF</span> <span class="pdf-name">{{ $att->original_name ?? '—' }}</span></div>
+                                    @endforeach
+                                    @if (!$hasAny)
                                         <span style="color:#bbb;">—</span>
                                     @endif
                                 </td>

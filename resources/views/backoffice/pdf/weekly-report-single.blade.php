@@ -192,6 +192,11 @@
                                         <strong>PDF joint :</strong> {{ $report->attachment_original_name ?? 'document.pdf' }}
                                     </div>
                                 @endif
+                                @foreach ($report->attachments as $att)
+                                    <div class="skill-attach">
+                                        <strong>PDF joint :</strong> {{ $att->original_name ?? 'document.pdf' }}
+                                    </div>
+                                @endforeach
                             @else
                                 <em>Aucune activité enregistrée pour cette compétence.</em>
                             @endif
@@ -210,6 +215,11 @@
                         <strong>PDF joint :</strong> {{ $report->attachment_original_name ?? 'document.pdf' }}
                     </div>
                 @endif
+                @foreach ($report->attachments as $att)
+                    <div class="skill-attach">
+                        <strong>PDF joint :</strong> {{ $att->original_name ?? 'document.pdf' }}
+                    </div>
+                @endforeach
             </div>
         @endforeach
     @endif
