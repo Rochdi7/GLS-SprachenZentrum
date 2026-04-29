@@ -619,14 +619,15 @@
                                     @endphp
                                     <td class="{{ $isToday ? 'today' : '' }}"
                                         data-date="{{ $key }}"
-                                        onclick="openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}')">
+                                        onclick="openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}', { freshOnly: true })">
 
                                         <div class="day-number">{{ $day->format('d') }}</div>
-                                        <button class="btn-add-day" title="Ajouter rapport">+</button>
+                                        <button class="btn-add-day" title="Ajouter rapport"
+                                                onclick="event.stopPropagation(); openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}', { freshOnly: true })">+</button>
 
                                         @foreach ($dayReports as $report)
                                             <div class="report-chip"
-                                                 onclick="event.stopPropagation(); openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}')">
+                                                 onclick="event.stopPropagation(); openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}', { teacherId: {{ $report->teacher_id }}, groupId: {{ $report->group_id ?? 'null' }} })">
                                                 <span class="teacher-name">{{ $report->teacher->name }}</span>
                                                 @if ($report->group)
                                                     <span class="group-badge" title="{{ $report->group->name }}">{{ $report->group->name }}</span>
@@ -657,15 +658,15 @@
                             <div class="day-card-header">
                                 <span class="day-label">{{ $day->locale('fr')->isoFormat('dddd D MMM') }}</span>
                                 <button class="btn-add-mobile"
-                                        onclick="event.stopPropagation(); openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}')"
+                                        onclick="event.stopPropagation(); openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}', { freshOnly: true })"
                                         title="Ajouter rapport">+</button>
                             </div>
                             <div class="day-card-body"
-                                 onclick="openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}')">
+                                 onclick="openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}', { freshOnly: true })">
 
                                 @forelse ($dayReports as $report)
                                     <div class="report-chip"
-                                         onclick="event.stopPropagation(); openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}')">
+                                         onclick="event.stopPropagation(); openDayModal('{{ $key }}', '{{ $day->locale('fr')->isoFormat('dddd D MMM YYYY') }}', { teacherId: {{ $report->teacher_id }}, groupId: {{ $report->group_id ?? 'null' }} })">
                                         <span class="teacher-name">{{ $report->teacher->name }}</span>
                                         @if ($report->group)
                                             <span class="group-badge" title="{{ $report->group->name }}">{{ $report->group->name }}</span>
@@ -1341,12 +1342,29 @@
         });
     });
 
-    async function openDayModal(date, label) {
+    async function openDayModal(date, label, opts) {
+        const options = opts || {};
+        const freshOnly = options.freshOnly === true;
+        const filterTeacherId = options.teacherId !== undefined && options.teacherId !== null ? String(options.teacherId) : null;
+        const filterGroupId = options.groupId !== undefined && options.groupId !== null ? String(options.groupId) : '';
+
         rowCounter = 0;
         rowsContainer.innerHTML = '';
         document.getElementById('modalDate').value = date;
         document.getElementById('modalDateLabel').textContent = label;
         emptyHint.style.display = 'block';
+
+        // Fresh-only mode: skip the network round-trip — open the modal with one empty row
+        // so the user sees only the new entry form.
+        if (freshOnly) {
+            emptyHint.classList.remove('is-loading');
+            emptyHint.innerHTML = 'Aucune note pour ce jour.<br>Cliquez sur <strong>« Ajouter une note »</strong> pour commencer.';
+            reportModal.show();
+            addRow();
+            refreshRowNumbers();
+            return;
+        }
+
         emptyHint.classList.add('is-loading');
         emptyHint.innerHTML = '<span class="loading-wrap"><span class="loading-spinner"></span> Chargement…</span>';
         reportModal.show();
@@ -1358,7 +1376,17 @@
             });
             if (res.ok) {
                 const json = await res.json();
-                const reports = json.reports || [];
+                let reports = json.reports || [];
+
+                // If the modal was opened from a chip click, restrict the data to that
+                // teacher (and group) so the user only sees the bar they clicked on.
+                if (filterTeacherId !== null) {
+                    reports = reports.filter(r => {
+                        if (String(r.teacher_id) !== filterTeacherId) return false;
+                        const rg = r.group_id !== undefined && r.group_id !== null ? String(r.group_id) : '';
+                        return rg === filterGroupId;
+                    });
+                }
 
                 // Group every report by (teacher_id, group_id) — one card per bucket.
                 // Legacy reports without a `skill` (free-text notes from the old UI)
