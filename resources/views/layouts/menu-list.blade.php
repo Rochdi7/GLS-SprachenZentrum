@@ -8,7 +8,9 @@
         || request()->routeIs('backoffice.attestations.*')
         || request()->routeIs('backoffice.studienkollegs.*')
         || request()->routeIs('backoffice.quizzes.*');
-    $admissionsOpen = request()->routeIs('backoffice.applications.*') || request()->routeIs('backoffice.leads.*');
+    $admissionsOpen = request()->routeIs('backoffice.applications.*')
+        || request()->routeIs('backoffice.leads.*')
+        || request()->routeIs('backoffice.newsletter_subscribers.*');
     $payrollOpen = request()->routeIs('backoffice.payroll.*') && !request()->routeIs('backoffice.payroll.presence.*');
     $presenceOpen = request()->routeIs('backoffice.payroll.presence.*');
     $contentOpen = request()->routeIs('backoffice.blog.*');
@@ -122,7 +124,7 @@
 @endcanany
 
 @hasanyrole('Super Admin|Admin')
-@canany(['applications.view', 'leads.view', 'lead_stats.view'])
+@canany(['applications.view', 'leads.view', 'lead_stats.view', 'newsletter_subscribers.view'])
 <li class="pc-item pc-hasmenu {{ $admissionsOpen ? 'pc-trigger' : '' }}">
     <a href="#!" class="pc-link">
         <span class="pc-micon"><i class="ph-duotone ph-address-book"></i></span>
@@ -148,6 +150,13 @@
         <li class="pc-item {{ request()->routeIs('backoffice.leads.stats') ? 'active' : '' }}">
             <a href="{{ route('backoffice.leads.stats') }}" class="pc-link {{ request()->routeIs('backoffice.leads.stats') ? 'active' : '' }}">
                 <span class="pc-mtext">Statistiques Leads</span>
+            </a>
+        </li>
+        @endcan
+        @can('newsletter_subscribers.view')
+        <li class="pc-item {{ request()->routeIs('backoffice.newsletter_subscribers.*') ? 'active' : '' }}">
+            <a href="{{ route('backoffice.newsletter_subscribers.index') }}" class="pc-link {{ request()->routeIs('backoffice.newsletter_subscribers.*') ? 'active' : '' }}">
+                <span class="pc-mtext">Newsletter</span>
             </a>
         </li>
         @endcan

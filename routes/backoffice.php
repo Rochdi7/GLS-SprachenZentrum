@@ -24,6 +24,7 @@ use App\Http\Controllers\Backoffice\HelpController;
 use App\Http\Controllers\Backoffice\UserController;
 use App\Http\Controllers\Backoffice\RoleController;
 use App\Http\Controllers\Backoffice\WhatsAppCampaignController;
+use App\Http\Controllers\Backoffice\NewsletterSubscriberController;
 
 use App\Http\Controllers\Backoffice\LeadController;
 use App\Http\Controllers\Backoffice\GroupApplicationController as BackofficeGroupApplicationController;
@@ -261,6 +262,21 @@ Route::prefix('backoffice')
                 Route::delete('/consultation/{consultation}', [LeadController::class, 'destroyConsultation'])->middleware('permission:leads.delete')->name('consultation.destroy');
                 Route::delete('/inscription/{inscription}', [LeadController::class, 'destroyInscription'])->middleware('permission:leads.delete')->name('inscription.destroy');
                 Route::delete('/application/{application}', [LeadController::class, 'destroyApplication'])->middleware('permission:leads.delete')->name('application.destroy');
+            });
+
+        /*
+        |----------------------------------------------------------------------
+        | NEWSLETTER SUBSCRIBERS
+        |----------------------------------------------------------------------
+        */
+        Route::prefix('newsletter-subscribers')
+            ->name('newsletter_subscribers.')
+            ->middleware('role:Super Admin|Admin')
+            ->group(function () {
+                Route::get('/', [NewsletterSubscriberController::class, 'index'])
+                    ->middleware('permission:newsletter_subscribers.view')->name('index');
+                Route::delete('/{subscriber}', [NewsletterSubscriberController::class, 'destroy'])
+                    ->middleware('permission:newsletter_subscribers.delete')->name('destroy');
             });
 
         /*

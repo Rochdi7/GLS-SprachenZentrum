@@ -24,7 +24,8 @@
                         <img src="{{ $media
                             ? route('media.custom', ['id' => $media->id, 'filename' => $media->file_name])
                             : asset('assets/images/user/avatar-2.jpg') }}"
-                            alt="image-utilisateur" class="user-avtar rounded-circle">
+                            alt="image-utilisateur" class="user-avtar rounded-circle"
+                            style="aspect-ratio:1/1;object-fit:cover;">
 
 
 
@@ -50,7 +51,8 @@
                                             src="{{ $media
                                                 ? route('media.custom', ['id' => $media->id, 'filename' => $media->file_name])
                                                 : URL::asset('build/images/user/avatar-1.jpg') }}"
-                                            alt="Image utilisateur" />
+                                            alt="Image utilisateur"
+                                            style="aspect-ratio:1/1;object-fit:cover;" />
 
                                         <div class="ms-3">
                                             <h5 class="mb-0">{{ Auth::user()->name ?? 'Administrateur' }}</h5>

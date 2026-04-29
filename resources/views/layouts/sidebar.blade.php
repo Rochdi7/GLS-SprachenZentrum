@@ -35,7 +35,8 @@
                     <img src="{{ $media
                         ? route('media.custom', ['id' => $media->id, 'filename' => $media->file_name])
                         : asset('assets/images/user/avatar-2.jpg') }}"
-                        alt="image utilisateur" class="user-avtar wid-45 rounded-circle" />
+                        alt="image utilisateur" class="user-avtar wid-45 rounded-circle"
+                        style="aspect-ratio:1/1;object-fit:cover;" />
 
 
                     <div class="flex-grow-1 ms-3">

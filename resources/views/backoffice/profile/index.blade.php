@@ -65,7 +65,8 @@
                                         src="{{ $media
                                             ? route('media.custom', ['id' => $media->id, 'filename' => $media->file_name])
                                             : URL::asset('build/images/user/avatar-1.jpg') }}"
-                                        alt="Image utilisateur" />
+                                        alt="Image utilisateur"
+                                        style="aspect-ratio:1/1;object-fit:cover;" />
 
                                     <i class="chat-badge bg-success me-2 mb-2"></i>
                                 </div>

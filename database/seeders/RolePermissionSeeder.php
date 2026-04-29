@@ -41,6 +41,7 @@ class RolePermissionSeeder extends Seeder
             'schedules'        => ['view', 'create', 'edit', 'delete'],
             'encaissements'    => ['view', 'create', 'edit', 'delete'],
             'whatsapp_campaigns' => ['view', 'create', 'edit', 'delete'],
+            'newsletter_subscribers' => ['view', 'delete'],
         ];
 
         // Create all permissions
