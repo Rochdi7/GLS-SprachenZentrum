@@ -165,6 +165,7 @@
 @endcanany
 @endhasanyrole
 
+{{-- Hidden: not ready for production
 @can('payroll.view')
 <li class="pc-item pc-hasmenu {{ $payrollOpen ? 'pc-trigger' : '' }}">
     <a href="#!" class="pc-link">
@@ -188,6 +189,7 @@
     </ul>
 </li>
 @endcan
+--}}
 
 @can('presence.view')
 <li class="pc-item pc-hasmenu {{ $presenceOpen ? 'pc-trigger' : '' }}">
@@ -213,6 +215,7 @@
 </li>
 @endcan
 
+@if(false) {{-- Hidden: not ready for production --}}
 @can('encaissements.view')
 <li class="pc-item pc-hasmenu {{ $encaissementOpen ? 'pc-trigger' : '' }}">
     <a href="#!" class="pc-link">
@@ -273,6 +276,7 @@
     </ul>
 </li>
 @endcan
+@endif
 
 <li class="pc-item pc-hasmenu {{ $rhOpen ? 'pc-trigger' : '' }}">
     <a href="#!" class="pc-link">
@@ -328,6 +332,7 @@
 </li>
 @endcanany
 
+{{-- Hidden: not ready for production
 @can('whatsapp_campaigns.view')
 <li class="pc-item pc-hasmenu {{ $whatsappOpen ? 'pc-trigger' : '' }}">
     <a href="#!" class="pc-link">
@@ -356,6 +361,7 @@
     </ul>
 </li>
 @endcan
+--}}
 
 @canany(['users.view', 'roles.view'])
 <li class="pc-item pc-hasmenu {{ $adminOpen ? 'pc-trigger' : '' }}">

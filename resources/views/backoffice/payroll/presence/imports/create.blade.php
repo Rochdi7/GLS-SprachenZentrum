@@ -89,7 +89,7 @@
                                            required id="date-end-input"
                                            placeholder="Fin">
                                 </div>
-                                <small class="text-muted">Période réelle couverte par la feuille (peut chevaucher 2 mois)</small>
+                                <small class="text-muted">Période réelle couverte par la feuille </small>
                             </div>
 
                             {{-- Auto-populated info --}}
