@@ -10,10 +10,14 @@
      */
 
     $site         = $attestation->group?->site;
-    $courseStart  = $attestation->course_start_date?->format('d-m-Y') ?? '—';
-    $courseEnd    = $attestation->is_ongoing ? 'heute' : ($attestation->course_end_date?->format('d-m-Y') ?? '—');
-    $niveauStart  = $attestation->niveau_start_date?->format('d-m-Y') ?? '—';
-    $niveauEnd    = $attestation->is_ongoing ? 'heute' : ($attestation->niveau_end_date?->format('d-m-Y') ?? '—');
+
+    // Format helper — empty values are rendered as a non-breaking dash so layout doesn't collapse.
+    $fmt = fn ($d) => $d?->format('d-m-Y') ?? '—';
+
+    $courseStart  = $fmt($attestation->course_start_date);
+    $courseEnd    = $attestation->is_ongoing ? 'heute' : $fmt($attestation->course_end_date);
+    $niveauStart  = $fmt($attestation->niveau_start_date);
+    $niveauEnd    = $attestation->is_ongoing ? 'heute' : $fmt($attestation->niveau_end_date);
 
     $erfolgList = ['Erfolg', 'mit gutem Erfolg', 'mit Erfolg', 'teilgenommen'];
     $levels     = ['A1', 'A2', 'B1', 'B2'];
@@ -265,18 +269,17 @@
         </tr>
     </table>
 
-    {{-- ============ PARTICIPATION (DE on top, FR underneath) ============ --}}
+    {{-- ============ PARTICIPATION (matches Word reference) ============ --}}
     <div class="block">
         <div class="line-de">
-            hat in der Zeit <span class="underline">vom</span>
+            hat in der Zeit <span class="underline">vom</span> / a participé
             <span class="bold nowrap">{{ $courseStart }}</span> bis
             <span class="bold nowrap">{{ $courseEnd }}</span>
+            <br>
             an einem Deutschkurs im GLS Sprachenzentrum teilgenommen.
         </div>
         <div class="line-fr">
-            A participé du <span class="bold nowrap">{{ $courseStart }}</span> au
-            <span class="bold nowrap">{{ $courseEnd }}</span>
-            à un cours de langue allemande au GLS Sprachenzentrum.
+            A un cours de la langue Allemande au GLS Sprachenzentrum.
         </div>
     </div>
 
@@ -285,7 +288,7 @@
         <tr>
             <td class="label-de">Der Kurs umfasste</td>
             <td class="num" rowspan="2">{{ $attestation->units_45min }}</td>
-            <td class="suffix-de">Unterrichtseinheiten zu je 45 Minuten.</td>
+            <td class="suffix-de"><span class="underline">Unterrichtseinheiten</span> 45 Minuten.</td>
         </tr>
         <tr>
             <td class="label-fr">Le cours comprenait</td>
