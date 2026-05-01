@@ -13,7 +13,7 @@ return [
     'hero' => [
         'subtitle' => 'Bequem von zu Hause aus',
         'title' => 'Deutsch online lernen',
-        'description' => "Von Niveau A1 bis B2, Kurse für alle Profile, überall auf der Welt.<br>
+        'description' => "Von Niveau A1 bis B2, Kurse für alle Profile, überall in Marokko.<br>
                           Lernen Sie Deutsch online mit Live-Unterricht, in kleinen Gruppen, unterrichtet von qualifizierten Lehrern —
                           alles von zu Hause aus.",
 
@@ -57,7 +57,7 @@ return [
             'Kleine Gruppen',
             'Alle Niveaus A1 bis B2',
             'Online-Lehrmaterialien',
-            'Studierende aus der ganzen Welt',
+            'Studierende aus ganz Marokko',
             'Ganzjährig offene Einschreibung',
         ],
     ],

@@ -23,7 +23,7 @@ return [
     'hero' => [
         'subtitle' => 'Depuis le confort de votre maison',
         'title' => 'Apprenez l’allemand en ligne',
-        'description' => "Du niveau A1 au niveau B2, des cours adaptés à tous les profils, partout dans le monde.<br>
+        'description' => "Du niveau A1 au niveau B2, des cours adaptés à tous les profils, partout au Maroc.<br>
                           Apprenez l’allemand en ligne avec des cours en direct, en petits groupes, animés par des professeurs qualifiés —
                           le tout depuis chez vous.",
 
@@ -77,7 +77,7 @@ return [
             'Petits groupes',
             'Tous niveaux de A1 à B2',
             'Ressources pédagogiques en ligne',
-            'Étudiants du monde entier',
+            'Étudiants de tout le Maroc',
             'Inscriptions ouvertes toute l’année',
         ],
     ],

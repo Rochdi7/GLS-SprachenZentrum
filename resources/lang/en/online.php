@@ -23,7 +23,7 @@ return [
     'hero' => [
         'subtitle' => 'From the comfort of your home',
         'title' => 'Learn German online',
-        'description' => "From level A1 to B2, courses adapted to all profiles, anywhere in the world.<br>
+        'description' => "From level A1 to B2, courses adapted to all profiles, anywhere in Morocco.<br>
                           Learn German online with live classes, in small groups, taught by qualified teachers —
                           all from your home.",
 
@@ -77,7 +77,7 @@ return [
             'Small groups',
             'All levels A1 to B2',
             'Online teaching resources',
-            'Students from around the world',
+            'Students from across Morocco',
             'Open enrollment year-round',
         ],
     ],
