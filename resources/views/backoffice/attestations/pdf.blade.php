@@ -84,8 +84,7 @@
 
         .inline-date {
             font-weight: bold;
-            display: inline-block;
-            padding: 0 4px;
+            white-space: nowrap;
         }
 
         /* ===== UNITÉS — number positioned between DE & FR lines ===== */
@@ -100,19 +99,22 @@
             font-size: 12.5px;
             line-height: 1.55;
         }
-        .units-table td.de-text { width: 40%; }
+        .units-table td.de-text { width: 30%; white-space: nowrap; padding-right: 8px; }
         .units-table td.units-num {
-            width: 18%;
+            width: 12%;
             text-align: center;
             font-size: 19px;
             font-weight: bold;
+            white-space: nowrap;
         }
         .units-table td.de-suffix {
-            width: 42%;
-            padding-left: 4px;
+            width: 58%;
+            padding-left: 8px;
+            white-space: nowrap;
         }
         .units-table td.fr-text {
             font-size: 12px;
+            white-space: nowrap;
         }
 
         /* ===== CHECK BOX ===== */
@@ -160,7 +162,7 @@
             font-size: 12.5px;
         }
         .levels-row {
-            width: 100%;
+            width: auto;
             border-collapse: collapse;
             margin-bottom: 12px;
         }
@@ -168,10 +170,11 @@
             text-align: left;
             font-size: 14px;
             font-weight: bold;
-            padding-right: 14px;
+            padding-right: 32px;
             white-space: nowrap;
+            vertical-align: middle;
         }
-        .levels-row .check-box { margin-right: 8px; vertical-align: -2px; }
+        .levels-row .check-box { margin-right: 6px; vertical-align: middle; }
 
         /* ===== KURSINFO ===== */
         .kursinfo-title {
@@ -274,14 +277,15 @@
     </table>
 
     {{-- ============ PARTICIPATION ============ --}}
+    @php
+        $courseEndLabel = $attestation->is_ongoing
+            ? 'heute'
+            : $attestation->course_end_date?->format('d-m-Y');
+    @endphp
     <div class="para">
-        hat in der Zeit <u>vom</u> / a participé
-        <span class="inline-date">{{ $attestation->course_start_date?->format('d-m-Y') }}</span>
-        bis
-        <span class="inline-date">{{ $attestation->course_end_date?->format('d-m-Y') }}</span>
-        <br>
-        an einem Deutschkurs im GLS Sprachenzentrum teilgenommen .
-        <span class="para-fr">A un cours de la langue Allemagne au GLS Sprachenzentrum.</span>
+        hat in der Zeit <u>vom</u> / a participé <span class="inline-date">{{ $attestation->course_start_date?->format('d-m-Y') }}</span> bis <span class="inline-date">{{ $courseEndLabel }}</span>
+        an einem Deutschkurs im GLS Sprachenzentrum teilgenommen.
+        <span class="para-fr">A un cours de la langue Allemande au GLS Sprachenzentrum.</span>
     </div>
 
     {{-- ============ UNITS — DE & FR with number centered between ============ --}}
@@ -306,11 +310,13 @@
     </div>
 
     {{-- ============ NIVEAU PERIOD ============ --}}
+    @php
+        $niveauEndLabel = $attestation->is_ongoing
+            ? 'heute'
+            : $attestation->niveau_end_date?->format('d-m-Y');
+    @endphp
     <div class="niveau-period">
-        Das Niveau <u>beginnt</u> von
-        <span class="inline-date">{{ $attestation->niveau_start_date?->format('d-m-Y') }}</span>
-        bis
-        <span class="inline-date">{{ $attestation->niveau_end_date?->format('d-m-Y') }}</span>
+        Das Niveau <u>beginnt</u> von <span class="inline-date">{{ $attestation->niveau_start_date?->format('d-m-Y') }}</span> bis <span class="inline-date">{{ $niveauEndLabel }}</span>
     </div>
 
     {{-- ============ LEVELS ============ --}}
@@ -318,16 +324,15 @@
         <u>Referenzniveau des Kurses</u> &nbsp;/ Niveau de référence européen :
     </div>
 
-    @php $levels = ['A1', 'A2', 'B1', 'B2', 'C1']; @endphp
+    @php $levels = ['A1', 'A2', 'B1', 'B2']; @endphp
 
     <table class="levels-row">
         <tr>
             @foreach($levels as $lvl)
                 <td>
-                    <span class="check-box {{ $attestation->level === $lvl ? 'checked' : '' }}"></span>{{ $lvl === 'C1' ? 'C 1' : $lvl }}
+                    <span class="check-box {{ $attestation->level === $lvl ? 'checked' : '' }}"></span>{{ $lvl }}
                 </td>
             @endforeach
-            <td style="width: 100%;"></td>
         </tr>
     </table>
 
@@ -347,9 +352,13 @@
         .
     </div>
 
-    <div class="legal">
-        L'appréciation des résultats obtenus en cours est faite par les enseignant(e)s . Cette attestation de présence n'est pas un diplôme . Le barème comprend 4 appréciations : très bien , bien , assez bien , participation régulière
-    </div>
+    @php
+        $defaultMethodology = "L'appréciation des résultats obtenus en cours est faite par les enseignant(e)s . Cette attestation de présence n'est pas un diplôme . Le barème comprend 4 appréciations : très bien , bien , assez bien , participation régulière";
+        $methodologyText = trim((string) ($attestation->methodology_text ?? '')) !== ''
+            ? $attestation->methodology_text
+            : $defaultMethodology;
+    @endphp
+    <div class="legal">{!! nl2br(e($methodologyText)) !!}</div>
 
     {{-- ============ ORT / DATUM / KURSLEITUNG ============ --}}
     <table class="sig-table">

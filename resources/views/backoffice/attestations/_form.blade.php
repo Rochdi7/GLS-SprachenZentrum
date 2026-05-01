@@ -12,25 +12,25 @@
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Nom (Name)</label>
+        <label class="form-label fw-bold">Nom</label>
         <input type="text" name="last_name" class="form-control" required
                value="{{ old('last_name', $att->last_name ?? '') }}">
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Prénom (Vorname)</label>
+        <label class="form-label fw-bold">Prénom</label>
         <input type="text" name="first_name" class="form-control" required
                value="{{ old('first_name', $att->first_name ?? '') }}">
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Date de naissance (geboren am)</label>
+        <label class="form-label fw-bold">Date de naissance</label>
         <input type="date" name="birth_date" class="form-control"
                value="{{ old('birth_date', isset($att->birth_date) ? $att->birth_date->format('Y-m-d') : '') }}">
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Lieu de naissance (geboren in)</label>
+        <label class="form-label fw-bold">Lieu de naissance</label>
         <input type="text" name="birth_place" class="form-control"
                value="{{ old('birth_place', $att->birth_place ?? '') }}">
     </div>
@@ -39,7 +39,7 @@
     {{--   COURS / GROUPE                                             --}}
     {{-- ============================================================ --}}
     <div class="col-12 mt-3">
-        <h5 class="mb-3 fw-bold">Cours / Groupe</h5>
+        <h5 class="mb-3 fw-bold">Cours et groupe</h5>
     </div>
 
     <div class="col-md-6 mb-3">
@@ -62,7 +62,7 @@
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Niveau (sélectionné)</label>
+        <label class="form-label fw-bold">Niveau sélectionné</label>
         @php
             $selectedLevel = old('level', $att->level ?? '');
             $staticLevels = ['A1', 'A2', 'B1', 'B2'];
@@ -73,19 +73,35 @@
                 <option value="{{ $lvl }}" {{ $selectedLevel === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
             @endforeach
         </select>
-        <small class="text-muted">Les dates de début/fin sont récupérées depuis le Suivi niveau du groupe sélectionné.</small>
+        <small class="text-muted d-block">Les dates de début/fin sont récupérées automatiquement depuis le Suivi niveau du groupe sélectionné.</small>
+        <small id="att-level-warning" class="text-danger d-none">
+            Aucune entrée de Suivi niveau trouvée pour ce niveau dans le groupe sélectionné. Veuillez saisir les dates manuellement.
+        </small>
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Début du cours (vom)</label>
+        <label class="form-label fw-bold">Début du cours</label>
         <input type="date" name="course_start_date" id="att-course-start" class="form-control"
                value="{{ old('course_start_date', isset($att->course_start_date) ? $att->course_start_date->format('Y-m-d') : '') }}">
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Fin du cours (bis)</label>
+        <label class="form-label fw-bold">Fin du cours</label>
         <input type="date" name="course_end_date" id="att-course-end" class="form-control"
                value="{{ old('course_end_date', isset($att->course_end_date) ? $att->course_end_date->format('Y-m-d') : '') }}">
+    </div>
+
+    <div class="col-md-12 mb-3">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="is_ongoing" id="att-is-ongoing" value="1"
+                   {{ old('is_ongoing', $att->is_ongoing ?? false) ? 'checked' : '' }}>
+            <label class="form-check-label fw-bold" for="att-is-ongoing">
+                L'étudiant est toujours en cours
+            </label>
+            <small class="text-muted d-block">
+                Si coché, la date de fin sera remplacée par « heute » (ou la traduction selon la langue) sur le PDF exporté.
+            </small>
+        </div>
     </div>
 
     <div class="col-md-6 mb-3">
@@ -101,36 +117,20 @@
     </div>
 
     {{-- ============================================================ --}}
-    {{--   AUTO-CALCUL                                                --}}
+    {{--   VOLUME HORAIRE (manuel)                                    --}}
     {{-- ============================================================ --}}
-    <div class="col-12 mt-3">
-        <h5 class="mb-3 fw-bold">Volume horaire (auto)</h5>
-    </div>
-
-    <div class="col-md-4 mb-3">
-        <label class="form-label fw-bold">Heures par séance (centre)</label>
-        <input type="text" id="att-hours-display" class="form-control" readonly
-               value="{{ old('hours_per_session', isset($att->hours_per_session) ? $att->hours_per_session : '') }}">
-        <small class="text-muted">2h pour Rabat / Salé / Casablanca / Online — 2h30 ailleurs.</small>
-    </div>
-
-    <div class="col-md-4 mb-3">
-        <label class="form-label fw-bold">Jours ouvrés (Lun–Ven)</label>
-        <input type="text" id="att-weekdays-display" class="form-control" readonly>
-    </div>
-
-    <div class="col-md-4 mb-3">
-        <label class="form-label fw-bold">Unterrichtseinheiten (45 min)</label>
-        <input type="text" id="att-units-display" class="form-control" readonly
-               value="{{ old('units_45min', isset($att->units_45min) ? $att->units_45min : '') }}">
-        <small class="text-muted">Calcul final côté serveur.</small>
+    <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Unités d'enseignement (45 min)</label>
+        <input type="number" min="0" step="1" name="units_45min" id="att-units-input" class="form-control" required
+               value="{{ old('units_45min', $att->units_45min ?? '') }}">
+        <small class="text-muted">Saisir manuellement le nombre de séances de 45 minutes.</small>
     </div>
 
     {{-- ============================================================ --}}
     {{--   FRAIS                                                      --}}
     {{-- ============================================================ --}}
     <div class="col-12 mt-3">
-        <h5 class="mb-3 fw-bold">Frais (Kursgebühren)</h5>
+        <h5 class="mb-3 fw-bold">Frais de cours</h5>
     </div>
 
     <div class="col-md-12 mb-3">
@@ -138,7 +138,7 @@
             <input class="form-check-input" type="radio" name="fees_status" id="fees-full" value="full"
                    {{ old('fees_status', $att->fees_status ?? 'full') === 'full' ? 'checked' : '' }}>
             <label class="form-check-label" for="fees-full">
-                Vollständig entrichtet (intégralement payés)
+                Intégralement payés
             </label>
         </div>
 
@@ -146,7 +146,7 @@
             <input class="form-check-input" type="radio" name="fees_status" id="fees-partial" value="partial"
                    {{ old('fees_status', $att->fees_status ?? 'full') === 'partial' ? 'checked' : '' }}>
             <label class="form-check-label" for="fees-partial">
-                Teilweise entrichtet (partiellement payés)
+                Partiellement payés
             </label>
         </div>
     </div>
@@ -155,23 +155,25 @@
     {{--   KURSINFO                                                   --}}
     {{-- ============================================================ --}}
     <div class="col-12 mt-3">
-        <h5 class="mb-3 fw-bold">Kursinfo</h5>
+        <h5 class="mb-3 fw-bold">Informations sur le cours</h5>
     </div>
 
     <div class="col-md-3 mb-3">
-        <label class="form-label fw-bold">Stufe (X)</label>
+        <label class="form-label fw-bold">Niveau actuel</label>
         <input type="number" min="1" max="9" name="stufe_index" class="form-control" required
                value="{{ old('stufe_index', $att->stufe_index ?? 1) }}">
+        <small class="text-muted">Numéro du palier en cours.</small>
     </div>
 
     <div class="col-md-3 mb-3">
-        <label class="form-label fw-bold">von (Y)</label>
+        <label class="form-label fw-bold">Nombre total de niveaux</label>
         <input type="number" min="1" max="9" name="stufe_total" class="form-control" required
                value="{{ old('stufe_total', $att->stufe_total ?? 3) }}">
+        <small class="text-muted">Total des paliers du parcours.</small>
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Erfolg / Appréciation</label>
+        <label class="form-label fw-bold">Appréciation</label>
         <select name="erfolg" class="form-select" required>
             @foreach($erfolgOptions as $value => $label)
                 <option value="{{ $value }}"
@@ -181,6 +183,11 @@
             @endforeach
         </select>
     </div>
+
+    {{-- ============================================================ --}}
+    {{--   MÉTHODOLOGIE / NOTE LÉGALE — caché, valeur préservée       --}}
+    {{-- ============================================================ --}}
+    <input type="hidden" name="methodology_text" value="{{ old('methodology_text', $att->methodology_text ?? '') }}">
 
     {{-- ============================================================ --}}
     {{--   LANGUE DE L'ATTESTATION                                    --}}
@@ -210,14 +217,14 @@
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Ort / Lieu</label>
+        <label class="form-label fw-bold">Lieu</label>
         <input type="text" name="city" id="att-city" class="form-control"
                value="{{ old('city', $att->city ?? '') }}">
         <small class="text-muted">Pré-rempli depuis la ville du centre.</small>
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Datum / Date</label>
+        <label class="form-label fw-bold">Date de délivrance</label>
         <input type="date" name="issue_date" class="form-control" required
                value="{{ old('issue_date', isset($att->issue_date) ? $att->issue_date->format('Y-m-d') : now()->format('Y-m-d')) }}">
     </div>
@@ -231,35 +238,55 @@
 document.addEventListener('DOMContentLoaded', function () {
     'use strict';
 
-    const groupSelect    = document.getElementById('att-group-select');
-    const levelSelect    = document.getElementById('att-level-select');
-    const courseStart    = document.getElementById('att-course-start');
-    const courseEnd      = document.getElementById('att-course-end');
-    const niveauStart    = document.getElementById('att-niveau-start');
-    const niveauEnd      = document.getElementById('att-niveau-end');
-    const hoursDisplay   = document.getElementById('att-hours-display');
-    const weekdaysDisplay = document.getElementById('att-weekdays-display');
-    const unitsDisplay   = document.getElementById('att-units-display');
-    const cityInput      = document.getElementById('att-city');
+    const groupSelect  = document.getElementById('att-group-select');
+    const levelSelect  = document.getElementById('att-level-select');
+    const courseStart  = document.getElementById('att-course-start');
+    const courseEnd    = document.getElementById('att-course-end');
+    const niveauStart  = document.getElementById('att-niveau-start');
+    const niveauEnd    = document.getElementById('att-niveau-end');
+    const cityInput    = document.getElementById('att-city');
 
-    const baseLevelsUrl  = groupSelect.dataset.levelsUrl; // ends with /0
-    let cachedLevels     = [];
-    let hoursPerSession  = parseFloat(hoursDisplay.value) || null;
+    const baseLevelsUrl = groupSelect.dataset.levelsUrl; // ends with /0
+    const levelWarning  = document.getElementById('att-level-warning');
+    let cachedLevels    = [];
 
-    function fetchGroupLevels(groupId) {
+    function showLevelWarning(show) {
+        if (!levelWarning) return;
+        levelWarning.classList.toggle('d-none', !show);
+    }
+
+    function annotateLevelOptions() {
+        // Tag each <option> with whether the group has a Suivi niveau entry for it.
+        const availableSet = new Set(cachedLevels.map(l => l.level));
+        Array.from(levelSelect.options).forEach(opt => {
+            if (!opt.value) return;
+            const has = availableSet.has(opt.value);
+            const baseLabel = opt.dataset.baseLabel || opt.textContent.replace(/\s*•.*$/, '');
+            opt.dataset.baseLabel = baseLabel;
+            opt.textContent = has
+                ? baseLabel + ' • dates disponibles'
+                : baseLabel + ' • aucune date enregistrée';
+        });
+    }
+
+    function fetchGroupLevels(groupId, opts) {
+        opts = opts || {};
         if (!groupId) {
             cachedLevels = [];
+            annotateLevelOptions();
             return;
         }
 
-        const url = baseLevelsUrl.replace(/\/0(\?|$)/, '/' + groupId + '$1');
+        // The placeholder route was generated with group=0; substitute the real group id.
+        // Match /0 when followed by /, ?, or end-of-string so it works whether the placeholder is mid-path or at the end.
+        const url = baseLevelsUrl.replace(/\/0(?=\/|\?|$)/, '/' + groupId);
 
         fetch(url, { headers: { 'Accept': 'application/json' } })
             .then(r => r.json())
             .then(data => {
                 cachedLevels = data.levels || [];
-                hoursPerSession = parseFloat(data.group?.hours_per_session) || 2.5;
-                hoursDisplay.value = hoursPerSession.toFixed(2);
+
+                annotateLevelOptions();
 
                 // Pre-fill course (vom .. bis) from group dates if empty
                 if (!courseStart.value && data.group?.date_debut) {
@@ -278,10 +305,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // If a level is already selected (edit / old()), auto-fill its date range from Suivi niveau.
                 if (levelSelect.value) {
-                    onLevelChange(/* keepPreselectedDates */ true);
+                    onLevelChange(/* keepPreselectedDates */ !!opts.initialLoad);
+                } else {
+                    showLevelWarning(false);
                 }
-
-                computeUnitsPreview();
             })
             .catch(err => {
                 console.error('Failed to fetch group levels', err);
@@ -290,75 +317,53 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function onLevelChange(keepPreselectedDates) {
         const value = levelSelect.value;
-        if (!value) return;
+        if (!value) {
+            niveauStart.value = '';
+            niveauEnd.value = '';
+            showLevelWarning(false);
+            return;
+        }
 
         const lvl = cachedLevels.find(function (l) { return l.level === value; });
-
-        // Falls back gracefully if the group has no Suivi niveau entry for the chosen level.
         const start = lvl ? lvl.start_date : null;
         const end   = lvl ? lvl.end_date   : null;
 
         if (keepPreselectedDates) {
-            // On edit reload, use the saved values if present.
+            // On edit reload, prefer saved values, otherwise fall back to Suivi niveau dates.
             const savedStart = groupSelect.dataset.selectedNiveauStart;
             const savedEnd   = groupSelect.dataset.selectedNiveauEnd;
-            if (savedStart) niveauStart.value = savedStart;
-            else if (start) niveauStart.value = start;
-
-            if (savedEnd)   niveauEnd.value = savedEnd;
-            else if (end)   niveauEnd.value = end;
+            niveauStart.value = savedStart || start || '';
+            niveauEnd.value   = savedEnd   || end   || '';
         } else {
-            if (start) niveauStart.value = start;
-            if (end)   niveauEnd.value   = end;
+            // Manual change: always overwrite with Suivi niveau dates (or clear if missing).
+            niveauStart.value = start || '';
+            niveauEnd.value   = end   || '';
         }
 
-        computeUnitsPreview();
-    }
-
-    function countWeekdays(startStr, endStr) {
-        if (!startStr || !endStr) return 0;
-        const start = new Date(startStr + 'T00:00:00');
-        const end   = new Date(endStr + 'T00:00:00');
-        if (isNaN(start) || isNaN(end) || end < start) return 0;
-
-        let count = 0;
-        const cur = new Date(start);
-        while (cur <= end) {
-            const d = cur.getDay(); // 0 = Sun, 6 = Sat
-            if (d !== 0 && d !== 6) count++;
-            cur.setDate(cur.getDate() + 1);
-        }
-        return count;
-    }
-
-    function computeUnitsPreview() {
-        const days = countWeekdays(niveauStart.value, niveauEnd.value);
-        weekdaysDisplay.value = days;
-
-        const hours = parseFloat(hoursDisplay.value) || hoursPerSession || 0;
-        if (!hours || !days) {
-            unitsDisplay.value = '';
-            return;
-        }
-
-        const minutes = days * hours * 60;
-        const units = Math.round(minutes / 45);
-        unitsDisplay.value = units;
+        showLevelWarning(!lvl);
     }
 
     groupSelect.addEventListener('change', function () {
+        // New group → clear level + niveau dates so they get rebuilt from the new group's Suivi niveau.
+        levelSelect.value = '';
+        niveauStart.value = '';
+        niveauEnd.value = '';
+        // Clear course dates too, will be auto-refilled from new group's date_debut/date_fin.
+        courseStart.value = '';
+        courseEnd.value = '';
+        cityInput.value = '';
+        showLevelWarning(false);
         fetchGroupLevels(this.value);
     });
 
     levelSelect.addEventListener('change', function () { onLevelChange(false); });
-    niveauStart.addEventListener('change', computeUnitsPreview);
-    niveauEnd.addEventListener('change', computeUnitsPreview);
 
-    // Initial load (edit)
+    // Initial load (edit / old() repopulation)
     if (groupSelect.value) {
-        fetchGroupLevels(groupSelect.value);
+        fetchGroupLevels(groupSelect.value, { initialLoad: true });
     } else {
-        computeUnitsPreview();
+        annotateLevelOptions();
     }
+
 });
 </script>

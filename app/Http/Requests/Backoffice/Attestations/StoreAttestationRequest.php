@@ -27,12 +27,16 @@ class StoreAttestationRequest extends FormRequest
 
             'niveau_start_date'  => 'nullable|date',
             'niveau_end_date'    => 'nullable|date',
+            'is_ongoing'         => 'nullable|boolean',
+
+            'units_45min'        => 'required|integer|min:0',
 
             'fees_status'        => 'required|in:full,partial',
 
             'stufe_index'        => 'required|integer|min:1|max:9',
             'stufe_total'        => 'required|integer|min:1|max:9',
             'erfolg'             => 'required|string|max:50',
+            'methodology_text'   => 'nullable|string|max:5000',
             'language'           => 'required|in:de_fr,de,fr,en',
 
             'city'               => 'nullable|string|max:120',

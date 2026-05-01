@@ -21,6 +21,7 @@ class Attestation extends Model
 
         'niveau_start_date',
         'niveau_end_date',
+        'is_ongoing',
 
         'units_45min',
         'hours_per_session',
@@ -30,6 +31,7 @@ class Attestation extends Model
         'stufe_index',
         'stufe_total',
         'erfolg',
+        'methodology_text',
         'language',
 
         'city',
@@ -50,6 +52,7 @@ class Attestation extends Model
         'hours_per_session'  => 'decimal:2',
         'stufe_index'        => 'integer',
         'stufe_total'        => 'integer',
+        'is_ongoing'         => 'boolean',
     ];
 
     public function group()

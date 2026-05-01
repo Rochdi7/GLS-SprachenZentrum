@@ -17,10 +17,10 @@ class AttestationController extends Controller
     private const ORDER = ['A1', 'A2', 'B1', 'B2', 'C1'];
 
     private const ERFOLG_OPTIONS = [
-        'Erfolg'             => 'Erfolg (très bien)',
-        'mit gutem Erfolg'   => 'mit gutem Erfolg (bien)',
-        'mit Erfolg'         => 'mit Erfolg (assez bien)',
-        'teilgenommen'       => 'teilgenommen (participation régulière)',
+        'Erfolg'             => 'Très bien',
+        'mit gutem Erfolg'   => 'Bien',
+        'mit Erfolg'         => 'Assez bien',
+        'teilgenommen'       => 'Participation régulière',
     ];
 
     private const LANGUAGE_OPTIONS = [
@@ -174,18 +174,15 @@ class AttestationController extends Controller
     private function hydrate(array $data): array
     {
         $group = Group::with('site')->findOrFail($data['group_id']);
-        $hoursPerSession = $group->site?->getCourseDuration() ?? 2.5;
 
-        $data['hours_per_session'] = $hoursPerSession;
+        // hours_per_session reste enregistré pour référence/historique mais n'est plus utilisé pour calculer units_45min.
+        $data['hours_per_session'] = $group->site?->getCourseDuration() ?? 2.5;
 
-        // Calcul auto des unités uniquement si les deux dates du niveau sont fournies.
-        if (!empty($data['niveau_start_date']) && !empty($data['niveau_end_date'])) {
-            $niveauStart = Carbon::parse($data['niveau_start_date']);
-            $niveauEnd   = Carbon::parse($data['niveau_end_date']);
-            $data['units_45min'] = self::computeUnits($niveauStart, $niveauEnd, $hoursPerSession);
-        } else {
-            $data['units_45min'] = 0;
-        }
+        // units_45min provient du formulaire (saisie manuelle) — on garantit juste un entier positif.
+        $data['units_45min'] = isset($data['units_45min']) ? max(0, (int) $data['units_45min']) : 0;
+
+        // Cours en cours : checkbox non cochée = false.
+        $data['is_ongoing'] = !empty($data['is_ongoing']);
 
         // Si la ville n'est pas définie, on tente le centre
         if (empty($data['city'])) {

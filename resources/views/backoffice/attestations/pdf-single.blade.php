@@ -86,10 +86,20 @@
     $t = $T[$lang] ?? $T['de'];
     $erfolgT = $erfolgTranslations[$lang] ?? $erfolgTranslations['de'];
 
+    $todayWord = [
+        'de' => 'heute',
+        'fr' => "aujourd'hui",
+        'en' => 'today',
+    ][$lang] ?? 'heute';
+
     $startCourse = $attestation->course_start_date?->format('d-m-Y') ?? '—';
-    $endCourse   = $attestation->course_end_date?->format('d-m-Y')   ?? '—';
+    $endCourse   = $attestation->is_ongoing
+        ? $todayWord
+        : ($attestation->course_end_date?->format('d-m-Y') ?? '—');
     $startNiveau = $attestation->niveau_start_date?->format('d-m-Y') ?? '—';
-    $endNiveau   = $attestation->niveau_end_date?->format('d-m-Y')   ?? '—';
+    $endNiveau   = $attestation->is_ongoing
+        ? $todayWord
+        : ($attestation->niveau_end_date?->format('d-m-Y') ?? '—');
 
     $participationText = strtr($t['participation'], [':start' => $startCourse, ':end' => $endCourse]);
     $unitsText         = strtr($t['units'], [':units' => $attestation->units_45min]);
@@ -97,7 +107,7 @@
     $kursinfoLine      = strtr($t['kursinfo_line'], [':idx' => $attestation->stufe_index, ':total' => $attestation->stufe_total]);
 
     $erfolgList = ['Erfolg', 'mit gutem Erfolg', 'mit Erfolg', 'teilgenommen'];
-    $levels = ['A1', 'A2', 'B1', 'B2', 'C1'];
+    $levels = ['A1', 'A2', 'B1', 'B2'];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}">
@@ -173,15 +183,16 @@
         .niveau-period { margin: 14px 0 12px 0; font-size: 12.5px; }
 
         .levels-title { margin: 10px 0 8px; font-size: 12.5px; text-decoration: underline; }
-        .levels-row { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+        .levels-row { width: auto; border-collapse: collapse; margin-bottom: 12px; }
         .levels-row td {
             text-align: left;
             font-size: 14px;
             font-weight: bold;
-            padding-right: 14px;
+            padding-right: 32px;
             white-space: nowrap;
+            vertical-align: middle;
         }
-        .levels-row .check-box { margin-right: 8px; vertical-align: -2px; }
+        .levels-row .check-box { margin-right: 6px; vertical-align: middle; }
 
         .kursinfo-title { margin-top: 6px; margin-bottom: 4px; font-size: 12.5px; }
         .kursinfo-line { margin-bottom: 4px; font-size: 12.5px; }
@@ -258,10 +269,9 @@
         <tr>
             @foreach($levels as $lvl)
                 <td>
-                    <span class="check-box {{ $attestation->level === $lvl ? 'checked' : '' }}"></span>{{ $lvl === 'C1' ? 'C 1' : $lvl }}
+                    <span class="check-box {{ $attestation->level === $lvl ? 'checked' : '' }}"></span>{{ $lvl }}
                 </td>
             @endforeach
-            <td style="width: 100%;"></td>
         </tr>
     </table>
 
@@ -275,7 +285,12 @@
         .
     </div>
 
-    <div class="legal">{{ $t['legal'] }}</div>
+    @php
+        $methodologyText = trim((string) ($attestation->methodology_text ?? '')) !== ''
+            ? $attestation->methodology_text
+            : $t['legal'];
+    @endphp
+    <div class="legal">{!! nl2br(e($methodologyText)) !!}</div>
 
     <table class="sig-table">
         <tr>
