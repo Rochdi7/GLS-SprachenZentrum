@@ -23,10 +23,10 @@
         ? $attestation->methodology_text
         : $defaultMethodology;
 
-    // Footer — pulled from the centre when available, with a Salé fallback.
-    $footerAddress = $site?->address  ?? 'Avenue Yacoub El Mansour, Immeuble Espace Guéliz, 3ème étage Bureau 28, Marrakech.';
-    $footerPhone   = $site?->phone    ?? '0808540625 / 0622996078';
-    $footerEmail   = $site?->email    ?? 'info@glssprachenzentrum.ma';
+    // Footer — fixed (Salé head office), used on all bilingual exports.
+    $footerAddress = 'Rue Halima Saadia N12 Lgherabliya en face la pharmacie centrale près de station tram Diyar';
+    $footerPhone   = '0808540625 / 0622996078';
+    $footerEmail   = 'gls.sprachenzentrum.sale@gmail.com';
 @endphp
 <!DOCTYPE html>
 <html lang="de">
@@ -35,121 +35,106 @@
     <title>Teilnahmebestätigung — {{ $attestation->last_name }} {{ $attestation->first_name }}</title>
 
     <style>
-        @page { size: A4 portrait; margin: 30px 30px 100px 30px; }
-
+        @page { size: A4 portrait; margin: 35px 40px 95px 40px; }
         * { box-sizing: border-box; }
 
         body {
             font-family: DejaVu Sans, sans-serif;
-            font-size: 11pt;
+            font-size: 10.5pt;
             color: #111;
             margin: 0;
             padding: 0;
-            line-height: 1.45;
+            line-height: 1.5;
         }
 
-        /* ====== HEADER ====== */
+        /* ===== HEADER ===== */
         table.header {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 24px;
+            margin-bottom: 26px;
+            table-layout: fixed;
         }
         table.header td { vertical-align: middle; padding: 0; }
-        table.header td.logo-cell { width: 150px; }
-        table.header td.title-cell {
-            text-align: left;
-            padding-left: 30px;
-        }
-        .header-logo { width: 130px; height: auto; display: block; }
+        table.header td.logo-cell { width: 140px; }
+        table.header td.title-cell { padding-left: 22px; text-align: left; }
+        .header-logo { width: 120px; height: auto; display: block; }
         .header-title {
-            font-size: 22pt;
+            font-size: 21pt;
             font-weight: bold;
             text-decoration: underline;
             line-height: 1;
             white-space: nowrap;
+            letter-spacing: -0.2px;
         }
 
-        /* ====== NAME BLOCK ====== */
-        .name-block { margin-bottom: 18px; }
+        /* ===== NAME ===== */
+        .name-block { margin-bottom: 16px; }
         .name-value {
-            font-size: 16pt;
+            font-size: 15pt;
             font-weight: bold;
-            line-height: 1.15;
-            letter-spacing: 0.3px;
+            line-height: 1.2;
+            letter-spacing: 0.4px;
             white-space: nowrap;
         }
-        .name-label {
-            font-size: 8.5pt;
-            color: #555;
-            font-style: italic;
-            margin-top: 3px;
-        }
+        .name-label { font-size: 8.5pt; color: #666; font-style: italic; margin-top: 2px; }
 
-        /* ====== BIRTH ROW ====== */
+        /* ===== BIRTH ===== */
         table.birth {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 22px;
             table-layout: fixed;
         }
-        table.birth td {
-            width: 50%;
-            padding: 0;
-            vertical-align: top;
-        }
-        table.birth td.right { padding-left: 20px; }
+        table.birth td { width: 50%; vertical-align: top; padding: 0; }
+        table.birth td.right { padding-left: 18px; }
         .birth-value {
-            font-size: 13pt;
+            font-size: 12pt;
             font-weight: bold;
-            line-height: 1.15;
+            line-height: 1.2;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .birth-label {
-            font-size: 8.5pt;
-            color: #555;
-            font-style: italic;
-            margin-top: 3px;
-        }
+        .birth-label { font-size: 8.5pt; color: #666; font-style: italic; margin-top: 2px; }
 
-        /* ====== SHARED PARAGRAPH STYLES ====== */
+        /* ===== PARAGRAPHS ===== */
         .block { margin-bottom: 14px; }
-        .line-de { font-size: 11pt; line-height: 1.5; }
-        .line-fr { font-size: 10.5pt; line-height: 1.4; }
+        .line-de { font-size: 10.5pt; line-height: 1.6; }
+        .line-fr { font-size: 10pt; line-height: 1.5; color: #333; margin-top: 2px; }
         .bold { font-weight: bold; }
         .underline { text-decoration: underline; }
         .nowrap { white-space: nowrap; }
 
-        /* ====== UNITS GRID — fixed columns: text | number | suffix ====== */
+        /* ===== UNITS — balanced fixed columns ===== */
         table.units {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 16px;
+            margin: 6px 0 16px 0;
             table-layout: fixed;
         }
         table.units td { padding: 0; vertical-align: middle; }
-        table.units td.label-de { width: 175px; font-size: 11pt; }
-        table.units td.label-fr { width: 175px; font-size: 10.5pt; }
+        table.units td.label-de { width: 32%; font-size: 10.5pt; padding-right: 8px; }
+        table.units td.label-fr { width: 32%; font-size: 10pt; color: #333; padding-right: 8px; }
         table.units td.num {
-            width: 70px;
+            width: 14%;
             text-align: center;
             font-size: 14pt;
             font-weight: bold;
+            white-space: nowrap;
         }
-        table.units td.suffix-de { font-size: 11pt; padding-left: 6px; }
-        table.units td.suffix-fr { font-size: 10.5pt; padding-left: 6px; }
+        table.units td.suffix-de { width: 54%; font-size: 10.5pt; padding-left: 8px; }
+        table.units td.suffix-fr { width: 54%; font-size: 10pt; color: #333; padding-left: 8px; }
 
-        /* ====== CHECKBOX ROWS ====== */
+        /* ===== CHECKBOX ROWS ===== */
         .check-row {
-            margin: 5px 0;
-            font-size: 11pt;
-            line-height: 1.5;
+            margin: 4px 0;
+            padding-left: 8px;
+            font-size: 10.5pt;
+            line-height: 1.55;
         }
         .check-box {
             display: inline-block;
-            width: 12px;
-            height: 12px;
+            width: 12px; height: 12px;
             border: 1.2px solid #111;
             position: relative;
             vertical-align: -2px;
@@ -166,83 +151,84 @@
         .check-box.checked::before { transform: translate(-50%, -50%) rotate(45deg); }
         .check-box.checked::after  { transform: translate(-50%, -50%) rotate(-45deg); }
 
-        /* ====== NIVEAU PERIOD ====== */
-        .niveau-period {
-            margin: 16px 0 10px;
-            font-size: 11pt;
-        }
+        /* ===== NIVEAU PERIOD ===== */
+        .niveau-period { margin: 18px 0 6px; font-size: 10.5pt; }
 
-        /* ====== LEVELS GRID — fixed-pitch cells ====== */
-        .levels-title {
-            margin: 8px 0 8px;
-            font-size: 11pt;
-        }
+        /* ===== LEVELS — centered on the page ===== */
+        .levels-title { margin: 10px 0 8px; font-size: 10.5pt; text-align: center; }
+        .levels-wrap { text-align: center; margin-bottom: 14px; }
         table.levels {
             border-collapse: collapse;
-            margin-bottom: 14px;
+            display: inline-table;
+            margin: 0 auto;
         }
         table.levels td {
-            font-size: 12pt;
+            font-size: 11.5pt;
             font-weight: bold;
-            padding: 0 30px 0 0;
+            padding: 0 28px;
             white-space: nowrap;
             vertical-align: middle;
+            text-align: left;
         }
 
-        /* ====== KURSINFO ====== */
-        .kursinfo-title { font-size: 11pt; margin-top: 8px; margin-bottom: 4px; }
-        .kursinfo-line  { font-size: 11pt; margin-bottom: 4px; }
-        .erfolg-line    { font-size: 10.5pt; margin-bottom: 10px; line-height: 1.5; }
-        .erfolg-active  { font-weight: bold; text-decoration: underline; }
+        /* ===== KURSINFO ===== */
+        .kursinfo-title {
+            font-size: 10.5pt;
+            font-weight: 600;
+            margin-top: 14px;
+            margin-bottom: 4px;
+        }
+        .kursinfo-line  { font-size: 10.5pt; margin-bottom: 4px; }
+        .erfolg-line    { font-size: 10pt; margin-bottom: 12px; line-height: 1.5; color: #333; }
+        .erfolg-active  { font-weight: bold; text-decoration: underline; color: #111; }
 
         .legal {
-            font-size: 9pt;
-            color: #444;
-            line-height: 1.5;
-            margin-bottom: 22px;
-        }
-
-        /* ====== SIGNATURE ROW ====== */
-        table.sig {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 18px;
-            table-layout: fixed;
-        }
-        table.sig td { width: 50%; vertical-align: top; padding: 0; }
-        table.sig td.right { text-align: right; }
-        .sig-value {
-            font-size: 13pt;
-            font-weight: bold;
-            line-height: 1.15;
-            white-space: nowrap;
-        }
-        .sig-label {
             font-size: 8.5pt;
             color: #555;
-            font-style: italic;
-            margin-top: 3px;
-        }
-        .kursleitung {
-            margin-top: 22px;
-            text-align: right;
-            font-size: 10.5pt;
-            text-decoration: underline;
+            line-height: 1.55;
+            margin-bottom: 24px;
+            text-align: justify;
         }
 
-        /* ====== FIXED FOOTER ====== */
+        /* ===== SIGNATURE — centred pair, Kursleitung sits under Datum ===== */
+        .sig-wrap { text-align: center; margin-top: 28px; }
+        table.sig {
+            border-collapse: collapse;
+            display: inline-table;
+            margin: 0 auto;
+        }
+        table.sig td { vertical-align: top; padding: 0; }
+        table.sig td.left  { text-align: center; padding-right: 80px; }
+        table.sig td.right { text-align: center; }
+        .sig-value {
+            font-size: 12pt;
+            font-weight: bold;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+        .sig-label { font-size: 8.5pt; color: #666; font-style: italic; margin-top: 2px; }
+
+        .kursleitung-cell {
+            padding-top: 22px;
+            text-align: center;
+            font-size: 10pt;
+            text-decoration: underline;
+            white-space: nowrap;
+        }
+
+        /* ===== FOOTER ===== */
         .footer {
             position: fixed;
-            left: 30px; right: 30px;
-            bottom: 20px;
+            left: 40px; right: 40px;
+            bottom: 25px;
             text-align: center;
-            font-size: 8.5pt;
-            color: #333;
-            border-top: 1px solid #999;
+            font-size: 8pt;
+            color: #444;
+            border-top: 1px solid #aaa;
             padding-top: 6px;
-            line-height: 1.5;
+            line-height: 1.55;
         }
-        .footer .addr { text-decoration: underline; }
+        .footer div { line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -327,15 +313,17 @@
         <span class="underline">Referenzniveau des Kurses</span> / Niveau de référence européen :
     </div>
 
-    <table class="levels">
-        <tr>
-            @foreach($levels as $lvl)
-                <td>
-                    <span class="check-box {{ $attestation->level === $lvl ? 'checked' : '' }}"></span>{{ $lvl }}
-                </td>
-            @endforeach
-        </tr>
-    </table>
+    <div class="levels-wrap">
+        <table class="levels">
+            <tr>
+                @foreach($levels as $lvl)
+                    <td>
+                        <span class="check-box {{ $attestation->level === $lvl ? 'checked' : '' }}"></span>{{ $lvl }}
+                    </td>
+                @endforeach
+            </tr>
+        </table>
+    </div>
 
     {{-- ============ KURSINFO ============ --}}
     <div class="kursinfo-title">Kursinfo / Information sur le cours :</div>
@@ -353,26 +341,30 @@
 
     <div class="legal">{!! nl2br(e($methodologyText)) !!}</div>
 
-    {{-- ============ SIGNATURE ============ --}}
-    <table class="sig">
-        <tr>
-            <td>
-                <div class="sig-value">{{ strtoupper($attestation->city) }}</div>
-                <div class="sig-label">Ort, Lieu</div>
-            </td>
-            <td class="right">
-                <div class="sig-value">{{ $attestation->issue_date?->format('d.m.Y') }}</div>
-                <div class="sig-label">Datum, Date</div>
-            </td>
-        </tr>
-    </table>
-
-    <div class="kursleitung">Kursleitung :</div>
+    {{-- ============ SIGNATURE (centred, Kursleitung directly under Datum) ============ --}}
+    <div class="sig-wrap">
+        <table class="sig">
+            <tr>
+                <td class="left">
+                    <div class="sig-value">{{ strtoupper($attestation->city) }}</div>
+                    <div class="sig-label">Ort, Lieu</div>
+                </td>
+                <td class="right">
+                    <div class="sig-value">{{ $attestation->issue_date?->format('d.m.Y') }}</div>
+                    <div class="sig-label">Datum, Date</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="left"></td>
+                <td class="kursleitung-cell">Kursleitung :</td>
+            </tr>
+        </table>
+    </div>
 
     {{-- ============ FOOTER ============ --}}
     <div class="footer">
-        <div class="addr">{{ $footerAddress }}</div>
-        Tel : {{ $footerPhone }} , Email : {{ $footerEmail }}
+        <div>Adresse : {{ $footerAddress }}</div>
+        <div>Tel : {{ $footerPhone }} , Email : {{ $footerEmail }}</div>
     </div>
 
 </body>

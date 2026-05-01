@@ -37,7 +37,7 @@ class StoreAttestationRequest extends FormRequest
             'stufe_total'        => 'required|integer|min:1|max:9',
             'erfolg'             => 'required|string|max:50',
             'methodology_text'   => 'nullable|string|max:5000',
-            'language'           => 'required|in:de_fr,de,fr,en',
+            'language'           => 'required|in:de_fr',
 
             'city'               => 'nullable|string|max:120',
             'issue_date'         => 'required|date',

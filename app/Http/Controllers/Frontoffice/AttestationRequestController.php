@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Frontoffice;
 use App\Http\Controllers\Controller;
 use App\Mail\AttestationRequestSubmittedMail;
 use App\Models\AttestationRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redirect;
 
 class AttestationRequestController extends Controller
 {
@@ -27,7 +29,7 @@ class AttestationRequestController extends Controller
             'birth_place' => ['nullable', 'string', 'max:255'],
             'group_name'  => ['required', 'string', 'max:255'],
             'level'       => ['required', 'in:A1,A2,B1,B2'],
-            'language'    => ['required', 'in:de_fr,de,fr,en'],
+            'language'    => ['required', 'in:de_fr'],
         ], [
             'last_name.required'   => 'Le nom est obligatoire.',
             'first_name.required'  => 'Le prénom est obligatoire.',
@@ -48,7 +50,7 @@ class AttestationRequestController extends Controller
             ]);
         }
 
-        return redirect()->route('front.attestation-request.success');
+        return Redirect::route('front.attestation-request.success');
     }
 
     public function success()

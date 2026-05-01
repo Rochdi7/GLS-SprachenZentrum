@@ -191,24 +191,9 @@
     <input type="hidden" name="methodology_text" value="{{ old('methodology_text', $att->methodology_text ?? '') }}">
 
     {{-- ============================================================ --}}
-    {{--   LANGUE DE L'ATTESTATION                                    --}}
+    {{--   LANGUE DE L'ATTESTATION — fixée à la version bilingue       --}}
     {{-- ============================================================ --}}
-    <div class="col-12 mt-3">
-        <h5 class="mb-3 fw-bold">Langue du document</h5>
-    </div>
-
-    <div class="col-md-12 mb-3">
-        <label class="form-label fw-bold">Modèle linguistique</label>
-        <select name="language" class="form-select" required>
-            @foreach($languageOptions as $value => $label)
-                <option value="{{ $value }}"
-                        {{ old('language', $att->language ?? $pr->language ?? 'de_fr') === $value ? 'selected' : '' }}>
-                    {{ $label }}
-                </option>
-            @endforeach
-        </select>
-        <small class="text-muted">Bilingue = format officiel GLS (DE+FR). Les autres modèles affichent une seule langue.</small>
-    </div>
+    <input type="hidden" name="language" value="de_fr">
 
     {{-- ============================================================ --}}
     {{--   SIGNATURE                                                  --}}

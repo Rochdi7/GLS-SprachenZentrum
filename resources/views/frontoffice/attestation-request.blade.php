@@ -129,21 +129,10 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Langue de l'attestation <span class="text-danger">*</span></label>
-                        <select name="language" class="form-select" required>
-                            @php
-                                $langs = [
-                                    'de_fr' => 'Bilingue (Allemand / Français)',
-                                    'de'    => 'Allemand',
-                                    'fr'    => 'Français',
-                                    'en'    => 'Anglais',
-                                ];
-                                $oldLang = old('language', 'de_fr');
-                            @endphp
-                            @foreach ($langs as $value => $label)
-                                <option value="{{ $value }}" {{ $oldLang === $value ? 'selected' : '' }}>{{ $label }}</option>
-                            @endforeach
-                        </select>
+                        <label class="form-label">Langue de l'attestation</label>
+                        <input type="text" class="form-control" value="Bilingue (Allemand / Français)" readonly>
+                        <input type="hidden" name="language" value="de_fr">
+                        <small class="help">L'attestation est délivrée en version bilingue allemand-français.</small>
                     </div>
                 </div>
 

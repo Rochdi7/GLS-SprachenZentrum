@@ -103,68 +103,103 @@
     <title>{{ $t['title'] }} — {{ $attestation->last_name }} {{ $attestation->first_name }}</title>
 
     <style>
-        @page { size: A4 portrait; margin: 30px 30px 100px 30px; }
+        @page { size: A4 portrait; margin: 35px 40px 95px 40px; }
         * { box-sizing: border-box; }
 
         body {
             font-family: DejaVu Sans, sans-serif;
-            font-size: 11pt;
+            font-size: 10.5pt;
             color: #111;
             margin: 0;
             padding: 0;
-            line-height: 1.45;
+            line-height: 1.5;
         }
 
-        table.header { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+        /* ===== HEADER ===== */
+        table.header {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 26px;
+            table-layout: fixed;
+        }
         table.header td { vertical-align: middle; padding: 0; }
-        table.header td.logo-cell { width: 150px; }
-        table.header td.title-cell { padding-left: 30px; }
-        .header-logo { width: 130px; height: auto; display: block; }
+        table.header td.logo-cell { width: 140px; }
+        table.header td.title-cell { padding-left: 22px; text-align: left; }
+        .header-logo { width: 120px; height: auto; display: block; }
         .header-title {
-            font-size: 22pt;
+            font-size: 21pt;
             font-weight: bold;
             text-decoration: underline;
             line-height: 1;
             white-space: nowrap;
+            letter-spacing: -0.2px;
         }
 
-        .name-block { margin-bottom: 18px; }
+        /* ===== NAME ===== */
+        .name-block { margin-bottom: 16px; }
         .name-value {
-            font-size: 16pt;
+            font-size: 15pt;
             font-weight: bold;
-            line-height: 1.15;
-            letter-spacing: 0.3px;
+            line-height: 1.2;
+            letter-spacing: 0.4px;
             white-space: nowrap;
         }
-        .name-label { font-size: 8.5pt; color: #555; font-style: italic; margin-top: 3px; }
+        .name-label { font-size: 8.5pt; color: #666; font-style: italic; margin-top: 2px; }
 
-        table.birth { width: 100%; border-collapse: collapse; margin-bottom: 22px; table-layout: fixed; }
+        /* ===== BIRTH ===== */
+        table.birth {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 22px;
+            table-layout: fixed;
+        }
         table.birth td { width: 50%; vertical-align: top; padding: 0; }
-        table.birth td.right { padding-left: 20px; }
+        table.birth td.right { padding-left: 18px; }
         .birth-value {
-            font-size: 13pt;
+            font-size: 12pt;
             font-weight: bold;
-            line-height: 1.15;
+            line-height: 1.2;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .birth-label { font-size: 8.5pt; color: #555; font-style: italic; margin-top: 3px; }
+        .birth-label { font-size: 8.5pt; color: #666; font-style: italic; margin-top: 2px; }
 
-        .block { margin-bottom: 14px; font-size: 11pt; line-height: 1.5; }
+        /* ===== PARAGRAPHS ===== */
+        .block {
+            margin-bottom: 14px;
+            font-size: 10.5pt;
+            line-height: 1.6;
+        }
 
-        table.units { width: 100%; border-collapse: collapse; margin-bottom: 16px; table-layout: fixed; }
-        table.units td { padding: 0; vertical-align: middle; font-size: 11pt; }
-        table.units td.label-col { width: 220px; }
+        /* ===== UNITS — tighter, balanced grid ===== */
+        table.units {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 6px 0 16px 0;
+            table-layout: fixed;
+        }
+        table.units td { padding: 0; vertical-align: middle; font-size: 10.5pt; }
+        table.units td.label-col { width: 32%; padding-right: 8px; }
         table.units td.num-col {
-            width: 70px;
+            width: 14%;
             text-align: center;
             font-size: 14pt;
             font-weight: bold;
+            white-space: nowrap;
         }
-        table.units td.suffix-col { padding-left: 6px; }
+        table.units td.suffix-col {
+            width: 54%;
+            padding-left: 8px;
+        }
 
-        .check-row { margin: 5px 0; font-size: 11pt; line-height: 1.5; }
+        /* ===== CHECKBOX ROWS ===== */
+        .check-row {
+            margin: 4px 0;
+            padding-left: 8px;
+            font-size: 10.5pt;
+            line-height: 1.55;
+        }
         .check-box {
             display: inline-block;
             width: 12px; height: 12px;
@@ -184,45 +219,87 @@
         .check-box.checked::before { transform: translate(-50%, -50%) rotate(45deg); }
         .check-box.checked::after  { transform: translate(-50%, -50%) rotate(-45deg); }
 
-        .niveau-period { margin: 16px 0 10px; font-size: 11pt; }
+        /* ===== NIVEAU PERIOD ===== */
+        .niveau-period {
+            margin: 18px 0 6px;
+            font-size: 10.5pt;
+        }
 
-        .levels-title { margin: 8px 0 8px; font-size: 11pt; text-decoration: underline; }
-        table.levels { border-collapse: collapse; margin-bottom: 14px; }
+        /* ===== LEVELS — left-aligned, tighter spacing ===== */
+        .levels-title {
+            margin: 10px 0 8px;
+            font-size: 10.5pt;
+            text-decoration: underline;
+        }
+        table.levels {
+            border-collapse: collapse;
+            margin: 0;
+        }
         table.levels td {
-            font-size: 12pt;
+            font-size: 11.5pt;
             font-weight: bold;
-            padding: 0 30px 0 0;
+            padding: 0 28px 0 0;
             white-space: nowrap;
             vertical-align: middle;
         }
 
-        .kursinfo-title { font-size: 11pt; margin-top: 8px; margin-bottom: 4px; }
-        .kursinfo-line  { font-size: 11pt; margin-bottom: 4px; }
-        .erfolg-line    { font-size: 10.5pt; margin-bottom: 10px; line-height: 1.5; }
-        .erfolg-active  { font-weight: bold; text-decoration: underline; }
+        /* ===== KURSINFO ===== */
+        .kursinfo-title {
+            font-size: 10.5pt;
+            font-weight: 600;
+            margin-top: 14px;
+            margin-bottom: 4px;
+        }
+        .kursinfo-line  { font-size: 10.5pt; margin-bottom: 4px; }
+        .erfolg-line    { font-size: 10pt; margin-bottom: 12px; line-height: 1.5; color: #333; }
+        .erfolg-active  { font-weight: bold; text-decoration: underline; color: #111; }
 
-        .legal { font-size: 9pt; color: #444; line-height: 1.5; margin-bottom: 22px; }
+        .legal {
+            font-size: 8.5pt;
+            color: #555;
+            line-height: 1.55;
+            margin-bottom: 24px;
+            text-align: justify;
+        }
 
-        table.sig { width: 100%; border-collapse: collapse; margin-top: 18px; table-layout: fixed; }
-        table.sig td { width: 50%; vertical-align: top; padding: 0; }
-        table.sig td.right { text-align: right; }
-        .sig-value { font-size: 13pt; font-weight: bold; line-height: 1.15; white-space: nowrap; }
-        .sig-label { font-size: 8.5pt; color: #555; font-style: italic; margin-top: 3px; }
+        /* ===== SIGNATURE — centred, stamp area on the right ===== */
+        .sig-wrap { text-align: center; margin-top: 28px; }
+        table.sig {
+            border-collapse: collapse;
+            display: inline-table;
+            margin: 0 auto;
+        }
+        table.sig td { vertical-align: top; padding: 0; }
+        table.sig td.left  { text-align: center; padding-right: 60px; }
+        table.sig td.right { text-align: center; }
+        .sig-value {
+            font-size: 12pt;
+            font-weight: bold;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+        .sig-label { font-size: 8.5pt; color: #666; font-style: italic; margin-top: 2px; }
 
-        .signature { margin-top: 22px; text-align: right; font-size: 10.5pt; text-decoration: underline; }
+        .signature {
+            margin-top: 22px;
+            text-align: center;
+            font-size: 10pt;
+            text-decoration: underline;
+        }
 
+        /* ===== FOOTER ===== */
         .footer {
             position: fixed;
-            left: 30px; right: 30px;
-            bottom: 20px;
+            left: 40px; right: 40px;
+            bottom: 25px;
             text-align: center;
-            font-size: 8.5pt;
-            color: #333;
-            border-top: 1px solid #999;
+            font-size: 8pt;
+            color: #444;
+            border-top: 1px solid #aaa;
             padding-top: 6px;
-            line-height: 1.5;
+            line-height: 1.55;
         }
-        .footer .addr { text-decoration: underline; }
+        .footer .addr { text-decoration: underline; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -299,18 +376,20 @@
 
     <div class="legal">{!! nl2br(e($methodologyText)) !!}</div>
 
-    <table class="sig">
-        <tr>
-            <td>
-                <div class="sig-value">{{ strtoupper($attestation->city) }}</div>
-                <div class="sig-label">{{ $t['place_label'] }}</div>
-            </td>
-            <td class="right">
-                <div class="sig-value">{{ $attestation->issue_date?->format('d.m.Y') }}</div>
-                <div class="sig-label">{{ $t['date_label'] }}</div>
-            </td>
-        </tr>
-    </table>
+    <div class="sig-wrap">
+        <table class="sig">
+            <tr>
+                <td class="left">
+                    <div class="sig-value">{{ strtoupper($attestation->city) }}</div>
+                    <div class="sig-label">{{ $t['place_label'] }}</div>
+                </td>
+                <td class="right">
+                    <div class="sig-value">{{ $attestation->issue_date?->format('d.m.Y') }}</div>
+                    <div class="sig-label">{{ $t['date_label'] }}</div>
+                </td>
+            </tr>
+        </table>
+    </div>
 
     <div class="signature">{{ $t['signature'] }}</div>
 

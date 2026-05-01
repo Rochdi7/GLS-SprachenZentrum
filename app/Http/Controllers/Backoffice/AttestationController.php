@@ -26,9 +26,6 @@ class AttestationController extends Controller
 
     private const LANGUAGE_OPTIONS = [
         'de_fr' => 'Bilingue (Allemand / Français)',
-        'de'    => 'Allemand uniquement',
-        'fr'    => 'Français uniquement',
-        'en'    => 'Anglais uniquement',
     ];
 
     public function index()
