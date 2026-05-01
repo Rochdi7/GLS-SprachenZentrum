@@ -18,6 +18,7 @@ use App\Http\Controllers\Backoffice\GroupController;
 use App\Http\Controllers\Backoffice\LevelFollowupController;
 use App\Http\Controllers\Backoffice\CertificateController;
 use App\Http\Controllers\Backoffice\AttestationController;
+use App\Http\Controllers\Backoffice\AttestationRequestController as BackofficeAttestationRequestController;
 use App\Http\Controllers\Backoffice\QuizController;
 use App\Http\Controllers\Backoffice\QuizQuestionController;
 use App\Http\Controllers\Backoffice\HelpController;
@@ -209,6 +210,21 @@ Route::prefix('backoffice')
                 Route::delete('/{attestation}', [AttestationController::class, 'destroy'])->middleware('permission:attestations.delete')->name('destroy');
 
                 Route::get('/{attestation}/pdf', [AttestationController::class, 'pdf'])->middleware('permission:attestations.view')->name('pdf');
+            });
+
+        /*
+        |----------------------------------------------------------------------
+        | DEMANDES D'ATTESTATION (frontoffice form inbox)
+        |----------------------------------------------------------------------
+        */
+        Route::prefix('attestation-requests')
+            ->name('attestation_requests.')
+            ->group(function () {
+                Route::get('/', [BackofficeAttestationRequestController::class, 'index'])->middleware('permission:attestations.view')->name('index');
+                Route::get('/{id}', [BackofficeAttestationRequestController::class, 'show'])->middleware('permission:attestations.view')->name('show');
+                Route::post('/{id}/accept', [BackofficeAttestationRequestController::class, 'accept'])->middleware('permission:attestations.create')->name('accept');
+                Route::post('/{id}/refuse', [BackofficeAttestationRequestController::class, 'refuse'])->middleware('permission:attestations.edit')->name('refuse');
+                Route::delete('/{id}', [BackofficeAttestationRequestController::class, 'destroy'])->middleware('permission:attestations.delete')->name('destroy');
             });
 
         /*

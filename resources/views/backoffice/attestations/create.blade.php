@@ -25,8 +25,23 @@
             </div>
         @endif
 
+        @isset($prefillRequest)
+            <div class="alert alert-info animate__animated animate__fadeIn">
+                <strong>Demande #{{ $prefillRequest->id }}</strong> de
+                {{ $prefillRequest->last_name }} {{ $prefillRequest->first_name }} ({{ $prefillRequest->email }}) —
+                groupe demandé : « <em>{{ $prefillRequest->group_name }}</em> », niveau
+                <strong>{{ $prefillRequest->level }}</strong>, langue
+                <strong>{{ $prefillRequest->language }}</strong>.
+                <br>
+                <small>Les informations de l'étudiant ont été pré-remplies. Sélectionnez le groupe correspondant et complétez les champs manquants.</small>
+            </div>
+        @endisset
+
         <form action="{{ route('backoffice.attestations.store') }}" method="POST" class="needs-validation" novalidate>
             @csrf
+            @isset($prefillRequest)
+                <input type="hidden" name="from_request" value="{{ $prefillRequest->id }}">
+            @endisset
 
             <div id="attestation-form-card" class="card animate__animated animate__rollIn">
                 <div class="card-header">
@@ -34,7 +49,7 @@
                 </div>
 
                 <div class="card-body">
-                    @include('backoffice.attestations._form')
+                    @include('backoffice.attestations._form', ['prefillRequest' => $prefillRequest ?? null])
                 </div>
 
                 <div class="card-footer text-end">

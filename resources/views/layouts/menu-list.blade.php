@@ -6,6 +6,7 @@
         || request()->routeIs('backoffice.groups.*')
         || request()->routeIs('backoffice.certificates.*')
         || request()->routeIs('backoffice.attestations.*')
+        || request()->routeIs('backoffice.attestation_requests.*')
         || request()->routeIs('backoffice.studienkollegs.*')
         || request()->routeIs('backoffice.quizzes.*');
     $admissionsOpen = request()->routeIs('backoffice.applications.*')
@@ -100,6 +101,17 @@
         <li class="pc-item {{ request()->routeIs('backoffice.attestations.*') ? 'active' : '' }}">
             <a href="{{ route('backoffice.attestations.index') }}" class="pc-link {{ request()->routeIs('backoffice.attestations.*') ? 'active' : '' }}">
                 <span class="pc-mtext">Attestations</span>
+            </a>
+        </li>
+        <li class="pc-item {{ request()->routeIs('backoffice.attestation_requests.*') ? 'active' : '' }}">
+            <a href="{{ route('backoffice.attestation_requests.index') }}" class="pc-link {{ request()->routeIs('backoffice.attestation_requests.*') ? 'active' : '' }}">
+                <span class="pc-mtext">Demandes d'attestation</span>
+                @php
+                    $pendingAttestationRequests = \App\Models\AttestationRequest::where('status', 'pending')->count();
+                @endphp
+                @if ($pendingAttestationRequests > 0)
+                    <span class="badge bg-warning rounded-pill ms-1">{{ $pendingAttestationRequests }}</span>
+                @endif
             </a>
         </li>
         @endcan

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Backoffice\Attestations\StoreAttestationRequest;
 use App\Http\Requests\Backoffice\Attestations\UpdateAttestationRequest;
 use App\Models\Attestation;
+use App\Models\AttestationRequest;
 use App\Models\Group;
 use App\Models\GroupLevelFollowup;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -37,12 +38,18 @@ class AttestationController extends Controller
         return view('backoffice.attestations.index', compact('attestations'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        $prefillRequest = null;
+        if ($request->filled('from_request')) {
+            $prefillRequest = AttestationRequest::find($request->query('from_request'));
+        }
+
         return view('backoffice.attestations.create', [
             'groups'           => $this->groupsForSelect(),
             'erfolgOptions'    => self::ERFOLG_OPTIONS,
             'languageOptions'  => self::LANGUAGE_OPTIONS,
+            'prefillRequest'   => $prefillRequest,
         ]);
     }
 
@@ -50,7 +57,15 @@ class AttestationController extends Controller
     {
         $data = $this->hydrate($request->validated());
 
-        Attestation::create($data);
+        $attestation = Attestation::create($data);
+
+        // If this attestation was created from an accepted demand, link them.
+        if ($request->filled('from_request')) {
+            $attRequest = AttestationRequest::find($request->input('from_request'));
+            if ($attRequest && $attRequest->status === AttestationRequest::STATUS_ACCEPTED) {
+                $attRequest->update(['attestation_id' => $attestation->id]);
+            }
+        }
 
         return redirect()->route('backoffice.attestations.index')
             ->with('success', 'Attestation ajoutée avec succès.');

@@ -1,7 +1,6 @@
 @php
     /**
-     * Single-language attestation PDF.
-     *
+     * Single-language attestation PDF — pixel-stable layout for DomPDF.
      * $lang in ['de', 'fr', 'en']
      */
 
@@ -12,7 +11,8 @@
             'birth_date_lbl'  => 'geboren am',
             'birth_place_lbl' => 'geboren in',
             'participation'   => 'hat in der Zeit vom :start bis :end an einem Deutschkurs im GLS Sprachenzentrum teilgenommen.',
-            'units'           => 'Der Kurs umfasste :units Unterrichtseinheiten zu je 45 Minuten.',
+            'units_label'     => 'Der Kurs umfasste',
+            'units_suffix'    => 'Unterrichtseinheiten zu je 45 Minuten.',
             'fees_full'       => 'Die Kursgebühren wurden vollständig entrichtet.',
             'fees_partial'    => 'Die Kursgebühren wurden teilweise entrichtet.',
             'niveau_period'   => 'Das Niveau beginnt von :start bis :end',
@@ -30,14 +30,15 @@
             'birth_date_lbl'  => 'Date de naissance',
             'birth_place_lbl' => 'Lieu de naissance',
             'participation'   => 'a participé du :start au :end à un cours de langue allemande au GLS Sprachenzentrum.',
-            'units'           => 'Le cours comprenait :units unités d\'enseignement de 45 minutes chacune.',
+            'units_label'     => 'Le cours comprenait',
+            'units_suffix'    => "unités d'enseignement de 45 minutes chacune.",
             'fees_full'       => 'Les frais de cours ont été intégralement payés.',
             'fees_partial'    => 'Les frais de cours ont été partiellement payés.',
             'niveau_period'   => 'Le niveau commence du :start au :end',
             'level_title'     => 'Niveau de référence européen :',
             'kursinfo_title'  => 'Information sur le cours :',
             'kursinfo_line'   => 'Niveau :idx sur :total',
-            'legal'           => 'L\'appréciation des résultats obtenus en cours est faite par les enseignant(e)s. Cette attestation de présence n\'est pas un diplôme. Le barème comprend 4 appréciations : très bien, bien, assez bien, participation régulière.',
+            'legal'           => "L'appréciation des résultats obtenus en cours est faite par les enseignant(e)s. Cette attestation de présence n'est pas un diplôme. Le barème comprend 4 appréciations : très bien, bien, assez bien, participation régulière.",
             'place_label'     => 'Lieu',
             'date_label'      => 'Date',
             'signature'       => 'Direction du cours :',
@@ -48,7 +49,8 @@
             'birth_date_lbl'  => 'Date of birth',
             'birth_place_lbl' => 'Place of birth',
             'participation'   => 'attended a German language course at GLS Sprachenzentrum from :start to :end.',
-            'units'           => 'The course consisted of :units teaching units of 45 minutes each.',
+            'units_label'     => 'The course consisted of',
+            'units_suffix'    => 'teaching units of 45 minutes each.',
             'fees_full'       => 'Course fees have been paid in full.',
             'fees_partial'    => 'Course fees have been paid in part.',
             'niveau_period'   => 'The level runs from :start to :end',
@@ -63,51 +65,36 @@
     ];
 
     $erfolgTranslations = [
-        'de' => [
-            'Erfolg'           => 'sehr gut',
-            'mit gutem Erfolg' => 'gut',
-            'mit Erfolg'       => 'befriedigend',
-            'teilgenommen'     => 'regelmäßige Teilnahme',
-        ],
-        'fr' => [
-            'Erfolg'           => 'très bien',
-            'mit gutem Erfolg' => 'bien',
-            'mit Erfolg'       => 'assez bien',
-            'teilgenommen'     => 'participation régulière',
-        ],
-        'en' => [
-            'Erfolg'           => 'very good',
-            'mit gutem Erfolg' => 'good',
-            'mit Erfolg'       => 'satisfactory',
-            'teilgenommen'     => 'regular attendance',
-        ],
+        'de' => ['Erfolg' => 'sehr gut', 'mit gutem Erfolg' => 'gut', 'mit Erfolg' => 'befriedigend', 'teilgenommen' => 'regelmäßige Teilnahme'],
+        'fr' => ['Erfolg' => 'très bien', 'mit gutem Erfolg' => 'bien', 'mit Erfolg' => 'assez bien', 'teilgenommen' => 'participation régulière'],
+        'en' => ['Erfolg' => 'very good', 'mit gutem Erfolg' => 'good', 'mit Erfolg' => 'satisfactory', 'teilgenommen' => 'regular attendance'],
     ];
 
     $t = $T[$lang] ?? $T['de'];
     $erfolgT = $erfolgTranslations[$lang] ?? $erfolgTranslations['de'];
 
-    $todayWord = [
-        'de' => 'heute',
-        'fr' => "aujourd'hui",
-        'en' => 'today',
-    ][$lang] ?? 'heute';
+    $todayWord = ['de' => 'heute', 'fr' => "aujourd'hui", 'en' => 'today'][$lang] ?? 'heute';
 
     $startCourse = $attestation->course_start_date?->format('d-m-Y') ?? '—';
-    $endCourse   = $attestation->is_ongoing
-        ? $todayWord
-        : ($attestation->course_end_date?->format('d-m-Y') ?? '—');
+    $endCourse   = $attestation->is_ongoing ? $todayWord : ($attestation->course_end_date?->format('d-m-Y') ?? '—');
     $startNiveau = $attestation->niveau_start_date?->format('d-m-Y') ?? '—';
-    $endNiveau   = $attestation->is_ongoing
-        ? $todayWord
-        : ($attestation->niveau_end_date?->format('d-m-Y') ?? '—');
+    $endNiveau   = $attestation->is_ongoing ? $todayWord : ($attestation->niveau_end_date?->format('d-m-Y') ?? '—');
 
     $participationText = strtr($t['participation'], [':start' => $startCourse, ':end' => $endCourse]);
-    $unitsText         = strtr($t['units'], [':units' => $attestation->units_45min]);
     $niveauPeriodText  = strtr($t['niveau_period'], [':start' => $startNiveau, ':end' => $endNiveau]);
     $kursinfoLine      = strtr($t['kursinfo_line'], [':idx' => $attestation->stufe_index, ':total' => $attestation->stufe_total]);
 
     $erfolgList = ['Erfolg', 'mit gutem Erfolg', 'mit Erfolg', 'teilgenommen'];
     $levels = ['A1', 'A2', 'B1', 'B2'];
+
+    $methodologyText = trim((string) ($attestation->methodology_text ?? '')) !== ''
+        ? $attestation->methodology_text
+        : $t['legal'];
+
+    $site = $attestation->group?->site;
+    $footerAddress = $site?->address ?? 'Avenue Yacoub El Mansour, Immeuble Espace Guéliz, 3ème étage Bureau 28, Marrakech.';
+    $footerPhone   = $site?->phone   ?? '0808540625 / 0622996078';
+    $footerEmail   = $site?->email   ?? 'info@glssprachenzentrum.ma';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}">
@@ -116,120 +103,138 @@
     <title>{{ $t['title'] }} — {{ $attestation->last_name }} {{ $attestation->first_name }}</title>
 
     <style>
-        @page { size: A4 portrait; margin: 0; }
+        @page { size: A4 portrait; margin: 30px 30px 100px 30px; }
+        * { box-sizing: border-box; }
 
         body {
             font-family: DejaVu Sans, sans-serif;
-            font-size: 12.5px;
-            color: #1a1a1a;
+            font-size: 11pt;
+            color: #111;
             margin: 0;
-            padding: 30px 55px 110px 55px;
-            line-height: 1.5;
+            padding: 0;
+            line-height: 1.45;
         }
 
-        .header { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
-        .header td { vertical-align: middle; padding: 0; }
-        .header-logo { width: 130px; height: auto; }
+        table.header { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+        table.header td { vertical-align: middle; padding: 0; }
+        table.header td.logo-cell { width: 150px; }
+        table.header td.title-cell { padding-left: 30px; }
+        .header-logo { width: 130px; height: auto; display: block; }
         .header-title {
-            font-size: 26px;
+            font-size: 22pt;
             font-weight: bold;
-            color: #1a1a1a;
-            text-align: left;
-            padding-left: 18px;
             text-decoration: underline;
-            line-height: 1.1;
+            line-height: 1;
+            white-space: nowrap;
         }
 
-        .name-block { margin-top: 8px; margin-bottom: 14px; }
+        .name-block { margin-bottom: 18px; }
         .name-value {
-            font-size: 22px;
+            font-size: 16pt;
             font-weight: bold;
-            color: #1a1a1a;
-            margin-bottom: 2px;
-            letter-spacing: 0.5px;
+            line-height: 1.15;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
         }
-        .name-label { font-size: 10.5px; color: #555; font-style: italic; }
+        .name-label { font-size: 8.5pt; color: #555; font-style: italic; margin-top: 3px; }
 
-        .birth { width: 100%; border-collapse: collapse; margin-bottom: 22px; }
-        .birth td { width: 50%; vertical-align: top; padding: 0; }
-        .birth td.right { padding-left: 30px; }
-        .birth-value { font-size: 17px; font-weight: bold; margin-bottom: 2px; }
-        .birth-label { font-size: 10.5px; color: #555; font-style: italic; }
+        table.birth { width: 100%; border-collapse: collapse; margin-bottom: 22px; table-layout: fixed; }
+        table.birth td { width: 50%; vertical-align: top; padding: 0; }
+        table.birth td.right { padding-left: 20px; }
+        .birth-value {
+            font-size: 13pt;
+            font-weight: bold;
+            line-height: 1.15;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .birth-label { font-size: 8.5pt; color: #555; font-style: italic; margin-top: 3px; }
 
-        .para { margin: 0 0 12px 0; font-size: 12.5px; line-height: 1.6; }
+        .block { margin-bottom: 14px; font-size: 11pt; line-height: 1.5; }
 
-        .check-row { margin: 6px 0; font-size: 12.5px; line-height: 1.5; }
-        .check-row .check-box { margin-right: 10px; margin-left: 28px; }
+        table.units { width: 100%; border-collapse: collapse; margin-bottom: 16px; table-layout: fixed; }
+        table.units td { padding: 0; vertical-align: middle; font-size: 11pt; }
+        table.units td.label-col { width: 220px; }
+        table.units td.num-col {
+            width: 70px;
+            text-align: center;
+            font-size: 14pt;
+            font-weight: bold;
+        }
+        table.units td.suffix-col { padding-left: 6px; }
 
+        .check-row { margin: 5px 0; font-size: 11pt; line-height: 1.5; }
         .check-box {
             display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 1.4px solid #1a1a1a;
+            width: 12px; height: 12px;
+            border: 1.2px solid #111;
             position: relative;
             vertical-align: -2px;
+            margin-right: 8px;
         }
         .check-box.checked::before,
         .check-box.checked::after {
             content: '';
             position: absolute;
             top: 50%; left: 50%;
-            width: 19px; height: 1.4px;
-            background: #1a1a1a;
+            width: 16px; height: 1.2px;
+            background: #111;
         }
         .check-box.checked::before { transform: translate(-50%, -50%) rotate(45deg); }
         .check-box.checked::after  { transform: translate(-50%, -50%) rotate(-45deg); }
 
-        .niveau-period { margin: 14px 0 12px 0; font-size: 12.5px; }
+        .niveau-period { margin: 16px 0 10px; font-size: 11pt; }
 
-        .levels-title { margin: 10px 0 8px; font-size: 12.5px; text-decoration: underline; }
-        .levels-row { width: auto; border-collapse: collapse; margin-bottom: 12px; }
-        .levels-row td {
-            text-align: left;
-            font-size: 14px;
+        .levels-title { margin: 8px 0 8px; font-size: 11pt; text-decoration: underline; }
+        table.levels { border-collapse: collapse; margin-bottom: 14px; }
+        table.levels td {
+            font-size: 12pt;
             font-weight: bold;
-            padding-right: 32px;
+            padding: 0 30px 0 0;
             white-space: nowrap;
             vertical-align: middle;
         }
-        .levels-row .check-box { margin-right: 6px; vertical-align: middle; }
 
-        .kursinfo-title { margin-top: 6px; margin-bottom: 4px; font-size: 12.5px; }
-        .kursinfo-line { margin-bottom: 4px; font-size: 12.5px; }
-        .erfolg-line { margin-bottom: 8px; font-size: 11.5px; line-height: 1.5; }
-        .erfolg-active { font-weight: bold; text-decoration: underline; }
+        .kursinfo-title { font-size: 11pt; margin-top: 8px; margin-bottom: 4px; }
+        .kursinfo-line  { font-size: 11pt; margin-bottom: 4px; }
+        .erfolg-line    { font-size: 10.5pt; margin-bottom: 10px; line-height: 1.5; }
+        .erfolg-active  { font-weight: bold; text-decoration: underline; }
 
-        .legal { font-size: 9.5px; color: #444; line-height: 1.5; margin-bottom: 22px; }
+        .legal { font-size: 9pt; color: #444; line-height: 1.5; margin-bottom: 22px; }
 
-        .sig-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
-        .sig-table td { width: 50%; vertical-align: top; padding: 0; }
-        .sig-table td.right { text-align: right; }
-        .sig-value { font-size: 17px; font-weight: bold; margin-bottom: 1px; }
-        .sig-label { font-size: 10.5px; color: #555; font-style: italic; }
+        table.sig { width: 100%; border-collapse: collapse; margin-top: 18px; table-layout: fixed; }
+        table.sig td { width: 50%; vertical-align: top; padding: 0; }
+        table.sig td.right { text-align: right; }
+        .sig-value { font-size: 13pt; font-weight: bold; line-height: 1.15; white-space: nowrap; }
+        .sig-label { font-size: 8.5pt; color: #555; font-style: italic; margin-top: 3px; }
 
-        .signature { margin-top: 22px; text-align: right; font-size: 12px; text-decoration: underline; }
+        .signature { margin-top: 22px; text-align: right; font-size: 10.5pt; text-decoration: underline; }
 
         .footer {
             position: fixed;
-            left: 55px; right: 55px;
-            bottom: 28px;
+            left: 30px; right: 30px;
+            bottom: 20px;
             text-align: center;
-            font-size: 9.5px;
+            font-size: 8.5pt;
             color: #333;
             border-top: 1px solid #999;
-            padding-top: 8px;
-            line-height: 1.55;
+            padding-top: 6px;
+            line-height: 1.5;
         }
+        .footer .addr { text-decoration: underline; }
     </style>
 </head>
 <body>
 
     <table class="header">
         <tr>
-            <td style="width: 32%;">
+            <td class="logo-cell">
                 <img src="{{ public_path('assets/images/logo/gls.png') }}" class="header-logo" alt="GLS">
             </td>
-            <td class="header-title">{{ $t['title'] }}</td>
+            <td class="title-cell">
+                <span class="header-title">{{ $t['title'] }}</span>
+            </td>
         </tr>
     </table>
 
@@ -251,8 +256,15 @@
         </tr>
     </table>
 
-    <div class="para">{{ $participationText }}</div>
-    <div class="para">{{ $unitsText }}</div>
+    <div class="block">{{ $participationText }}</div>
+
+    <table class="units">
+        <tr>
+            <td class="label-col">{{ $t['units_label'] }}</td>
+            <td class="num-col">{{ $attestation->units_45min }}</td>
+            <td class="suffix-col">{{ $t['units_suffix'] }}</td>
+        </tr>
+    </table>
 
     <div class="check-row">
         <span class="check-box {{ $attestation->fees_status === 'full' ? 'checked' : '' }}"></span>{{ $t['fees_full'] }}
@@ -265,7 +277,7 @@
 
     <div class="levels-title">{{ $t['level_title'] }}</div>
 
-    <table class="levels-row">
+    <table class="levels">
         <tr>
             @foreach($levels as $lvl)
                 <td>
@@ -285,14 +297,9 @@
         .
     </div>
 
-    @php
-        $methodologyText = trim((string) ($attestation->methodology_text ?? '')) !== ''
-            ? $attestation->methodology_text
-            : $t['legal'];
-    @endphp
     <div class="legal">{!! nl2br(e($methodologyText)) !!}</div>
 
-    <table class="sig-table">
+    <table class="sig">
         <tr>
             <td>
                 <div class="sig-value">{{ strtoupper($attestation->city) }}</div>
@@ -308,8 +315,8 @@
     <div class="signature">{{ $t['signature'] }}</div>
 
     <div class="footer">
-        Adresse : Rue Halima Saadia N12 Lgherabliva en face la pharmacie centrale près de station tram Divar<br>
-        Tel : 0808540625/0622996078 , Email : gls.sprachenzentrum.sale@gmail.com
+        <div class="addr">{{ $footerAddress }}</div>
+        Tel : {{ $footerPhone }} , Email : {{ $footerEmail }}
     </div>
 
 </body>

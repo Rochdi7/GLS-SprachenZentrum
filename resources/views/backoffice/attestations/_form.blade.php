@@ -1,5 +1,6 @@
 @php
     $att = $attestation ?? null;
+    $pr  = $prefillRequest ?? null; // optional AttestationRequest used to prefill new attestations
 @endphp
 
 <div class="row">
@@ -14,25 +15,25 @@
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Nom</label>
         <input type="text" name="last_name" class="form-control" required
-               value="{{ old('last_name', $att->last_name ?? '') }}">
+               value="{{ old('last_name', $att->last_name ?? $pr->last_name ?? '') }}">
     </div>
 
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Prénom</label>
         <input type="text" name="first_name" class="form-control" required
-               value="{{ old('first_name', $att->first_name ?? '') }}">
+               value="{{ old('first_name', $att->first_name ?? $pr->first_name ?? '') }}">
     </div>
 
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Date de naissance</label>
         <input type="date" name="birth_date" class="form-control"
-               value="{{ old('birth_date', isset($att->birth_date) ? $att->birth_date->format('Y-m-d') : '') }}">
+               value="{{ old('birth_date', isset($att->birth_date) ? $att->birth_date->format('Y-m-d') : (isset($pr->birth_date) ? $pr->birth_date->format('Y-m-d') : '')) }}">
     </div>
 
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Lieu de naissance</label>
         <input type="text" name="birth_place" class="form-control"
-               value="{{ old('birth_place', $att->birth_place ?? '') }}">
+               value="{{ old('birth_place', $att->birth_place ?? $pr->birth_place ?? '') }}">
     </div>
 
     {{-- ============================================================ --}}
@@ -64,7 +65,7 @@
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Niveau sélectionné</label>
         @php
-            $selectedLevel = old('level', $att->level ?? '');
+            $selectedLevel = old('level', $att->level ?? $pr->level ?? '');
             $staticLevels = ['A1', 'A2', 'B1', 'B2'];
         @endphp
         <select name="level" id="att-level-select" class="form-select" required>
@@ -201,7 +202,7 @@
         <select name="language" class="form-select" required>
             @foreach($languageOptions as $value => $label)
                 <option value="{{ $value }}"
-                        {{ old('language', $att->language ?? 'de_fr') === $value ? 'selected' : '' }}>
+                        {{ old('language', $att->language ?? $pr->language ?? 'de_fr') === $value ? 'selected' : '' }}>
                     {{ $label }}
                 </option>
             @endforeach

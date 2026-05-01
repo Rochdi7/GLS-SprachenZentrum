@@ -13,6 +13,7 @@ use App\Http\Controllers\Frontoffice\ConsultationController;
 use App\Http\Controllers\Frontoffice\NewsletterController;
 use App\Http\Controllers\Frontoffice\GroupApplicationController;
 use App\Http\Controllers\Frontoffice\LevelQuizController;
+use App\Http\Controllers\Frontoffice\AttestationRequestController;
 
 Route::middleware(CacheResponse::class)->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('front.home');
@@ -39,6 +40,9 @@ Route::middleware(CacheResponse::class)->group(function () {
     Route::get('/online-registration', [PageController::class, 'onlineRegistration'])->name('front.online-registration');
     Route::get('/gls-inscription', [PageController::class, 'glsInscription'])->name('front.gls-inscription');
     Route::get('/gls-inscription/success', [PageController::class, 'glsSuccess'])->name('front.gls-inscription.success');
+
+    Route::get('/demande-attestation', [AttestationRequestController::class, 'create'])->name('front.attestation-request.create');
+    Route::get('/demande-attestation/success', [AttestationRequestController::class, 'success'])->name('front.attestation-request.success');
 
     Route::get('/exams/gls', [PageController::class, 'glsExams'])->name('front.exams.gls');
     Route::get('/exams/osd', [PageController::class, 'osdExams'])->name('front.exams.osd');
@@ -90,6 +94,7 @@ Route::post('/contact', [PageController::class, 'contactPost'])->name('front.con
 Route::post('/certificate-check', [PageController::class, 'certificateCheckPost'])->name('front.certificate.check.post');
 Route::post('/online-registration', [PageController::class, 'storeOnlineRegistration'])->name('front.online-registration.store');
 Route::post('/gls-inscription', [GlsController::class, 'store'])->name('gls.inscription');
+Route::post('/demande-attestation', [AttestationRequestController::class, 'store'])->name('front.attestation-request.store');
 Route::post('/consultation', [ConsultationController::class, 'store'])->name('front.consultation.store');
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 Route::post('/groups/apply', [GroupApplicationController::class, 'storeFromQuery'])->name('front.groups.apply');
