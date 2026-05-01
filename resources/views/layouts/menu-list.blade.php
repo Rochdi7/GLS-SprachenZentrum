@@ -103,17 +103,8 @@
                 <span class="pc-mtext">Attestations</span>
             </a>
         </li>
-        <li class="pc-item {{ request()->routeIs('backoffice.attestation_requests.*') ? 'active' : '' }}">
-            <a href="{{ route('backoffice.attestation_requests.index') }}" class="pc-link {{ request()->routeIs('backoffice.attestation_requests.*') ? 'active' : '' }}">
-                <span class="pc-mtext">Demandes d'attestation</span>
-                @php
-                    $pendingAttestationRequests = \App\Models\AttestationRequest::where('status', 'pending')->count();
-                @endphp
-                @if ($pendingAttestationRequests > 0)
-                    <span class="badge bg-warning rounded-pill ms-1">{{ $pendingAttestationRequests }}</span>
-                @endif
-            </a>
-        </li>
+        {{-- Sidebar entry for "Demandes d'attestation" temporarily hidden.
+             Routes still active so the controller pages work via direct URL. --}}
         @endcan
         @hasanyrole('Super Admin|Admin')
             @can('studienkollegs.view')

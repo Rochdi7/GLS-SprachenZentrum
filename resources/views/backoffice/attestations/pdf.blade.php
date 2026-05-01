@@ -198,7 +198,7 @@
             margin: 0 auto;
         }
         table.sig td { vertical-align: top; padding: 0; }
-        table.sig td.left  { text-align: center; padding-right: 80px; }
+        table.sig td.left  { text-align: center; padding-right: 160px; }
         table.sig td.right { text-align: center; }
         .sig-value {
             font-size: 12pt;
