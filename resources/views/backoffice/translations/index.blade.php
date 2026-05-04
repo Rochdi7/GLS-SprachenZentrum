@@ -12,98 +12,84 @@
         .status-delivered   { background:#cfe2ff; color:#0a58ca; border:1px solid #9ec5fe; font-weight:600; }
         .status-pill        { padding:.35rem .9rem; border-radius:999px; font-size:.78rem; cursor:pointer; display:inline-block; min-width:160px; text-align:center; }
         .status-pill:hover  { filter:brightness(.96); }
-        .pp-toolbar         { background:#eaf2ff; border:1px solid #c7dbff; border-radius:.5rem; padding:.4rem .6rem; }
-        .pp-toolbar input   { width:90px; }
         td.amount, th.amount{ text-align:right; font-variant-numeric: tabular-nums; }
+        .items-mini        { font-size:.78rem; color:#6c757d; }
+        .items-mini li     { margin:0; padding:0; line-height:1.4; }
+        .items-mini .doc   { color:#212529; font-weight:500; }
+        .filter-status     { width:230px !important; min-width:230px; }
+        .filter-search     { width:240px !important; min-width:240px; }
     </style>
 @endsection
 
 @section('content')
 
-    @if (session('success') || session('error'))
-        <div class="alert alert-{{ session('error') ? 'danger' : 'success' }} alert-dismissible fade show" role="alert">
-            {{ session('success') ?? session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {{-- Toast Notifications --}}
+    @if (session('toast') || session('success') || session('error'))
+        <div class="position-fixed top-0 end-0 p-3" style="z-index: 99999">
+            <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <img src="{{ asset('assets/images/favicon/favicon.svg') }}" class="img-fluid me-2" alt="favicon" style="width: 17px">
+                    <strong class="me-auto">GLS Backoffice</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    {{ session('toast') ?? (session('success') ?? session('error')) }}
+                </div>
+            </div>
         </div>
     @endif
 
-    {{-- HEADER : filtres + total --}}
+    {{-- Validation errors (when modal submission fails server-side) --}}
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show">
+            <strong>Erreur lors de l'enregistrement :</strong>
+            <ul class="mb-0">
+                @foreach ($errors->all() as $err)<li>{{ $err }}</li>@endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    {{-- HEADER --}}
     <div class="card mb-3">
-        <div class="card-body">
+        <div class="card-body py-3">
             <div class="d-flex flex-wrap align-items-center gap-3 justify-content-between">
-                <div>
-                    <h5 class="mb-1">Suivi des Traductions</h5>
+                <div class="me-auto">
+                    <h5 class="mb-0">Suivi des Traductions</h5>
                     <small class="text-muted">Portail interne — Maroc / Allemagne</small>
                 </div>
 
                 <div class="d-flex flex-wrap align-items-center gap-2">
-                    <form method="GET" action="{{ route('backoffice.translations.index') }}" class="d-flex gap-2">
-                        <input type="text" name="q" value="{{ $q }}" class="form-control form-control-sm" placeholder="CIN, nom, document…">
-                        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <form method="GET" action="{{ route('backoffice.translations.index') }}" class="d-flex gap-2 align-items-center">
+                        <input type="text" name="q" value="{{ $q }}" class="form-control form-control-sm filter-search" placeholder="CIN, nom, document…">
+                        <select name="status" class="form-select form-select-sm filter-status" onchange="this.form.submit()">
                             <option value="">Tous statuts ({{ $counts['all'] }})</option>
                             <option value="pending"    {{ $currentStatus === 'pending'    ? 'selected' : '' }}>Reçu (GLS) ({{ $counts['pending'] }})</option>
                             <option value="translator" {{ $currentStatus === 'translator' ? 'selected' : '' }}>Chez Traducteur ({{ $counts['translator'] }})</option>
                             <option value="delivered"  {{ $currentStatus === 'delivered'  ? 'selected' : '' }}>Rendu ({{ $counts['delivered'] }})</option>
                         </select>
-                        <button class="btn btn-sm btn-outline-primary" type="submit">Filtrer</button>
+                        <button class="btn btn-sm btn-outline-primary text-nowrap" type="submit">
+                            <i class="ti ti-filter"></i> Filtrer
+                        </button>
                     </form>
 
                     @can('translations.view')
-                    <a href="{{ route('backoffice.translations.export') }}" class="btn btn-sm btn-success">
+                    <a href="{{ route('backoffice.translations.export') }}" class="btn btn-sm btn-success text-nowrap">
                         <i class="ti ti-file-spreadsheet"></i> Export CSV
                     </a>
+                    @endcan
+
+                    @can('translations.create')
+                    <button type="button" class="btn btn-sm btn-primary text-nowrap"
+                            data-bs-toggle="modal" data-bs-target="#createTranslationModal">
+                        <i class="ti ti-plus"></i> Nouvelle commande
+                    </button>
                     @endcan
                 </div>
             </div>
         </div>
     </div>
-
-    {{-- FORM : nouvelle commande --}}
-    @can('translations.create')
-    <div class="card mb-3">
-        <div class="card-header">
-            <h6 class="mb-0"><i class="ti ti-plus-circle text-primary"></i> Nouvelle commande</h6>
-        </div>
-        <div class="card-body">
-            <form action="{{ route('backoffice.translations.store') }}" method="POST" class="row g-2 align-items-end">
-                @csrf
-                <div class="col-md-2">
-                    <label class="form-label small text-muted">CIN *</label>
-                    <input type="text" name="cin" class="form-control form-control-sm text-uppercase" placeholder="AB123456" required>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small text-muted">Nom étudiant *</label>
-                    <input type="text" name="student_name" class="form-control form-control-sm" placeholder="Ahmed Alami" required>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small text-muted">Téléphone</label>
-                    <input type="text" name="phone" class="form-control form-control-sm" placeholder="06…">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small text-muted">Documents</label>
-                    <input type="text" name="doc_type" class="form-control form-control-sm" placeholder="Bac, Relevés…">
-                </div>
-                <div class="col-md-1">
-                    <label class="form-label small text-muted">Pages *</label>
-                    <input type="number" name="page_count" min="1" value="1" class="form-control form-control-sm text-center fw-bold" required>
-                </div>
-                <div class="col-md-1">
-                    <label class="form-label small text-muted">Prix/page</label>
-                    <input type="number" name="price_per_page" min="0" value="{{ $defaultPrice }}" class="form-control form-control-sm" required>
-                </div>
-                <div class="col-md-1">
-                    <label class="form-label small text-muted">Date dépôt</label>
-                    <input type="date" name="date_received" value="{{ now()->toDateString() }}" class="form-control form-control-sm">
-                </div>
-                <div class="col-md-1">
-                    <button type="submit" class="btn btn-primary btn-sm w-100">
-                        <i class="ti ti-device-floppy"></i> Enregistrer
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    @endcan
 
     {{-- TABLE --}}
     <div class="card">
@@ -117,11 +103,11 @@
                             <th>Étudiant</th>
                             <th>Documents</th>
                             <th class="text-center">Pages</th>
-                            <th class="amount">Coût</th>
+                            <th class="amount">Total</th>
                             <th>Dépôt</th>
                             <th style="width:170px">Date Remise</th>
                             <th class="text-center" style="width:200px">Statut</th>
-                            <th class="text-center" style="width:120px">Actions</th>
+                            <th class="text-center" style="width:140px">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -133,8 +119,21 @@
                                     <div class="fw-semibold">{{ $t->student_name }}</div>
                                     @if($t->phone)<small class="text-muted">{{ $t->phone }}</small>@endif
                                 </td>
-                                <td><small>{{ $t->doc_type }}</small></td>
-                                <td class="text-center fw-bold">{{ $t->page_count }}</td>
+                                <td>
+                                    @if($t->items->isEmpty())
+                                        <small class="text-muted fst-italic">Aucun document</small>
+                                    @else
+                                        <ul class="items-mini list-unstyled mb-0">
+                                            @foreach($t->items as $it)
+                                                <li>
+                                                    <span class="doc">{{ $it->doc_type }}</span>
+                                                    <span class="text-muted">— {{ $it->page_count }} p × {{ $it->price_per_page }} DH = <strong>{{ number_format($it->line_total, 0, ',', ' ') }} DH</strong></span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </td>
+                                <td class="text-center fw-bold">{{ $t->totalPages() }}</td>
                                 <td class="amount fw-semibold text-primary">{{ number_format($t->total_cost, 0, ',', ' ') }} DH</td>
                                 <td><small>{{ optional($t->date_received)->format('d/m/Y') ?? '-' }}</small></td>
                                 <td>
@@ -165,13 +164,13 @@
                                 <td class="text-center">
                                     @can('translations.edit')
                                     <button type="button" class="btn btn-sm btn-link text-secondary p-1"
-                                            data-bs-toggle="modal" data-bs-target="#editTranslation-{{ $t->id }}" title="Éditer">
+                                            data-bs-toggle="modal" data-bs-target="#editTranslationModal-{{ $t->id }}" title="Éditer">
                                         <i class="ti ti-edit f-18"></i>
                                     </button>
                                     @endcan
                                     @can('translations.delete')
                                     <form method="POST" action="{{ route('backoffice.translations.destroy', $t) }}" class="d-inline"
-                                          onsubmit="return confirm('Supprimer cette commande ?')">
+                                          onsubmit="return confirm('Supprimer cette commande et tous ses documents ?')">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-link text-danger p-1" title="Supprimer">
                                             <i class="ti ti-trash f-18"></i>
@@ -198,73 +197,73 @@
         </div>
     </div>
 
+    {{-- CREATE MODAL --}}
+    @can('translations.create')
+        <div class="modal fade" id="createTranslationModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="ti ti-plus-circle text-primary"></i> Nouvelle commande de traduction</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        @include('backoffice.translations._form', [
+                            'translation'  => null,
+                            'defaultPrice' => $defaultPrice,
+                            'formId'       => 'createTranslationForm',
+                        ])
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endcan
+
     {{-- EDIT MODALS --}}
     @can('translations.edit')
         @foreach($translations as $t)
-            <div class="modal fade" id="editTranslation-{{ $t->id }}" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <form action="{{ route('backoffice.translations.update', $t) }}" method="POST" class="modal-content">
-                        @csrf @method('PUT')
+            <div class="modal fade" id="editTranslationModal-{{ $t->id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
                         <div class="modal-header">
-                            <h6 class="modal-title">Modifier — {{ $t->student_name }}</h6>
+                            <h5 class="modal-title">
+                                <i class="ti ti-edit text-primary"></i>
+                                Modifier — {{ $t->student_name }} <small class="text-muted">(CIN : {{ $t->cin }})</small>
+                            </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
-                            <div class="row g-2">
-                                <div class="col-md-3">
-                                    <label class="form-label small">CIN *</label>
-                                    <input type="text" name="cin" value="{{ $t->cin }}" class="form-control form-control-sm text-uppercase" required>
-                                </div>
-                                <div class="col-md-5">
-                                    <label class="form-label small">Étudiant *</label>
-                                    <input type="text" name="student_name" value="{{ $t->student_name }}" class="form-control form-control-sm" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label small">Téléphone</label>
-                                    <input type="text" name="phone" value="{{ $t->phone }}" class="form-control form-control-sm">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small">Documents</label>
-                                    <input type="text" name="doc_type" value="{{ $t->doc_type }}" class="form-control form-control-sm">
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label small">Pages *</label>
-                                    <input type="number" name="page_count" min="1" value="{{ $t->page_count }}" class="form-control form-control-sm" required>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label small">Prix/page</label>
-                                    <input type="number" name="price_per_page" min="0" value="{{ $t->price_per_page }}" class="form-control form-control-sm" required>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label small">Statut</label>
-                                    <select name="status" class="form-select form-select-sm">
-                                        @foreach(\App\Models\Translation::statuses() as $k => $label)
-                                            <option value="{{ $k }}" {{ $t->status === $k ? 'selected' : '' }}>{{ $label }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small">Date dépôt</label>
-                                    <input type="date" name="date_received" value="{{ optional($t->date_received)->format('Y-m-d') }}" class="form-control form-control-sm">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small">Date remise</label>
-                                    <input type="date" name="date_handed_over" value="{{ optional($t->date_handed_over)->format('Y-m-d') }}" class="form-control form-control-sm">
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label small">Notes internes</label>
-                                    <textarea name="notes" rows="2" class="form-control form-control-sm">{{ $t->notes }}</textarea>
-                                </div>
-                            </div>
+                            @include('backoffice.translations._form', [
+                                'translation'  => $t,
+                                'defaultPrice' => 0,
+                                'formId'       => 'editTranslationForm-' . $t->id,
+                            ])
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                            <button type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         @endforeach
     @endcan
 
+@endsection
+
+@section('scripts')
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toastEl = document.getElementById('liveToast');
+            if (toastEl) {
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }
+
+            // Re-open the modal on validation errors so the user sees the messages.
+            @if ($errors->any() && old('_form_kind') === 'create')
+                const cm = new bootstrap.Modal(document.getElementById('createTranslationModal'));
+                cm.show();
+            @elseif ($errors->any() && old('_form_kind') && str_starts_with(old('_form_kind'), 'edit:'))
+                @php $editId = (int) str_replace('edit:', '', old('_form_kind')); @endphp
+                const em = document.getElementById('editTranslationModal-{{ $editId }}');
+                if (em) (new bootstrap.Modal(em)).show();
+            @endif
+        });
+    </script>
 @endsection

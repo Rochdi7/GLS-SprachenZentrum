@@ -4,17 +4,25 @@ namespace App\Http\Controllers\Backoffice;
 
 use App\Http\Controllers\Controller;
 use App\Models\Translation;
+use App\Models\TranslationItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TranslationController extends Controller
 {
+    /* ------------------------------------------------------------------ */
+    /*  LIST                                                              */
+    /* ------------------------------------------------------------------ */
     public function index(Request $request)
     {
         $status = $request->query('status');
         $q      = trim((string) $request->query('q', ''));
 
-        $query = Translation::query()->latest('date_received')->latest('id');
+        $query = Translation::query()
+            ->with('items')
+            ->latest('date_received')
+            ->latest('id');
 
         if (in_array($status, [Translation::STATUS_PENDING, Translation::STATUS_TRANSLATOR, Translation::STATUS_DELIVERED], true)) {
             $query->where('status', $status);
@@ -24,8 +32,8 @@ class TranslationController extends Controller
             $query->where(function ($w) use ($q) {
                 $w->where('cin', 'like', "%{$q}%")
                   ->orWhere('student_name', 'like', "%{$q}%")
-                  ->orWhere('doc_type', 'like', "%{$q}%")
-                  ->orWhere('phone', 'like', "%{$q}%");
+                  ->orWhere('phone', 'like', "%{$q}%")
+                  ->orWhereHas('items', fn ($i) => $i->where('doc_type', 'like', "%{$q}%"));
             });
         }
 
@@ -40,7 +48,7 @@ class TranslationController extends Controller
 
         $grandTotal = (int) $translations->sum('total_cost');
 
-        $defaultPrice = (int) (Translation::latest('id')->value('price_per_page') ?? 200);
+        $defaultPrice = 0;
 
         return view('backoffice.translations.index', [
             'translations'  => $translations,
@@ -52,61 +60,114 @@ class TranslationController extends Controller
         ]);
     }
 
+    /* ------------------------------------------------------------------ */
+    /*  CREATE / STORE                                                    */
+    /* ------------------------------------------------------------------ */
+    public function create()
+    {
+        return view('backoffice.translations.create', [
+            'defaultPrice' => 0,
+        ]);
+    }
+
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'cin'              => ['required', 'string', 'max:32'],
-            'student_name'     => ['required', 'string', 'max:255'],
-            'phone'            => ['nullable', 'string', 'max:32'],
-            'doc_type'         => ['nullable', 'string', 'max:255'],
-            'page_count'       => ['required', 'integer', 'min:1'],
-            'price_per_page'   => ['required', 'integer', 'min:0'],
-            'date_received'    => ['nullable', 'date'],
-            'notes'            => ['nullable', 'string', 'max:5000'],
-        ]);
+        $data = $this->validateOrder($request, creating: true);
 
-        $data['cin']          = Translation::normalizeCin($data['cin']);
-        $data['doc_type']     = $data['doc_type'] ?: 'Documents divers';
-        $data['total_cost']   = (int) $data['page_count'] * (int) $data['price_per_page'];
-        $data['date_received'] = $data['date_received'] ?? now()->toDateString();
-        $data['status']       = Translation::STATUS_PENDING;
+        DB::transaction(function () use ($data) {
+            $translation = Translation::create([
+                'cin'              => Translation::normalizeCin($data['cin']),
+                'student_name'     => $data['student_name'],
+                'phone'            => $data['phone']            ?? null,
+                'date_received'    => $data['date_received']    ?? now()->toDateString(),
+                'date_handed_over' => $data['date_handed_over'] ?? null,
+                'status'           => $data['status']           ?? Translation::STATUS_PENDING,
+                'notes'            => $data['notes']            ?? null,
+            ]);
 
-        Translation::create($data);
+            foreach ($data['items'] as $item) {
+                $translation->items()->create([
+                    'doc_type'       => $item['doc_type'] ?: 'Documents divers',
+                    'page_count'     => (int) $item['page_count'],
+                    'price_per_page' => (int) $item['price_per_page'],
+                ]);
+            }
+
+            $translation->recalculateTotal();
+        });
 
         return redirect()->route('backoffice.translations.index')
-            ->with('success', 'Commande enregistrée.');
+            ->with('toast', 'Commande de traduction enregistrée.');
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  EDIT / UPDATE                                                     */
+    /* ------------------------------------------------------------------ */
+    public function edit(Translation $translation)
+    {
+        $translation->load('items');
+
+        return view('backoffice.translations.edit', [
+            'translation' => $translation,
+        ]);
     }
 
     public function update(Request $request, Translation $translation)
     {
-        $data = $request->validate([
-            'cin'              => ['required', 'string', 'max:32'],
-            'student_name'     => ['required', 'string', 'max:255'],
-            'phone'            => ['nullable', 'string', 'max:32'],
-            'doc_type'         => ['nullable', 'string', 'max:255'],
-            'page_count'       => ['required', 'integer', 'min:1'],
-            'price_per_page'   => ['required', 'integer', 'min:0'],
-            'date_received'    => ['nullable', 'date'],
-            'date_handed_over' => ['nullable', 'date'],
-            'status'           => ['required', 'in:pending,translator,delivered'],
-            'notes'            => ['nullable', 'string', 'max:5000'],
-        ]);
+        $data = $this->validateOrder($request, creating: false);
 
-        $data['cin']        = Translation::normalizeCin($data['cin']);
-        $data['doc_type']   = $data['doc_type'] ?: 'Documents divers';
-        $data['total_cost'] = (int) $data['page_count'] * (int) $data['price_per_page'];
+        DB::transaction(function () use ($data, $translation) {
+            $orderPayload = [
+                'cin'              => Translation::normalizeCin($data['cin']),
+                'student_name'     => $data['student_name'],
+                'phone'            => $data['phone']            ?? null,
+                'date_received'    => $data['date_received']    ?? null,
+                'date_handed_over' => $data['date_handed_over'] ?? null,
+                'status'           => $data['status'],
+                'notes'            => $data['notes']            ?? null,
+            ];
 
-        if ($data['status'] === Translation::STATUS_DELIVERED && empty($data['date_handed_over'])) {
-            $data['date_handed_over'] = now()->toDateString();
-        }
+            if ($orderPayload['status'] === Translation::STATUS_DELIVERED && empty($orderPayload['date_handed_over'])) {
+                $orderPayload['date_handed_over'] = now()->toDateString();
+            }
 
-        $translation->update($data);
+            $translation->update($orderPayload);
+
+            // Sync items: keep existing where id provided, update them; create new; delete missing.
+            $keepIds = [];
+            foreach ($data['items'] as $row) {
+                $itemPayload = [
+                    'doc_type'       => $row['doc_type'] ?: 'Documents divers',
+                    'page_count'     => (int) $row['page_count'],
+                    'price_per_page' => (int) $row['price_per_page'],
+                ];
+
+                if (!empty($row['id'])) {
+                    $item = $translation->items()->where('id', $row['id'])->first();
+                    if ($item) {
+                        $item->update($itemPayload);
+                        $keepIds[] = $item->id;
+                        continue;
+                    }
+                }
+
+                $new = $translation->items()->create($itemPayload);
+                $keepIds[] = $new->id;
+            }
+
+            $translation->items()->whereNotIn('id', $keepIds)->delete();
+
+            $translation->recalculateTotal();
+        });
 
         return redirect()->route('backoffice.translations.index')
-            ->with('success', 'Commande mise à jour.');
+            ->with('toast', 'Commande mise à jour.');
     }
 
-    public function updateStatus(Request $request, Translation $translation)
+    /* ------------------------------------------------------------------ */
+    /*  STATUS / HANDOVER / DELETE                                        */
+    /* ------------------------------------------------------------------ */
+    public function updateStatus(Translation $translation)
     {
         $next = match ($translation->status) {
             Translation::STATUS_PENDING    => Translation::STATUS_TRANSLATOR,
@@ -122,7 +183,7 @@ class TranslationController extends Controller
 
         $translation->update($payload);
 
-        return back()->with('success', 'Statut mis à jour.');
+        return back()->with('toast', 'Statut mis à jour.');
     }
 
     public function updateHandover(Request $request, Translation $translation)
@@ -140,39 +201,74 @@ class TranslationController extends Controller
     {
         $translation->delete();
 
-        return back()->with('success', 'Commande supprimée.');
+        return back()->with('toast', 'Commande supprimée.');
     }
 
-    public function exportCsv(Request $request): StreamedResponse
+    /* ------------------------------------------------------------------ */
+    /*  EXPORT                                                            */
+    /* ------------------------------------------------------------------ */
+    public function exportCsv(): StreamedResponse
     {
-        $rows = Translation::query()
-            ->latest('date_received')->latest('id')
+        $rows = Translation::with('items')
+            ->latest('date_received')
+            ->latest('id')
             ->get();
 
         $filename = 'GLS_Traductions_' . now()->format('Y-m-d') . '.csv';
 
         return response()->streamDownload(function () use ($rows) {
             $out = fopen('php://output', 'w');
-            // BOM so Excel picks UTF-8
             fwrite($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
-            fputcsv($out, ['CIN', 'Étudiant', 'Téléphone', 'Documents', 'Pages', 'Prix/page', 'Total (DH)', 'Date Dépôt', 'Date Remise', 'Statut'], ';');
+            fputcsv($out, ['CIN', 'Étudiant', 'Téléphone', 'Document', 'Pages', 'Prix/page', 'Total ligne (DH)', 'Date Dépôt', 'Date Remise', 'Statut'], ';');
             foreach ($rows as $r) {
-                fputcsv($out, [
-                    $r->cin,
-                    $r->student_name,
-                    $r->phone,
-                    $r->doc_type,
-                    $r->page_count,
-                    $r->price_per_page,
-                    $r->total_cost,
-                    optional($r->date_received)->format('d/m/Y'),
-                    optional($r->date_handed_over)->format('d/m/Y'),
-                    Translation::statuses()[$r->status] ?? $r->status,
-                ], ';');
+                if ($r->items->isEmpty()) {
+                    fputcsv($out, [
+                        $r->cin, $r->student_name, $r->phone,
+                        '-', 0, 0, 0,
+                        optional($r->date_received)->format('d/m/Y'),
+                        optional($r->date_handed_over)->format('d/m/Y'),
+                        Translation::statuses()[$r->status] ?? $r->status,
+                    ], ';');
+                    continue;
+                }
+                foreach ($r->items as $i) {
+                    fputcsv($out, [
+                        $r->cin, $r->student_name, $r->phone,
+                        $i->doc_type, $i->page_count, $i->price_per_page, $i->line_total,
+                        optional($r->date_received)->format('d/m/Y'),
+                        optional($r->date_handed_over)->format('d/m/Y'),
+                        Translation::statuses()[$r->status] ?? $r->status,
+                    ], ';');
+                }
             }
             fclose($out);
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  VALIDATION                                                        */
+    /* ------------------------------------------------------------------ */
+    private function validateOrder(Request $request, bool $creating): array
+    {
+        return $request->validate([
+            'cin'                  => ['required', 'string', 'max:32'],
+            'student_name'         => ['required', 'string', 'max:255'],
+            'phone'                => ['nullable', 'string', 'max:32'],
+            'date_received'        => ['nullable', 'date'],
+            'date_handed_over'     => ['nullable', 'date'],
+            'status'               => [$creating ? 'nullable' : 'required', 'in:pending,translator,delivered'],
+            'notes'                => ['nullable', 'string', 'max:5000'],
+
+            'items'                  => ['required', 'array', 'min:1'],
+            'items.*.id'             => ['nullable', 'integer'],
+            'items.*.doc_type'       => ['nullable', 'string', 'max:255'],
+            'items.*.page_count'     => ['required', 'integer', 'min:1'],
+            'items.*.price_per_page' => ['required', 'integer', 'min:0'],
+        ], [
+            'items.required' => 'Vous devez ajouter au moins un document.',
+            'items.min'      => 'Vous devez ajouter au moins un document.',
         ]);
     }
 }

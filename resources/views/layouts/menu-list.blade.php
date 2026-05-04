@@ -7,6 +7,7 @@
         || request()->routeIs('backoffice.certificates.*')
         || request()->routeIs('backoffice.attestations.*')
         || request()->routeIs('backoffice.attestation_requests.*')
+        || request()->routeIs('backoffice.translations.*')
         || request()->routeIs('backoffice.studienkollegs.*')
         || request()->routeIs('backoffice.quizzes.*');
     $admissionsOpen = request()->routeIs('backoffice.applications.*')
@@ -61,7 +62,7 @@
 </li>
 @endcanany
 
-@canany(['sites.view', 'teachers.view', 'groups.view', 'certificates.view', 'attestations.view', 'studienkollegs.view', 'quizzes.view'])
+@canany(['sites.view', 'teachers.view', 'groups.view', 'certificates.view', 'attestations.view', 'attestation_requests.view', 'translations.view', 'studienkollegs.view', 'quizzes.view'])
 <li class="pc-item pc-hasmenu {{ $schoolOpen ? 'pc-trigger' : '' }}">
     <a href="#!" class="pc-link">
         <span class="pc-micon"><i class="ph-duotone ph-buildings"></i></span>
@@ -103,8 +104,20 @@
                 <span class="pc-mtext">Attestations</span>
             </a>
         </li>
-        {{-- Sidebar entry for "Demandes d'attestation" temporarily hidden.
-             Routes still active so the controller pages work via direct URL. --}}
+        @endcan
+        @can('attestation_requests.view')
+        <li class="pc-item {{ request()->routeIs('backoffice.attestation_requests.*') ? 'active' : '' }}">
+            <a href="{{ route('backoffice.attestation_requests.index') }}" class="pc-link {{ request()->routeIs('backoffice.attestation_requests.*') ? 'active' : '' }}">
+                <span class="pc-mtext">Demandes d'attestation</span>
+            </a>
+        </li>
+        @endcan
+        @can('translations.view')
+        <li class="pc-item {{ request()->routeIs('backoffice.translations.*') ? 'active' : '' }}">
+            <a href="{{ route('backoffice.translations.index') }}" class="pc-link {{ request()->routeIs('backoffice.translations.*') ? 'active' : '' }}">
+                <span class="pc-mtext">Traductions</span>
+            </a>
+        </li>
         @endcan
         @hasanyrole('Super Admin|Admin')
             @can('studienkollegs.view')

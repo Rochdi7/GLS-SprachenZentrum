@@ -188,22 +188,33 @@ z-index: 30;
 backdrop-filter: blur(8px);
 }
 
-.dropdown:hover > .dropdown-menu {
+.dropdown:hover > .dropdown-menu,
+.dropdown > .dropdown-menu.show {
 opacity: 1;
 visibility: visible;
 transform: translateY(0);
+display: flex;
 }
 
-.dropdown-menu a {
+.dropdown-menu a,
+.dropdown-menu .dropdown-item {
 text-decoration: none;
 color: var(--color-text);
 font-size: 0.8rem;
 font-weight: 500;
+padding: 0;
+background: transparent;
+white-space: normal;
 transition: color 0.2s ease;
 }
 
-.dropdown-menu a:hover {
+.dropdown-menu a:hover,
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus,
+.dropdown-menu .dropdown-item.active,
+.dropdown-menu .dropdown-item:active {
 color: var(--color-secondary);
+background: transparent;
 }
 
 

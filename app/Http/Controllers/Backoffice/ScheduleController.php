@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Site;
 use App\Models\User;
 use App\Models\UserSchedule;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -157,6 +158,52 @@ class ScheduleController extends Controller
             'authUser', 'target', 'isAdmin', 'staffOptions',
             'weekStart', 'weekEnd', 'days', 'totalWorked'
         ));
+    }
+
+    /**
+     * Export the weekly planning as a PDF.
+     *
+     * Open to any authenticated user for their own week. Center admins can
+     * export the week of any user they are allowed to manage (same site).
+     */
+    public function weekPdf(Request $request)
+    {
+        $authUser = $request->user();
+        $isAdmin = $authUser->isCenterAdmin();
+
+        $weekStart = $request->filled('week')
+            ? Carbon::parse($request->week)->startOfWeek(Carbon::MONDAY)
+            : Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $weekEnd = (clone $weekStart)->endOfWeek(Carbon::SUNDAY);
+
+        $targetUserId = (int) ($request->user_id ?? $authUser->id);
+        if (! $isAdmin) {
+            $targetUserId = $authUser->id;
+        }
+        $target = User::findOrFail($targetUserId);
+        $this->authorizeManage($authUser, $target);
+
+        $schedules = UserSchedule::where('user_id', $target->id)
+            ->whereBetween('date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+            ->orderBy('date')
+            ->get();
+
+        $data = [
+            'employee'    => $target,
+            'site'        => $target->site,
+            'schedules'   => $schedules,
+            'weekStart'   => $weekStart,
+            'weekEnd'     => $weekEnd,
+            'dateFrom'    => $weekStart->toDateString(),
+            'dateTo'      => $weekEnd->toDateString(),
+            'totalWorked' => $schedules->sum('worked_minutes'),
+            'totalBreak'  => $schedules->sum('break_minutes'),
+        ];
+
+        $pdf = Pdf::loadView('backoffice.pdf.planning-week', $data)->setPaper('A4', 'landscape');
+        $filename = 'planning_semaine_' . str_replace(' ', '_', $target->name) . '_' . $weekStart->toDateString() . '.pdf';
+
+        return $pdf->download($filename);
     }
 
     public function saveWeek(Request $request)

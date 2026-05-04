@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <meta name="description"
         content="GLS Sprachen Zentrum Back Office – Gérez les articles de blog, les enseignants, les certificats, les groupes, les sites et plus encore. Tableau de bord d'administration pour les centres GLS à travers le Maroc." />

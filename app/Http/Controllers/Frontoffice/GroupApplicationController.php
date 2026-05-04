@@ -96,11 +96,11 @@ class GroupApplicationController extends Controller
     {
         abort_unless((int) $application->group_id === (int) $group->id, 404);
 
-        $application->update(['status' => 'approved']);
+        $application->setStatus('approved')->save();
 
         return back()->with([
             'status_action' => 'Inscription approuvée avec succès.',
-            'status_type' => 'success', 
+            'status_type' => 'success',
         ]);
     }
 
@@ -108,7 +108,7 @@ class GroupApplicationController extends Controller
     {
         abort_unless((int) $application->group_id === (int) $group->id, 404);
 
-        $application->update(['status' => 'rejected']);
+        $application->setStatus('rejected')->save();
 
         return back()->with([
             'status_action' => 'Inscription refusée.',

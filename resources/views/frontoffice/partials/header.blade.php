@@ -177,7 +177,7 @@
             <!-- ABOUT -->
             <div class="dropdown">
                 <button class="btn btn-link dropdown-toggle text-decoration-none" type="button"
-                    data-bs-toggle="dropdown">
+                    data-bs-toggle="dropdown" data-bs-display="static">
                     {{ __('header.about') }}
                 </button>
                 <ul class="dropdown-menu">
@@ -236,7 +236,7 @@
             <!-- COURSES -->
             <div class="dropdown">
                 <button class="btn btn-link dropdown-toggle text-decoration-none" type="button"
-                    data-bs-toggle="dropdown">
+                    data-bs-toggle="dropdown" data-bs-display="static">
                     {{ __('header.german_courses') }}
                 </button>
                 <ul class="dropdown-menu">
@@ -261,7 +261,7 @@
             <!-- EXAMS -->
             <div class="dropdown">
                 <button class="btn btn-link dropdown-toggle text-decoration-none" type="button"
-                    data-bs-toggle="dropdown">
+                    data-bs-toggle="dropdown" data-bs-display="static">
                     {{ __('header.exams') }}
                 </button>
                 <ul class="dropdown-menu">
@@ -284,7 +284,7 @@
             <!-- RESOURCES -->
             <div class="dropdown">
                 <button class="btn btn-link dropdown-toggle text-decoration-none" type="button"
-                    data-bs-toggle="dropdown">
+                    data-bs-toggle="dropdown" data-bs-display="static">
                     {{ __('header.resources') }}
                 </button>
                 <ul class="dropdown-menu">
@@ -295,10 +295,13 @@
                     </li>
 
                     <li><a class="dropdown-item"
-                            href="{{ LaravelLocalization::localizeUrl(route('front.student-stories')) }}">{{ __('header.student_stories') }}</a>
+                            href="{{ LaravelLocalization::localizeUrl(route('front.certificate.check')) }}">{{ __('header.verify_certificate') }}</a>
                     </li>
                     <li><a class="dropdown-item"
-                            href="{{ LaravelLocalization::localizeUrl(route('front.certificate.check')) }}">{{ __('header.verify_certificate') }}</a>
+                            href="{{ LaravelLocalization::localizeUrl(route('front.attestation-request.create')) }}">{{ __('header.request_attestation') }}</a>
+                    </li>
+                    <li><a class="dropdown-item"
+                            href="{{ LaravelLocalization::localizeUrl(route('front.translations.track')) }}">{{ __('header.track_translation') }}</a>
                     </li>
                     <li><a class="dropdown-item"
                             href="{{ LaravelLocalization::localizeUrl(route('front.partners.fc_marokko')) }}">{{ __('header.fc_marokko') }}</a>
@@ -308,7 +311,7 @@
 
             <div class="dropdown">
                 <button class="btn btn-link dropdown-toggle text-decoration-none" type="button"
-                    data-bs-toggle="dropdown" aria-expanded="false">
+                    data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                     {{ __('header.visa') }}
                 </button>
 
@@ -319,6 +322,10 @@
                             href="{{ LaravelLocalization::localizeUrl(route('front.studienkollegs')) }}">
                             {{ __('header.studienkolleg') }}
                         </a>
+                    </li>
+
+                    <li><a class="dropdown-item"
+                            href="{{ LaravelLocalization::localizeUrl(route('front.student-stories')) }}">{{ __('header.student_stories') }}</a>
                     </li>
 
                 </ul>
@@ -481,12 +488,16 @@
                     {{ __('footer.blog') }}
                 </a>
 
-                <a href="{{ LaravelLocalization::localizeUrl(route('front.student-stories')) }}">
-                    {{ __('header.student_stories') }}
-                </a>
-
                 <a href="{{ LaravelLocalization::localizeUrl(route('front.certificate.check')) }}">
                     {{ __('header.verify_certificate') }}
+                </a>
+
+                <a href="{{ LaravelLocalization::localizeUrl(route('front.attestation-request.create')) }}">
+                    {{ __('header.request_attestation') }}
+                </a>
+
+                <a href="{{ LaravelLocalization::localizeUrl(route('front.translations.track')) }}">
+                    {{ __('header.track_translation') }}
                 </a>
 
                 <a href="{{ LaravelLocalization::localizeUrl(route('front.partners.fc_marokko')) }}">
@@ -505,6 +516,10 @@
             <div class="submenu">
                 <a href="{{ LaravelLocalization::localizeUrl(route('front.studienkollegs')) }}">
                     {{ __('header.studienkolleg') }}
+                </a>
+
+                <a href="{{ LaravelLocalization::localizeUrl(route('front.student-stories')) }}">
+                    {{ __('header.student_stories') }}
                 </a>
             </div>
         </div>

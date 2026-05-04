@@ -64,7 +64,7 @@
         <div class="container reveal delay-2">
             <div class="blog-details-content reveal delay-3">
 
-                {!! $post->content !!}
+                {!! \App\Support\HtmlSanitizer::richText($post->content) !!}
 
                 <div class="blog-share mt-5 reveal delay-1">
                     <p class="fw-bold mb-2 reveal delay-1">{{ __('blog.details.share') }}</p>

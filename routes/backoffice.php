@@ -221,11 +221,11 @@ Route::prefix('backoffice')
         Route::prefix('attestation-requests')
             ->name('attestation_requests.')
             ->group(function () {
-                Route::get('/', [BackofficeAttestationRequestController::class, 'index'])->middleware('permission:attestations.view')->name('index');
-                Route::get('/{id}', [BackofficeAttestationRequestController::class, 'show'])->middleware('permission:attestations.view')->name('show');
-                Route::post('/{id}/accept', [BackofficeAttestationRequestController::class, 'accept'])->middleware('permission:attestations.create')->name('accept');
-                Route::post('/{id}/refuse', [BackofficeAttestationRequestController::class, 'refuse'])->middleware('permission:attestations.edit')->name('refuse');
-                Route::delete('/{id}', [BackofficeAttestationRequestController::class, 'destroy'])->middleware('permission:attestations.delete')->name('destroy');
+                Route::get('/', [BackofficeAttestationRequestController::class, 'index'])->middleware('permission:attestation_requests.view')->name('index');
+                Route::get('/{id}', [BackofficeAttestationRequestController::class, 'show'])->middleware('permission:attestation_requests.view')->name('show');
+                Route::post('/{id}/accept', [BackofficeAttestationRequestController::class, 'accept'])->middleware('permission:attestation_requests.create')->name('accept');
+                Route::post('/{id}/refuse', [BackofficeAttestationRequestController::class, 'refuse'])->middleware('permission:attestation_requests.edit')->name('refuse');
+                Route::delete('/{id}', [BackofficeAttestationRequestController::class, 'destroy'])->middleware('permission:attestation_requests.delete')->name('destroy');
             });
 
         /*
@@ -454,6 +454,7 @@ Route::prefix('backoffice')
                 // Self-service + admin weekly planning — open to any authenticated user
                 Route::get('/week', [ScheduleController::class, 'week'])->name('week');
                 Route::post('/week', [ScheduleController::class, 'saveWeek'])->name('week.save');
+                Route::get('/week/pdf', [ScheduleController::class, 'weekPdf'])->name('week.pdf');
 
                 // Admin-only overview + legacy batch edit
                 Route::get('/', [ScheduleController::class, 'index'])->middleware('permission:schedules.view')->name('index');
@@ -662,12 +663,19 @@ Route::prefix('backoffice')
             ->group(function () {
                 Route::get('/', [TranslationController::class, 'index'])
                     ->middleware('permission:translations.view')->name('index');
-                Route::post('/', [TranslationController::class, 'store'])
-                    ->middleware('permission:translations.create')->name('store');
                 Route::get('/export', [TranslationController::class, 'exportCsv'])
                     ->middleware('permission:translations.view')->name('export');
+
+                Route::get('/create', [TranslationController::class, 'create'])
+                    ->middleware('permission:translations.create')->name('create');
+                Route::post('/', [TranslationController::class, 'store'])
+                    ->middleware('permission:translations.create')->name('store');
+
+                Route::get('/{translation}/edit', [TranslationController::class, 'edit'])
+                    ->middleware('permission:translations.edit')->name('edit');
                 Route::put('/{translation}', [TranslationController::class, 'update'])
                     ->middleware('permission:translations.edit')->name('update');
+
                 Route::post('/{translation}/status', [TranslationController::class, 'updateStatus'])
                     ->middleware('permission:translations.edit')->name('status');
                 Route::patch('/{translation}/handover', [TranslationController::class, 'updateHandover'])

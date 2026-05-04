@@ -73,7 +73,7 @@ class GroupApplicationSyncTest extends TestCase
 
         Queue::fake();
 
-        $application->update(['status' => 'approved']);
+        $application->setStatus('approved')->save();
 
         Queue::assertPushed(SyncConfirmedLeadToGoogleSheetJob::class, function ($job) use ($application) {
             return $job->lead->id === $application->id;
@@ -94,7 +94,7 @@ class GroupApplicationSyncTest extends TestCase
         ]);
 
         Queue::fake();
-        $application->update(['status' => 'rejected']);
+        $application->setStatus('rejected')->save();
 
         Queue::assertNotPushed(SyncConfirmedLeadToGoogleSheetJob::class);
     }

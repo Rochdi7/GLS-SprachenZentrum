@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Translation extends Model
 {
@@ -10,21 +11,16 @@ class Translation extends Model
         'cin',
         'student_name',
         'phone',
-        'doc_type',
-        'page_count',
-        'price_per_page',
-        'total_cost',
         'date_received',
         'date_handed_over',
         'status',
         'notes',
+        'total_cost',
     ];
 
     protected $casts = [
         'date_received'    => 'date',
         'date_handed_over' => 'date',
-        'page_count'       => 'integer',
-        'price_per_page'   => 'integer',
         'total_cost'       => 'integer',
     ];
 
@@ -49,5 +45,21 @@ class Translation extends Model
     public static function normalizeCin(?string $cin): string
     {
         return strtoupper(trim((string) $cin));
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(TranslationItem::class);
+    }
+
+    public function recalculateTotal(): void
+    {
+        $this->total_cost = (int) $this->items()->sum('line_total');
+        $this->saveQuietly();
+    }
+
+    public function totalPages(): int
+    {
+        return (int) $this->items->sum('page_count');
     }
 }

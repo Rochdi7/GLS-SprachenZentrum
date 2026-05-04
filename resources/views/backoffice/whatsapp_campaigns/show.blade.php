@@ -194,13 +194,17 @@
     function isFax(p){ const s=String(p||'').replace(/[\s\-+\(\)]/g,''); if(/^2125/.test(s))return true; return s.length===10&&s.startsWith('05'); }
     function esc(s){ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
 
+    const CSRF_TOKEN = (document.querySelector('meta[name="csrf-token"]')||{}).content || '';
     async function api(url, opts={}){
         const headers = Object.assign({'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}, opts.headers||{});
+        if (CSRF_TOKEN && (opts.method||'GET').toUpperCase() !== 'GET') {
+            headers['X-CSRF-TOKEN'] = CSRF_TOKEN;
+        }
         let body = opts.body;
         if (body && typeof body === 'object' && !(body instanceof FormData)){
             headers['Content-Type']='application/json'; body=JSON.stringify(body);
         }
-        const r = await fetch(url, Object.assign({}, opts, {headers, body}));
+        const r = await fetch(url, Object.assign({}, opts, {headers, body, credentials:'same-origin'}));
         let data=null;
         const ct = r.headers.get('content-type')||'';
         if (ct.includes('application/json')) { try{data=await r.json();}catch(_){ } }

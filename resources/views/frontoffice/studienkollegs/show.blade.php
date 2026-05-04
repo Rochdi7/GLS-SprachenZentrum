@@ -303,7 +303,7 @@ CONTENT
 
                         @if ($studienkolleg->map_embed)
                             <div class="map-box">
-                                {!! $studienkolleg->map_embed !!}
+                                {!! \App\Support\HtmlSanitizer::mapEmbed($studienkolleg->map_embed) !!}
                             </div>
                         @endif
                     </div>

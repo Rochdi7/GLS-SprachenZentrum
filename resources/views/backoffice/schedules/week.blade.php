@@ -56,6 +56,10 @@
             <a href="{{ route('backoffice.schedules.week', ['week' => $nextWeek, 'user_id' => $target->id]) }}" class="btn btn-outline-secondary btn-sm">
                 Suivante <i class="ph-duotone ph-caret-right"></i>
             </a>
+            <a href="{{ route('backoffice.schedules.week.pdf', ['week' => $weekStart->toDateString(), 'user_id' => $target->id]) }}"
+               class="btn btn-danger btn-sm" target="_blank">
+                <i class="ph-duotone ph-file-pdf me-1"></i> Exporter PDF
+            </a>
         </div>
     </div>
 

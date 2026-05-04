@@ -16,7 +16,8 @@ class TranslationTrackingController extends Controller
 
         if ($cin !== '') {
             $searched = true;
-            $orders = Translation::where('cin', $cin)
+            $orders = Translation::with('items')
+                ->where('cin', $cin)
                 ->orderByDesc('date_received')
                 ->orderByDesc('id')
                 ->get();

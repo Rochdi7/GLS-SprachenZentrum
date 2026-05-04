@@ -12,6 +12,12 @@ class GroupApplication extends Model implements HasMedia, SyncableToGoogleSheet
 {
     use HasFactory, InteractsWithMedia;
 
+    /**
+     * NOTE: `status` is intentionally excluded from $fillable to prevent a
+     * public-form submitter from self-approving their own application via
+     * mass assignment. Admin code that needs to change status must use
+     * setStatus() / direct attribute assignment + save().
+     */
     protected $fillable = [
         'group_id',
         'full_name',
@@ -19,7 +25,6 @@ class GroupApplication extends Model implements HasMedia, SyncableToGoogleSheet
         'email',
         'note',
         'birthday',
-        'status',
 
         // Google Sheets tracking
         'google_sheet_name',
@@ -27,6 +32,25 @@ class GroupApplication extends Model implements HasMedia, SyncableToGoogleSheet
         'google_sheet_synced_at',
         'google_sheet_confirmed_synced_at',
     ];
+
+    protected $attributes = [
+        'status' => 'pending',
+    ];
+
+    public const STATUSES = ['pending', 'approved', 'rejected'];
+
+    /**
+     * Safely set the application status from admin code. Validates against
+     * the allowed status set so callers cannot inject arbitrary values.
+     */
+    public function setStatus(string $status): self
+    {
+        if (!in_array($status, self::STATUSES, true)) {
+            throw new \InvalidArgumentException("Invalid GroupApplication status: {$status}");
+        }
+        $this->setAttribute('status', $status);
+        return $this;
+    }
 
     protected $casts = [
         'birthday' => 'date',

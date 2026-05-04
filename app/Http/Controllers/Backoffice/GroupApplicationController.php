@@ -57,9 +57,12 @@ class GroupApplicationController extends Controller
             'status' => ['nullable', 'in:pending,approved,rejected'],
         ]);
 
-        $validated['status'] = $validated['status'] ?? 'pending';
+        $status = $validated['status'] ?? 'pending';
+        unset($validated['status']);
 
-        GroupApplication::create($validated);
+        $application = new GroupApplication($validated);
+        $application->setStatus($status);
+        $application->save();
 
         return redirect()
             ->route('backoffice.applications.index')
@@ -85,7 +88,12 @@ class GroupApplicationController extends Controller
             'status' => ['required', 'in:pending,approved,rejected'],
         ]);
 
-        $application->update($validated);
+        $status = $validated['status'];
+        unset($validated['status']);
+
+        $application->fill($validated);
+        $application->setStatus($status);
+        $application->save();
 
         return redirect()
             ->route('backoffice.applications.index')

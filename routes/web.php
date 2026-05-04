@@ -26,11 +26,43 @@ Route::post('/logout', [LoginController::class, 'logout'])
  * =============================
  * MEDIA (NO LOCALE)
  * =============================
+ *
+ * Public-facing media handler. Only collections explicitly listed below are
+ * served without authentication. Anything else (e.g. ID card scans on
+ * GroupApplication) requires an authenticated backoffice user. The supplied
+ * filename must match the stored file_name to prevent ID enumeration paired
+ * with arbitrary filename guessing.
  */
 Route::get('/media/{id}/{filename}', function ($id, $filename) {
     $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::findOrFail($id);
+
+    if (!hash_equals((string) $media->file_name, (string) $filename)) {
+        abort(404);
+    }
+
+    $publicCollections = [
+        'profile_photo',
+        'teacher_photo',
+        'site_hero',
+        'site_logo',
+        'blog_image',
+        'blog_cover',
+        'certificate_image',
+        'studienkolleg_image',
+        'quiz_image',
+        'default',
+    ];
+
+    if (!in_array($media->collection_name, $publicCollections, true)) {
+        if (!Auth::check()) {
+            abort(403);
+        }
+    }
+
     return response()->file($media->getPath());
-})->name('media.custom');
+})
+    ->where('filename', '[A-Za-z0-9._\-]+')
+    ->name('media.custom');
 
 /**
  * =============================
