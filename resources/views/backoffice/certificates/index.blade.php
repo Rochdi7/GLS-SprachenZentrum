@@ -46,6 +46,27 @@
                 </div>
 
                 <div class="card-body pt-3">
+                    @if($sites->count() > 1)
+                        <form method="GET" class="row g-2 mb-3 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold mb-1">Filtrer par centre</label>
+                                <select name="site_id" class="form-select" onchange="this.form.submit()">
+                                    <option value="">Tous les centres</option>
+                                    @foreach($sites as $s)
+                                        <option value="{{ $s->id }}" {{ (string) $requestedSiteId === (string) $s->id ? 'selected' : '' }}>
+                                            {{ $s->name }}@if($s->city) — {{ $s->city }}@endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @if($requestedSiteId)
+                                <div class="col-md-2">
+                                    <a href="{{ route('backoffice.certificates.index') }}" class="btn btn-link">Réinitialiser</a>
+                                </div>
+                            @endif
+                        </form>
+                    @endif
+
                     @include('backoffice.certificates.table')
                 </div>
 

@@ -11,6 +11,13 @@ class StoreAttestationRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'is_legacy' => $this->boolean('is_legacy'),
+        ]);
+    }
+
     public function rules(): array
     {
         return [
@@ -19,7 +26,9 @@ class StoreAttestationRequest extends FormRequest
             'birth_date'         => 'nullable|date',
             'birth_place'        => 'nullable|string|max:255',
 
-            'group_id'           => 'required|exists:groups,id',
+            'is_legacy'          => 'nullable|boolean',
+            'group_id'           => 'nullable|required_if:is_legacy,false|exists:groups,id',
+            'site_id'            => 'nullable|required_if:is_legacy,true|exists:sites,id',
             'level'              => 'required|in:A1,A2,B1,B2,C1',
 
             'course_start_date'  => 'nullable|date',
@@ -49,7 +58,8 @@ class StoreAttestationRequest extends FormRequest
         return [
             'last_name.required'   => 'Le nom est obligatoire.',
             'first_name.required'  => 'Le prénom est obligatoire.',
-            'group_id.required'    => 'Veuillez sélectionner un groupe.',
+            'group_id.required_if' => 'Veuillez sélectionner un groupe (ou cocher « Étudiant ancien »).',
+            'site_id.required_if'  => 'Veuillez sélectionner le centre (obligatoire pour un étudiant ancien).',
             'level.required'       => 'Veuillez sélectionner un niveau.',
         ];
     }

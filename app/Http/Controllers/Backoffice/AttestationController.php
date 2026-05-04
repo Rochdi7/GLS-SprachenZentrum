@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backoffice\Attestations\StoreAttestationRequest;
 use App\Http\Requests\Backoffice\Attestations\UpdateAttestationRequest;
@@ -15,6 +16,8 @@ use Illuminate\Http\Request;
 
 class AttestationController extends Controller
 {
+    use ScopesToUserSites;
+
     private const ORDER = ['A1', 'A2', 'B1', 'B2', 'C1'];
 
     private const ERFOLG_OPTIONS = [
@@ -28,11 +31,25 @@ class AttestationController extends Controller
         'de_fr' => 'Bilingue (Allemand / Français)',
     ];
 
-    public function index()
+    public function index(Request $request)
     {
-        $attestations = Attestation::with('group.site')->latest()->get();
+        $query = Attestation::with('group.site', 'site')->latest();
 
-        return view('backoffice.attestations.index', compact('attestations'));
+        // Centre access scope (Super Admin / Admin: no scope; others: only their centres)
+        $this->scopeToUserSites($query);
+
+        // Optional centre filter dropdown (only meaningful for users with multiple centres)
+        $requestedSiteId = $this->resolveRequestedSiteId(
+            $request->filled('site_id') ? (int) $request->site_id : null
+        );
+        if ($requestedSiteId) {
+            $query->where('site_id', $requestedSiteId);
+        }
+
+        $attestations = $query->get();
+        $sites        = $this->accessibleSites();
+
+        return view('backoffice.attestations.index', compact('attestations', 'sites', 'requestedSiteId'));
     }
 
     public function create(Request $request)
@@ -42,8 +59,11 @@ class AttestationController extends Controller
             $prefillRequest = AttestationRequest::find($request->query('from_request'));
         }
 
+        $sites = $this->accessibleSites();
+
         return view('backoffice.attestations.create', [
             'groups'           => $this->groupsForSelect(),
+            'sites'            => $sites,
             'erfolgOptions'    => self::ERFOLG_OPTIONS,
             'languageOptions'  => self::LANGUAGE_OPTIONS,
             'prefillRequest'   => $prefillRequest,
@@ -53,6 +73,14 @@ class AttestationController extends Controller
     public function store(StoreAttestationRequest $request)
     {
         $data = $this->hydrate($request->validated());
+
+        // Block users that aren't allowed to manage this centre.
+        abort_unless(
+            $this->userSeesAllSites() ||
+            ($data['site_id'] !== null && in_array((int) $data['site_id'], auth()->user()->accessibleSiteIds(), true)),
+            403,
+            "Vous n'avez pas accès à ce centre."
+        );
 
         $attestation = Attestation::create($data);
 
@@ -72,9 +100,16 @@ class AttestationController extends Controller
     {
         $attestation = Attestation::findOrFail($id);
 
+        abort_unless(
+            $this->userSeesAllSites() ||
+            in_array((int) $attestation->site_id, auth()->user()->accessibleSiteIds(), true),
+            403
+        );
+
         return view('backoffice.attestations.edit', [
             'attestation'      => $attestation,
             'groups'           => $this->groupsForSelect(),
+            'sites'            => $this->accessibleSites(),
             'erfolgOptions'    => self::ERFOLG_OPTIONS,
             'languageOptions'  => self::LANGUAGE_OPTIONS,
         ]);
@@ -84,7 +119,20 @@ class AttestationController extends Controller
     {
         $attestation = Attestation::findOrFail($id);
 
+        abort_unless(
+            $this->userSeesAllSites() ||
+            in_array((int) $attestation->site_id, auth()->user()->accessibleSiteIds(), true),
+            403
+        );
+
         $data = $this->hydrate($request->validated());
+
+        abort_unless(
+            $this->userSeesAllSites() ||
+            ($data['site_id'] !== null && in_array((int) $data['site_id'], auth()->user()->accessibleSiteIds(), true)),
+            403,
+            "Vous n'avez pas accès à ce centre."
+        );
 
         $attestation->update($data);
 
@@ -94,7 +142,15 @@ class AttestationController extends Controller
 
     public function destroy(string $id)
     {
-        Attestation::findOrFail($id)->delete();
+        $attestation = Attestation::findOrFail($id);
+
+        abort_unless(
+            $this->userSeesAllSites() ||
+            in_array((int) $attestation->site_id, auth()->user()->accessibleSiteIds(), true),
+            403
+        );
+
+        $attestation->delete();
 
         return redirect()->route('backoffice.attestations.index')
             ->with('success', 'Attestation supprimée avec succès.');
@@ -136,7 +192,13 @@ class AttestationController extends Controller
 
     public function pdf(string $id)
     {
-        $attestation = Attestation::with('group.site')->findOrFail($id);
+        $attestation = Attestation::with('group.site', 'site')->findOrFail($id);
+
+        abort_unless(
+            $this->userSeesAllSites() ||
+            in_array((int) $attestation->site_id, auth()->user()->accessibleSiteIds(), true),
+            403
+        );
 
         // Bilingue par défaut → vue principale.
         // Mono-langue → vue dédiée (de / fr / en) qui mutualise un partial _content.
@@ -185,10 +247,28 @@ class AttestationController extends Controller
 
     private function hydrate(array $data): array
     {
-        $group = Group::with('site')->findOrFail($data['group_id']);
+        $data['is_legacy'] = !empty($data['is_legacy']);
 
-        // hours_per_session reste enregistré pour référence/historique mais n'est plus utilisé pour calculer units_45min.
-        $data['hours_per_session'] = $group->site?->getCourseDuration() ?? 2.5;
+        // Étudiant ancien : pas de groupe à chercher, tout est saisi manuellement.
+        if ($data['is_legacy']) {
+            $data['group_id']          = null;
+            $data['hours_per_session'] = 2.5;
+            // site_id vient du formulaire en mode legacy.
+            $data['site_id'] = isset($data['site_id']) ? (int) $data['site_id'] : null;
+        } else {
+            $group = Group::with('site')->findOrFail($data['group_id']);
+
+            // hours_per_session reste enregistré pour référence/historique mais n'est plus utilisé pour calculer units_45min.
+            $data['hours_per_session'] = $group->site?->getCourseDuration() ?? 2.5;
+
+            // Le centre est dérivé du groupe — source de vérité.
+            $data['site_id'] = $group->site_id;
+
+            // Si la ville n'est pas définie, on tente le centre
+            if (empty($data['city'])) {
+                $data['city'] = $group->site?->city ?? '';
+            }
+        }
 
         // units_45min provient du formulaire (saisie manuelle) — on garantit juste un entier positif.
         $data['units_45min'] = isset($data['units_45min']) ? max(0, (int) $data['units_45min']) : 0;
@@ -196,19 +276,18 @@ class AttestationController extends Controller
         // Cours en cours : checkbox non cochée = false.
         $data['is_ongoing'] = !empty($data['is_ongoing']);
 
-        // Si la ville n'est pas définie, on tente le centre
-        if (empty($data['city'])) {
-            $data['city'] = $group->site?->city ?? '';
-        }
-
         return $data;
     }
 
     private function groupsForSelect()
     {
-        return Group::query()
+        $query = Group::query()
             ->with('site')
-            ->orderBy('name')
-            ->get(['id', 'name', 'site_id', 'level', 'date_debut', 'date_fin']);
+            ->orderBy('name');
+
+        // Limit groups to centres the user can access.
+        $this->scopeToUserSites($query);
+
+        return $query->get(['id', 'name', 'site_id', 'level', 'date_debut', 'date_fin']);
     }
 }

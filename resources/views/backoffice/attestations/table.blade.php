@@ -18,8 +18,8 @@
                 <tr>
                     <td>{{ $att->id }}</td>
                     <td>{{ $att->last_name }} {{ $att->first_name }}</td>
-                    <td>{{ $att->group?->name ?? '—' }}</td>
-                    <td>{{ $att->group?->site?->name ?? '—' }}</td>
+                    <td>{{ $att->group?->name ?? ($att->is_legacy ? '— (ancien)' : '—') }}</td>
+                    <td>{{ $att->site?->name ?? $att->group?->site?->name ?? '—' }}</td>
                     <td>
                         <span class="badge bg-light-primary text-primary">{{ $att->level }}</span>
                     </td>
@@ -63,7 +63,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9" class="text-center text-muted">Aucune attestation trouvée.</td>
+                    <td colspan="9" class="text-center text-muted">Aucune attestation trouvée pour ce centre.</td>
                 </tr>
             @endforelse
         </tbody>

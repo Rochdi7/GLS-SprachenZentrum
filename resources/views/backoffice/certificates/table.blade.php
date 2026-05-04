@@ -5,6 +5,7 @@
             <tr>
                 <th>#ID</th>
                 <th>Nom & Prénom</th>
+                <th>Centre</th>
                 <th>Niveau</th>
                 <th>Date Examen</th>
                 <th>Score Total</th>
@@ -22,6 +23,9 @@
 
                     {{-- NAME --}}
                     <td>{{ $cert->last_name }} {{ $cert->first_name }}</td>
+
+                    {{-- CENTRE --}}
+                    <td>{{ $cert->site?->name ?? '—' }}</td>
 
                     {{-- LEVEL --}}
                     <td>
@@ -95,8 +99,8 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="text-center text-muted">
-                        Aucun certificat trouvé.
+                    <td colspan="9" class="text-center text-muted">
+                        Aucun certificat trouvé pour ce centre.
                     </td>
                 </tr>
             @endforelse

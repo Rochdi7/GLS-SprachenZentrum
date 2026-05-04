@@ -2,6 +2,8 @@
     $cert = $certificate ?? null;
     $configs = $scoreConfigs ?? [];
     $currentType = old('certificate_type', $cert->certificate_type ?? 'b2');
+    $sitesList    = $sites ?? collect();
+    $selectedSite = old('site_id', $cert->site_id ?? ($sitesList->count() === 1 ? $sitesList->first()->id : ''));
 @endphp
 
 <div class="row">
@@ -44,6 +46,19 @@
     {{-- ========================= --}}
     <div class="col-12 mt-4">
         <h5 class="mb-3 fw-bold">Informations sur l'examen</h5>
+    </div>
+
+    {{-- CENTRE — obligatoire, filtre les listes/exports. --}}
+    <div class="col-md-4 mb-3">
+        <label class="form-label fw-bold">Centre</label>
+        <select name="site_id" class="form-select" required {{ $sitesList->count() === 1 ? 'readonly' : '' }}>
+            <option value="">— Sélectionner un centre —</option>
+            @foreach($sitesList as $s)
+                <option value="{{ $s->id }}" {{ (string) $selectedSite === (string) $s->id ? 'selected' : '' }}>
+                    {{ $s->name }}@if($s->city) — {{ $s->city }}@endif
+                </option>
+            @endforeach
+        </select>
     </div>
 
     {{-- CERTIFICATE TYPE SELECTOR --}}

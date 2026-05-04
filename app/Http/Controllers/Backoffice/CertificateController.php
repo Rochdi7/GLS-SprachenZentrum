@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\Backoffice;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backoffice\Certificates\StoreCertificateRequest;
 use App\Http\Requests\Backoffice\Certificates\UpdateCertificateRequest;
 use App\Models\Certificate;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class CertificateController extends Controller
 {
+    use ScopesToUserSites;
+
     /**
      * Score configs per certificate type.
      */
@@ -37,11 +41,23 @@ class CertificateController extends Controller
     /**
      * INDEX
      */
-    public function index()
+    public function index(Request $request)
     {
-        $certificates = Certificate::latest()->get();
+        $query = Certificate::with('site')->latest();
 
-        return view('backoffice.certificates.index', compact('certificates'));
+        $this->scopeToUserSites($query);
+
+        $requestedSiteId = $this->resolveRequestedSiteId(
+            $request->filled('site_id') ? (int) $request->site_id : null
+        );
+        if ($requestedSiteId) {
+            $query->where('site_id', $requestedSiteId);
+        }
+
+        $certificates = $query->get();
+        $sites        = $this->accessibleSites();
+
+        return view('backoffice.certificates.index', compact('certificates', 'sites', 'requestedSiteId'));
     }
 
     /**
@@ -51,6 +67,7 @@ class CertificateController extends Controller
     {
         return view('backoffice.certificates.create', [
             'scoreConfigs' => self::SCORE_CONFIGS,
+            'sites'        => $this->accessibleSites(),
         ]);
     }
 
@@ -60,6 +77,13 @@ class CertificateController extends Controller
     public function store(StoreCertificateRequest $request)
     {
         $data = $this->hydrateScores($request->validated());
+
+        abort_unless(
+            $this->userSeesAllSites() ||
+            in_array((int) $data['site_id'], auth()->user()->accessibleSiteIds(), true),
+            403,
+            "Vous n'avez pas accès à ce centre."
+        );
 
         Certificate::create($data);
 
@@ -73,6 +97,12 @@ class CertificateController extends Controller
     {
         $certificate = Certificate::findOrFail($id);
 
+        abort_unless(
+            $this->userSeesAllSites() ||
+            in_array((int) $certificate->site_id, auth()->user()->accessibleSiteIds(), true),
+            403
+        );
+
         return view('backoffice.certificates.show', compact('certificate'));
     }
 
@@ -83,9 +113,16 @@ class CertificateController extends Controller
     {
         $certificate = Certificate::findOrFail($id);
 
+        abort_unless(
+            $this->userSeesAllSites() ||
+            in_array((int) $certificate->site_id, auth()->user()->accessibleSiteIds(), true),
+            403
+        );
+
         return view('backoffice.certificates.edit', [
-            'certificate' => $certificate,
+            'certificate'  => $certificate,
             'scoreConfigs' => self::SCORE_CONFIGS,
+            'sites'        => $this->accessibleSites(),
         ]);
     }
 
@@ -96,7 +133,20 @@ class CertificateController extends Controller
     {
         $certificate = Certificate::findOrFail($id);
 
+        abort_unless(
+            $this->userSeesAllSites() ||
+            in_array((int) $certificate->site_id, auth()->user()->accessibleSiteIds(), true),
+            403
+        );
+
         $data = $this->hydrateScores($request->validated());
+
+        abort_unless(
+            $this->userSeesAllSites() ||
+            in_array((int) $data['site_id'], auth()->user()->accessibleSiteIds(), true),
+            403,
+            "Vous n'avez pas accès à ce centre."
+        );
 
         $certificate->update($data);
 
@@ -108,7 +158,15 @@ class CertificateController extends Controller
      */
     public function destroy(string $id)
     {
-        Certificate::findOrFail($id)->delete();
+        $certificate = Certificate::findOrFail($id);
+
+        abort_unless(
+            $this->userSeesAllSites() ||
+            in_array((int) $certificate->site_id, auth()->user()->accessibleSiteIds(), true),
+            403
+        );
+
+        $certificate->delete();
 
         return redirect()->route('backoffice.certificates.index')->with('success', 'Certificat supprimé avec succès.');
     }
@@ -119,6 +177,12 @@ class CertificateController extends Controller
     public function pdf(string $id)
     {
         $certificate = Certificate::findOrFail($id);
+
+        abort_unless(
+            $this->userSeesAllSites() ||
+            in_array((int) $certificate->site_id, auth()->user()->accessibleSiteIds(), true),
+            403
+        );
 
         $url = route('certificates.public.download', [
             'token' => $certificate->public_token,

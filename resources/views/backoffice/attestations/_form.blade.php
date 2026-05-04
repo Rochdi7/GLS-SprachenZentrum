@@ -43,9 +43,40 @@
         <h5 class="mb-3 fw-bold">Cours et groupe</h5>
     </div>
 
-    <div class="col-md-6 mb-3">
+    <div class="col-md-12 mb-3">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="is_legacy" id="att-is-legacy" value="1"
+                   {{ old('is_legacy', $att->is_legacy ?? false) ? 'checked' : '' }}>
+            <label class="form-check-label fw-bold" for="att-is-legacy">
+                Étudiant ancien (saisie manuelle, sans groupe)
+            </label>
+            <small class="text-muted d-block">
+                À cocher si l'étudiant a suivi son cours sur l'ancien système et que son groupe n'existe plus dans la base. Vous remplissez alors manuellement le niveau, les dates, les unités et la ville.
+            </small>
+        </div>
+    </div>
+
+    {{-- Centre — utilisé uniquement en mode "Étudiant ancien" (sinon dérivé du groupe). --}}
+    @php
+        $sitesList    = $sites ?? collect();
+        $selectedSite = old('site_id', $att->site_id ?? ($sitesList->count() === 1 ? $sitesList->first()->id : ''));
+    @endphp
+    <div class="col-md-6 mb-3" id="att-site-wrapper" style="display:none;">
+        <label class="form-label fw-bold">Centre</label>
+        <select name="site_id" id="att-site-select" class="form-select">
+            <option value="">— Sélectionner un centre —</option>
+            @foreach($sitesList as $s)
+                <option value="{{ $s->id }}" {{ (string) $selectedSite === (string) $s->id ? 'selected' : '' }}>
+                    {{ $s->name }}@if($s->city) — {{ $s->city }}@endif
+                </option>
+            @endforeach
+        </select>
+        <small class="text-muted">Centre auquel rattacher l'attestation (obligatoire pour un étudiant ancien).</small>
+    </div>
+
+    <div class="col-md-6 mb-3" id="att-group-wrapper">
         <label class="form-label fw-bold">Groupe</label>
-        <select name="group_id" id="att-group-select" class="form-select" required
+        <select name="group_id" id="att-group-select" class="form-select"
                 data-levels-url="{{ route('backoffice.attestations.group_levels', ['group' => 0]) }}"
                 data-selected-level="{{ old('level', $att->level ?? '') }}"
                 data-selected-niveau-start="{{ old('niveau_start_date', isset($att->niveau_start_date) ? $att->niveau_start_date->format('Y-m-d') : '') }}"
@@ -225,12 +256,41 @@ document.addEventListener('DOMContentLoaded', function () {
     'use strict';
 
     const groupSelect  = document.getElementById('att-group-select');
+    const groupWrapper = document.getElementById('att-group-wrapper');
+    const siteWrapper  = document.getElementById('att-site-wrapper');
+    const siteSelect   = document.getElementById('att-site-select');
+    const legacyCheck  = document.getElementById('att-is-legacy');
     const levelSelect  = document.getElementById('att-level-select');
     const courseStart  = document.getElementById('att-course-start');
     const courseEnd    = document.getElementById('att-course-end');
     const niveauStart  = document.getElementById('att-niveau-start');
     const niveauEnd    = document.getElementById('att-niveau-end');
     const cityInput    = document.getElementById('att-city');
+
+    function applyLegacyMode() {
+        const isLegacy = legacyCheck.checked;
+        if (isLegacy) {
+            groupWrapper.style.display = 'none';
+            groupSelect.removeAttribute('required');
+            groupSelect.value = '';
+            if (siteWrapper) siteWrapper.style.display = '';
+            if (siteSelect)  siteSelect.setAttribute('required', 'required');
+            // Strip "dates disponibles / aucune date" annotations — irrelevant in legacy mode.
+            Array.from(levelSelect.options).forEach(opt => {
+                if (!opt.value) return;
+                const baseLabel = opt.dataset.baseLabel || opt.textContent.replace(/\s*•.*$/, '');
+                opt.dataset.baseLabel = baseLabel;
+                opt.textContent = baseLabel;
+            });
+            showLevelWarning(false);
+        } else {
+            groupWrapper.style.display = '';
+            groupSelect.setAttribute('required', 'required');
+            if (siteWrapper) siteWrapper.style.display = 'none';
+            if (siteSelect)  siteSelect.removeAttribute('required');
+            annotateLevelOptions();
+        }
+    }
 
     const baseLevelsUrl = groupSelect.dataset.levelsUrl; // ends with /0
     const levelWarning  = document.getElementById('att-level-warning');
@@ -342,12 +402,19 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchGroupLevels(this.value);
     });
 
-    levelSelect.addEventListener('change', function () { onLevelChange(false); });
+    levelSelect.addEventListener('change', function () {
+        // En mode "ancien étudiant", aucune entrée Suivi niveau à appliquer — on laisse les dates en saisie libre.
+        if (legacyCheck.checked) return;
+        onLevelChange(false);
+    });
+
+    legacyCheck.addEventListener('change', applyLegacyMode);
 
     // Initial load (edit / old() repopulation)
-    if (groupSelect.value) {
+    applyLegacyMode();
+    if (!legacyCheck.checked && groupSelect.value) {
         fetchGroupLevels(groupSelect.value, { initialLoad: true });
-    } else {
+    } else if (!legacyCheck.checked) {
         annotateLevelOptions();
     }
 

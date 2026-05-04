@@ -961,17 +961,72 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
                 </div>
 
-                {{-- RIGHT SIDE: MAP CAROUSEL (AUTO-CYCLING) --}}
-                <div>
-                    {{-- Map Container with Auto-Carousel --}}
-                    <a id="mapLink" href="https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Rabat"
-                        target="_blank" class="div-block-7 reveal delay-3">
-                        <iframe id="mapFrame"
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3307.8001465016737!2d-6.8485901!3d33.9976668!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda76dcf7a656da5%3A0xcaf46ae5e6e81d87!2sGLS%20Sprachenzentrum%20-%20Centre%20GLS%20de%20langue%20Allemande%20Rabat!5e0!3m2!1sen!2sma!4v1769193870895!5m2!1sen!2sma"
-                            allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-                            class="reveal delay-1"></iframe>
-                    </a>
+                {{-- RIGHT SIDE : INTERACTIVE MOROCCO MAP — 6 GLS centres --}}
+                <div class="gls-map-wrap reveal delay-3">
+                    <div id="glsCentresMap" class="gls-centres-map" aria-label="GLS Sprachenzentrum centres au Maroc"></div>
+                    <ul class="gls-map-legend" id="glsMapLegend"></ul>
                 </div>
+
+                {{-- Leaflet (OpenStreetMap) --}}
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+                      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+                <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    if (typeof L === 'undefined' || !document.getElementById('glsCentresMap')) return;
+
+                    const centres = [
+                        { name: 'GLS Rabat',      slug: 'gls-rabat',      lat: 33.9716, lng: -6.8498, color: '#1c45db' },
+                        { name: 'GLS Salé',       slug: 'gls-sale',       lat: 34.0531, lng: -6.7985, color: '#009d5a' },
+                        { name: 'GLS Kénitra',    slug: 'gls-kenitra',    lat: 34.2610, lng: -6.5802, color: '#ff7a08' },
+                        { name: 'GLS Casablanca', slug: 'gls-casablanca', lat: 33.5731, lng: -7.5898, color: '#9767f8' },
+                        { name: 'GLS Marrakech',  slug: 'gls-marrakech',  lat: 31.6295, lng: -7.9811, color: '#d22730' },
+                        { name: 'GLS Agadir',     slug: 'gls-agadir',     lat: 30.4278, lng: -9.5981, color: '#fc0' },
+                    ];
+
+                    const map = L.map('glsCentresMap', {
+                        zoomControl: true,
+                        scrollWheelZoom: false,
+                        attributionControl: false,
+                    }).setView([32.0, -7.5], 6);
+
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                        maxZoom: 18,
+                    }).addTo(map);
+
+                    const baseUrl = @json(LaravelLocalization::localizeUrl('/sites/'));
+                    const legend = document.getElementById('glsMapLegend');
+                    const markers = {};
+
+                    centres.forEach((c, i) => {
+                        const html = `
+                            <div class="gls-pin-wrap" style="--pin-color:${c.color};">
+                                <div class="gls-pin"></div>
+                                <div class="gls-pin-label">${c.name.replace('GLS ', '')}</div>
+                            </div>`;
+                        const icon = L.divIcon({
+                            html, className: 'gls-pin-icon',
+                            iconSize: [120, 56],
+                            iconAnchor: [12, 28],
+                        });
+                        const m = L.marker([c.lat, c.lng], { icon }).addTo(map);
+                        const url = baseUrl + c.slug;
+                        m.bindPopup(`<strong>${c.name}</strong><br><a href="${url}" style="color:${c.color};font-weight:600;">Voir le centre →</a>`);
+                        markers[c.slug] = m;
+
+                        const li = document.createElement('li');
+                        li.innerHTML = `<span class="dot" style="background:${c.color}"></span> ${c.name.replace('GLS ', '')}`;
+                        li.dataset.slug = c.slug;
+                        li.addEventListener('click', () => {
+                            map.flyTo([c.lat, c.lng], 9, { duration: 0.6 });
+                            m.openPopup();
+                        });
+                        legend.appendChild(li);
+                    });
+                });
+                </script>
 
             </div>
         </section>

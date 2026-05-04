@@ -22,6 +22,7 @@ class StoreCertificateRequest extends FormRequest
             'birth_place'        => 'nullable|string|max:255',
 
             'certificate_type'   => 'required|in:a2,b2',
+            'site_id'            => 'required|exists:sites,id',
             'exam_level'         => 'required|string|max:255',
             'exam_date'          => 'required|date',
             'issue_date'         => 'required|date',

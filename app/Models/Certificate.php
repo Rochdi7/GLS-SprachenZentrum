@@ -20,6 +20,7 @@ class Certificate extends Model
         'issue_date',
         'certificate_number',
         'certificate_type', // 'a2' or 'b2'
+        'site_id',
 
         // Written (B2) / Lesen+Hören (A2)
         'written_total',
@@ -102,6 +103,11 @@ class Certificate extends Model
     |  HELPERS
     |--------------------------------------------------------------------------
     */
+
+    public function site()
+    {
+        return $this->belongsTo(Site::class);
+    }
 
     public function isA2(): bool
     {

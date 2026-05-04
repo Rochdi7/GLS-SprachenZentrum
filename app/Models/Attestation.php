@@ -14,6 +14,8 @@ class Attestation extends Model
         'birth_place',
 
         'group_id',
+        'site_id',
+        'is_legacy',
         'level',
 
         'course_start_date',
@@ -53,11 +55,17 @@ class Attestation extends Model
         'stufe_index'        => 'integer',
         'stufe_total'        => 'integer',
         'is_ongoing'         => 'boolean',
+        'is_legacy'          => 'boolean',
     ];
 
     public function group()
     {
         return $this->belongsTo(Group::class);
+    }
+
+    public function site()
+    {
+        return $this->belongsTo(Site::class);
     }
 
     public function getFullNameAttribute(): string
