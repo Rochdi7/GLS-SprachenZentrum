@@ -14,6 +14,7 @@ use App\Http\Controllers\Frontoffice\NewsletterController;
 use App\Http\Controllers\Frontoffice\GroupApplicationController;
 use App\Http\Controllers\Frontoffice\LevelQuizController;
 use App\Http\Controllers\Frontoffice\AttestationRequestController;
+use App\Http\Controllers\Frontoffice\TranslationTrackingController;
 
 Route::middleware(CacheResponse::class)->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('front.home');
@@ -84,6 +85,14 @@ Route::get('/discover-your-level/quiz', [LevelQuizController::class, 'showQuiz']
 // Optional submit route later (if you use it)
 Route::post('/discover-your-level/answer', [LevelQuizController::class, 'answer'])
     ->name('front.discover-your-level.answer');
+
+/*
+|--------------------------------------------------------------------------
+| TRADUCTIONS - public tracking by CIN (NOT cached)
+|--------------------------------------------------------------------------
+*/
+Route::get('/traductions/suivi', [TranslationTrackingController::class, 'show'])
+    ->name('front.translations.track');
 
 /*
 |--------------------------------------------------------------------------

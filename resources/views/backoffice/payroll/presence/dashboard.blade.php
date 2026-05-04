@@ -124,16 +124,26 @@
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                            <a href="{{ route('backoffice.payroll.presence.group.imports', $group) }}"
-                                               class="btn btn-sm btn-outline-primary" title="Historique">
-                                                <i class="ph-duotone ph-clock-counter-clockwise"></i>
-                                            </a>
-                                            @if($latest)
-                                                <a href="{{ route('backoffice.payroll.presence.import.show', ['group' => $group->id, 'import' => $latest->id]) }}"
-                                                   class="btn btn-sm btn-outline-success" title="Dernier import">
-                                                    <i class="ph-duotone ph-eye"></i>
+                                            <div class="d-inline-flex gap-2 align-items-center justify-content-end">
+                                                <a href="{{ route('backoffice.payroll.presence.group.imports', $group) }}"
+                                                   class="btn btn-sm btn-outline-primary" title="Historique">
+                                                    <i class="ph-duotone ph-clock-counter-clockwise"></i>
                                                 </a>
-                                            @endif
+                                                @if($latest)
+                                                    <a href="{{ route('backoffice.payroll.presence.import.show', ['group' => $group->id, 'import' => $latest->id]) }}"
+                                                       class="btn btn-sm btn-outline-success" title="Dernier import">
+                                                        <i class="ph-duotone ph-eye"></i>
+                                                    </a>
+                                                    <form action="{{ route('backoffice.payroll.presence.import.destroy', $latest) }}"
+                                                          method="POST" class="d-inline"
+                                                          onsubmit="return confirm('Supprimer le dernier import de présence de ce groupe ?')">
+                                                        @csrf @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer le dernier import">
+                                                            <i class="ph-duotone ph-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty

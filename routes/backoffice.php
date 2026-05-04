@@ -19,6 +19,7 @@ use App\Http\Controllers\Backoffice\LevelFollowupController;
 use App\Http\Controllers\Backoffice\CertificateController;
 use App\Http\Controllers\Backoffice\AttestationController;
 use App\Http\Controllers\Backoffice\AttestationRequestController as BackofficeAttestationRequestController;
+use App\Http\Controllers\Backoffice\TranslationController;
 use App\Http\Controllers\Backoffice\QuizController;
 use App\Http\Controllers\Backoffice\QuizQuestionController;
 use App\Http\Controllers\Backoffice\HelpController;
@@ -650,6 +651,30 @@ Route::prefix('backoffice')
         Route::delete('/level-followups/{followup}', [LevelFollowupController::class, 'destroy'])
             ->middleware('permission:level_followups.delete')
             ->name('level_followups.destroy');
+
+        /*
+        |----------------------------------------------------------------------
+        | TRADUCTIONS — Suivi des commandes de traduction (Maroc–Allemagne)
+        |----------------------------------------------------------------------
+        */
+        Route::prefix('translations')
+            ->name('translations.')
+            ->group(function () {
+                Route::get('/', [TranslationController::class, 'index'])
+                    ->middleware('permission:translations.view')->name('index');
+                Route::post('/', [TranslationController::class, 'store'])
+                    ->middleware('permission:translations.create')->name('store');
+                Route::get('/export', [TranslationController::class, 'exportCsv'])
+                    ->middleware('permission:translations.view')->name('export');
+                Route::put('/{translation}', [TranslationController::class, 'update'])
+                    ->middleware('permission:translations.edit')->name('update');
+                Route::post('/{translation}/status', [TranslationController::class, 'updateStatus'])
+                    ->middleware('permission:translations.edit')->name('status');
+                Route::patch('/{translation}/handover', [TranslationController::class, 'updateHandover'])
+                    ->middleware('permission:translations.edit')->name('handover');
+                Route::delete('/{translation}', [TranslationController::class, 'destroy'])
+                    ->middleware('permission:translations.delete')->name('destroy');
+            });
 
         /*
         |----------------------------------------------------------------------

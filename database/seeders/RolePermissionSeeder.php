@@ -25,6 +25,7 @@ class RolePermissionSeeder extends Seeder
             'groups'           => ['view', 'create', 'edit', 'delete'],
             'certificates'     => ['view', 'create', 'edit', 'delete'],
             'attestations'     => ['view', 'create', 'edit', 'delete'],
+            'translations'     => ['view', 'create', 'edit', 'delete'],
             'studienkollegs'   => ['view', 'create', 'edit', 'delete'],
             'quizzes'          => ['view', 'create', 'edit', 'delete'],
             'blog_categories'  => ['view', 'create', 'edit', 'delete'],
@@ -100,6 +101,7 @@ class RolePermissionSeeder extends Seeder
             'groups.view', 'groups.create', 'groups.edit',
             'certificates.view', 'certificates.create', 'certificates.edit',
             'attestations.view', 'attestations.create', 'attestations.edit',
+            'translations.view', 'translations.create', 'translations.edit',
             'studienkollegs.view',
 
             // Admissions — reception handles incoming students
