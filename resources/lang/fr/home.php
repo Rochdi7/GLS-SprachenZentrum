@@ -329,4 +329,53 @@ return [
         'title' => 'Nos partenaires de coopération',
         'aria_label' => 'Nos partenaires de coopération',
     ],
+
+    'student_services' => [
+        'eyebrow'      => 'Studentenakte · Espace étudiant',
+        'title_lead'   => 'Votre dossier',
+        'title_accent' => 'GLS',
+        'title_tail'   => ', à portée de main.',
+
+        'meta_label'   => 'Portail officiel',
+        'meta_text'    => "Vérification, demandes et suivi — gérés directement depuis votre numéro de référence.",
+
+        'feature_tag'  => 'Service phare',
+        'feature_title'=> 'Suivez vos traductions Maroc – Allemagne',
+        'feature_desc' => "Du dépôt en agence jusqu'à la remise, suivez l'avancement de vos documents traduits avec votre CIN.",
+        'feature_cta'  => 'Suivre mes documents',
+
+        'preview_order'   => 'Commande #2041',
+        'preview_pages'   => '3 documents · 5 pages',
+        'preview_status'  => 'Chez Traducteur',
+        'preview_step1'   => 'Reçu',
+        'preview_step2'   => 'Traduction',
+        'preview_step3'   => 'Rendu',
+
+        'item1_title'  => "Vérifier un certificat GLS",
+        'item1_desc'   => "Authentifiez instantanément un certificat délivré par GLS Sprachenzentrum à l'aide de son numéro unique.",
+
+        'item2_title'  => "Demander une attestation de participation",
+        'item2_desc'   => "Soumettez votre demande en ligne — notre équipe l'envoie par email après validation.",
+
+        'foot_text'    => 'Service réservé aux étudiants & anciens étudiants GLS.',
+
+        'tr_title_short'        => 'Suivi de traduction',
+        'tr_desc_short'         => "Suivez vos traductions Maroc – Allemagne avec votre CIN, du dépôt à la remise.",
+
+        'cert_tag'              => 'Vérification rapide',
+        'cert_cta'              => 'Vérifier un certificat',
+        'cert_preview_label'    => 'Numéro saisi',
+        'cert_preview_status'   => 'Authentique',
+        'cert_preview_level'    => 'Niveau',
+        'cert_preview_authentic'=> 'Délivré par GLS Sprachenzentrum',
+
+        'att_tag'               => 'Demande en ligne',
+        'att_cta'               => 'Demander mon attestation',
+        'att_preview_request'   => 'Demande envoyée',
+        'att_preview_status'    => 'En cours d\'examen',
+        'att_preview_level'     => 'Niveau',
+        'att_step1'             => 'Soumis',
+        'att_step2'             => 'Validation',
+        'att_step3'             => 'Email',
+    ],
 ];

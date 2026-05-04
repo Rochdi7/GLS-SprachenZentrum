@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>GLS Sprachenzentrum – Learning Center Morocco</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="facebook-domain-verification" content="21382f16lc5kb1hxg8a19ch6iwvzoc" />
 
     {{-- Canonical + hreflang (SEO: language alternates) --}}
     @php
@@ -16,8 +17,7 @@
         <link rel="alternate" hreflang="{{ $localeCode }}"
             href="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], true) }}">
     @endforeach
-    <link rel="alternate" hreflang="x-default"
-        href="{{ LaravelLocalization::getLocalizedURL('fr', null, [], true) }}">
+    <link rel="alternate" hreflang="x-default" href="{{ LaravelLocalization::getLocalizedURL('fr', null, [], true) }}">
 
     <!-- Favicons -->
     <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('assets/images/favicon/favicon-96x96.png') }}">

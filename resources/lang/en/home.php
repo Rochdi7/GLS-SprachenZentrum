@@ -326,4 +326,53 @@ return [
         'title' => 'Our Cooperation Partners',
         'aria_label' => 'Our Cooperation Partners',
     ],
+
+    'student_services' => [
+        'eyebrow'      => 'Studentenakte · Student space',
+        'title_lead'   => 'Your',
+        'title_accent' => 'GLS file',
+        'title_tail'   => ', within reach.',
+
+        'meta_label'   => 'Official portal',
+        'meta_text'    => 'Verifications, requests and tracking — handled directly from your reference number.',
+
+        'feature_tag'  => 'Featured service',
+        'feature_title'=> 'Track your Morocco – Germany translations',
+        'feature_desc' => 'From drop-off at our office to final delivery, follow your documents in real time with your CIN.',
+        'feature_cta'  => 'Track my documents',
+
+        'preview_order'   => 'Order #2041',
+        'preview_pages'   => '3 documents · 5 pages',
+        'preview_status'  => 'With Translator',
+        'preview_step1'   => 'Received',
+        'preview_step2'   => 'Translation',
+        'preview_step3'   => 'Delivered',
+
+        'item1_title'  => 'Verify a GLS certificate',
+        'item1_desc'   => 'Instantly authenticate a certificate issued by GLS Sprachenzentrum using its unique number.',
+
+        'item2_title'  => 'Request a participation attestation',
+        'item2_desc'   => 'Submit your request online — our team will email it to you once validated.',
+
+        'foot_text'    => 'Service reserved for current and former GLS students.',
+
+        'tr_title_short'        => 'Translation tracking',
+        'tr_desc_short'         => 'Track your Morocco – Germany translations with your CIN, from drop-off to delivery.',
+
+        'cert_tag'              => 'Instant check',
+        'cert_cta'              => 'Verify a certificate',
+        'cert_preview_label'    => 'Number entered',
+        'cert_preview_status'   => 'Authentic',
+        'cert_preview_level'    => 'Level',
+        'cert_preview_authentic'=> 'Issued by GLS Sprachenzentrum',
+
+        'att_tag'               => 'Online request',
+        'att_cta'               => 'Request my attestation',
+        'att_preview_request'   => 'Request sent',
+        'att_preview_status'    => 'Under review',
+        'att_preview_level'     => 'Level',
+        'att_step1'             => 'Submitted',
+        'att_step2'             => 'Validation',
+        'att_step3'             => 'Email',
+    ],
 ];

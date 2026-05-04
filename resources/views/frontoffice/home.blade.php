@@ -536,6 +536,270 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
 
         {{-- ===========================
+ STUDENTENAKTE — Editorial student services dossier
+=========================== --}}
+        <section class="ssn-section reveal delay-1" aria-label="{{ __('home.student_services.eyebrow') }}">
+            <div class="ssn-inner">
+
+                {{-- HEADER --}}
+                <header class="ssn-header reveal delay-2">
+                    <div>
+                        <div class="ssn-eyebrow">
+                            <img class="flag" src="{{ asset('assets/images/germany-flag-icon.svg') }}" alt="" aria-hidden="true">
+                            {{ __('home.student_services.eyebrow') }}
+                        </div>
+                        <h2 class="ssn-title">
+                            {{ __('home.student_services.title_lead') }}
+                            <em>{{ __('home.student_services.title_accent') }}</em>{{ __('home.student_services.title_tail') }}
+                        </h2>
+                    </div>
+                    <div class="ssn-meta">
+                        <strong>{{ __('home.student_services.meta_label') }}</strong>
+                        {{ __('home.student_services.meta_text') }}
+                    </div>
+                </header>
+
+                <div class="ssn-body" data-state="track">
+
+                    {{-- LEFT — FEATURED : DYNAMIC PANEL (3 variants stacked) --}}
+                    <div class="ssn-feature-stack reveal delay-3">
+
+                        {{-- VARIANT : TRACK (default / featured) --}}
+                        <a class="ssn-feature ssn-variant ssn-variant--track" href="{{ LaravelLocalization::localizeUrl(route('front.translations.track')) }}">
+                            <span class="ssn-feature-tag">
+                                <span class="pulse"></span>
+                                {{ __('home.student_services.feature_tag') }}
+                            </span>
+                            <h3 class="ssn-feature-title">{{ __('home.student_services.feature_title') }}</h3>
+                            <p class="ssn-feature-desc">{{ __('home.student_services.feature_desc') }}</p>
+
+                            <div class="ssn-preview" aria-hidden="true">
+                                <div class="ssn-preview-row">
+                                    <strong>{{ __('home.student_services.preview_order') }}</strong>
+                                    <span>{{ __('home.student_services.preview_pages') }}</span>
+                                </div>
+                                <div class="ssn-preview-row">
+                                    <span style="color:var(--ssn-gold-bright);font-weight:600;">
+                                        <i class="bi bi-translate"></i> {{ __('home.student_services.preview_status') }}
+                                    </span>
+                                    <span>05.05.2026</span>
+                                </div>
+                                <div class="ssn-track">
+                                    <span class="ssn-dot done"></span>
+                                    <span class="ssn-bar done"></span>
+                                    <span class="ssn-dot now"></span>
+                                    <span class="ssn-bar"></span>
+                                    <span class="ssn-dot"></span>
+                                </div>
+                            </div>
+
+                            <span class="ssn-feature-cta">
+                                {{ __('home.student_services.feature_cta') }}
+                                <i class="bi bi-arrow-up-right"></i>
+                            </span>
+                        </a>
+
+                        {{-- VARIANT : CERTIFICATE --}}
+                        <a class="ssn-feature ssn-variant ssn-variant--cert" href="{{ LaravelLocalization::localizeUrl(route('front.certificate.check')) }}">
+                            <span class="ssn-feature-tag">
+                                <i class="bi bi-patch-check-fill"></i>
+                                {{ __('home.student_services.cert_tag') }}
+                            </span>
+                            <h3 class="ssn-feature-title">{{ __('home.student_services.item1_title') }}</h3>
+                            <p class="ssn-feature-desc">{{ __('home.student_services.item1_desc') }}</p>
+
+                            <div class="ssn-preview" aria-hidden="true">
+                                <div class="ssn-preview-row">
+                                    <strong>{{ __('home.student_services.cert_preview_label') }}</strong>
+                                    <span class="ssn-cert-num">GLS-2024-A1F8K</span>
+                                </div>
+                                <div class="ssn-preview-row">
+                                    <span style="color:#5dd29c;font-weight:600;">
+                                        <i class="bi bi-shield-check"></i> {{ __('home.student_services.cert_preview_status') }}
+                                    </span>
+                                    <span>{{ __('home.student_services.cert_preview_level') }} · B2</span>
+                                </div>
+                                <div class="ssn-cert-stamp">
+                                    <i class="bi bi-patch-check-fill"></i>
+                                    <span>{{ __('home.student_services.cert_preview_authentic') }}</span>
+                                </div>
+                            </div>
+
+                            <span class="ssn-feature-cta">
+                                {{ __('home.student_services.cert_cta') }}
+                                <i class="bi bi-arrow-up-right"></i>
+                            </span>
+                        </a>
+
+                        {{-- VARIANT : ATTESTATION --}}
+                        <a class="ssn-feature ssn-variant ssn-variant--att" href="{{ LaravelLocalization::localizeUrl(route('front.attestation-request.create')) }}">
+                            <span class="ssn-feature-tag">
+                                <i class="bi bi-envelope-paper-fill"></i>
+                                {{ __('home.student_services.att_tag') }}
+                            </span>
+                            <h3 class="ssn-feature-title">{{ __('home.student_services.item2_title') }}</h3>
+                            <p class="ssn-feature-desc">{{ __('home.student_services.item2_desc') }}</p>
+
+                            <div class="ssn-preview" aria-hidden="true">
+                                <div class="ssn-preview-row">
+                                    <strong>{{ __('home.student_services.att_preview_request') }}</strong>
+                                    <span>05.05.2026</span>
+                                </div>
+                                <div class="ssn-preview-row">
+                                    <span style="color:var(--ssn-gold-bright);font-weight:600;">
+                                        <i class="bi bi-hourglass-split"></i> {{ __('home.student_services.att_preview_status') }}
+                                    </span>
+                                    <span>{{ __('home.student_services.att_preview_level') }} · A2</span>
+                                </div>
+                                <div class="ssn-att-flow">
+                                    <div class="ssn-att-step done"><i class="bi bi-check"></i><span>{{ __('home.student_services.att_step1') }}</span></div>
+                                    <div class="ssn-att-step now"><span class="dot"></span><span>{{ __('home.student_services.att_step2') }}</span></div>
+                                    <div class="ssn-att-step"><i class="bi bi-envelope"></i><span>{{ __('home.student_services.att_step3') }}</span></div>
+                                </div>
+                            </div>
+
+                            <span class="ssn-feature-cta">
+                                {{ __('home.student_services.att_cta') }}
+                                <i class="bi bi-arrow-up-right"></i>
+                            </span>
+                        </a>
+
+                    </div>
+
+                    {{-- RIGHT — NUMBERED LIST --}}
+                    <div class="ssn-list reveal delay-4">
+
+                        {{-- 00 — TRACK TRANSLATION (resets to default) --}}
+                        <a class="ssn-item ssn-item--track" data-target="track" href="{{ LaravelLocalization::localizeUrl(route('front.translations.track')) }}">
+                            <span class="ssn-num">01</span>
+                            <div class="ssn-item-body">
+                                <h4 class="ssn-item-title">{{ __('home.student_services.tr_title_short') }}</h4>
+                                <p class="ssn-item-desc">{{ __('home.student_services.tr_desc_short') }}</p>
+                            </div>
+                            <span class="ssn-arrow"><i class="bi bi-arrow-right"></i></span>
+                        </a>
+
+                        {{-- 02 — VERIFY CERTIFICATE --}}
+                        <a class="ssn-item ssn-item--cert" data-target="cert" href="{{ LaravelLocalization::localizeUrl(route('front.certificate.check')) }}">
+                            <span class="ssn-num">02</span>
+                            <div class="ssn-item-body">
+                                <h4 class="ssn-item-title">{{ __('home.student_services.item1_title') }}</h4>
+                                <p class="ssn-item-desc">{{ __('home.student_services.item1_desc') }}</p>
+                            </div>
+                            <span class="ssn-arrow"><i class="bi bi-arrow-right"></i></span>
+                        </a>
+
+                        {{-- 03 — ATTESTATION REQUEST --}}
+                        <a class="ssn-item ssn-item--att" data-target="att" href="{{ LaravelLocalization::localizeUrl(route('front.attestation-request.create')) }}">
+                            <span class="ssn-num">03</span>
+                            <div class="ssn-item-body">
+                                <h4 class="ssn-item-title">{{ __('home.student_services.item2_title') }}</h4>
+                                <p class="ssn-item-desc">{{ __('home.student_services.item2_desc') }}</p>
+                            </div>
+                            <span class="ssn-arrow"><i class="bi bi-arrow-right"></i></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <script>
+                (function () {
+                    const body = document.currentScript.previousElementSibling;
+                    if (!body || !body.matches('.ssn-body')) return;
+
+                    const STATES = ['track', 'cert', 'att'];
+                    const items  = Array.from(body.querySelectorAll('.ssn-item[data-target]'));
+                    const mqMobile = window.matchMedia('(max-width: 992px)');
+
+                    let autoTimer = null;
+                    let userTouched = false;
+                    let resumeTimer = null;
+
+                    function setState(s) {
+                        if (!STATES.includes(s) || body.dataset.state === s) return;
+                        body.dataset.state = s;
+                        items.forEach(it => it.classList.toggle('is-active', it.dataset.target === s));
+                    }
+
+                    function startAuto() {
+                        stopAuto();
+                        autoTimer = setInterval(() => {
+                            const cur = body.dataset.state || 'track';
+                            const next = STATES[(STATES.indexOf(cur) + 1) % STATES.length];
+                            setState(next);
+                        }, 3000);
+                    }
+                    function stopAuto() {
+                        if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+                    }
+
+                    function configureForViewport() {
+                        if (mqMobile.matches) {
+                            // Mobile : autoplay (unless user just interacted)
+                            if (!userTouched) startAuto();
+                        } else {
+                            // Desktop : hover-driven, no autoplay
+                            stopAuto();
+                            setState('track');
+                        }
+                    }
+
+                    // ── Desktop hover/focus ──
+                    items.forEach(it => {
+                        it.addEventListener('mouseenter', () => {
+                            if (mqMobile.matches) return;
+                            setState(it.dataset.target);
+                        });
+                        it.addEventListener('focus', () => setState(it.dataset.target));
+                    });
+                    body.addEventListener('mouseleave', () => {
+                        if (mqMobile.matches) return;
+                        setState('track');
+                    });
+
+                    // ── Mobile : pause autoplay briefly on tap, then resume ──
+                    items.forEach(it => {
+                        it.addEventListener('touchstart', () => {
+                            if (!mqMobile.matches) return;
+                            userTouched = true;
+                            stopAuto();
+                            setState(it.dataset.target);
+                            clearTimeout(resumeTimer);
+                            resumeTimer = setTimeout(() => {
+                                userTouched = false;
+                                startAuto();
+                            }, 6000);
+                        }, { passive: true });
+                    });
+
+                    // ── Pause when section is offscreen, resume when visible ──
+                    if ('IntersectionObserver' in window) {
+                        const io = new IntersectionObserver((entries) => {
+                            entries.forEach(e => {
+                                if (!mqMobile.matches) return;
+                                if (e.isIntersecting && !userTouched) startAuto();
+                                else stopAuto();
+                            });
+                        }, { threshold: 0.25 });
+                        io.observe(body);
+                    }
+
+                    mqMobile.addEventListener('change', configureForViewport);
+                    configureForViewport();
+                })();
+                </script>
+
+                <div class="ssn-foot">
+                    <span class="ssn-stamp">
+                        <i class="bi bi-shield-lock-fill"></i>
+                        {{ __('home.student_services.foot_text') }}
+                    </span>
+                    <span class="ssn-locale">{{ strtoupper(app()->getLocale()) }} · MA – DE</span>
+                </div>
+            </div>
+        </section>
+
+        {{-- ===========================
  ABOUT GLS MOROCCO – 9onsol’s Talks
 =========================== --}}
         <section class="home-about-section section {{ app()->getLocale() == 'ar' ? 'rtl' : '' }} reveal delay-1">

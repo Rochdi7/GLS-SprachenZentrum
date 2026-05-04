@@ -284,4 +284,53 @@ return [
         'title' => 'Unsere Kooperationspartner',
         'aria_label' => 'Unsere Kooperationspartner',
     ],
+
+    'student_services' => [
+        'eyebrow'      => 'Studentenakte · Studentenbereich',
+        'title_lead'   => 'Ihre',
+        'title_accent' => 'GLS-Akte',
+        'title_tail'   => ', immer griffbereit.',
+
+        'meta_label'   => 'Offizielles Portal',
+        'meta_text'    => 'Überprüfungen, Anträge und Sendungsverfolgung — direkt über Ihre Referenznummer.',
+
+        'feature_tag'  => 'Top-Service',
+        'feature_title'=> 'Verfolgen Sie Ihre Übersetzungen Marokko – Deutschland',
+        'feature_desc' => 'Vom Eingang in unserem Büro bis zur Übergabe — verfolgen Sie Ihre Dokumente in Echtzeit mit Ihrer CIN.',
+        'feature_cta'  => 'Dokumente verfolgen',
+
+        'preview_order'   => 'Auftrag #2041',
+        'preview_pages'   => '3 Dokumente · 5 Seiten',
+        'preview_status'  => 'Beim Übersetzer',
+        'preview_step1'   => 'Erhalten',
+        'preview_step2'   => 'Übersetzung',
+        'preview_step3'   => 'Übergeben',
+
+        'item1_title'  => 'GLS-Zertifikat überprüfen',
+        'item1_desc'   => 'Authentifizieren Sie sofort ein von GLS Sprachenzentrum ausgestelltes Zertifikat mit seiner eindeutigen Nummer.',
+
+        'item2_title'  => 'Teilnahmebescheinigung anfordern',
+        'item2_desc'   => 'Stellen Sie Ihren Antrag online — unser Team sendet ihn nach Prüfung per E-Mail.',
+
+        'foot_text'    => 'Service ausschließlich für aktuelle und ehemalige GLS-Studierende.',
+
+        'tr_title_short'        => 'Übersetzungen verfolgen',
+        'tr_desc_short'         => 'Verfolgen Sie Ihre Übersetzungen Marokko – Deutschland mit Ihrer CIN, von der Abgabe bis zur Übergabe.',
+
+        'cert_tag'              => 'Sofortige Prüfung',
+        'cert_cta'              => 'Zertifikat überprüfen',
+        'cert_preview_label'    => 'Eingegebene Nummer',
+        'cert_preview_status'   => 'Echt',
+        'cert_preview_level'    => 'Niveau',
+        'cert_preview_authentic'=> 'Ausgestellt von GLS Sprachenzentrum',
+
+        'att_tag'               => 'Online-Anfrage',
+        'att_cta'               => 'Bescheinigung anfordern',
+        'att_preview_request'   => 'Anfrage gesendet',
+        'att_preview_status'    => 'In Prüfung',
+        'att_preview_level'     => 'Niveau',
+        'att_step1'             => 'Eingereicht',
+        'att_step2'             => 'Prüfung',
+        'att_step3'             => 'E-Mail',
+    ],
 ];

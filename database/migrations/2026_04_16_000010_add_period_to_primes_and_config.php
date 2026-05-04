@@ -9,22 +9,31 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('primes', function (Blueprint $table) {
-            // Period the prime covers
-            $table->date('period_start')->nullable()->after('month')
-                  ->comment('Debut periode couverte');
-            $table->date('period_end')->nullable()->after('period_start')
-                  ->comment('Fin periode couverte');
-            $table->unsignedTinyInteger('period_months')->default(1)->after('period_end')
-                  ->comment('Duree periode en mois (1, 3, 6, 12)');
+            if (! Schema::hasColumn('primes', 'period_start')) {
+                $table->date('period_start')->nullable()->after('month')
+                      ->comment('Debut periode couverte');
+            }
+            if (! Schema::hasColumn('primes', 'period_end')) {
+                $table->date('period_end')->nullable()->after('period_start')
+                      ->comment('Fin periode couverte');
+            }
+            if (! Schema::hasColumn('primes', 'period_months')) {
+                $table->unsignedTinyInteger('period_months')->default(1)->after('period_end')
+                      ->comment('Duree periode en mois (1, 3, 6, 12)');
+            }
         });
 
-        // Impaye imports: record the "as of" date (like CRM export)
         Schema::table('impaye_imports', function (Blueprint $table) {
-            $table->date('snapshot_date')->nullable()->after('month')
-                  ->comment('Date d arrete du snapshot (toutes echeances jusqu a cette date)');
+            if (! Schema::hasColumn('impaye_imports', 'snapshot_date')) {
+                $table->date('snapshot_date')->nullable()->after('month')
+                      ->comment('Date d arrete du snapshot (toutes echeances jusqu a cette date)');
+            }
         });
 
-        // Config table for system-wide settings
+        if (Schema::hasTable('system_configs')) {
+            return;
+        }
+
         Schema::create('system_configs', function (Blueprint $table) {
             $table->id();
             $table->string('key')->unique();

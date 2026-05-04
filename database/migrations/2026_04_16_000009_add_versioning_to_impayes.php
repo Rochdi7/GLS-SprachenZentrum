@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -19,10 +20,12 @@ return new class extends Migration
             }
         });
 
-        $indexes = collect(Schema::getConnection()
-            ->getDoctrineSchemaManager()
-            ->listTableIndexes('impayes'));
-        if (!$indexes->has('impaye_dedup_idx')) {
+        $indexExists = collect(DB::select(
+            "SHOW INDEX FROM `impayes` WHERE Key_name = ?",
+            ['impaye_dedup_idx']
+        ))->isNotEmpty();
+
+        if (! $indexExists) {
             Schema::table('impayes', function (Blueprint $table) {
                 $table->index(['site_id', 'dedup_key'], 'impaye_dedup_idx');
             });

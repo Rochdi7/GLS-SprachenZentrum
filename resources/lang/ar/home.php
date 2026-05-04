@@ -329,4 +329,53 @@ return [
         'title' => 'شركاؤنا في التعاون',
         'aria_label' => 'شركاؤنا في التعاون',
     ],
+
+    'student_services' => [
+        'eyebrow'      => 'Studentenakte · فضاء الطالب',
+        'title_lead'   => 'ملفك',
+        'title_accent' => 'لدى GLS',
+        'title_tail'   => '، بين يديك.',
+
+        'meta_label'   => 'البوابة الرسمية',
+        'meta_text'    => 'تحقّق، طلبات، ومتابعة — كلها مرتبطة برقمك المرجعي.',
+
+        'feature_tag'  => 'الخدمة المميزة',
+        'feature_title'=> 'تابع ترجماتك بين المغرب وألمانيا',
+        'feature_desc' => 'من الإيداع لدى مكتبنا حتى التسليم النهائي، تابع وثائقك في الوقت الفعلي عبر رقم CIN.',
+        'feature_cta'  => 'متابعة وثائقي',
+
+        'preview_order'   => 'الطلب #2041',
+        'preview_pages'   => '3 وثائق · 5 صفحات',
+        'preview_status'  => 'لدى المترجم',
+        'preview_step1'   => 'استُلم',
+        'preview_step2'   => 'الترجمة',
+        'preview_step3'   => 'سُلِّم',
+
+        'item1_title'  => 'التحقق من شهادة GLS',
+        'item1_desc'   => 'تحقّق فورًا من أي شهادة صادرة عن GLS Sprachenzentrum باستخدام رقمها الفريد.',
+
+        'item2_title'  => 'طلب شهادة مشاركة',
+        'item2_desc'   => 'قدّم طلبك عبر الإنترنت — يرسلها فريقنا بالبريد الإلكتروني بعد التحقق.',
+
+        'foot_text'    => 'خدمة مخصّصة لطلاب GLS الحاليين والقدامى.',
+
+        'tr_title_short'        => 'متابعة الترجمات',
+        'tr_desc_short'         => 'تابع ترجماتك بين المغرب وألمانيا برقم CIN، من الإيداع إلى التسليم.',
+
+        'cert_tag'              => 'تحقّق فوري',
+        'cert_cta'              => 'التحقق من شهادة',
+        'cert_preview_label'    => 'الرقم المُدخل',
+        'cert_preview_status'   => 'أصلية',
+        'cert_preview_level'    => 'المستوى',
+        'cert_preview_authentic'=> 'صادرة عن GLS Sprachenzentrum',
+
+        'att_tag'               => 'طلب عبر الإنترنت',
+        'att_cta'               => 'طلب الشهادة',
+        'att_preview_request'   => 'تم إرسال الطلب',
+        'att_preview_status'    => 'قيد المراجعة',
+        'att_preview_level'     => 'المستوى',
+        'att_step1'             => 'أُرسل',
+        'att_step2'             => 'مراجعة',
+        'att_step3'             => 'بريد',
+    ],
 ];
