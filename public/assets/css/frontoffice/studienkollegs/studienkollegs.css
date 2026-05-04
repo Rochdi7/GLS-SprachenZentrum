@@ -107,8 +107,6 @@ body{
     flex-direction: column;
     width: 100%;
     min-height: 260px;
-    max-height: 340px; 
-    overflow: hidden;
 }
 
 /* Desktop & large screens */
@@ -116,7 +114,23 @@ body{
     .featured-card-inner {
         flex-direction: row;
         align-items: stretch;
+        max-height: 340px;
+        overflow: hidden;
     }
+}
+
+/* Mobile : meta items stack so values + labels stay readable */
+@media (max-width: 575px) {
+    .featured-meta {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+    .featured-meta-item {
+        gap: 10px;
+    }
+    .featured-meta-value { font-size: 1rem; }
+    .featured-meta-label { font-size: .78rem; }
 }
 
 /* ---------- IMAGE ---------- */
