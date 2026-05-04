@@ -29,7 +29,7 @@ class AttestationRequestController extends Controller
             'birth_place' => ['nullable', 'string', 'max:255'],
             'group_name'  => ['required', 'string', 'max:255'],
             'level'       => ['required', 'in:A1,A2,B1,B2'],
-            'language'    => ['required', 'in:de_fr'],
+            'notes'       => ['nullable', 'string', 'max:2000'],
         ], [
             'last_name.required'   => 'Le nom est obligatoire.',
             'first_name.required'  => 'Le prénom est obligatoire.',
@@ -37,7 +37,7 @@ class AttestationRequestController extends Controller
             'email.email'          => 'L\'email n\'est pas valide.',
             'group_name.required'  => 'Veuillez préciser le nom de votre groupe.',
             'level.required'       => 'Veuillez sélectionner un niveau.',
-            'language.required'    => 'Veuillez sélectionner la langue de l\'attestation.',
+            'notes.max'            => 'Les notes ne peuvent pas dépasser 2000 caractères.',
         ]);
 
         $attRequest = AttestationRequest::create($validated);

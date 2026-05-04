@@ -61,8 +61,14 @@
                         <dt class="col-sm-4">Niveau</dt>
                         <dd class="col-sm-8"><span class="badge bg-light-primary text-primary">{{ $request->level }}</span></dd>
 
-                        <dt class="col-sm-4">Langue souhaitée</dt>
-                        <dd class="col-sm-8">{{ $request->language }}</dd>
+                        <dt class="col-sm-4">Notes</dt>
+                        <dd class="col-sm-8">
+                            @if(filled($request->notes))
+                                <div style="white-space:pre-wrap;">{{ $request->notes }}</div>
+                            @else
+                                <span class="text-muted">—</span>
+                            @endif
+                        </dd>
                     </dl>
 
                     @if ($request->status !== 'pending')

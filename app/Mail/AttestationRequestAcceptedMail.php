@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Mail\Concerns\EmbedsBrandLogo;
 use App\Models\AttestationRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -9,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 
 class AttestationRequestAcceptedMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, EmbedsBrandLogo;
 
     public AttestationRequest $request;
 
@@ -21,7 +22,8 @@ class AttestationRequestAcceptedMail extends Mailable
     public function build()
     {
         return $this->subject('Votre demande d\'attestation a été acceptée')
-            ->markdown('emails.attestation-request-accepted')
-            ->with(['request' => $this->request]);
+            ->view('emails.attestation-request-accepted')
+            ->with(['request' => $this->request])
+            ->withSymfonyMessage($this->embedBrandLogo());
     }
 }

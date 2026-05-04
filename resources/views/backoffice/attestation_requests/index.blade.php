@@ -54,7 +54,7 @@
                                     <th>Email</th>
                                     <th>Groupe (saisi)</th>
                                     <th>Niveau</th>
-                                    <th>Langue</th>
+                                    <th>Notes</th>
                                     <th>Statut</th>
                                     <th>Reçue le</th>
                                     <th>Actions</th>
@@ -68,7 +68,15 @@
                                         <td><a href="mailto:{{ $r->email }}">{{ $r->email }}</a></td>
                                         <td><em>{{ $r->group_name }}</em></td>
                                         <td><span class="badge bg-light-primary text-primary">{{ $r->level }}</span></td>
-                                        <td>{{ $r->language }}</td>
+                                        <td>
+                                            @if(filled($r->notes))
+                                                <span title="{{ $r->notes }}" style="display:inline-block;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;">
+                                                    {{ \Illuminate\Support\Str::limit($r->notes, 60) }}
+                                                </span>
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
                                         <td>
                                             @if ($r->status === 'pending')
                                                 <span class="badge bg-light-warning text-warning">En attente</span>

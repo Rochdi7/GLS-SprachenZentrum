@@ -1,75 +1,58 @@
-<!DOCTYPE html>
-<html lang="fr">
+@php
+    $typeCours = $data['type_cours'] ?? null;
+    $typeLabel = match($typeCours) {
+        'presentiel' => 'Cours en présentiel',
+        'en_ligne'   => 'Cours en ligne',
+        default      => 'Non spécifié',
+    };
+    $centreLabel = ($typeCours === 'presentiel' && !empty($centre))
+        ? ($centre->name . ' — ' . $centre->city)
+        : ($typeCours === 'presentiel' ? 'Aucun centre sélectionné' : null);
+    $groupLabel = !empty($group)
+        ? ($group->display_name ?? ($group->name ?? 'Groupe ' . $group->id))
+        : 'Aucun groupe sélectionné';
+@endphp
 
-<head>
-    <meta charset="UTF-8">
-    <title>Confirmation Inscription</title>
-</head>
+@component('emails.layouts.branded', [
+    'title' => 'Merci pour votre inscription !',
+    'subtitle' => 'GLS Sprachenzentrum — Centre de langue allemande au Maroc',
+])
 
-<body style="font-family: Arial, sans-serif; background:#f7f7f7; padding:20px;">
-    <div style="background:white; padding:25px; border-radius:12px; max-width:600px; margin:auto;">
+<p style="margin:0 0 14px 0;font-size:16px;">
+    Bonjour <strong>{{ $data['nom'] ?? '' }} {{ $data['prenom'] ?? '' }}</strong>,
+</p>
 
-        <h2 style="color:#111;">Merci pour votre inscription, {{ $data['nom'] }} {{ $data['prenom'] }} !</h2>
+<div style="background:#eafbf1;border-left:4px solid #009d5a;padding:14px 18px;border-radius:6px;margin:18px 0;">
+    Nous avons bien reçu votre demande d'inscription au <strong>GLS Sprachenzentrum</strong>. Notre équipe pédagogique vous contactera très prochainement pour finaliser votre dossier.
+</div>
 
-        <p>Nous avons bien reçu votre demande d'inscription au GLS Sprachenzentrum.</p>
+<div style="margin-top:18px;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:#7a716c;font-weight:600;">
+    Détails de votre demande
+</div>
 
-        <p style="margin-top:20px;"><strong>Détails de votre demande :</strong></p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #efeae0;border-radius:10px;border-collapse:separate;overflow:hidden;margin:10px 0 8px 0;">
+    @include('emails.partials.info-row', ['label' => 'Nom', 'value' => $data['nom'] ?? null])
+    @include('emails.partials.info-row', ['label' => 'Prénom', 'value' => $data['prenom'] ?? null])
+    @include('emails.partials.info-row', ['label' => 'Email', 'value' => $data['email'] ?? null])
+    @include('emails.partials.info-row', ['label' => 'Téléphone', 'value' => $data['phone'] ?? null])
+    @include('emails.partials.info-row', ['label' => 'Adresse', 'value' => $data['adresse'] ?? null])
+    @include('emails.partials.info-row', ['label' => 'Niveau choisi', 'value' => $data['niveau'] ?? 'Non spécifié'])
+    @include('emails.partials.info-row', ['label' => 'Type de cours', 'value' => $typeLabel])
+    @if($centreLabel)
+        @include('emails.partials.info-row', ['label' => 'Centre', 'value' => $centreLabel])
+    @endif
+    @include('emails.partials.info-row', ['label' => 'Groupe', 'value' => $groupLabel])
+    @if(!empty($data['horaire_prefere']))
+        @include('emails.partials.info-row', ['label' => 'Horaire', 'value' => $data['horaire_prefere']])
+    @endif
+    @if(!empty($data['date_start']))
+        @include('emails.partials.info-row', ['label' => 'Date de début', 'value' => $data['date_start']])
+    @endif
+</table>
 
-        <p><strong>Nom :</strong> {{ $data['nom'] ?? '—' }}</p>
-        <p><strong>Prénom :</strong> {{ $data['prenom'] ?? '—' }}</p>
-        <p><strong>Email :</strong> {{ $data['email'] ?? '—' }}</p>
-        <p><strong>Téléphone :</strong> {{ $data['phone'] ?? '—' }}</p>
-        <p><strong>Adresse :</strong> {{ $data['adresse'] ?? '—' }}</p>
+<p style="margin:24px 0 0 0;">
+    Willkommen bei GLS — bienvenue dans notre école !<br>
+    <strong>L'équipe GLS Sprachenzentrum</strong>
+</p>
 
-        <p><strong>Niveau choisi :</strong> {{ $data['niveau'] ?? 'Non spécifié' }}</p>
-
-        <p><strong>Type de cours :</strong>
-            @if (($data['type_cours'] ?? '') === 'presentiel')
-                Cours en présentiel
-            @elseif(($data['type_cours'] ?? '') === 'en_ligne')
-                Cours en ligne
-            @else
-                Non spécifié
-            @endif
-        </p>
-
-        {{-- CENTRE (Seulement si présentiel) --}}
-        @if (($data['type_cours'] ?? '') === 'presentiel')
-            <p><strong>Centre sélectionné :</strong>
-                @if (!empty($centre))
-                    {{ $centre->name }} – {{ $centre->city }}
-                @else
-                    Aucun centre sélectionné
-                @endif
-            </p>
-        @endif
-
-        {{-- GROUPE SELECTIONNÉ --}}
-        <p><strong>Groupe choisi :</strong>
-            @if (!empty($group))
-                {{ $group->display_name ?? ($group->name ?? 'Groupe ' . $group->id) }}
-            @else
-                Aucun groupe sélectionné
-            @endif
-        </p>
-
-        {{-- HORAIRE --}}
-        @if (!empty($data['horaire_prefere']))
-            <p><strong>Horaire :</strong> {{ $data['horaire_prefere'] }}</p>
-        @endif
-
-        @if (!empty($data['date_start']))
-            <p><strong>Date de début :</strong> {{ $data['date_start'] }}</p>
-        @endif
-
-        <hr style="margin:25px 0;">
-
-        <p>Notre équipe vous contactera très prochainement pour finaliser votre inscription.</p>
-
-        <p style="color:#555; font-size:14px; margin-top:20px;">
-            GLS Sprachenzentrum – Centres de langue allemande au Maroc
-        </p>
-    </div>
-</body>
-
-</html>
+@endcomponent

@@ -69,9 +69,9 @@
                             <option value="translator" {{ $currentStatus === 'translator' ? 'selected' : '' }}>Chez Traducteur ({{ $counts['translator'] }})</option>
                             <option value="delivered"  {{ $currentStatus === 'delivered'  ? 'selected' : '' }}>Rendu ({{ $counts['delivered'] }})</option>
                         </select>
-                        <button class="btn btn-sm btn-outline-primary text-nowrap" type="submit">
-                            <i class="ti ti-filter"></i> Filtrer
-                        </button>
+                        <a href="{{ route('backoffice.translations.index') }}" class="btn btn-sm btn-outline-secondary text-nowrap">
+                            <i class="ti ti-refresh"></i> Reset
+                        </a>
                     </form>
 
                     @can('translations.view')

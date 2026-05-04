@@ -105,10 +105,17 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">Langue de l'attestation</label>
-                            <input type="text" class="form-control" value="Bilingue (Allemand / Français)" readonly>
-                            <input type="hidden" name="language" value="de_fr">
-                            <small class="help"><i class="bi bi-globe2"></i> Document délivré en version bilingue.</small>
+                            <label class="form-label" for="att-notes">Notes / informations complémentaires</label>
+                            <textarea id="att-notes"
+                                      name="notes"
+                                      class="form-control @error('notes') is-invalid @enderror"
+                                      rows="3"
+                                      maxlength="2000"
+                                      placeholder="Précisez ici toute information utile (dates de cours, professeur, motif de la demande...)">{{ old('notes') }}</textarea>
+                            @error('notes')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="help"><i class="bi bi-pencil-square"></i> Optionnel — facilite le traitement de votre demande.</small>
                         </div>
                     </div>
 

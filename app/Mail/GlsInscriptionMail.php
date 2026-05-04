@@ -2,13 +2,14 @@
 
 namespace App\Mail;
 
+use App\Mail\Concerns\EmbedsBrandLogo;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class GlsInscriptionMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, EmbedsBrandLogo;
 
     public $data;
     public $centre;
@@ -29,6 +30,7 @@ class GlsInscriptionMail extends Mailable
                         'data' => $this->data,
                         'centre' => $this->centre,
                         'group' => $this->group,
-                    ]);
+                    ])
+                    ->withSymfonyMessage($this->embedBrandLogo());
     }
 }

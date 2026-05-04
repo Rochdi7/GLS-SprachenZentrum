@@ -15,6 +15,7 @@ class AttestationRequest extends Model
         'birth_place',
         'group_name',
         'level',
+        'notes',
         'language',
         'status',
         'refusal_reason',

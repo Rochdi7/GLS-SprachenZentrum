@@ -2,13 +2,14 @@
 
 namespace App\Mail;
 
+use App\Mail\Concerns\EmbedsBrandLogo;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class ContactMessageMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, EmbedsBrandLogo;
 
     public $data;
 
@@ -20,6 +21,7 @@ class ContactMessageMail extends Mailable
     public function build()
     {
         return $this->subject('Nouveau message du formulaire de contact')
-                    ->markdown('emails.contact-message');
+                    ->view('emails.contact-message')
+                    ->withSymfonyMessage($this->embedBrandLogo());
     }
 }
