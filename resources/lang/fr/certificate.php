@@ -19,4 +19,7 @@ return [
     'qr_caption_line1' => 'Scanner pour télécharger',
     'qr_caption_line2' => 'le certificat',
     'qr_unavailable' => 'QR code indisponible',
+    'eyebrow' => 'Vérification de Certificat',
+    'helper_secure' => 'Vérification authentique délivrée par GLS Sprachenzentrum.',
+    'verified_banner' => 'Certificat vérifié et authentique',
 ];

@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'page_title'        => 'Track my translations — GLS Sprachenzentrum',
+    'eyebrow'           => 'Student portal',
+    'heading'           => 'Track your',
+    'heading_accent'    => 'Morocco – Germany translations',
+    'lead'              => 'Enter your national ID number (CIN) to see the status of your documents — from drop-off to delivery.',
+    'cin_label'         => 'Your CIN number',
+    'cin_placeholder'   => 'AB123456',
+    'helper_secure'     => 'Your data stays confidential. Only your own orders are shown.',
+    'search_btn'        => 'Search my orders',
+    'no_results_title'  => 'No order found',
+    'no_results_text'   => 'No translation is registered for CIN :cin.',
+    'no_results_hint'   => 'Please check your input or contact the GLS reception.',
+    'orders_found'      => ':count order found|:count orders found',
+    'student'           => 'Student',
+    'order_label'       => 'Order',
+    'documents'         => ':count document|:count documents',
+    'pages'             => ':count page|:count pages',
+    'deposited_on'      => 'Dropped off on :date',
+    'page_count'        => '1 page|:count pages',
+    'total_label'       => 'Order total',
+    'step_received'     => 'Received (GLS)',
+    'step_translator'   => 'With Translator',
+    'step_delivered'    => 'Delivered',
+    'delivered_banner'  => 'Documents handed to the student on :date',
+    'status' => [
+        'pending'    => 'Received (GLS)',
+        'translator' => 'With Translator',
+        'delivered'  => 'Delivered to student',
+    ],
+];

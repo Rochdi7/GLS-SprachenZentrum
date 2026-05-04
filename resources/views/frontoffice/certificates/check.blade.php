@@ -35,7 +35,7 @@
     {{-- ── HERO + SEARCH ───────────────────────────── --}}
     <section class="vc-hero">
         <div class="container vc-hero-inner">
-            <span class="vc-eyebrow"><span class="dot"></span> {{ __('certificate.page_title') }}</span>
+            <span class="vc-eyebrow"><span class="dot"></span> {{ __('certificate.eyebrow') }}</span>
             <h1>{{ __('certificate.heading') }}</h1>
             <p class="lead">{{ __('certificate.subheading') }}</p>
 
@@ -53,7 +53,7 @@
                     </div>
                     <div class="vc-search-helper">
                         <i class="bi bi-shield-check"></i>
-                        Vérification authentique délivrée par GLS Sprachenzentrum.
+                        {{ __('certificate.helper_secure') }}
                     </div>
                     <button type="submit" class="vc-search-btn mt-3">
                         <i class="bi bi-search me-1"></i> {{ __('certificate.submit') }}
@@ -76,7 +76,7 @@
 
                     <div class="vc-cert-banner">
                         <i class="bi bi-shield-check"></i>
-                        Certificat vérifié et authentique
+                        {{ __('certificate.verified_banner') }}
                     </div>
 
                     <div class="vc-cert-body">

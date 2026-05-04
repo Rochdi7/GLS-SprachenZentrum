@@ -19,4 +19,7 @@ return [
     'qr_caption_line1' => 'امسح للتحميل',
     'qr_caption_line2' => 'الشهادة',
     'qr_unavailable' => 'رمز QR غير متوفر',
+    'eyebrow' => 'التحقق من الشهادة',
+    'helper_secure' => 'تحقّق أصلي صادر عن GLS Sprachenzentrum.',
+    'verified_banner' => 'شهادة متحقَّق منها وأصلية',
 ];

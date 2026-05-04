@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'page_title'        => 'Suivi de mes traductions — GLS Sprachenzentrum',
+    'eyebrow'           => 'Portail étudiant',
+    'heading'           => 'Suivez vos',
+    'heading_accent'    => 'traductions Maroc – Allemagne',
+    'lead'              => "Entrez votre numéro de CIN pour voir où en sont vos documents — du dépôt à la remise.",
+    'cin_label'         => 'Votre numéro de CIN',
+    'cin_placeholder'   => 'AB123456',
+    'helper_secure'     => "Vos données restent confidentielles. Seules vos commandes s'affichent.",
+    'search_btn'        => 'Rechercher mes commandes',
+    'no_results_title'  => 'Aucune commande trouvée',
+    'no_results_text'   => "Aucune traduction n'est enregistrée pour le CIN :cin.",
+    'no_results_hint'   => "Vérifiez votre saisie ou contactez l'accueil GLS.",
+    'orders_found'      => ':count commande trouvée|:count commandes trouvées',
+    'student'           => 'Étudiant',
+    'order_label'       => 'Commande',
+    'documents'         => ':count document|:count documents',
+    'pages'             => ':count page|:count pages',
+    'deposited_on'      => 'Déposé le :date',
+    'page_count'        => '1 page|:count pages',
+    'total_label'       => 'Total commande',
+    'step_received'     => 'Reçu (GLS)',
+    'step_translator'   => 'Chez Traducteur',
+    'step_delivered'    => 'Rendu',
+    'delivered_banner'  => "Documents remis à l'étudiant le :date",
+    'status' => [
+        'pending'    => 'Reçu (GLS)',
+        'translator' => 'Chez Traducteur',
+        'delivered'  => "Rendu à l'étudiant",
+    ],
+];

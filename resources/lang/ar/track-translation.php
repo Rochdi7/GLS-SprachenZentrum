@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'page_title'        => 'متابعة ترجماتي — GLS Sprachenzentrum',
+    'eyebrow'           => 'بوابة الطالب',
+    'heading'           => 'تابع',
+    'heading_accent'    => 'ترجماتك بين المغرب وألمانيا',
+    'lead'              => 'أدخل رقم بطاقتك الوطنية (CIN) لمعرفة حالة وثائقك — من الإيداع إلى التسليم.',
+    'cin_label'         => 'رقم البطاقة الوطنية',
+    'cin_placeholder'   => 'AB123456',
+    'helper_secure'     => 'بياناتك تبقى سرية. تظهر طلباتك فقط.',
+    'search_btn'        => 'البحث عن طلباتي',
+    'no_results_title'  => 'لم يُعثر على أي طلب',
+    'no_results_text'   => 'لا توجد ترجمة مسجّلة للبطاقة :cin.',
+    'no_results_hint'   => 'يرجى التحقق من الإدخال أو الاتصال باستقبال GLS.',
+    'orders_found'      => 'تم العثور على طلب واحد|تم العثور على :count طلبات',
+    'student'           => 'الطالب',
+    'order_label'       => 'الطلب',
+    'documents'         => 'وثيقة واحدة|:count وثائق',
+    'pages'             => 'صفحة واحدة|:count صفحات',
+    'deposited_on'      => 'أُودع بتاريخ :date',
+    'page_count'        => 'صفحة واحدة|:count صفحات',
+    'total_label'       => 'إجمالي الطلب',
+    'step_received'     => 'تم الاستلام (GLS)',
+    'step_translator'   => 'لدى المترجم',
+    'step_delivered'    => 'تم التسليم',
+    'delivered_banner'  => 'تم تسليم الوثائق للطالب بتاريخ :date',
+    'status' => [
+        'pending'    => 'تم الاستلام (GLS)',
+        'translator' => 'لدى المترجم',
+        'delivered'  => 'تم التسليم للطالب',
+    ],
+];

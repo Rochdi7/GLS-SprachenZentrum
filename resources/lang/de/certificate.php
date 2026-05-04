@@ -19,4 +19,7 @@ return [
     'qr_caption_line1' => 'Scannen zum Herunterladen',
     'qr_caption_line2' => 'des Zertifikats',
     'qr_unavailable' => 'QR-Code nicht verfügbar',
+    'eyebrow' => 'Zertifikatsüberprüfung',
+    'helper_secure' => 'Authentische Überprüfung durch GLS Sprachenzentrum.',
+    'verified_banner' => 'Überprüftes und authentisches Zertifikat',
 ];

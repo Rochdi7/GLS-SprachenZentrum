@@ -1233,12 +1233,15 @@ class QuizQuestionsSeeder extends Seeder
                         'is_active'     => true,
                     ]);
 
-                    foreach ($qData['options'] as $optData) {
+                    $shuffledOptions = $qData['options'];
+                    shuffle($shuffledOptions);
+
+                    foreach ($shuffledOptions as $index => $optData) {
                         QuizOption::query()->create([
                             'question_id' => $question->id,
                             'option_text'  => $optData['option_text'] ?? null,
                             'is_correct'   => (bool) ($optData['is_correct'] ?? false),
-                            'sort_order'   => $optData['sort_order'] ?? 0,
+                            'sort_order'   => $index,
                         ]);
                     }
                 }

@@ -12,86 +12,63 @@ use App\Models\Studienkolleg;
 
 class GenerateSitemap extends Command
 {
-    /**
-     * The name and signature of the console command.
-     */
     protected $signature = 'gls:generate-sitemap {--with-quiz : Inclure /discover-your-level/quiz (facultatif)}';
 
+    protected $description = 'Génère le sitemap.xml du site GLS (URLs localisées + hreflang)';
+
     /**
-     * The console command description.
+     * Locales we expose to search engines. fr is default and used for x-default.
      */
-    protected $description = 'Génère le sitemap.xml du site GLS (routes front + contenus dynamiques)';
+    private array $locales = ['fr', 'en', 'de', 'ar'];
+
+    private string $defaultLocale = 'fr';
 
     public function handle(): int
     {
         $baseUrl = rtrim(config('app.url'), '/');
 
-        if (empty($baseUrl)) {
-            $this->error("APP_URL est vide. Mets APP_URL=https://gls-sprachzentrum.ma dans ton .env");
-            return self::FAILURE;
+        if (empty($baseUrl) || str_contains($baseUrl, '127.0.0.1') || str_contains($baseUrl, 'localhost')) {
+            $baseUrl = 'https://gls-sprachzentrum.ma';
+            $this->warn("APP_URL is local/empty — falling back to {$baseUrl}");
         }
 
         $this->info("Generating sitemap for: {$baseUrl}");
 
         $sitemap = Sitemap::create();
 
-        /*
-        |----------------------------------------------------------------------
-        | Static GET routes (from your routes file)
-        |----------------------------------------------------------------------
-        */
         $staticPaths = [
-            '/',
-            '/about',
-            '/faq',
-            '/contact',
-            '/intensive-courses',
-            '/online-courses',
-            '/pricing',
-
-            '/exams/gls',
-            '/exams/osd',
-            '/exams/goethe',
-
-            '/blog',
-            '/student-stories',
-            '/certificate-check',
-
-            '/niveaux/a1',
-            '/niveaux/a2',
-            '/niveaux/b1',
-            '/niveaux/b2',
-
-            '/studienkollegs',
-            '/discover-your-level',
-
-            '/terms',
-            '/privacy',
-            '/partners/fc-marokko',
+            '/' => 1.0,
+            '/about' => 0.7,
+            '/faq' => 0.7,
+            '/contact' => 0.7,
+            '/intensive-courses' => 0.7,
+            '/online-courses' => 0.7,
+            '/pricing' => 0.7,
+            '/exams/gls' => 0.7,
+            '/exams/osd' => 0.7,
+            '/exams/goethe' => 0.7,
+            '/blog' => 0.7,
+            '/student-stories' => 0.7,
+            '/certificate-check' => 0.7,
+            '/niveaux/a1' => 0.7,
+            '/niveaux/a2' => 0.7,
+            '/niveaux/b1' => 0.7,
+            '/niveaux/b2' => 0.7,
+            '/studienkollegs' => 0.7,
+            '/discover-your-level' => 0.7,
+            '/terms' => 0.7,
+            '/privacy' => 0.7,
+            '/partners/fc-marokko' => 0.7,
         ];
 
-        foreach ($staticPaths as $path) {
-            $sitemap->add(
-                Url::create($baseUrl . $path)
-                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                    ->setPriority($path === '/' ? 1.0 : 0.7)
-            );
+        foreach ($staticPaths as $path => $priority) {
+            $this->addLocalizedUrl($sitemap, $baseUrl, $path, Url::CHANGE_FREQUENCY_WEEKLY, $priority);
         }
 
-        // Optional: quiz page (dynamic, not cached)
         if ($this->option('with-quiz')) {
-            $sitemap->add(
-                Url::create($baseUrl . '/discover-your-level/quiz')
-                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-                    ->setPriority(0.6)
-            );
+            $this->addLocalizedUrl($sitemap, $baseUrl, '/discover-your-level/quiz', Url::CHANGE_FREQUENCY_WEEKLY, 0.6);
         }
 
-        /*
-        |----------------------------------------------------------------------
-        | Blog posts (dynamic)
-        |----------------------------------------------------------------------
-        */
         if (class_exists(BlogPost::class)) {
             BlogPost::query()
                 ->whereNotNull('slug')
@@ -99,25 +76,17 @@ class GenerateSitemap extends Command
                 ->latest()
                 ->get(['slug', 'updated_at'])
                 ->each(function ($post) use ($sitemap, $baseUrl) {
-                    $url = $baseUrl . '/blog/' . ltrim($post->slug, '/');
-
-                    $tag = Url::create($url)
-                        ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
-                        ->setPriority(0.6);
-
-                    if (!empty($post->updated_at)) {
-                        $tag->setLastModificationDate(Carbon::parse($post->updated_at));
-                    }
-
-                    $sitemap->add($tag);
+                    $this->addLocalizedUrl(
+                        $sitemap,
+                        $baseUrl,
+                        '/blog/' . ltrim($post->slug, '/'),
+                        Url::CHANGE_FREQUENCY_MONTHLY,
+                        0.6,
+                        $post->updated_at ? Carbon::parse($post->updated_at) : null
+                    );
                 });
         }
 
-        /*
-        |----------------------------------------------------------------------
-        | Studienkollegs (dynamic)
-        |----------------------------------------------------------------------
-        */
         if (class_exists(Studienkolleg::class)) {
             Studienkolleg::query()
                 ->whereNotNull('slug')
@@ -125,31 +94,65 @@ class GenerateSitemap extends Command
                 ->latest()
                 ->get(['slug', 'updated_at'])
                 ->each(function ($item) use ($sitemap, $baseUrl) {
-                    $url = $baseUrl . '/studienkollegs/' . ltrim($item->slug, '/');
-
-                    $tag = Url::create($url)
-                        ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
-                        ->setPriority(0.6);
-
-                    if (!empty($item->updated_at)) {
-                        $tag->setLastModificationDate(Carbon::parse($item->updated_at));
-                    }
-
-                    $sitemap->add($tag);
+                    $this->addLocalizedUrl(
+                        $sitemap,
+                        $baseUrl,
+                        '/studienkollegs/' . ltrim($item->slug, '/'),
+                        Url::CHANGE_FREQUENCY_MONTHLY,
+                        0.6,
+                        $item->updated_at ? Carbon::parse($item->updated_at) : null
+                    );
                 });
         }
 
-        /*
-        |----------------------------------------------------------------------
-        | Write sitemap.xml
-        |----------------------------------------------------------------------
-        */
         $path = public_path('sitemap.xml');
         $sitemap->writeToFile($path);
 
-        $this->info("✅ Sitemap generated successfully: {$path}");
-        $this->info("✅ Public URL: {$baseUrl}/sitemap.xml");
+        $this->info("Sitemap generated: {$path}");
+        $this->info("Public URL: {$baseUrl}/sitemap.xml");
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Adds one <url> entry per locale, each annotated with xhtml:link hreflang
+     * pointing to all locale alternates plus an x-default. Listed URLs are the
+     * final 200-OK localized URLs (e.g. /fr/about), not the bare /about that
+     * 302-redirects.
+     */
+    private function addLocalizedUrl(
+        Sitemap $sitemap,
+        string $baseUrl,
+        string $path,
+        string $changeFreq,
+        float $priority,
+        ?Carbon $lastMod = null
+    ): void {
+        foreach ($this->locales as $locale) {
+            $loc = $baseUrl . '/' . $locale . $this->normalizePath($path);
+
+            $tag = Url::create($loc)
+                ->setChangeFrequency($changeFreq)
+                ->setPriority($priority);
+
+            foreach ($this->locales as $alt) {
+                $tag->addAlternate($baseUrl . '/' . $alt . $this->normalizePath($path), $alt);
+            }
+            $tag->addAlternate($baseUrl . '/' . $this->defaultLocale . $this->normalizePath($path), 'x-default');
+
+            if ($lastMod) {
+                $tag->setLastModificationDate($lastMod);
+            }
+
+            $sitemap->add($tag);
+        }
+    }
+
+    private function normalizePath(string $path): string
+    {
+        if ($path === '/' || $path === '') {
+            return '';
+        }
+        return '/' . ltrim($path, '/');
     }
 }

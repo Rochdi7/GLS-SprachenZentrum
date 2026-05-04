@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'page_title'        => 'Übersetzungen verfolgen — GLS Sprachenzentrum',
+    'eyebrow'           => 'Studentenportal',
+    'heading'           => 'Verfolgen Sie Ihre',
+    'heading_accent'    => 'Übersetzungen Marokko – Deutschland',
+    'lead'              => 'Geben Sie Ihre nationale Ausweisnummer (CIN) ein, um den Status Ihrer Dokumente zu sehen — von der Abgabe bis zur Übergabe.',
+    'cin_label'         => 'Ihre CIN-Nummer',
+    'cin_placeholder'   => 'AB123456',
+    'helper_secure'     => 'Ihre Daten bleiben vertraulich. Nur Ihre eigenen Aufträge werden angezeigt.',
+    'search_btn'        => 'Meine Aufträge suchen',
+    'no_results_title'  => 'Kein Auftrag gefunden',
+    'no_results_text'   => 'Für die CIN :cin ist keine Übersetzung registriert.',
+    'no_results_hint'   => 'Bitte prüfen Sie Ihre Eingabe oder wenden Sie sich an die GLS-Rezeption.',
+    'orders_found'      => ':count Auftrag gefunden|:count Aufträge gefunden',
+    'student'           => 'Student/in',
+    'order_label'       => 'Auftrag',
+    'documents'         => ':count Dokument|:count Dokumente',
+    'pages'             => ':count Seite|:count Seiten',
+    'deposited_on'      => 'Abgegeben am :date',
+    'page_count'        => '1 Seite|:count Seiten',
+    'total_label'       => 'Auftragssumme',
+    'step_received'     => 'Erhalten (GLS)',
+    'step_translator'   => 'Beim Übersetzer',
+    'step_delivered'    => 'Übergeben',
+    'delivered_banner'  => 'Dokumente am :date an den Studenten übergeben',
+    'status' => [
+        'pending'    => 'Erhalten (GLS)',
+        'translator' => 'Beim Übersetzer',
+        'delivered'  => 'An Studenten übergeben',
+    ],
+];

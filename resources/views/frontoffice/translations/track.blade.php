@@ -1,6 +1,6 @@
 @extends('frontoffice.layouts.app')
 
-@section('title', 'Suivi de mes traductions — GLS Sprachenzentrum')
+@section('title', __('track-translation.page_title'))
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/ressource/track-translation.css') }}">
@@ -11,16 +11,16 @@
     {{-- ── HERO + SEARCH ───────────────────────────── --}}
     <section class="tt-hero">
         <div class="container tt-hero-inner">
-            <span class="tt-eyebrow"><span class="dot"></span> Portail étudiant</span>
-            <h1>Suivez vos <span class="accent">traductions Maroc&nbsp;–&nbsp;Allemagne</span></h1>
-            <p class="lead">Entrez votre numéro de CIN pour voir où en sont vos documents — du dépôt à la remise.</p>
+            <span class="tt-eyebrow"><span class="dot"></span> {{ __('track-translation.eyebrow') }}</span>
+            <h1>{{ __('track-translation.heading') }} <span class="accent">{!! __('track-translation.heading_accent') !!}</span></h1>
+            <p class="lead">{{ __('track-translation.lead') }}</p>
 
             <div class="tt-search-card mt-4">
                 <form method="GET" action="{{ route('front.translations.track') }}">
-                    <label class="form-label">Votre numéro de CIN</label>
+                    <label class="form-label">{{ __('track-translation.cin_label') }}</label>
                     <div class="input-icon mb-2">
                         <input type="text" name="cin" class="form-control text-uppercase"
-                               placeholder="AB123456"
+                               placeholder="{{ __('track-translation.cin_placeholder') }}"
                                value="{{ $cin }}"
                                autocomplete="off"
                                autofocus required>
@@ -28,10 +28,10 @@
                     </div>
                     <div class="tt-search-helper">
                         <i class="bi bi-shield-check"></i>
-                        Vos données restent confidentielles. Seules vos commandes s'affichent.
+                        {{ __('track-translation.helper_secure') }}
                     </div>
                     <button type="submit" class="tt-search-btn mt-3">
-                        <i class="bi bi-search me-1"></i> Rechercher mes commandes
+                        <i class="bi bi-search me-1"></i> {{ __('track-translation.search_btn') }}
                     </button>
                 </form>
             </div>
@@ -47,9 +47,9 @@
                 @if($orders->isEmpty())
                     <div class="tt-empty">
                         <div class="icon"><i class="bi bi-search-heart"></i></div>
-                        <h4 class="mb-2">Aucune commande trouvée</h4>
-                        <p>Aucune traduction n'est enregistrée pour le CIN <strong>{{ $cin }}</strong>.<br>
-                        Vérifiez votre saisie ou contactez l'accueil GLS.</p>
+                        <h4 class="mb-2">{{ __('track-translation.no_results_title') }}</h4>
+                        <p>{{ __('track-translation.no_results_text', ['cin' => $cin]) }}<br>
+                        {{ __('track-translation.no_results_hint') }}</p>
                     </div>
                 @else
                     @php $studentName = $orders->first()->student_name; @endphp
@@ -57,11 +57,11 @@
 
                     <div class="tt-results-head">
                         <div class="tt-results-count">
-                            {{ $orders->count() }} commande{{ $orders->count() > 1 ? 's' : '' }} trouvée{{ $orders->count() > 1 ? 's' : '' }}
+                            {{ trans_choice('track-translation.orders_found', $orders->count(), ['count' => $orders->count()]) }}
                         </div>
                         <span class="tt-student-chip">
                             <span class="avatar">{{ $initials ?: '?' }}</span>
-                            <span><span class="text-muted">Étudiant&nbsp;:</span> <strong>{{ $studentName }}</strong></span>
+                            <span><span class="text-muted">{{ __('track-translation.student') }}&nbsp;:</span> <strong>{{ $studentName }}</strong></span>
                         </span>
                     </div>
 
@@ -74,24 +74,25 @@
                                 default      => 0,
                             };
                             $statusClass = 'tt-' . $o->status;
+                            $statusLabel = __('track-translation.status.' . $o->status);
                         @endphp
 
                         <div class="tt-order">
                             {{-- Head --}}
                             <div class="tt-order-head">
                                 <div class="tt-order-meta">
-                                    <div class="tt-order-id">Commande <span class="hash">#{{ $o->id }}</span></div>
+                                    <div class="tt-order-id">{{ __('track-translation.order_label') }} <span class="hash">#{{ $o->id }}</span></div>
                                     <div class="tt-order-sub">
-                                        <span><i class="bi bi-files"></i>{{ $o->items->count() }} document{{ $o->items->count() > 1 ? 's' : '' }}</span>
-                                        <span class="dot-sep"><i class="bi bi-file-earmark-text"></i>{{ $o->totalPages() }} page{{ $o->totalPages() > 1 ? 's' : '' }}</span>
+                                        <span><i class="bi bi-files"></i>{{ trans_choice('track-translation.documents', $o->items->count(), ['count' => $o->items->count()]) }}</span>
+                                        <span class="dot-sep"><i class="bi bi-file-earmark-text"></i>{{ trans_choice('track-translation.pages', $o->totalPages(), ['count' => $o->totalPages()]) }}</span>
                                         @if($o->date_received)
-                                            <span class="dot-sep"><i class="bi bi-calendar2-event"></i>Déposé le {{ $o->date_received->format('d/m/Y') }}</span>
+                                            <span class="dot-sep"><i class="bi bi-calendar2-event"></i>{{ __('track-translation.deposited_on', ['date' => $o->date_received->format('d/m/Y')]) }}</span>
                                         @endif
                                     </div>
                                 </div>
 
                                 <span class="tt-status-pill {{ $statusClass }}">
-                                    <span class="dot"></span> {{ $o->statusLabel() }}
+                                    <span class="dot"></span> {{ $statusLabel }}
                                 </span>
                             </div>
 
@@ -104,7 +105,7 @@
                                                 <span class="tt-item-icon"><i class="bi bi-file-earmark-text"></i></span>
                                                 <div>
                                                     <div class="tt-item-name">{{ $it->doc_type }}</div>
-                                                    <div class="tt-item-meta">{{ $it->page_count }} page{{ $it->page_count > 1 ? 's' : '' }}</div>
+                                                    <div class="tt-item-meta">{{ trans_choice('track-translation.page_count', $it->page_count, ['count' => $it->page_count]) }}</div>
                                                 </div>
                                             </div>
                                             <div class="tt-item-price">{{ number_format($it->line_total, 0, ',', ' ') }} DH</div>
@@ -113,7 +114,7 @@
                                 </div>
 
                                 <div class="tt-total">
-                                    <span class="tt-total-label">Total commande</span>
+                                    <span class="tt-total-label">{{ __('track-translation.total_label') }}</span>
                                     <span class="tt-total-val">{{ number_format($o->total_cost, 0, ',', ' ') }} DH</span>
                                 </div>
                             @endif
@@ -126,7 +127,7 @@
                                         @else <i class="bi bi-inbox"></i>
                                         @endif
                                     </span>
-                                    <span class="tt-step-label">Reçu (GLS)</span>
+                                    <span class="tt-step-label">{{ __('track-translation.step_received') }}</span>
                                 </div>
                                 <div class="tt-step-line {{ $stepIdx >= 2 ? 'done' : '' }}"></div>
 
@@ -136,7 +137,7 @@
                                         @else <i class="bi bi-translate"></i>
                                         @endif
                                     </span>
-                                    <span class="tt-step-label">Chez Traducteur</span>
+                                    <span class="tt-step-label">{{ __('track-translation.step_translator') }}</span>
                                 </div>
                                 <div class="tt-step-line {{ $stepIdx >= 3 ? 'done' : '' }}"></div>
 
@@ -146,14 +147,14 @@
                                         @else <i class="bi bi-bag-check"></i>
                                         @endif
                                     </span>
-                                    <span class="tt-step-label">Rendu</span>
+                                    <span class="tt-step-label">{{ __('track-translation.step_delivered') }}</span>
                                 </div>
                             </div>
 
                             @if($o->status === 'delivered' && $o->date_handed_over)
                                 <div class="tt-delivered-banner">
                                     <i class="bi bi-check-circle-fill"></i>
-                                    Documents remis à l'étudiant le {{ $o->date_handed_over->format('d/m/Y') }}
+                                    {{ __('track-translation.delivered_banner', ['date' => $o->date_handed_over->format('d/m/Y')]) }}
                                 </div>
                             @endif
                         </div>
