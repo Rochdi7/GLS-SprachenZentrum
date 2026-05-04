@@ -794,7 +794,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                         <i class="bi bi-shield-lock-fill"></i>
                         {{ __('home.student_services.foot_text') }}
                     </span>
-                    <span class="ssn-locale">{{ strtoupper(app()->getLocale()) }} · MA – DE</span>
+                    <span class="ssn-locale">MA</span>
                 </div>
             </div>
         </section>
