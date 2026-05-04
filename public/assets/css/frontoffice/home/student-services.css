@@ -540,9 +540,50 @@
 }
 @media (max-width: 600px) {
     .ssn-inner { padding: 0 22px; }
-    .ssn-feature { padding: 28px 24px; }
+    .ssn-feature { padding: 24px 22px 22px; }
+    .ssn-feature-title { font-size: 1.35rem; margin-bottom: 10px; }
+    .ssn-feature-desc { font-size: .9rem; margin-bottom: 18px; }
+    .ssn-feature-tag { margin-bottom: 14px; }
+    .ssn-preview { padding: 14px 16px; margin-bottom: 18px; }
+    .ssn-feature-cta { padding: 12px 18px 12px 22px; font-size: .9rem; }
     .ssn-item { grid-template-columns: 56px 1fr auto; gap: 14px; padding: 22px 2px; }
     .ssn-num { font-size: 1.8rem; }
     .ssn-item-title { font-size: 1.05rem; }
     .ssn-arrow { width: 36px; height: 36px; }
+
+    /* Stack the 3 attestation steps on mobile */
+    .ssn-att-flow {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+    .ssn-att-step {
+        padding: 10px 12px;
+        font-size: .82rem;
+    }
+}
+
+/* On mobile (<=992px) the variants are stacked one under the other  */
+@media (max-width: 992px) {
+    .ssn-feature-stack {
+        min-height: 0;
+        position: static;
+    }
+    .ssn-variant {
+        position: relative;
+        inset: auto;
+        opacity: 1;
+        pointer-events: auto;
+        transform: none;
+        filter: none;
+        margin-bottom: 18px;
+    }
+    /* On mobile show only the active one (autoplay handles it) */
+    .ssn-body[data-state="track"] .ssn-variant--cert,
+    .ssn-body[data-state="track"] .ssn-variant--att,
+    .ssn-body[data-state="cert"]  .ssn-variant--track,
+    .ssn-body[data-state="cert"]  .ssn-variant--att,
+    .ssn-body[data-state="att"]   .ssn-variant--track,
+    .ssn-body[data-state="att"]   .ssn-variant--cert {
+        display: none;
+    }
 }

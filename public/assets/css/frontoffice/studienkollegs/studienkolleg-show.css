@@ -90,6 +90,8 @@ body { background: var(--sk-bg) !important; color: var(--sk-text); }
     margin: 0 0 18px;
     max-width: 22ch;
     letter-spacing: -.015em;
+    color: #fff;
+    text-shadow: 0 2px 18px rgba(0,0,0,.55);
 }
 .hero-specs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
 .hero-spec {
