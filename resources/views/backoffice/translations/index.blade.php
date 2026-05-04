@@ -74,12 +74,6 @@
                         </a>
                     </form>
 
-                    @can('translations.view')
-                    <a href="{{ route('backoffice.translations.export') }}" class="btn btn-sm btn-success text-nowrap">
-                        <i class="ti ti-file-spreadsheet"></i> Export CSV
-                    </a>
-                    @endcan
-
                     @can('translations.create')
                     <button type="button" class="btn btn-sm btn-primary text-nowrap"
                             data-bs-toggle="modal" data-bs-target="#createTranslationModal">

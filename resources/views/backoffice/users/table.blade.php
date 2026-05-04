@@ -40,7 +40,18 @@
                         @endphp
 
                         @if(!$primary && $extras->isEmpty())
-                            <span class="text-muted">—</span>
+                            @php
+                                $isAdminRole = $user->hasAnyRole(['Super Admin', 'Admin']);
+                            @endphp
+                            @if($isAdminRole)
+                                <span class="badge bg-light-secondary" title="Rôle global, pas besoin de centre">
+                                    <i class="ti ti-globe"></i> Global
+                                </span>
+                            @else
+                                <span class="badge bg-light-warning" title="Aucun centre — l'utilisateur ne peut accéder à aucune donnée">
+                                    <i class="ti ti-alert-triangle"></i> Aucun centre
+                                </span>
+                            @endif
                         @else
                             <div class="d-flex flex-wrap gap-1">
                                 @if($primary)

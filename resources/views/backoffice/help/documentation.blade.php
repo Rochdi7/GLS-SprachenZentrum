@@ -178,6 +178,64 @@
             font-weight: 700;
         }
 
+        /* ── QUICK-JUMP TAG BAR ────────────────────────── */
+        .doc-tagbar {
+            position: sticky;
+            top: 70px;
+            z-index: 30;
+            margin: 24px 0 8px;
+            padding: 16px 20px;
+            background: rgba(255,255,255,.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid #e7ecf3;
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(18,38,63,.06);
+        }
+        .doc-tagbar__label {
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: #5c6b82;
+            margin-bottom: 10px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .doc-tagbar__label i { color: #0b72c7; font-size: 1rem; }
+        .doc-tagbar__list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .doc-tag {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 14px;
+            background: #f4f8fd;
+            border: 1px solid #e3ebf5;
+            border-radius: 999px;
+            color: #233044;
+            font-size: .85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all .2s ease;
+            white-space: nowrap;
+        }
+        .doc-tag i { font-size: 1rem; }
+        .doc-tag:hover {
+            background: #233044;
+            border-color: #233044;
+            color: #fff;
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+        .doc-tag--blue   { background: #eaf5ff; border-color: #cfe5ff; color: #0b72c7; }
+        .doc-tag--green  { background: #e6f7ec; border-color: #c3ebcf; color: #0f8a58; }
+        .doc-tag--purple { background: #f1ebff; border-color: #ddcfff; color: #6d44d8; }
+        .doc-tag--pink   { background: #ffe9f1; border-color: #ffc6da; color: #c01e69; }
+        .doc-tag--orange { background: #fff1e0; border-color: #ffd9b3; color: #c8651a; }
+        .doc-tag--gold   { background: #fff7d6; border-color: #ffe8a3; color: #8a6d00; }
+        .doc-tag--red    { background: #fde7e9; border-color: #f6c0c4; color: #b3252f; }
+
+        .doc-hero__title[id],
+        .doc-card__title[id],
+        .doc-card[id] { scroll-margin-top: 160px; }
+
         .doc-workflow {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -249,6 +307,7 @@
                 padding: 24px;
             }
 
+            .doc-tagbar { padding: 14px 16px; }
             .doc-hero__title {
                 font-size: 1.6rem;
             }
@@ -298,6 +357,36 @@
                     </div>
                 </div>
             </section>
+        </div>
+    </div>
+
+    {{-- ── QUICK-JUMP TAG BAR ───────────────────────────── --}}
+    <div class="row">
+        <div class="col-12">
+            <div class="doc-tagbar">
+                <div class="doc-tagbar__label">
+                    <i class="ph-duotone ph-bookmark-simple"></i>
+                    Acces rapide aux modules
+                </div>
+                <div class="doc-tagbar__list">
+                    <a href="#doc-school" class="doc-tag doc-tag--blue"><i class="ph-duotone ph-buildings"></i> Gestion ecole</a>
+                    <a href="#doc-translations" class="doc-tag doc-tag--red"><i class="ph-duotone ph-translate"></i> Traductions</a>
+                    <a href="#doc-attestation-requests" class="doc-tag doc-tag--gold"><i class="ph-duotone ph-mail-forward"></i> Demandes attestation</a>
+                    <a href="#doc-attestations" class="doc-tag doc-tag--green"><i class="ph-duotone ph-file-text"></i> Attestations</a>
+                    <a href="#doc-certificates" class="doc-tag doc-tag--purple"><i class="ph-duotone ph-certificate"></i> Certificats</a>
+                    <a href="#doc-studienkollegs" class="doc-tag doc-tag--orange"><i class="ph-duotone ph-graduation-cap"></i> Studienkollegs</a>
+                    <a href="#doc-quizzes" class="doc-tag doc-tag--pink"><i class="ph-duotone ph-question"></i> Quizzes</a>
+                    <a href="#doc-blog" class="doc-tag doc-tag--blue"><i class="ph-duotone ph-newspaper"></i> Blog</a>
+                    <a href="#doc-leads" class="doc-tag doc-tag--pink"><i class="ph-duotone ph-address-book"></i> Leads &amp; Applications</a>
+                    <a href="#doc-newsletter" class="doc-tag"><i class="ph-duotone ph-envelope"></i> Newsletter</a>
+                    <a href="#doc-crm" class="doc-tag doc-tag--green"><i class="ph-duotone ph-wallet"></i> Suivi paiement</a>
+                    <a href="#doc-presence" class="doc-tag doc-tag--purple"><i class="ph-duotone ph-user-check"></i> Paiement profs</a>
+                    <a href="#doc-whatsapp" class="doc-tag doc-tag--green"><i class="ph-duotone ph-whatsapp-logo"></i> WhatsApp</a>
+                    <a href="#doc-planning" class="doc-tag doc-tag--blue"><i class="ph-duotone ph-calendar"></i> Planning</a>
+                    <a href="#doc-rapport" class="doc-tag doc-tag--blue"><i class="ph-duotone ph-clipboard-text"></i> Rapport semaine</a>
+                    <a href="#doc-users" class="doc-tag"><i class="ph-duotone ph-user-gear"></i> Utilisateurs &amp; Roles</a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -525,7 +614,7 @@
                             <i class="ph-duotone ph-wallet"></i>
                             Module Suivi Paiement
                         </div>
-                        <h2 class="doc-hero__title">Suivi Paiement — Import CRM</h2>
+                        <h2 id="doc-crm" class="doc-hero__title">Suivi Paiement — Import CRM</h2>
                         <p class="doc-hero__text">
                             Ce module permet de suivre les paiements des etudiants vers GLS. Il importe les fichiers Excel du CRM
                             contenant les montants payes par chaque etudiant chaque mois, et analyse leur cycle de vie
@@ -702,7 +791,7 @@
                             <i class="ph-duotone ph-user-check"></i>
                             Module Paiement Professeurs
                         </div>
-                        <h2 class="doc-hero__title">Paiement Professeurs — Import Presence</h2>
+                        <h2 id="doc-presence" class="doc-hero__title">Paiement Professeurs — Import Presence</h2>
                         <p class="doc-hero__text">
                             Ce module calcule automatiquement le salaire du professeur en se basant sur la presence des etudiants.
                             Chaque etudiant est classe dans une categorie (Complet, 3/4, 1/2, 1/4, Zero) selon le nombre de semaines
@@ -1132,7 +1221,7 @@
                             <i class="ph-duotone ph-whatsapp-logo"></i>
                             Module Communication
                         </div>
-                        <h2 class="doc-hero__title">Campagnes WhatsApp — Envois massifs</h2>
+                        <h2 id="doc-whatsapp" class="doc-hero__title">Campagnes WhatsApp — Envois massifs</h2>
                         <p class="doc-hero__text">
                             Ce module permet d'envoyer un meme message WhatsApp (texte + piece jointe optionnelle) a une liste
                             de numeros. Les envois se font depuis un poste Windows sur lequel WhatsApp Desktop est ouvert et
@@ -1301,7 +1390,7 @@
                             <i class="ph-duotone ph-clock"></i>
                             Module RH / Planning
                         </div>
-                        <h2 class="doc-hero__title">Mon planning — Semaine</h2>
+                        <h2 id="doc-planning" class="doc-hero__title">Mon planning — Semaine</h2>
                         <p class="doc-hero__text">
                             Cette page permet de saisir les horaires de travail (debut / fin / pause) pour chaque jour de la
                             semaine. Le temps travaille est calcule <strong>en temps reel</strong> au fur et a mesure de la saisie,
@@ -1390,7 +1479,7 @@
                             <i class="ph-duotone ph-calendar-check"></i>
                             Module Pilotage
                         </div>
-                        <h2 class="doc-hero__title">Rapport Semaine — Enseignants</h2>
+                        <h2 id="doc-rapport" class="doc-hero__title">Rapport Semaine — Enseignants</h2>
                         <p class="doc-hero__text">
                             Cette page sert de carnet de bord : pour chaque jour de la semaine, on note ce que chaque enseignant
                             a fait (cours, intervention, absence justifiee, etc.). La vue semaine offre un calendrier lundi-vendredi
@@ -1523,6 +1612,306 @@
                         </ul>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- =========================================================
+         TRADUCTIONS — Maroc / Allemagne
+         ========================================================= --}}
+    <div class="doc-section">
+        <div class="row g-4">
+            <div class="col-12">
+                <section class="doc-hero" style="background: radial-gradient(circle at top right, rgba(210,39,48,0.16), transparent 28%), linear-gradient(135deg, #ffffff 0%, #fff5f5 55%, #fffbe8 100%);">
+                    <div class="doc-hero__body">
+                        <div class="doc-eyebrow" style="background:#fde7e9;color:#b3252f;">
+                            <i class="ph-duotone ph-translate"></i>
+                            Module Traductions
+                        </div>
+                        <h2 id="doc-translations" class="doc-hero__title">Traductions — Suivi Maroc / Allemagne</h2>
+                        <p class="doc-hero__text">
+                            Gerer les commandes de traduction des etudiants. Une commande = un etudiant (CIN unique) avec plusieurs documents,
+                            chacun ayant son nombre de pages et son prix. Le total est calcule automatiquement.
+                        </p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <div class="doc-section">
+        <div class="doc-grid-2">
+            <div class="doc-card">
+                <div class="doc-card__header">
+                    <div class="doc-card__icon bg-doc-blue"><i class="ph-duotone ph-list-bullets"></i></div>
+                    <h5 class="doc-card__title">Operations principales</h5>
+                </div>
+                <div class="doc-card__body">
+                    <ul class="doc-list">
+                        <li><strong>Nouvelle commande :</strong> bouton en haut → modale → saisir CIN, nom, telephone, puis ajouter chaque document avec pages + prix par page.</li>
+                        <li><strong>Modifier :</strong> icone crayon sur la ligne → modale d'edition. Ajouter/supprimer des lignes de documents en direct.</li>
+                        <li><strong>Statut (1 clic) :</strong> bouton statut cycle Recu (GLS) → Chez Traducteur → Rendu a l'etudiant.</li>
+                        <li><strong>Date de remise :</strong> input de date sur la ligne, change a la volee.</li>
+                        <li><strong>Filtres :</strong> recherche libre (CIN, nom, document) + filtre par statut + total filtre affiche en bas.</li>
+                        <li><strong>Export CSV :</strong> bouton vert, une ligne par document (ouvre Excel).</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="doc-card">
+                <div class="doc-card__header">
+                    <div class="doc-card__icon bg-doc-green"><i class="ph-duotone ph-globe"></i></div>
+                    <h5 class="doc-card__title">Cote etudiant (frontoffice)</h5>
+                </div>
+                <div class="doc-card__body">
+                    <ul class="doc-list">
+                        <li><strong>URL publique :</strong> <code>/traductions/suivi</code> — l'etudiant entre son CIN.</li>
+                        <li>Affiche toutes ses commandes avec leurs documents, prix et timeline (Recu → Traducteur → Rendu).</li>
+                        <li>Etapes deja franchies en vert, etape actuelle en bleu pulse, prochaines etapes en gris.</li>
+                        <li>Total de la commande affiche en vert quand le statut est rendu.</li>
+                        <li>Aucune authentification — la confidentialite est garantie par le CIN unique.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- =========================================================
+         DEMANDES D'ATTESTATION — public form
+         ========================================================= --}}
+    <div class="doc-section">
+        <div class="row g-4">
+            <div class="col-12">
+                <section class="doc-hero" style="background: radial-gradient(circle at top right, rgba(245,180,10,0.18), transparent 28%), linear-gradient(135deg, #ffffff 0%, #fffbeb 55%, #fffbe8 100%);">
+                    <div class="doc-hero__body">
+                        <div class="doc-eyebrow" style="background:#fff7d6;color:#8a6d00;">
+                            <i class="ph-duotone ph-mail-forward"></i>
+                            Module Demandes d'attestation
+                        </div>
+                        <h2 id="doc-attestation-requests" class="doc-hero__title">Demandes d'attestation — Soumissions publiques</h2>
+                        <p class="doc-hero__text">
+                            Les anciens etudiants soumettent leur demande d'attestation depuis le site public. Ce module liste toutes les demandes
+                            recues, permet de les valider (et generer une attestation) ou de les refuser avec motif (envoye par email).
+                        </p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <div class="doc-section">
+        <div class="doc-grid-2">
+            <div class="doc-card">
+                <div class="doc-card__header">
+                    <div class="doc-card__icon bg-doc-orange"><i class="ph-duotone ph-list-checks"></i></div>
+                    <h5 class="doc-card__title">Workflow de traitement</h5>
+                </div>
+                <div class="doc-card__body">
+                    <ul class="doc-list">
+                        <li><strong>1. Liste :</strong> 3 onglets — En attente / Acceptees / Refusees + compteurs.</li>
+                        <li><strong>2. Voir le detail :</strong> icone oeil → page detail avec les infos saisies par l'etudiant.</li>
+                        <li><strong>3. Accepter :</strong> redirige vers le formulaire de creation d'attestation pre-rempli avec les donnees de la demande. Email automatique a l'etudiant.</li>
+                        <li><strong>4. Refuser :</strong> motif obligatoire (min. 5 caracteres) → email automatique avec le motif a l'etudiant.</li>
+                        <li><strong>5. Supprimer :</strong> icone poubelle si la demande est invalide.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="doc-card">
+                <div class="doc-card__header">
+                    <div class="doc-card__icon bg-doc-blue"><i class="ph-duotone ph-globe"></i></div>
+                    <h5 class="doc-card__title">Cote etudiant (frontoffice)</h5>
+                </div>
+                <div class="doc-card__body">
+                    <ul class="doc-list">
+                        <li><strong>URL publique :</strong> <code>/demande-attestation</code></li>
+                        <li>Formulaire en ligne : nom, prenom, email, telephone, date/lieu de naissance, groupe, niveau, notes.</li>
+                        <li>Apres envoi : page de remerciement + email a l'equipe GLS.</li>
+                        <li>L'etudiant recoit un email a chaque etape (recue / acceptee / refusee).</li>
+                        <li>Lien dans le footer du site et dans la dropdown "Ressources" du header public.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- =========================================================
+         GESTION ECOLE — Sites / Teachers / Groups / Certificates / Attestations
+         ========================================================= --}}
+    <div class="doc-section">
+        <div class="row g-4">
+            <div class="col-12">
+                <section class="doc-hero" style="background: radial-gradient(circle at top right, rgba(11,114,199,0.15), transparent 28%), linear-gradient(135deg, #ffffff 0%, #f4f8fd 100%);">
+                    <div class="doc-hero__body">
+                        <div class="doc-eyebrow"><i class="ph-duotone ph-buildings"></i> Gestion ecole</div>
+                        <h2 id="doc-school" class="doc-hero__title">Centres, Enseignants, Groupes</h2>
+                        <p class="doc-hero__text">
+                            Le coeur operationnel : creer et tenir a jour les centres GLS, les enseignants, les groupes de cours
+                            et les documents administratifs (certificats, attestations).
+                        </p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <div class="doc-section">
+        <div class="doc-grid-3">
+            <div class="doc-card">
+                <div class="doc-card__header">
+                    <div class="doc-card__icon bg-doc-blue"><i class="ph-duotone ph-buildings"></i></div>
+                    <h5 class="doc-card__title">Centres GLS</h5>
+                </div>
+                <div class="doc-card__body">
+                    <ul class="doc-list">
+                        <li>Creer / modifier les centres (Casablanca, Marrakech, etc.).</li>
+                        <li>Renseigner adresse, contact, image, slug, visibilite.</li>
+                        <li>Le slug est utilise dans les URLs publiques.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="doc-card">
+                <div class="doc-card__header">
+                    <div class="doc-card__icon bg-doc-green"><i class="ph-duotone ph-chalkboard-teacher"></i></div>
+                    <h5 class="doc-card__title">Enseignants</h5>
+                </div>
+                <div class="doc-card__body">
+                    <ul class="doc-list">
+                        <li>Profils des profs : nom, photo, centre principal, langues, certifications.</li>
+                        <li>Le profil est lie aux groupes via le champ enseignant.</li>
+                        <li>Les rapports semaine sont signes par un enseignant.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="doc-card">
+                <div class="doc-card__header">
+                    <div class="doc-card__icon bg-doc-purple"><i class="ph-duotone ph-users-three"></i></div>
+                    <h5 class="doc-card__title">Groupes</h5>
+                </div>
+                <div class="doc-card__body">
+                    <ul class="doc-list">
+                        <li>Creer un groupe : niveau (A1/A2/B1/B2/C1), centre, enseignant, plage horaire.</li>
+                        <li>Periode auto-detectee depuis <code>time_range</code> (matin / soir / etc.).</li>
+                        <li>Une candidature (Application) se rattache toujours a un groupe.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="doc-card">
+                <div class="doc-card__header">
+                    <div class="doc-card__icon bg-doc-pink"><i class="ph-duotone ph-certificate"></i></div>
+                    <h5 class="doc-card__title" id="doc-certificates">Certificats</h5>
+                </div>
+                <div class="doc-card__body">
+                    <ul class="doc-list">
+                        <li>Creer un certificat : nom etudiant, niveau, date examen, date emission.</li>
+                        <li>Numero unique <code>GLS-XXXX</code> + token public + QR code.</li>
+                        <li>Telechargement PDF, verification publique sur <code>/certificate-check</code>.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="doc-card">
+                <div class="doc-card__header">
+                    <div class="doc-card__icon bg-doc-green"><i class="ph-duotone ph-file-text"></i></div>
+                    <h5 class="doc-card__title" id="doc-attestations">Attestations</h5>
+                </div>
+                <div class="doc-card__body">
+                    <ul class="doc-list">
+                        <li>Attestations de participation (suivi de cours en cours ou termine).</li>
+                        <li>Bilingue allemand / francais. Lien direct depuis "Demandes d'attestation".</li>
+                        <li>Methodologie pedagogique editable (champ riche).</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="doc-card">
+                <div class="doc-card__header">
+                    <div class="doc-card__icon bg-doc-orange"><i class="ph-duotone ph-graduation-cap"></i></div>
+                    <h5 class="doc-card__title" id="doc-studienkollegs">Studienkollegs</h5>
+                </div>
+                <div class="doc-card__body">
+                    <ul class="doc-list">
+                        <li>Catalogue des Studienkollegs allemands : ville, universite, niveau de langue, deadlines.</li>
+                        <li>Chaque fiche : hero image, requirements, documents, courses, contact, lien d'application.</li>
+                        <li>La page detail publique calcule automatiquement les jours restants avant la prochaine deadline.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- =========================================================
+         QUIZZES + BLOG + LEADS
+         ========================================================= --}}
+    <div class="doc-section">
+        <div class="doc-grid-2">
+            <div class="doc-card" id="doc-quizzes">
+                <div class="doc-card__header">
+                    <div class="doc-card__icon bg-doc-pink"><i class="ph-duotone ph-question"></i></div>
+                    <h5 class="doc-card__title">Quizzes (QCM de niveau)</h5>
+                </div>
+                <div class="doc-card__body">
+                    <ul class="doc-list">
+                        <li>Creer un quiz, ajouter des questions, chaque question a plusieurs options.</li>
+                        <li>Attache un niveau cible — le score determine le niveau de l'etudiant.</li>
+                        <li>Utilise dans la page "Decouvrez votre niveau" du site public.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="doc-card" id="doc-blog">
+                <div class="doc-card__header">
+                    <div class="doc-card__icon bg-doc-blue"><i class="ph-duotone ph-newspaper"></i></div>
+                    <h5 class="doc-card__title">Blog (Categories &amp; Articles)</h5>
+                </div>
+                <div class="doc-card__body">
+                    <ul class="doc-list">
+                        <li><strong>Toujours</strong> creer la categorie avant l'article.</li>
+                        <li>Article : titre, slug, image, contenu riche, statut (publie / brouillon).</li>
+                        <li>Mots-cles SEO et meta description pour le referencement.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="doc-card" id="doc-leads">
+                <div class="doc-card__header">
+                    <div class="doc-card__icon bg-doc-orange"><i class="ph-duotone ph-address-book"></i></div>
+                    <h5 class="doc-card__title">Leads &amp; Applications</h5>
+                </div>
+                <div class="doc-card__body">
+                    <ul class="doc-list">
+                        <li><strong>Leads :</strong> consultations, inscriptions GLS, contacts entrants. Liste, filtres, suppression doublons.</li>
+                        <li><strong>Applications :</strong> candidatures rattachees a un groupe — accepter, refuser, modifier.</li>
+                        <li><strong>Stats leads :</strong> volume entrant, conversion, sources.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="doc-card" id="doc-newsletter">
+                <div class="doc-card__header">
+                    <div class="doc-card__icon bg-doc-green"><i class="ph-duotone ph-envelope"></i></div>
+                    <h5 class="doc-card__title">Newsletter</h5>
+                </div>
+                <div class="doc-card__body">
+                    <ul class="doc-list">
+                        <li>Liste des abonnes a la newsletter (formulaire footer du site public).</li>
+                        <li>Visualiser, filtrer, supprimer les abonnes.</li>
+                        <li>Pas d'envoi de newsletter integre — exporter et utiliser un outil externe.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- =========================================================
+         ADMINISTRATION — Users + Roles
+         ========================================================= --}}
+    <div class="doc-section">
+        <div class="doc-card" id="doc-users">
+            <div class="doc-card__header">
+                <div class="doc-card__icon bg-doc-purple"><i class="ph-duotone ph-user-gear"></i></div>
+                <h5 class="doc-card__title">Utilisateurs &amp; Roles</h5>
+            </div>
+            <div class="doc-card__body">
+                <ul class="doc-list">
+                    <li><strong>Utilisateurs :</strong> creer, modifier, attribuer un role et un ou plusieurs centres.</li>
+                    <li><strong>Roles disponibles :</strong> Super Admin (tout), Admin (sauf gestion utilisateurs/roles), Reception (operations centre, pas de suppression, pas de RH/comptes).</li>
+                    <li><strong>Permissions :</strong> CRUD par module — voir, creer, editer, supprimer. Editables sur la page <code>/backoffice/roles</code>.</li>
+                    <li><strong>Affectation centre obligatoire :</strong> les comptes non-admin sans centre attribue voient la page "Acces limite" et n'ont acces a aucune donnee.</li>
+                </ul>
             </div>
         </div>
     </div>

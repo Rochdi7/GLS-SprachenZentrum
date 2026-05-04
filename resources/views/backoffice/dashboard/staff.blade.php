@@ -97,6 +97,50 @@
         </div>
     </div>
 
+    {{-- Demandes d'attestation --}}
+    <div class="col-sm-6 col-xl-3">
+        <a href="{{ route('backoffice.attestation_requests.index') }}" class="text-decoration-none">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <p class="text-muted small text-uppercase mb-1">Demandes d'attestation</p>
+                    <i class="ti ti-mail-forward text-warning f-22"></i>
+                </div>
+                <h4 class="mb-0 text-dark">{{ $attestationRequestsTotal }}</h4>
+                <small class="text-warning fw-semibold">
+                    @if($attestationRequestsPending > 0)
+                        <i class="ti ti-bell"></i> {{ $attestationRequestsPending }} en attente
+                    @else
+                        <span class="text-muted">Aucune en attente</span>
+                    @endif
+                </small>
+            </div>
+        </div>
+        </a>
+    </div>
+
+    {{-- Traductions Maroc–Allemagne --}}
+    <div class="col-sm-6 col-xl-3">
+        <a href="{{ route('backoffice.translations.index') }}" class="text-decoration-none">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <p class="text-muted small text-uppercase mb-1">Traductions</p>
+                    <i class="ti ti-language text-danger f-22"></i>
+                </div>
+                <h4 class="mb-0 text-dark">{{ $translationsTotal }}</h4>
+                <small class="text-danger fw-semibold">
+                    @if($translationsActive > 0)
+                        <i class="ti ti-progress"></i> {{ $translationsActive }} en cours
+                    @else
+                        <span class="text-muted">Aucune en cours</span>
+                    @endif
+                </small>
+            </div>
+        </div>
+        </a>
+    </div>
+
     <div class="col-sm-6 col-xl-3">
         <div class="card h-100">
             <div class="card-body">
@@ -122,9 +166,13 @@
     </div>
     <div class="card-body p-0">
         @if($levelFollowupsDue->isEmpty())
-            <div class="p-4 text-center text-muted">
-                <i class="ti ti-check-circle f-22 text-success mb-2 d-block"></i>
-                Aucun rappel en retard. 🎉
+            <div class="d-flex flex-column align-items-center justify-content-center text-center py-5 px-3">
+                <span class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                      style="width:60px;height:60px;background:#e6f7ec;color:#198754;">
+                    <i class="ti ti-circle-check f-22"></i>
+                </span>
+                <h6 class="mb-1">Tout est à jour</h6>
+                <small class="text-muted">Aucun rappel de suivi de niveau en attente.</small>
             </div>
         @else
             <div class="table-responsive">
@@ -149,9 +197,6 @@
                                     <span class="badge {{ $isLate ? 'bg-danger' : 'bg-warning' }}">
                                         {{ $f->due_date?->format('d/m/Y') }}
                                     </span>
-                                    @if($isLate)
-                                        <small class="text-danger d-block">en retard</small>
-                                    @endif
                                 </td>
                                 <td>{{ $f->group?->name ?? '—' }}</td>
                                 <td><span class="badge bg-light-primary">{{ $f->level }}</span></td>
@@ -190,26 +235,40 @@
             </div>
             <div class="card-body p-0">
                 @if($myWeek->isEmpty())
-                    <div class="p-3 text-muted">Aucune entrée pour cette semaine.</div>
+                    <div class="d-flex flex-column align-items-center justify-content-center text-center py-5 px-3">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                              style="width:60px;height:60px;background:#e7f1ff;color:#0d6efd;">
+                            <i class="ti ti-calendar-off f-22"></i>
+                        </span>
+                        <h6 class="mb-1">Aucune entrée cette semaine</h6>
+                        <small class="text-muted">Votre planning sera affiché ici dès qu'il sera saisi.</small>
+                    </div>
                 @else
                     <div class="table-responsive">
-                        <table class="table table-sm mb-0">
-                            <thead>
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
                                 <tr>
-                                    <th>Jour</th>
+                                    <th class="ps-3">Jour</th>
                                     <th>Heures</th>
-                                    <th class="text-end">Travaillé</th>
+                                    <th class="text-end pe-3">Travaillé</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($myWeek as $s)
                                     <tr>
-                                        <td>{{ $s->date->locale('fr')->isoFormat('ddd DD/MM') }}</td>
-                                        <td>
-                                            {{ \Illuminate\Support\Str::of($s->start_time)->limit(5,'') }}
-                                            – {{ \Illuminate\Support\Str::of($s->end_time)->limit(5,'') }}
+                                        <td class="ps-3 fw-semibold text-capitalize">
+                                            {{ $s->date->locale('fr')->isoFormat('ddd DD/MM') }}
                                         </td>
-                                        <td class="text-end">{{ $fmtMinutes($s->worked_minutes) }}</td>
+                                        <td>
+                                            <span class="badge bg-light-secondary text-dark">
+                                                <i class="ti ti-clock"></i>
+                                                {{ \Illuminate\Support\Str::of($s->start_time)->limit(5,'') }}
+                                                – {{ \Illuminate\Support\Str::of($s->end_time)->limit(5,'') }}
+                                            </span>
+                                        </td>
+                                        <td class="text-end pe-3 fw-bold text-primary">
+                                            {{ $fmtMinutes($s->worked_minutes) }}
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -231,26 +290,38 @@
             </div>
             <div class="card-body p-0">
                 @if($weeklyReports->isEmpty())
-                    <div class="p-3 text-muted">Aucun rapport pour cette semaine.</div>
+                    <div class="d-flex flex-column align-items-center justify-content-center text-center py-5 px-3">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                              style="width:60px;height:60px;background:#fff4e5;color:#a06700;">
+                            <i class="ti ti-file-off f-22"></i>
+                        </span>
+                        <h6 class="mb-1">Aucun rapport déposé</h6>
+                        <small class="text-muted">Les rapports hebdomadaires des enseignants apparaîtront ici.</small>
+                    </div>
                 @else
                     <div class="table-responsive">
-                        <table class="table table-sm mb-0">
-                            <thead>
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
                                 <tr>
-                                    <th>Date</th>
+                                    <th class="ps-3" style="width:90px">Date</th>
                                     <th>Enseignant</th>
                                     <th>Groupe</th>
-                                    <th>Centre</th>
+                                    <th class="pe-3">Centre</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($weeklyReports as $r)
                                     <tr>
-                                        <td class="text-nowrap">{{ $r->report_date->format('d/m') }}</td>
-                                        <td class="text-nowrap">{{ $r->teacher?->name ?? '—' }}</td>
-                                        <td>{{ $r->group?->name ?? '—' }}</td>
-                                        <td>
-                                            <span class="badge bg-light-info text-wrap" style="white-space: normal;">
+                                        <td class="ps-3">
+                                            <span class="badge bg-light-primary text-dark">
+                                                {{ $r->report_date->format('d/m') }}
+                                            </span>
+                                        </td>
+                                        <td class="text-nowrap fw-semibold">{{ $r->teacher?->name ?? '—' }}</td>
+                                        <td class="text-muted">{{ $r->group?->name ?? '—' }}</td>
+                                        <td class="pe-3">
+                                            <span class="badge bg-light-info text-dark">
+                                                <i class="ti ti-building"></i>
                                                 {{ $r->teacher?->site?->name ?? '—' }}
                                             </span>
                                         </td>

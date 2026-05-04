@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Backoffice;
 use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Models\Attestation;
+use App\Models\AttestationRequest;
 use App\Models\Certificate;
 use App\Models\Group;
 use App\Models\GroupLevelFollowup;
 use App\Models\Teacher;
+use App\Models\Translation;
 use App\Models\UserSchedule;
 use App\Models\WeeklyReport;
 use Carbon\Carbon;
@@ -30,6 +32,11 @@ class StaffDashboardController extends Controller
         $user = $request->user();
         $accessibleSites = $this->accessibleSites($user);
         $allowedSiteIds = $this->accessibleSiteIds($user); // null = all centres
+
+        // Hard gate: non-admin users with NO centre assignment can't see data.
+        if (! $this->userSeesAllSites($user) && empty($allowedSiteIds)) {
+            return view('backoffice.dashboard.staff_no_site');
+        }
 
         // Optional centre picker (must be in accessible list)
         $requested = $request->filled('site_id') ? (int) $request->site_id : null;
@@ -67,6 +74,14 @@ class StaffDashboardController extends Controller
         }
         $attestationsTotal     = $attestationsQuery->count();
         $attestationsThisMonth = $attestationsThisMonthQuery->count();
+
+        // Attestation requests (public form submissions)
+        $attestationRequestsTotal   = AttestationRequest::count();
+        $attestationRequestsPending = AttestationRequest::where('status', AttestationRequest::STATUS_PENDING)->count();
+
+        // Translations (Maroc–Allemagne tracking)
+        $translationsTotal    = Translation::count();
+        $translationsActive   = Translation::whereIn('status', [Translation::STATUS_PENDING, Translation::STATUS_TRANSLATOR])->count();
 
         // Teachers (scoped to accessible centres)
         $teachersQuery = Teacher::query();
@@ -125,6 +140,8 @@ class StaffDashboardController extends Controller
             'accessibleSites', 'activeSiteId',
             'certificatesTotal', 'certificatesThisMonth',
             'attestationsTotal', 'attestationsThisMonth',
+            'attestationRequestsTotal', 'attestationRequestsPending',
+            'translationsTotal', 'translationsActive',
             'teachersTotal', 'activeGroupsTotal',
             'levelFollowupsDue',
             'myWeek', 'myWorkedMinutes',
