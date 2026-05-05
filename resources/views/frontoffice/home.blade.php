@@ -1,5 +1,12 @@
 ﻿@extends('frontoffice.layouts.app')
 
+@push('head')
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://basemaps.cartocdn.com" crossorigin>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+@endpush
+
 @section('content')
     <main class="home-page">
         {{-- ===========================
@@ -962,28 +969,27 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 </div>
 
                 {{-- RIGHT SIDE : INTERACTIVE MOROCCO MAP — 6 GLS centres --}}
-                <div class="gls-map-wrap reveal delay-3">
-                    <div id="glsCentresMap" class="gls-centres-map" aria-label="GLS Sprachenzentrum centres au Maroc"></div>
+                <div class="gls-map-wrap reveal delay-3" style="position:relative;border-radius:22px;overflow:hidden;border:1px solid #e6e2c5;background:#fffee8;box-shadow:0 18px 44px rgba(0,0,0,.08);width:100%;max-width:100%;aspect-ratio:4/5;min-height:520px;">
+                    <div id="glsCentresMap" style="position:absolute;inset:0;width:100%;height:100%;" aria-label="GLS Sprachenzentrum centres au Maroc"></div>
                     <ul class="gls-map-legend" id="glsMapLegend"></ul>
                 </div>
 
-                {{-- Leaflet (OpenStreetMap) --}}
-                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-                      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-                        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
                 <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    if (typeof L === 'undefined' || !document.getElementById('glsCentresMap')) return;
+                (function initGlsMap() {
+                    if (typeof L === 'undefined') {
+                        return setTimeout(initGlsMap, 80);
+                    }
+                    if (!document.getElementById('glsCentresMap')) return;
+                    if (document.getElementById('glsCentresMap').dataset.ready === '1') return;
+                    document.getElementById('glsCentresMap').dataset.ready = '1';
 
                     const centres = [
-                        { name: 'GLS Rabat',      slug: 'gls-rabat',      lat: 33.9716, lng: -6.8498, color: '#1c45db' },
-                        { name: 'GLS Salé',       slug: 'gls-sale',       lat: 34.0531, lng: -6.7985, color: '#009d5a' },
-                        { name: 'GLS Kénitra',    slug: 'gls-kenitra',    lat: 34.2610, lng: -6.5802, color: '#ff7a08' },
-                        { name: 'GLS Casablanca', slug: 'gls-casablanca', lat: 33.5731, lng: -7.5898, color: '#9767f8' },
-                        { name: 'GLS Marrakech',  slug: 'gls-marrakech',  lat: 31.6295, lng: -7.9811, color: '#d22730' },
-                        { name: 'GLS Agadir',     slug: 'gls-agadir',     lat: 30.4278, lng: -9.5981, color: '#fc0' },
+                        { name: 'GLS Rabat',      slug: 'gls-rabat',      lat: 33.9976668, lng: -6.8485901, color: '#1c45db', gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Rabat' },
+                        { name: 'GLS Salé',       slug: 'gls-sale',       lat: 34.0400773, lng: -6.8172275, color: '#009d5a', gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Sale' },
+                        { name: 'GLS Kénitra',    slug: 'gls-kenitra',    lat: 34.2582587, lng: -6.5876841, color: '#ff7a08', gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Kenitra' },
+                        { name: 'GLS Casablanca', slug: 'gls-casablanca', lat: 33.5936893, lng: -7.6210973, color: '#9767f8', gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachzentrum+Casablanca' },
+                        { name: 'GLS Marrakech',  slug: 'gls-marrakech',  lat: 31.6379228, lng: -8.009762,  color: '#d22730', gmap: 'https://www.google.com/maps/place/?q=place_id:ChIJUQDoLv3-2g0RABMT_OdCVvA' },
+                        { name: 'GLS Agadir',     slug: 'gls-agadir',     lat: 30.4017457, lng: -9.5471754, color: '#fc0',    gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Agadir' },
                     ];
 
                     const map = L.map('glsCentresMap', {
@@ -1012,8 +1018,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                             iconAnchor: [12, 28],
                         });
                         const m = L.marker([c.lat, c.lng], { icon }).addTo(map);
-                        const url = baseUrl + c.slug;
-                        m.bindPopup(`<strong>${c.name}</strong><br><a href="${url}" style="color:${c.color};font-weight:600;">Voir le centre →</a>`);
+                        m.bindPopup(`<strong>${c.name}</strong><br><a href="${c.gmap}" target="_blank" rel="noopener" style="color:${c.color};font-weight:600;">Voir sur Google Maps →</a>`);
                         markers[c.slug] = m;
 
                         const li = document.createElement('li');
@@ -1025,7 +1030,11 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                         });
                         legend.appendChild(li);
                     });
-                });
+
+                    // Force size recompute (in case container measured 0 at init)
+                    setTimeout(() => map.invalidateSize(), 200);
+                    window.addEventListener('resize', () => map.invalidateSize());
+                })();
                 </script>
 
             </div>

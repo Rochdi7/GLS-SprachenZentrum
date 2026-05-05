@@ -12,6 +12,9 @@ return [
     'step_2'            => 'Validation par GLS',
     'step_3'            => 'Réception par email',
 
+    'gls_only_title'    => 'Réservé aux étudiants GLS',
+    'gls_only_text'     => "Les attestations de participation sont délivrées uniquement aux étudiants ayant suivi un cours au sein du GLS Sprachenzentrum. Toute demande émanant d'une personne extérieure sera rejetée.",
+
     'errors_title'      => 'Veuillez corriger :',
 
     'section_identity'  => 'Vos informations personnelles',

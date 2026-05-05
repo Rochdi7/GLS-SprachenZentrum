@@ -123,18 +123,9 @@
                value="{{ old('course_end_date', isset($att->course_end_date) ? $att->course_end_date->format('Y-m-d') : '') }}">
     </div>
 
-    <div class="col-md-12 mb-3">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="is_ongoing" id="att-is-ongoing" value="1"
-                   {{ old('is_ongoing', $att->is_ongoing ?? false) ? 'checked' : '' }}>
-            <label class="form-check-label fw-bold" for="att-is-ongoing">
-                L'étudiant est toujours en cours
-            </label>
-            <small class="text-muted d-block">
-                Si coché, la date de fin sera remplacée par « heute » (ou la traduction selon la langue) sur le PDF exporté.
-            </small>
-        </div>
-    </div>
+    {{-- "Toujours en cours" est désormais piloté automatiquement par le mode "Étudiant ancien" :
+         décoché en mode ancien (date de fin manuelle), coché sinon (PDF affiche « heute »). --}}
+    <input type="hidden" name="is_ongoing" id="att-is-ongoing" value="1">
 
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Début du niveau</label>
@@ -260,6 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const siteWrapper  = document.getElementById('att-site-wrapper');
     const siteSelect   = document.getElementById('att-site-select');
     const legacyCheck  = document.getElementById('att-is-legacy');
+    const ongoingInput = document.getElementById('att-is-ongoing');
     const levelSelect  = document.getElementById('att-level-select');
     const courseStart  = document.getElementById('att-course-start');
     const courseEnd    = document.getElementById('att-course-end');
@@ -269,6 +261,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function applyLegacyMode() {
         const isLegacy = legacyCheck.checked;
+        // Mode ancien → date de fin saisie manuellement (is_ongoing = 0).
+        // Mode normal → étudiant toujours en cours par défaut (is_ongoing = 1).
+        if (ongoingInput) ongoingInput.value = isLegacy ? '0' : '1';
         if (isLegacy) {
             groupWrapper.style.display = 'none';
             groupSelect.removeAttribute('required');

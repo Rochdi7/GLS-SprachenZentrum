@@ -11,6 +11,9 @@ return [
     'step_2'            => 'Validation by GLS',
     'step_3'            => 'Receive by email',
 
+    'gls_only_title'    => 'GLS students only',
+    'gls_only_text'     => 'Participation attestations are issued exclusively to students who attended a course at GLS Sprachenzentrum. Requests from non-GLS students will be rejected.',
+
     'errors_title'      => 'Please correct:',
 
     'section_identity'  => 'Your personal information',

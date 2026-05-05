@@ -11,6 +11,9 @@ return [
     'step_2'            => 'Prüfung durch GLS',
     'step_3'            => 'Empfang per E-Mail',
 
+    'gls_only_title'    => 'Nur für GLS-Studierende',
+    'gls_only_text'     => 'Teilnahmebescheinigungen werden ausschließlich an Studierende ausgestellt, die einen Kurs am GLS Sprachenzentrum besucht haben. Anfragen von Nicht-GLS-Studierenden werden abgelehnt.',
+
     'errors_title'      => 'Bitte korrigieren Sie:',
 
     'section_identity'  => 'Ihre persönlichen Daten',

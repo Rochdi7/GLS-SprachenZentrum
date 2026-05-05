@@ -26,6 +26,15 @@
     {{-- ── FORM ─────────────────────────────────────── --}}
     <section class="att-page">
         <div class="container">
+
+            <div class="att-gls-only" role="note">
+                <div class="att-gls-only-icon"><i class="bi bi-shield-exclamation"></i></div>
+                <div class="att-gls-only-body">
+                    <strong>{{ __('attestation-request.gls_only_title') }}</strong>
+                    <p>{{ __('attestation-request.gls_only_text') }}</p>
+                </div>
+            </div>
+
             <div class="att-card">
 
                 @if ($errors->any())
