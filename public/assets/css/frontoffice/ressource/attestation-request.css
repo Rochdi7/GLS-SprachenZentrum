@@ -126,6 +126,7 @@ body { background: var(--gls-cream) !important; }
     border: 1px solid var(--gls-border);
     background: var(--gls-cream-soft);
     border-radius: 12px;
+    color: var(--gls-text);
     padding: .7rem .95rem;
     font-size: .95rem;
     transition: all .15s ease;
@@ -343,4 +344,424 @@ body { background: var(--gls-cream) !important; }
 [dir="rtl"] .att-gls-only {
     border-left: 1px solid #fcd9b6;
     border-right: 4px solid #ea580c;
+}
+
+/* =========================================================
+   Refined Select — designer pass
+   - Custom chevron (animated on focus)
+   - Cream-tinted dropdown menu (where browsers honor it)
+   - Crisp focus ring matching brand blue
+   ========================================================= */
+.att-card .form-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23111827' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 14px 14px;
+    padding-right: 2.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    letter-spacing: .01em;
+    line-height: 1.4;
+    transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease, transform .18s ease;
+}
+.att-card .form-select:hover {
+    border-color: #cfc8a3;
+    background-color: #fbf6dc;
+}
+.att-card .form-select:focus {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+.att-card .form-select:invalid,
+.att-card .form-select option[value=""] {
+    color: var(--gls-muted);
+}
+.att-card .form-select option {
+    background: #fff;
+    color: var(--gls-text);
+    padding: .5rem .75rem;
+    font-weight: 500;
+}
+.att-card .form-select option:disabled {
+    color: var(--gls-muted);
+    font-style: italic;
+}
+.att-card .form-select option:checked {
+    background: linear-gradient(0deg, var(--gls-blue), var(--gls-blue));
+    color: #fff;
+}
+
+/* RTL: flip chevron to the left side */
+[dir="rtl"] .att-card .form-select {
+    background-position: left 1rem center;
+    padding-right: .9rem;
+    padding-left: 2.5rem;
+}
+
+/* =========================================================
+   Custom Select (att-select) — designer-grade dropdown
+   Native <select> stays in DOM for form submission + a11y,
+   visually hidden behind the styled button + menu.
+   ========================================================= */
+.att-select {
+    position: relative;
+    width: 100%;
+}
+.att-select__native {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+}
+.att-select__btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .75rem 1rem;
+    background: var(--gls-cream-soft);
+    border: 1px solid var(--gls-border);
+    border-radius: 12px;
+    color: var(--gls-text);
+    font-size: .98rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+}
+.att-select__btn:hover {
+    border-color: #cfc8a3;
+    background: #fbf6dc;
+}
+.att-select.is-open .att-select__btn,
+.att-select__btn:focus-visible {
+    outline: none;
+    border-color: var(--gls-blue);
+    background: #fff;
+    box-shadow: 0 0 0 .18rem rgba(37,99,235,.15);
+}
+.att-select__value--placeholder {
+    color: var(--gls-muted);
+    font-weight: 500;
+}
+.att-select__chevron {
+    color: var(--gls-text);
+    flex-shrink: 0;
+    transition: transform .2s ease, color .18s ease;
+}
+.att-select.is-open .att-select__chevron {
+    transform: rotate(180deg);
+    color: var(--gls-blue);
+}
+
+/* Floating menu — separated card, generous spacing, soft shadow */
+.att-select__menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: .5rem;
+    list-style: none;
+    background: #fff;
+    border: 1px solid var(--gls-border);
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(17, 24, 39, .08), 0 2px 6px rgba(17, 24, 39, .04);
+    z-index: 30;
+    max-height: 320px;
+    overflow-y: auto;
+    transform-origin: top center;
+    animation: attSelectIn .16s ease-out;
+}
+@keyframes attSelectIn {
+    from { opacity: 0; transform: translateY(-4px) scale(.985); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.att-select__opt {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .75rem .9rem;
+    border-radius: 10px;
+    color: var(--gls-text);
+    font-size: .98rem;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color .14s ease, color .14s ease;
+}
+.att-select__opt + .att-select__opt {
+    margin-top: 2px;
+}
+.att-select__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: transparent;
+    flex-shrink: 0;
+    transition: background-color .14s ease, transform .14s ease;
+}
+.att-select__opt:hover,
+.att-select__opt.is-active {
+    background: #fbf6dc;
+}
+.att-select__opt[aria-selected="true"] {
+    background: #f7f0d4;
+    color: var(--gls-blue);
+    font-weight: 700;
+}
+.att-select__opt[aria-selected="true"] .att-select__dot {
+    background: var(--gls-blue);
+    transform: scale(1.15);
+}
+
+/* When the value is set, swap placeholder color/weight */
+.att-select__value:not(.att-select__value--placeholder) {
+    color: var(--gls-text);
+    font-weight: 700;
+}
+
+/* RTL */
+[dir="rtl"] .att-select__btn { text-align: right; }
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+    .att-select__menu { padding: .35rem; }
+    .att-select__opt { padding: .65rem .75rem; }
+}
+
+/* =========================================================
+   Custom Date Picker (att-datepicker)
+   Native input[type=date] kept for form submission + a11y;
+   styled trigger + month-grid panel layered on top.
+   ========================================================= */
+.att-datepicker { position: relative; width: 100%; }
+.att-datepicker__native {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+}
+.att-datepicker__btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    padding: .75rem 1rem;
+    background: var(--gls-cream-soft);
+    border: 1px solid var(--gls-border);
+    border-radius: 12px;
+    color: var(--gls-text);
+    font-size: .98rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+}
+.att-datepicker__btn:hover {
+    border-color: #cfc8a3;
+    background: #fbf6dc;
+}
+.att-datepicker.is-open .att-datepicker__btn,
+.att-datepicker__btn:focus-visible {
+    outline: none;
+    border-color: var(--gls-blue);
+    background: #fff;
+    box-shadow: 0 0 0 .18rem rgba(37,99,235,.15);
+}
+.att-datepicker__icon { color: var(--gls-blue); flex-shrink: 0; }
+.att-datepicker__value { flex: 1 1 auto; }
+.att-datepicker__value--placeholder { color: var(--gls-muted); font-weight: 500; }
+.att-datepicker__chevron {
+    color: var(--gls-text);
+    flex-shrink: 0;
+    transition: transform .2s ease, color .18s ease;
+}
+.att-datepicker.is-open .att-datepicker__chevron {
+    transform: rotate(180deg);
+    color: var(--gls-blue);
+}
+
+/* Floating panel */
+.att-datepicker__panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 320px;
+    max-width: calc(100vw - 2rem);
+    padding: .85rem;
+    background: #fff;
+    border: 1px solid var(--gls-border);
+    border-radius: 16px;
+    box-shadow: 0 16px 40px rgba(17, 24, 39, .10), 0 4px 10px rgba(17, 24, 39, .04);
+    z-index: 40;
+    transform-origin: top left;
+    animation: attSelectIn .16s ease-out;
+}
+[dir="rtl"] .att-datepicker__panel { left: auto; right: 0; transform-origin: top right; }
+
+.att-datepicker__head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: .5rem;
+    margin-bottom: .65rem;
+}
+.att-datepicker__head-labels {
+    display: flex; align-items: center; gap: .35rem;
+    flex: 1 1 auto;
+    justify-content: center;
+}
+.att-datepicker__head-month,
+.att-datepicker__head-year {
+    background: transparent;
+    border: 0;
+    padding: .35rem .55rem;
+    border-radius: 8px;
+    font-size: .98rem;
+    font-weight: 700;
+    color: var(--gls-text);
+    cursor: pointer;
+    transition: background-color .14s ease, color .14s ease;
+}
+.att-datepicker__head-month:hover,
+.att-datepicker__head-year:hover {
+    background: #fbf6dc;
+    color: var(--gls-blue);
+}
+.att-datepicker__nav {
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--gls-text);
+    cursor: pointer;
+    transition: background-color .14s ease, border-color .14s ease, color .14s ease;
+}
+.att-datepicker__nav:hover {
+    background: #fbf6dc;
+    border-color: var(--gls-border);
+    color: var(--gls-blue);
+}
+
+.att-datepicker__weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: .25rem;
+}
+.att-datepicker__weekdays span {
+    text-align: center;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--gls-muted);
+    padding: .35rem 0;
+}
+
+.att-datepicker__grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+.att-datepicker__day {
+    aspect-ratio: 1 / 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    border-radius: 10px;
+    color: var(--gls-text);
+    font-size: .9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color .14s ease, color .14s ease, transform .14s ease;
+}
+.att-datepicker__day:hover { background: #fbf6dc; }
+.att-datepicker__day.is-other  { color: var(--gls-muted); opacity: .55; }
+.att-datepicker__day.is-today  {
+    color: var(--gls-blue);
+    font-weight: 700;
+    box-shadow: inset 0 0 0 1px rgba(37,99,235,.35);
+}
+.att-datepicker__day.is-selected {
+    background: var(--gls-blue);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(37,99,235,.25);
+}
+.att-datepicker__day.is-selected:hover { background: var(--gls-blue); }
+.att-datepicker__day:disabled { color: var(--gls-muted); opacity: .4; cursor: not-allowed; background: transparent; }
+
+/* Month/year picker grids (overlay over day grid) */
+.att-datepicker__picker {
+    display: grid;
+    gap: .35rem;
+    padding: .25rem 0;
+}
+.att-datepicker__picker--months { grid-template-columns: repeat(3, 1fr); }
+.att-datepicker__picker--years  { grid-template-columns: repeat(4, 1fr); max-height: 252px; overflow-y: auto; }
+.att-datepicker__picker button {
+    background: transparent;
+    border: 0;
+    padding: .55rem .35rem;
+    border-radius: 10px;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--gls-text);
+    cursor: pointer;
+    transition: background-color .14s ease, color .14s ease;
+}
+.att-datepicker__picker button:hover { background: #fbf6dc; color: var(--gls-blue); }
+.att-datepicker__picker button.is-current {
+    background: var(--gls-blue);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(37,99,235,.22);
+}
+
+.att-datepicker__foot {
+    display: flex;
+    justify-content: space-between;
+    gap: .5rem;
+    margin-top: .65rem;
+    padding-top: .65rem;
+    border-top: 1px solid var(--gls-border);
+}
+.att-datepicker__action {
+    background: transparent;
+    border: 1px solid var(--gls-border);
+    padding: .45rem .85rem;
+    border-radius: 999px;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--gls-text);
+    cursor: pointer;
+    transition: background-color .14s ease, border-color .14s ease, color .14s ease;
+}
+.att-datepicker__action:hover { background: #fbf6dc; border-color: #cfc8a3; }
+.att-datepicker__action--primary {
+    background: var(--gls-blue);
+    color: #fff;
+    border-color: var(--gls-blue);
+}
+.att-datepicker__action--primary:hover {
+    background: #1d4fcf;
+    border-color: #1d4fcf;
+    color: #fff;
+}
+
+/* Mobile */
+@media (max-width: 420px) {
+    .att-datepicker__panel { width: calc(100vw - 2rem); }
+    .att-datepicker__day { font-size: .85rem; }
 }

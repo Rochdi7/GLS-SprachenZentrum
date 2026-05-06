@@ -88,8 +88,36 @@
                                 <div class="form-group">
                                     <label
                                         for="applyBirthday">{{ __('templates/group-apply-modals.fields.birthday.label') }}</label>
-                                    <input type="date" id="applyBirthday" name="birthday"
-                                        max="{{ now()->subYears(10)->format('Y-m-d') }}">
+                                    <div class="att-datepicker" data-att-datepicker data-locale="{{ app()->getLocale() }}">
+                                        <input type="date" id="applyBirthday" name="birthday" class="att-datepicker__native"
+                                               max="{{ now()->subYears(10)->format('Y-m-d') }}">
+                                        <button type="button" class="att-datepicker__btn" aria-haspopup="dialog" aria-expanded="false">
+                                            <svg class="att-datepicker__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>
+                                            <span class="att-datepicker__value att-datepicker__value--placeholder">{{ __('templates/group-apply-modals.fields.birthday.label') }}</span>
+                                            <svg class="att-datepicker__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                        </button>
+                                        <div class="att-datepicker__panel" role="dialog" aria-modal="false" hidden>
+                                            <div class="att-datepicker__head">
+                                                <button type="button" class="att-datepicker__nav" data-nav="prev" aria-label="Previous month"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+                                                <div class="att-datepicker__head-labels">
+                                                    <button type="button" class="att-datepicker__head-month" data-pick="month"></button>
+                                                    <button type="button" class="att-datepicker__head-year"  data-pick="year"></button>
+                                                </div>
+                                                <button type="button" class="att-datepicker__nav" data-nav="next" aria-label="Next month"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+                                            </div>
+                                            <div class="att-datepicker__weekdays" aria-hidden="true"></div>
+                                            <div class="att-datepicker__grid" role="grid"></div>
+                                            <div class="att-datepicker__foot">
+                                                <button type="button" class="att-datepicker__action" data-action="clear">{{ __('attestation-request.dp_clear') }}</button>
+                                                <button type="button" class="att-datepicker__action att-datepicker__action--primary" data-action="today">{{ __('attestation-request.dp_today') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="form-group">

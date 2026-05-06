@@ -42,6 +42,8 @@
     @endif
 
     @stack('styles')
+    <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/att-form-fields.css') }}?v={{ @filemtime(public_path('assets/css/frontoffice/att-form-fields.css')) ?: '1' }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/att-form-loading.css') }}?v={{ @filemtime(public_path('assets/css/frontoffice/att-form-loading.css')) ?: '1' }}">
     @stack('head')
 </head>
 
@@ -101,6 +103,8 @@
     ])
     @include('frontoffice.legal.cookies')
 
+    <script defer src="{{ asset('assets/js/att-form-fields.js') }}?v={{ @filemtime(public_path('assets/js/att-form-fields.js')) ?: '1' }}"></script>
+    <script defer src="{{ asset('assets/js/att-form-loading.js') }}?v={{ @filemtime(public_path('assets/js/att-form-loading.js')) ?: '1' }}"></script>
     @stack('scripts')
 
     @include('frontoffice.templates.consultation-form')

@@ -46,6 +46,9 @@ return [
     'secure_note'       => 'بياناتك تبقى سرية.',
     'submit'            => 'إرسال طلبي',
 
+    'dp_clear'          => 'مسح',
+    'dp_today'          => 'اليوم',
+
     'success_page_title'=> 'تم إرسال الطلب | GLS Sprachenzentrum',
     'success_heading'   => 'تم استلام طلبك!',
     'success_text'      => "شكرًا، تم إرسال طلب الشهادة إلى فريقنا.|ستصلك رسالة عبر البريد فور مراجعة الطلب.",

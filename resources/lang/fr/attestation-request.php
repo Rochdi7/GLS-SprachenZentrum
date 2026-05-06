@@ -47,6 +47,9 @@ return [
     'secure_note'       => 'Vos données restent confidentielles.',
     'submit'            => 'Envoyer ma demande',
 
+    'dp_clear'          => 'Effacer',
+    'dp_today'          => "Aujourd'hui",
+
     // Success page
     'success_page_title'=> 'Demande envoyée | GLS Sprachenzentrum',
     'success_heading'   => 'Demande bien reçue !',

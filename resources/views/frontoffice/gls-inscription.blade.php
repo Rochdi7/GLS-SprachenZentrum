@@ -134,17 +134,24 @@
                                             {{ $tr('templates/gls-form.fields.type_cours.label', 'Type de cours') }}
                                             <span class="required">*</span>
                                         </label>
-                                        <select id="glsPageTypeCours" name="type_cours" required>
-                                            <option value="">
-                                                {{ $tr('templates/gls-form.fields.type_cours.placeholder', 'Choisissez un type') }}
-                                            </option>
-                                            <option value="presentiel">
-                                                {{ $tr('templates/gls-form.fields.type_cours_options.presentiel', 'Cours presentiel') }}
-                                            </option>
-                                            <option value="en_ligne">
-                                                {{ $tr('templates/gls-form.fields.type_cours_options.en_ligne', 'Cours en ligne') }}
-                                            </option>
-                                        </select>
+                                        <div class="att-select" data-att-select>
+                                            <select id="glsPageTypeCours" name="type_cours" class="att-select__native" required>
+                                                <option value="">
+                                                    {{ $tr('templates/gls-form.fields.type_cours.placeholder', 'Choisissez un type') }}
+                                                </option>
+                                                <option value="presentiel">
+                                                    {{ $tr('templates/gls-form.fields.type_cours_options.presentiel', 'Cours presentiel') }}
+                                                </option>
+                                                <option value="en_ligne">
+                                                    {{ $tr('templates/gls-form.fields.type_cours_options.en_ligne', 'Cours en ligne') }}
+                                                </option>
+                                            </select>
+                                            <button type="button" class="att-select__btn" aria-haspopup="listbox" aria-expanded="false">
+                                                <span class="att-select__value att-select__value--placeholder">{{ $tr('templates/gls-form.fields.type_cours.placeholder', 'Choisissez un type') }}</span>
+                                                <svg class="att-select__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                            </button>
+                                            <ul class="att-select__menu" role="listbox" tabindex="-1" hidden></ul>
+                                        </div>
                                         <div class="invalid-feedback"></div>
                                     </div>
 
@@ -153,11 +160,18 @@
                                             {{ $tr('templates/gls-form.fields.centre.label', 'Centre GLS prefere') }}
                                             <span class="required">*</span>
                                         </label>
-                                        <select id="glsPageCentre" name="centre">
-                                            <option value="">
-                                                {{ $tr('templates/gls-form.fields.centre.placeholder', 'Selectionner un centre') }}
-                                            </option>
-                                        </select>
+                                        <div class="att-select" data-att-select>
+                                            <select id="glsPageCentre" name="centre" class="att-select__native">
+                                                <option value="">
+                                                    {{ $tr('templates/gls-form.fields.centre.placeholder', 'Selectionner un centre') }}
+                                                </option>
+                                            </select>
+                                            <button type="button" class="att-select__btn" aria-haspopup="listbox" aria-expanded="false">
+                                                <span class="att-select__value att-select__value--placeholder">{{ $tr('templates/gls-form.fields.centre.placeholder', 'Selectionner un centre') }}</span>
+                                                <svg class="att-select__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                            </button>
+                                            <ul class="att-select__menu" role="listbox" tabindex="-1" hidden></ul>
+                                        </div>
                                         <div class="invalid-feedback"></div>
                                     </div>
 
@@ -172,15 +186,22 @@
                                             {{ $tr('templates/gls-form.fields.group_id.label', 'Groupe') }}
                                             <span class="required">*</span>
                                         </label>
-                                        <select id="glsPageGroupId" name="group_id" required>
-                                            <option value="">
-                                                {{ $tr('templates/gls-form.fields.group_id.placeholder', 'Selectionner un groupe') }}
-                                            </option>
-                                            <!-- Groups will be populated dynamically based on selected center or type -->
-                                            <option value="25" id="onlineGroupOption" style="display: none;">Groupe
-                                                Nuit
-                                                20:00 – 22:00</option>
-                                        </select>
+                                        <div class="att-select" data-att-select>
+                                            <select id="glsPageGroupId" name="group_id" class="att-select__native" required>
+                                                <option value="">
+                                                    {{ $tr('templates/gls-form.fields.group_id.placeholder', 'Selectionner un groupe') }}
+                                                </option>
+                                                <!-- Groups will be populated dynamically based on selected center or type -->
+                                                <option value="25" id="onlineGroupOption" style="display: none;">Groupe
+                                                    Nuit
+                                                    20:00 – 22:00</option>
+                                            </select>
+                                            <button type="button" class="att-select__btn" aria-haspopup="listbox" aria-expanded="false">
+                                                <span class="att-select__value att-select__value--placeholder">{{ $tr('templates/gls-form.fields.group_id.placeholder', 'Selectionner un groupe') }}</span>
+                                                <svg class="att-select__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                            </button>
+                                            <ul class="att-select__menu" role="listbox" tabindex="-1" hidden></ul>
+                                        </div>
                                         <div class="invalid-feedback"></div>
                                     </div>
 
@@ -190,16 +211,23 @@
                                             {{ $tr('templates/gls-form.fields.niveau.label', "Niveau d'Allemand") }}
                                             <span class="required">*</span>
                                         </label>
-                                        <select id="glsPageNiveau" name="niveau" required>
-                                            <option value="">
-                                                {{ $tr('templates/gls-form.fields.niveau.placeholder', 'Selectionner un niveau') }}
-                                            </option>
-                                            <option value="A0">A0</option>
-                                            <option value="A1">A1</option>
-                                            <option value="A2">A2</option>
-                                            <option value="B1">B1</option>
-                                            <option value="B2">B2</option>
-                                        </select>
+                                        <div class="att-select" data-att-select>
+                                            <select id="glsPageNiveau" name="niveau" class="att-select__native" required>
+                                                <option value="">
+                                                    {{ $tr('templates/gls-form.fields.niveau.placeholder', 'Selectionner un niveau') }}
+                                                </option>
+                                                <option value="A0">A0</option>
+                                                <option value="A1">A1</option>
+                                                <option value="A2">A2</option>
+                                                <option value="B1">B1</option>
+                                                <option value="B2">B2</option>
+                                            </select>
+                                            <button type="button" class="att-select__btn" aria-haspopup="listbox" aria-expanded="false">
+                                                <span class="att-select__value att-select__value--placeholder">{{ $tr('templates/gls-form.fields.niveau.placeholder', 'Selectionner un niveau') }}</span>
+                                                <svg class="att-select__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                            </button>
+                                            <ul class="att-select__menu" role="listbox" tabindex="-1" hidden></ul>
+                                        </div>
                                         <div class="invalid-feedback"></div>
                                     </div>
 

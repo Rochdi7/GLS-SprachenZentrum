@@ -46,6 +46,9 @@ return [
     'secure_note'       => 'Your data stays confidential.',
     'submit'            => 'Send my request',
 
+    'dp_clear'          => 'Clear',
+    'dp_today'          => 'Today',
+
     'success_page_title'=> 'Request sent | GLS Sprachenzentrum',
     'success_heading'   => 'Request received!',
     'success_text'      => "Thank you, your attestation request has been sent to our team.|You will receive an email as soon as it has been reviewed.",

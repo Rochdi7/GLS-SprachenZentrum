@@ -3,7 +3,7 @@
 @section('title', __('attestation-request.page_title'))
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('assets/css/frontoffice/ressource/attestation-request.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/frontoffice/ressource/attestation-request.css') }}?v={{ @filemtime(public_path('assets/css/frontoffice/ressource/attestation-request.css')) ?: time() }}">
 
 @section('content')
 <main>
@@ -76,9 +76,41 @@
                                    value="{{ old('phone') }}">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">{{ __('attestation-request.birth_date') }}</label>
-                            <input type="date" name="birth_date" class="form-control"
-                                   value="{{ old('birth_date') }}">
+                            <label class="form-label" id="att-birth-date-label">{{ __('attestation-request.birth_date') }}</label>
+                            <div class="att-datepicker" data-att-datepicker data-locale="{{ app()->getLocale() }}">
+                                <input type="date" name="birth_date" class="att-datepicker__native"
+                                       value="{{ old('birth_date') }}" aria-labelledby="att-birth-date-label">
+                                <button type="button" class="att-datepicker__btn" aria-haspopup="dialog" aria-expanded="false" aria-labelledby="att-birth-date-label">
+                                    <svg class="att-datepicker__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    <span class="att-datepicker__value att-datepicker__value--placeholder">{{ __('attestation-request.birth_date') }}</span>
+                                    <svg class="att-datepicker__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </button>
+                                <div class="att-datepicker__panel" role="dialog" aria-modal="false" aria-labelledby="att-birth-date-label" hidden>
+                                    <div class="att-datepicker__head">
+                                        <button type="button" class="att-datepicker__nav" data-nav="prev" aria-label="Previous month">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                        </button>
+                                        <div class="att-datepicker__head-labels">
+                                            <button type="button" class="att-datepicker__head-month" data-pick="month"></button>
+                                            <button type="button" class="att-datepicker__head-year"  data-pick="year"></button>
+                                        </div>
+                                        <button type="button" class="att-datepicker__nav" data-nav="next" aria-label="Next month">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                        </button>
+                                    </div>
+                                    <div class="att-datepicker__weekdays" aria-hidden="true"></div>
+                                    <div class="att-datepicker__grid" role="grid"></div>
+                                    <div class="att-datepicker__foot">
+                                        <button type="button" class="att-datepicker__action" data-action="clear">{{ __('attestation-request.dp_clear') }}</button>
+                                        <button type="button" class="att-datepicker__action att-datepicker__action--primary" data-action="today">{{ __('attestation-request.dp_today') }}</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">{{ __('attestation-request.birth_place') }}</label>
@@ -102,13 +134,27 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label">{{ __('attestation-request.level') }} <span class="text-danger">*</span></label>
-                            <select name="level" class="form-select" required>
-                                <option value="">{{ __('attestation-request.level_select') }}</option>
-                                @foreach (['A1', 'A2', 'B1', 'B2'] as $lvl)
-                                    <option value="{{ $lvl }}" {{ old('level') === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
-                                @endforeach
-                            </select>
+                            <label class="form-label" id="att-level-label">{{ __('attestation-request.level') }} <span class="text-danger">*</span></label>
+                            <div class="att-select" data-att-select>
+                                <select name="level" class="att-select__native" required aria-labelledby="att-level-label">
+                                    <option value="">{{ __('attestation-request.level_select') }}</option>
+                                    @foreach (['A1', 'A2', 'B1', 'B2'] as $lvl)
+                                        <option value="{{ $lvl }}" {{ old('level') === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="button" class="att-select__btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="att-level-label">
+                                    <span class="att-select__value att-select__value--placeholder">{{ __('attestation-request.level_select') }}</span>
+                                    <svg class="att-select__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </button>
+                                <ul class="att-select__menu" role="listbox" tabindex="-1" aria-labelledby="att-level-label" hidden>
+                                    @foreach (['A1', 'A2', 'B1', 'B2'] as $lvl)
+                                        <li class="att-select__opt" role="option" data-value="{{ $lvl }}" tabindex="-1" aria-selected="{{ old('level') === $lvl ? 'true' : 'false' }}">
+                                            <span class="att-select__dot" aria-hidden="true"></span>
+                                            <span class="att-select__opt-label">{{ $lvl }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
                         </div>
 
                         <div class="col-md-6">

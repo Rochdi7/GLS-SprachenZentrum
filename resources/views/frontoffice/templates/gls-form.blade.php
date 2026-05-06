@@ -94,22 +94,36 @@
                     <div class="form-group">
                         <label for="glsTypeCours">{{ __('templates/gls-form.fields.type_cours.label') }} <span
                                 class="required">*</span></label>
-                        <select id="glsTypeCours" name="type_cours" required>
-                            <option value="">{{ __('templates/gls-form.fields.type_cours.placeholder') }}
-                            </option>
-                            <option value="presentiel">
-                                {{ __('templates/gls-form.fields.type_cours_options.presentiel') }}</option>
-                            <option value="en_ligne">{{ __('templates/gls-form.fields.type_cours_options.en_ligne') }}
-                            </option>
-                        </select>
+                        <div class="att-select" data-att-select>
+                            <select id="glsTypeCours" name="type_cours" class="att-select__native" required>
+                                <option value="">{{ __('templates/gls-form.fields.type_cours.placeholder') }}
+                                </option>
+                                <option value="presentiel">
+                                    {{ __('templates/gls-form.fields.type_cours_options.presentiel') }}</option>
+                                <option value="en_ligne">{{ __('templates/gls-form.fields.type_cours_options.en_ligne') }}
+                                </option>
+                            </select>
+                            <button type="button" class="att-select__btn" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="att-select__value att-select__value--placeholder">{{ __('templates/gls-form.fields.type_cours.placeholder') }}</span>
+                                <svg class="att-select__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </button>
+                            <ul class="att-select__menu" role="listbox" tabindex="-1" hidden></ul>
+                        </div>
                     </div>
 
                     <div class="form-group" id="glsCentreWrapper">
                         <label for="glsCentre">{{ __('templates/gls-form.fields.centre.label') }} <span
                                 class="required">*</span></label>
-                        <select id="glsCentre" name="centre">
-                            <option value="">{{ __('templates/gls-form.fields.centre.placeholder') }}</option>
-                        </select>
+                        <div class="att-select" data-att-select>
+                            <select id="glsCentre" name="centre" class="att-select__native">
+                                <option value="">{{ __('templates/gls-form.fields.centre.placeholder') }}</option>
+                            </select>
+                            <button type="button" class="att-select__btn" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="att-select__value att-select__value--placeholder">{{ __('templates/gls-form.fields.centre.placeholder') }}</span>
+                                <svg class="att-select__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </button>
+                            <ul class="att-select__menu" role="listbox" tabindex="-1" hidden></ul>
+                        </div>
                     </div>
                 </div>
 
@@ -119,20 +133,34 @@
                     <div class="form-group">
                         <label for="glsGroupId">{{ __('templates/gls-form.fields.group_id.label') }} <span
                                 class="required">*</span></label>
-                        <select id="glsGroupId" name="group_id" required>
-                            <option value="">{{ __('templates/gls-form.fields.group_id.placeholder') }}</option>
-                            <!-- Groups will be populated dynamically based on selected center or type -->
-                            <option value="25" id="onlineGroupOption" style="display: none;">Groupe Nuit 20:00 –
-                                22:00</option>
-                        </select>
+                        <div class="att-select" data-att-select>
+                            <select id="glsGroupId" name="group_id" class="att-select__native" required>
+                                <option value="">{{ __('templates/gls-form.fields.group_id.placeholder') }}</option>
+                                <!-- Groups will be populated dynamically based on selected center or type -->
+                                <option value="25" id="onlineGroupOption" style="display: none;">Groupe Nuit 20:00 –
+                                    22:00</option>
+                            </select>
+                            <button type="button" class="att-select__btn" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="att-select__value att-select__value--placeholder">{{ __('templates/gls-form.fields.group_id.placeholder') }}</span>
+                                <svg class="att-select__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </button>
+                            <ul class="att-select__menu" role="listbox" tabindex="-1" hidden></ul>
+                        </div>
                     </div>
 
                     <div class="form-group">
                         <label for="glsNiveau">{{ __('templates/gls-form.fields.niveau.label') }} <span
                                 class="required">*</span></label>
-                        <select id="glsNiveau" name="niveau" required>
-                            <option value="">{{ __('templates/gls-form.fields.niveau.placeholder') }}</option>
-                        </select>
+                        <div class="att-select" data-att-select>
+                            <select id="glsNiveau" name="niveau" class="att-select__native" required>
+                                <option value="">{{ __('templates/gls-form.fields.niveau.placeholder') }}</option>
+                            </select>
+                            <button type="button" class="att-select__btn" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="att-select__value att-select__value--placeholder">{{ __('templates/gls-form.fields.niveau.placeholder') }}</span>
+                                <svg class="att-select__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </button>
+                            <ul class="att-select__menu" role="listbox" tabindex="-1" hidden></ul>
+                        </div>
                     </div>
 
                 </div>

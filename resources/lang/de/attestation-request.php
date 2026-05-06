@@ -46,6 +46,9 @@ return [
     'secure_note'       => 'Ihre Daten bleiben vertraulich.',
     'submit'            => 'Anfrage senden',
 
+    'dp_clear'          => 'Löschen',
+    'dp_today'          => 'Heute',
+
     'success_page_title'=> 'Anfrage gesendet | GLS Sprachenzentrum',
     'success_heading'   => 'Anfrage erhalten!',
     'success_text'      => "Vielen Dank, Ihre Anfrage wurde an unser Team weitergeleitet.|Sie erhalten eine E-Mail, sobald sie geprüft wurde.",

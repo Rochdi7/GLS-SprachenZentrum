@@ -1,0 +1,54 @@
+/* =========================================================
+   GLS Form Submit Loading State
+   - CSS-driven spinner triggered by .is-loading or [disabled]
+     on a submit button (within a frontoffice form).
+   - Works alongside any existing button styling without
+     overriding background, color, or radius.
+   ========================================================= */
+form button[type="submit"].is-loading,
+form button[type="submit"][data-att-loading="1"] {
+    position: relative;
+    pointer-events: none;
+    cursor: progress;
+}
+
+/* Hide button text while loading */
+form button[type="submit"].is-loading > *,
+form button[type="submit"][data-att-loading="1"] > * {
+    visibility: hidden;
+    opacity: 0;
+}
+
+/* Centered spinner */
+form button[type="submit"].is-loading::after,
+form button[type="submit"][data-att-loading="1"]::after {
+    content: "";
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 18px; height: 18px;
+    margin: -9px 0 0 -9px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    opacity: .85;
+    animation: attBtnSpin .7s linear infinite;
+}
+
+@keyframes attBtnSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* Subtle press-like feedback while loading */
+form button[type="submit"].is-loading,
+form button[type="submit"][data-att-loading="1"] {
+    transform: translateY(0);
+    transition: opacity .15s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    form button[type="submit"].is-loading::after,
+    form button[type="submit"][data-att-loading="1"]::after {
+        animation-duration: 1.6s;
+    }
+}
