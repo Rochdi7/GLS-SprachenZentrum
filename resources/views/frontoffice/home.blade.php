@@ -13,7 +13,8 @@
      HERO SECTION
 =========================== --}}
         <section class="hero reveal delay-1" aria-label="Intro">
-            <div class="hero__bg reveal delay-2" style="background-image: url('{{ asset('assets/images/IMG_4399.webp') }}');">
+            <div class="hero__bg reveal delay-2"
+                style="background-image: url('{{ asset('assets/images/IMG_4399.webp') }}');">
             </div>
 
             {{-- Badges --}}
@@ -227,7 +228,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
             </div>
         </section>
 
-      {{-- Testimonial Videos Section --}}
+        {{-- Testimonial Videos Section --}}
         @include('frontoffice.partials.marketing-videos-testimonials')
 
         {{-- ===========================
@@ -299,7 +300,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                             </span>
                         </p>
 
-                        <a href="{{ LaravelLocalization::localizeUrl(route('front.gls-inscription')) }}" class="button is-white reveal delay-2"
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.gls-inscription')) }}"
+                            class="button is-white reveal delay-2"
                             style="background:#ffffff !important; color: var(--dark--off-black) !important; border-color: var(--dark--off-black) !important;">
                             {{ __('home.highlights.card_a1.button') }}
                         </a>
@@ -552,7 +554,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <header class="ssn-header reveal delay-2">
                     <div>
                         <div class="ssn-eyebrow">
-                            <img class="flag" src="{{ asset('assets/images/germany-flag-icon.svg') }}" alt="" aria-hidden="true">
+                            <img class="flag" src="{{ asset('assets/images/germany-flag-icon.svg') }}" alt=""
+                                aria-hidden="true">
                             {{ __('home.student_services.eyebrow') }}
                         </div>
                         <h2 class="ssn-title">
@@ -572,7 +575,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     <div class="ssn-feature-stack reveal delay-3">
 
                         {{-- VARIANT : TRACK (default / featured) --}}
-                        <a class="ssn-feature ssn-variant ssn-variant--track" href="{{ LaravelLocalization::localizeUrl(route('front.translations.track')) }}">
+                        <a class="ssn-feature ssn-variant ssn-variant--track"
+                            href="{{ LaravelLocalization::localizeUrl(route('front.translations.track')) }}">
                             <span class="ssn-feature-tag">
                                 <span class="pulse"></span>
                                 {{ __('home.student_services.feature_tag') }}
@@ -607,7 +611,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                         </a>
 
                         {{-- VARIANT : CERTIFICATE --}}
-                        <a class="ssn-feature ssn-variant ssn-variant--cert" href="{{ LaravelLocalization::localizeUrl(route('front.certificate.check')) }}">
+                        <a class="ssn-feature ssn-variant ssn-variant--cert"
+                            href="{{ LaravelLocalization::localizeUrl(route('front.certificate.check')) }}">
                             <span class="ssn-feature-tag">
                                 <i class="bi bi-patch-check-fill"></i>
                                 {{ __('home.student_services.cert_tag') }}
@@ -622,7 +627,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                                 </div>
                                 <div class="ssn-preview-row">
                                     <span style="color:#5dd29c;font-weight:600;">
-                                        <i class="bi bi-shield-check"></i> {{ __('home.student_services.cert_preview_status') }}
+                                        <i class="bi bi-shield-check"></i>
+                                        {{ __('home.student_services.cert_preview_status') }}
                                     </span>
                                     <span>{{ __('home.student_services.cert_preview_level') }} · B2</span>
                                 </div>
@@ -639,7 +645,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                         </a>
 
                         {{-- VARIANT : ATTESTATION --}}
-                        <a class="ssn-feature ssn-variant ssn-variant--att" href="{{ LaravelLocalization::localizeUrl(route('front.attestation-request.create')) }}">
+                        <a class="ssn-feature ssn-variant ssn-variant--att"
+                            href="{{ LaravelLocalization::localizeUrl(route('front.attestation-request.create')) }}">
                             <span class="ssn-feature-tag">
                                 <i class="bi bi-envelope-paper-fill"></i>
                                 {{ __('home.student_services.att_tag') }}
@@ -654,14 +661,21 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                                 </div>
                                 <div class="ssn-preview-row">
                                     <span style="color:var(--ssn-gold-bright);font-weight:600;">
-                                        <i class="bi bi-hourglass-split"></i> {{ __('home.student_services.att_preview_status') }}
+                                        <i class="bi bi-hourglass-split"></i>
+                                        {{ __('home.student_services.att_preview_status') }}
                                     </span>
                                     <span>{{ __('home.student_services.att_preview_level') }} · A2</span>
                                 </div>
                                 <div class="ssn-att-flow">
-                                    <div class="ssn-att-step done"><i class="bi bi-check"></i><span>{{ __('home.student_services.att_step1') }}</span></div>
-                                    <div class="ssn-att-step now"><span class="dot"></span><span>{{ __('home.student_services.att_step2') }}</span></div>
-                                    <div class="ssn-att-step"><i class="bi bi-envelope"></i><span>{{ __('home.student_services.att_step3') }}</span></div>
+                                    <div class="ssn-att-step done"><i
+                                            class="bi bi-check"></i><span>{{ __('home.student_services.att_step1') }}</span>
+                                    </div>
+                                    <div class="ssn-att-step now"><span
+                                            class="dot"></span><span>{{ __('home.student_services.att_step2') }}</span>
+                                    </div>
+                                    <div class="ssn-att-step"><i
+                                            class="bi bi-envelope"></i><span>{{ __('home.student_services.att_step3') }}</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -677,7 +691,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     <div class="ssn-list reveal delay-4">
 
                         {{-- 00 — TRACK TRANSLATION (resets to default) --}}
-                        <a class="ssn-item ssn-item--track" data-target="track" href="{{ LaravelLocalization::localizeUrl(route('front.translations.track')) }}">
+                        <a class="ssn-item ssn-item--track" data-target="track"
+                            href="{{ LaravelLocalization::localizeUrl(route('front.translations.track')) }}">
                             <span class="ssn-num">01</span>
                             <div class="ssn-item-body">
                                 <h4 class="ssn-item-title">{{ __('home.student_services.tr_title_short') }}</h4>
@@ -687,7 +702,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                         </a>
 
                         {{-- 02 — VERIFY CERTIFICATE --}}
-                        <a class="ssn-item ssn-item--cert" data-target="cert" href="{{ LaravelLocalization::localizeUrl(route('front.certificate.check')) }}">
+                        <a class="ssn-item ssn-item--cert" data-target="cert"
+                            href="{{ LaravelLocalization::localizeUrl(route('front.certificate.check')) }}">
                             <span class="ssn-num">02</span>
                             <div class="ssn-item-body">
                                 <h4 class="ssn-item-title">{{ __('home.student_services.item1_title') }}</h4>
@@ -697,7 +713,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                         </a>
 
                         {{-- 03 — ATTESTATION REQUEST --}}
-                        <a class="ssn-item ssn-item--att" data-target="att" href="{{ LaravelLocalization::localizeUrl(route('front.attestation-request.create')) }}">
+                        <a class="ssn-item ssn-item--att" data-target="att"
+                            href="{{ LaravelLocalization::localizeUrl(route('front.attestation-request.create')) }}">
                             <span class="ssn-num">03</span>
                             <div class="ssn-item-body">
                                 <h4 class="ssn-item-title">{{ __('home.student_services.item2_title') }}</h4>
@@ -710,90 +727,98 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 </div>
 
                 <script>
-                (function () {
-                    const body = document.currentScript.previousElementSibling;
-                    if (!body || !body.matches('.ssn-body')) return;
+                    (function() {
+                        const body = document.currentScript.previousElementSibling;
+                        if (!body || !body.matches('.ssn-body')) return;
 
-                    const STATES = ['track', 'cert', 'att'];
-                    const items  = Array.from(body.querySelectorAll('.ssn-item[data-target]'));
-                    const mqMobile = window.matchMedia('(max-width: 992px)');
+                        const STATES = ['track', 'cert', 'att'];
+                        const items = Array.from(body.querySelectorAll('.ssn-item[data-target]'));
+                        const mqMobile = window.matchMedia('(max-width: 992px)');
 
-                    let autoTimer = null;
-                    let userTouched = false;
-                    let resumeTimer = null;
+                        let autoTimer = null;
+                        let userTouched = false;
+                        let resumeTimer = null;
 
-                    function setState(s) {
-                        if (!STATES.includes(s) || body.dataset.state === s) return;
-                        body.dataset.state = s;
-                        items.forEach(it => it.classList.toggle('is-active', it.dataset.target === s));
-                    }
-
-                    function startAuto() {
-                        stopAuto();
-                        autoTimer = setInterval(() => {
-                            const cur = body.dataset.state || 'track';
-                            const next = STATES[(STATES.indexOf(cur) + 1) % STATES.length];
-                            setState(next);
-                        }, 3000);
-                    }
-                    function stopAuto() {
-                        if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
-                    }
-
-                    function configureForViewport() {
-                        if (mqMobile.matches) {
-                            // Mobile : autoplay (unless user just interacted)
-                            if (!userTouched) startAuto();
-                        } else {
-                            // Desktop : hover-driven, no autoplay
-                            stopAuto();
-                            setState('track');
+                        function setState(s) {
+                            if (!STATES.includes(s) || body.dataset.state === s) return;
+                            body.dataset.state = s;
+                            items.forEach(it => it.classList.toggle('is-active', it.dataset.target === s));
                         }
-                    }
 
-                    // ── Desktop hover/focus ──
-                    items.forEach(it => {
-                        it.addEventListener('mouseenter', () => {
-                            if (mqMobile.matches) return;
-                            setState(it.dataset.target);
-                        });
-                        it.addEventListener('focus', () => setState(it.dataset.target));
-                    });
-                    body.addEventListener('mouseleave', () => {
-                        if (mqMobile.matches) return;
-                        setState('track');
-                    });
-
-                    // ── Mobile : pause autoplay briefly on tap, then resume ──
-                    items.forEach(it => {
-                        it.addEventListener('touchstart', () => {
-                            if (!mqMobile.matches) return;
-                            userTouched = true;
+                        function startAuto() {
                             stopAuto();
-                            setState(it.dataset.target);
-                            clearTimeout(resumeTimer);
-                            resumeTimer = setTimeout(() => {
-                                userTouched = false;
-                                startAuto();
-                            }, 6000);
-                        }, { passive: true });
-                    });
+                            autoTimer = setInterval(() => {
+                                const cur = body.dataset.state || 'track';
+                                const next = STATES[(STATES.indexOf(cur) + 1) % STATES.length];
+                                setState(next);
+                            }, 3000);
+                        }
 
-                    // ── Pause when section is offscreen, resume when visible ──
-                    if ('IntersectionObserver' in window) {
-                        const io = new IntersectionObserver((entries) => {
-                            entries.forEach(e => {
-                                if (!mqMobile.matches) return;
-                                if (e.isIntersecting && !userTouched) startAuto();
-                                else stopAuto();
+                        function stopAuto() {
+                            if (autoTimer) {
+                                clearInterval(autoTimer);
+                                autoTimer = null;
+                            }
+                        }
+
+                        function configureForViewport() {
+                            if (mqMobile.matches) {
+                                // Mobile : autoplay (unless user just interacted)
+                                if (!userTouched) startAuto();
+                            } else {
+                                // Desktop : hover-driven, no autoplay
+                                stopAuto();
+                                setState('track');
+                            }
+                        }
+
+                        // ── Desktop hover/focus ──
+                        items.forEach(it => {
+                            it.addEventListener('mouseenter', () => {
+                                if (mqMobile.matches) return;
+                                setState(it.dataset.target);
                             });
-                        }, { threshold: 0.25 });
-                        io.observe(body);
-                    }
+                            it.addEventListener('focus', () => setState(it.dataset.target));
+                        });
+                        body.addEventListener('mouseleave', () => {
+                            if (mqMobile.matches) return;
+                            setState('track');
+                        });
 
-                    mqMobile.addEventListener('change', configureForViewport);
-                    configureForViewport();
-                })();
+                        // ── Mobile : pause autoplay briefly on tap, then resume ──
+                        items.forEach(it => {
+                            it.addEventListener('touchstart', () => {
+                                if (!mqMobile.matches) return;
+                                userTouched = true;
+                                stopAuto();
+                                setState(it.dataset.target);
+                                clearTimeout(resumeTimer);
+                                resumeTimer = setTimeout(() => {
+                                    userTouched = false;
+                                    startAuto();
+                                }, 6000);
+                            }, {
+                                passive: true
+                            });
+                        });
+
+                        // ── Pause when section is offscreen, resume when visible ──
+                        if ('IntersectionObserver' in window) {
+                            const io = new IntersectionObserver((entries) => {
+                                entries.forEach(e => {
+                                    if (!mqMobile.matches) return;
+                                    if (e.isIntersecting && !userTouched) startAuto();
+                                    else stopAuto();
+                                });
+                            }, {
+                                threshold: 0.25
+                            });
+                            io.observe(body);
+                        }
+
+                        mqMobile.addEventListener('change', configureForViewport);
+                        configureForViewport();
+                    })();
                 </script>
 
                 <div class="ssn-foot">
@@ -846,7 +871,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
         {{-- ===============================
  COOPERATION PARTNERS – Auto Marquee
 ================================ --}}
-        <section class="partners-section text-center reveal delay-1 {{ app()->getLocale() == 'ar' ? 'rtl' : '' }}" aria-label="{{ __('home.partners.aria_label') }}">
+        <section class="partners-section text-center reveal delay-1 {{ app()->getLocale() == 'ar' ? 'rtl' : '' }}"
+            aria-label="{{ __('home.partners.aria_label') }}">
             <div class="container reveal delay-2">
 
                 <h2 class="partners-title reveal fade-blur-title delay-1">{{ __('home.partners.title') }}</h2>
@@ -916,7 +942,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                         <a href="tel:+212669515019" class="link-block reveal delay-1">
                             <div class="text-block-3 reveal delay-2">
                                 <span class="text-span reveal delay-3">{!! __('home.contact.call_label') !!}<br></span>
-                                +212 6 69 51 50 19
+                                +212 6 03 16 02 77
                             </div>
                         </a>
 
@@ -969,72 +995,123 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 </div>
 
                 {{-- RIGHT SIDE : INTERACTIVE MOROCCO MAP — 6 GLS centres --}}
-                <div class="gls-map-wrap reveal delay-3" style="position:relative;border-radius:22px;overflow:hidden;border:1px solid #e6e2c5;background:#fffee8;box-shadow:0 18px 44px rgba(0,0,0,.08);width:100%;max-width:100%;aspect-ratio:4/5;min-height:520px;">
-                    <div id="glsCentresMap" style="position:absolute;inset:0;width:100%;height:100%;" aria-label="GLS Sprachenzentrum centres au Maroc"></div>
+                <div class="gls-map-wrap reveal delay-3"
+                    style="position:relative;border-radius:22px;overflow:hidden;border:1px solid #e6e2c5;background:#fffee8;box-shadow:0 18px 44px rgba(0,0,0,.08);width:100%;max-width:100%;aspect-ratio:4/5;min-height:520px;">
+                    <div id="glsCentresMap" style="position:absolute;inset:0;width:100%;height:100%;"
+                        aria-label="GLS Sprachenzentrum centres au Maroc"></div>
                     <ul class="gls-map-legend" id="glsMapLegend"></ul>
                 </div>
 
                 <script>
-                (function initGlsMap() {
-                    if (typeof L === 'undefined') {
-                        return setTimeout(initGlsMap, 80);
-                    }
-                    if (!document.getElementById('glsCentresMap')) return;
-                    if (document.getElementById('glsCentresMap').dataset.ready === '1') return;
-                    document.getElementById('glsCentresMap').dataset.ready = '1';
+                    (function initGlsMap() {
+                        if (typeof L === 'undefined') {
+                            return setTimeout(initGlsMap, 80);
+                        }
+                        if (!document.getElementById('glsCentresMap')) return;
+                        if (document.getElementById('glsCentresMap').dataset.ready === '1') return;
+                        document.getElementById('glsCentresMap').dataset.ready = '1';
 
-                    const centres = [
-                        { name: 'GLS Rabat',      slug: 'gls-rabat',      lat: 33.9976668, lng: -6.8485901, color: '#1c45db', gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Rabat' },
-                        { name: 'GLS Salé',       slug: 'gls-sale',       lat: 34.0400773, lng: -6.8172275, color: '#009d5a', gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Sale' },
-                        { name: 'GLS Kénitra',    slug: 'gls-kenitra',    lat: 34.2582587, lng: -6.5876841, color: '#ff7a08', gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Kenitra' },
-                        { name: 'GLS Casablanca', slug: 'gls-casablanca', lat: 33.5936893, lng: -7.6210973, color: '#9767f8', gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachzentrum+Casablanca' },
-                        { name: 'GLS Marrakech',  slug: 'gls-marrakech',  lat: 31.6379228, lng: -8.009762,  color: '#d22730', gmap: 'https://www.google.com/maps/place/?q=place_id:ChIJUQDoLv3-2g0RABMT_OdCVvA' },
-                        { name: 'GLS Agadir',     slug: 'gls-agadir',     lat: 30.4017457, lng: -9.5471754, color: '#fc0',    gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Agadir' },
-                    ];
+                        const centres = [{
+                                name: 'GLS Rabat',
+                                slug: 'gls-rabat',
+                                lat: 33.9976668,
+                                lng: -6.8485901,
+                                color: '#1c45db',
+                                gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Rabat'
+                            },
+                            {
+                                name: 'GLS Salé',
+                                slug: 'gls-sale',
+                                lat: 34.0400773,
+                                lng: -6.8172275,
+                                color: '#009d5a',
+                                gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Sale'
+                            },
+                            {
+                                name: 'GLS Kénitra',
+                                slug: 'gls-kenitra',
+                                lat: 34.2582587,
+                                lng: -6.5876841,
+                                color: '#ff7a08',
+                                gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Kenitra'
+                            },
+                            {
+                                name: 'GLS Casablanca',
+                                slug: 'gls-casablanca',
+                                lat: 33.5936893,
+                                lng: -7.6210973,
+                                color: '#9767f8',
+                                gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachzentrum+Casablanca'
+                            },
+                            {
+                                name: 'GLS Marrakech',
+                                slug: 'gls-marrakech',
+                                lat: 31.6379228,
+                                lng: -8.009762,
+                                color: '#d22730',
+                                gmap: 'https://www.google.com/maps/place/?q=place_id:ChIJUQDoLv3-2g0RABMT_OdCVvA'
+                            },
+                            {
+                                name: 'GLS Agadir',
+                                slug: 'gls-agadir',
+                                lat: 30.4017457,
+                                lng: -9.5471754,
+                                color: '#fc0',
+                                gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Agadir'
+                            },
+                        ];
 
-                    const map = L.map('glsCentresMap', {
-                        zoomControl: true,
-                        scrollWheelZoom: false,
-                        attributionControl: false,
-                    }).setView([32.0, -7.5], 6);
+                        const map = L.map('glsCentresMap', {
+                            zoomControl: true,
+                            scrollWheelZoom: false,
+                            attributionControl: false,
+                        }).setView([32.0, -7.5], 6);
 
-                    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                        maxZoom: 18,
-                    }).addTo(map);
+                        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                            maxZoom: 18,
+                        }).addTo(map);
 
-                    const baseUrl = @json(LaravelLocalization::localizeUrl('/sites/'));
-                    const legend = document.getElementById('glsMapLegend');
-                    const markers = {};
+                        const baseUrl = @json(LaravelLocalization::localizeUrl('/sites/'));
+                        const legend = document.getElementById('glsMapLegend');
+                        const markers = {};
 
-                    centres.forEach((c, i) => {
-                        const html = `
+                        centres.forEach((c, i) => {
+                            const html = `
                             <div class="gls-pin-wrap" style="--pin-color:${c.color};">
                                 <div class="gls-pin"></div>
                                 <div class="gls-pin-label">${c.name.replace('GLS ', '')}</div>
                             </div>`;
-                        const icon = L.divIcon({
-                            html, className: 'gls-pin-icon',
-                            iconSize: [120, 56],
-                            iconAnchor: [12, 28],
-                        });
-                        const m = L.marker([c.lat, c.lng], { icon }).addTo(map);
-                        m.bindPopup(`<strong>${c.name}</strong><br><a href="${c.gmap}" target="_blank" rel="noopener" style="color:${c.color};font-weight:600;">Voir sur Google Maps →</a>`);
-                        markers[c.slug] = m;
+                            const icon = L.divIcon({
+                                html,
+                                className: 'gls-pin-icon',
+                                iconSize: [120, 56],
+                                iconAnchor: [12, 28],
+                            });
+                            const m = L.marker([c.lat, c.lng], {
+                                icon
+                            }).addTo(map);
+                            m.bindPopup(
+                                `<strong>${c.name}</strong><br><a href="${c.gmap}" target="_blank" rel="noopener" style="color:${c.color};font-weight:600;">Voir sur Google Maps →</a>`
+                                );
+                            markers[c.slug] = m;
 
-                        const li = document.createElement('li');
-                        li.innerHTML = `<span class="dot" style="background:${c.color}"></span> ${c.name.replace('GLS ', '')}`;
-                        li.dataset.slug = c.slug;
-                        li.addEventListener('click', () => {
-                            map.flyTo([c.lat, c.lng], 9, { duration: 0.6 });
-                            m.openPopup();
+                            const li = document.createElement('li');
+                            li.innerHTML =
+                                `<span class="dot" style="background:${c.color}"></span> ${c.name.replace('GLS ', '')}`;
+                            li.dataset.slug = c.slug;
+                            li.addEventListener('click', () => {
+                                map.flyTo([c.lat, c.lng], 9, {
+                                    duration: 0.6
+                                });
+                                m.openPopup();
+                            });
+                            legend.appendChild(li);
                         });
-                        legend.appendChild(li);
-                    });
 
-                    // Force size recompute (in case container measured 0 at init)
-                    setTimeout(() => map.invalidateSize(), 200);
-                    window.addEventListener('resize', () => map.invalidateSize());
-                })();
+                        // Force size recompute (in case container measured 0 at init)
+                        setTimeout(() => map.invalidateSize(), 200);
+                        window.addEventListener('resize', () => map.invalidateSize());
+                    })();
                 </script>
 
             </div>

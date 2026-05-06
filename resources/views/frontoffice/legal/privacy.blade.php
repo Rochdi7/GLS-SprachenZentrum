@@ -73,8 +73,8 @@
     </div>
 
     <!-- =========================================================
-                     CONTACT SECTION
-                ========================================================= -->
+                         CONTACT SECTION
+                    ========================================================= -->
     <section class="contact-section section reveal delay-1">
         <div class="container is-2-col-grid reveal delay-2">
 
@@ -90,7 +90,7 @@
                     <a href="tel:+212669515019" class="link-block reveal delay-1">
                         <div class="text-block-3 reveal delay-2">
                             <span class="text-span reveal delay-3">{{ __('intensive.contact.call') }}<br></span>
-                            +212 6 69 51 50 19
+                            +212 6 03 16 02 77
                         </div>
                     </a>
 

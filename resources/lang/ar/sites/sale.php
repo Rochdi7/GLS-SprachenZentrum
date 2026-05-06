@@ -134,7 +134,7 @@ return [
         'addresses' => 'شارع محمد الخامس، زنقة حليمة رقم 12، ديار، سلا',
         'follow_label' => 'تابعونا',
         'phone_link' => '+212669515019',
-        'phone_display' => '+212 6 69 51 50 19',
+        'phone_display' => '+212 6 03 16 02 77',
         'email' => 'info@glssprachenzentrum.ma',
         'whatsapp_url' => 'https://api.whatsapp.com/send/?phone=0669515019&text&type=phone_number&app_absent=0',
         'map_url' => 'https://maps.app.goo.gl/g4PjrPB7wHQAqrSZA',
