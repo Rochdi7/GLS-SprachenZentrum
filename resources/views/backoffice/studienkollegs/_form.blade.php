@@ -62,7 +62,6 @@ if (is_array($deadlines) && !empty($deadlines)) {
     }
 }
 
-// ✅ FIX: make sure courses is always an array and contains only keys
 $selectedCourses = old('courses');
 if ($selectedCourses === null) {
     $raw = $item->courses ?? [];

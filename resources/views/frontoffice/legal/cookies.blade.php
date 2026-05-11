@@ -38,24 +38,20 @@ document.addEventListener('DOMContentLoaded', function () {
         banner.hidden = true;
     }
 
-    // ✅ FIRST VISIT → SHOW
     if (!localStorage.getItem(STORAGE_KEY)) {
         showBanner();
     }
 
-    // ✅ ACCEPT
     accept?.addEventListener('click', function () {
         localStorage.setItem(STORAGE_KEY, 'accepted');
         hideBanner();
     });
 
-    // ✅ REJECT
     reject?.addEventListener('click', function () {
         localStorage.setItem(STORAGE_KEY, 'rejected');
         hideBanner();
     });
 
-    // ✅ MANUAL OPEN (settings link)
     openLinks.forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();

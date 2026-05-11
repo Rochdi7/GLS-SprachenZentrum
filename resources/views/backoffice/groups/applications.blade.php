@@ -13,20 +13,16 @@
 @endsection
 
 @php
-    // ✅ Works for paginator AND collection
     $appsCollection = $applications instanceof \Illuminate\Pagination\AbstractPaginator
         ? $applications->getCollection()
         : collect($applications);
 
-    // ✅ counts (current page)
     $approvedCount = $appsCollection->where('status', 'approved')->count();
     $rejectedCount = $appsCollection->where('status', 'rejected')->count();
     $pendingCount  = $appsCollection->where('status', 'pending')->count();
 
-    // Current students in the group = approved
     $currentStudentsCount = $approvedCount;
 
-    // ✅ filtered collections for tabs
     $appsAll      = $appsCollection;
     $appsApproved = $appsCollection->where('status', 'approved');
     $appsPending  = $appsCollection->where('status', 'pending');

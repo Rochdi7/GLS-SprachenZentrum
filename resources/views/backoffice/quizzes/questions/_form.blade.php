@@ -168,7 +168,6 @@
 
                 {{-- IMAGE OPTION --}}
                 <div class="opt-image">
-                    {{-- ✅ allow edit without re-upload --}}
                     <input type="hidden" name="options[{{ $i }}][has_image]"
                         value="{{ !empty($opt['image_url']) ? 1 : 0 }}">
 
@@ -224,7 +223,7 @@
             const wrapAudio = document.getElementById('wrap_audio');
 
             const qImageInput = wrapImage?.querySelector('input[name="image"]');
-            const qAudioInput = wrapAudio?.querySelector('input[name="audio_url"]'); // ✅ CHANGED: audio_url text input
+            const qAudioInput = wrapAudio?.querySelector('input[name="audio_url"]');
 
             const optionsHint = document.getElementById('options_hint');
 

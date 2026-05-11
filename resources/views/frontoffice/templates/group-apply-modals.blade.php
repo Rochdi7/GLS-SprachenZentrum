@@ -26,7 +26,6 @@
                                 <p class="form-subtitle">{{ __('templates/group-apply-modals.header.subtitle') }}</p>
                             </div>
 
-                            {{-- ✅ ONE message box only (used for errors + duplicate) --}}
                             <div class="error-message" id="applyGroupErrorMessage"></div>
 
                             <form id="applyGroupForm" method="POST" action="{{ route('front.groups.apply') }}">
@@ -134,7 +133,6 @@
                                 </div>
                             </form>
 
-                            {{-- ✅ Success UI --}}
                             <div class="success-message" id="applyGroupSuccessMessage">
                                 <div class="success-icon"></div>
                                 <h3>{{ __('templates/group-apply-modals.messages.success_title') }}</h3>

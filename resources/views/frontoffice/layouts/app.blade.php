@@ -155,7 +155,7 @@
     </script>
 
     {{-- Disable Inspect/DevTools (Production Only) - temporarily commented out --}}
-    {{--
+    
     @production
         <script>
             (function() {
@@ -180,7 +180,7 @@
             })();
         </script>
     @endproduction
-    --}}
+   
 </body>
 
 </html>

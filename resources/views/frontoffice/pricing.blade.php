@@ -80,12 +80,10 @@
                 {{ __('pricing.headers.online.subtitle') }}
             </div>
 
-            {{-- ✅ One-time inscription info (not in table) --}}
             <div class="text-block-6 reveal delay-2">
                 Frais d’inscription : <strong>300 DH</strong> (payés une seule fois lors de la première inscription).
             </div>
 
-            {{-- ✅ B2 one-time inscription --}}
             <div class="text-block-6 reveal delay-2">
                 Inscription niveau B2 : <strong>200 DH</strong> (payée une seule fois).
             </div>
@@ -113,13 +111,11 @@
             const title = document.getElementById("pricing-title");
             const subtitle = document.getElementById("pricing-subtitle");
 
-            // ✅ IMPORTANT: use trans() to guarantee arrays (not strings)
             const pricing = @json(trans('pricing.data'));
             const headers = @json(trans('pricing.headers'));
 
             function loadTable(tab) {
 
-                // ✅ guard (avoid blank page if key missing)
                 if (!headers[tab] || !pricing[tab]) {
                     table.innerHTML = "";
                     title.textContent = "";

@@ -108,7 +108,6 @@
                                     <p>{{ $certificate->certificate_number }}</p>
                                 </div>
 
-                                {{-- ✅ TOKEN CACHÉ (BACKEND ONLY) --}}
                                 {{-- public_token is intentionally hidden --}}
                             </div>
                         </div>
