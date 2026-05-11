@@ -3,7 +3,7 @@
 @section('title', 'Studienkollegs in Germany')
 @section('description', 'Explore public Studienkollegs in Germany and prepare your university admission.')
 
-<link rel="stylesheet" href="{{ asset('assets/css/frontoffice/studienkollegs/studienkollegs.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/frontoffice/studienkollegs/studienkollegs.css') }}?v={{ @filemtime(public_path('assets/css/frontoffice/studienkollegs/studienkollegs.css')) ?: '1' }}">
 
 <style>
     .favorite-btn {
@@ -100,7 +100,7 @@
                     @endphp
 
                     <div class="att-select sk-filter-select {{ $selectedLabel ? 'is-filled' : '' }}" data-att-select>
-                        <span id="{{ $labelId }}" class="sr-only">{{ $group['placeholder'] }}</span>
+                        <span id="{{ $labelId }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">{{ $group['placeholder'] }}</span>
 
                         <select name="{{ $group['name'] }}" class="att-select__native"
                                 aria-labelledby="{{ $labelId }}"
