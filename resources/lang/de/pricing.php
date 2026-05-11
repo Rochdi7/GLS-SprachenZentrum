@@ -59,43 +59,43 @@ return [
 
         'online' => [
             'col1' => ["", "A1 Online", "A2 Online", "B1 Online", "B2 Online"],
-            'col2' => ["Dauer", "2 Monate", "2 Monate", "3 Monate", "3 Monate"],
+            'col2' => ["Dauer", "2 Monate", "2,5 Monate", "2,5 Monate", "3 Monate"],
             'col3' => ["Monatspreis", "1000 DH / Monat", "1000 DH / Monat", "1000 DH / Monat", "1000 DH / Monat"],
         ],
 
         'casablanca' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Dauer", "2 Monate", "2 Monate", "3 Monate", "3 Monate"],
+            'col2' => ["Dauer", "2 Monate", "2,5 Monate", "2,5 Monate", "3 Monate"],
             'col3' => ["Monatspreis", "1400 DH / Monat", "1400 DH / Monat", "1400 DH / Monat", "1400 DH / Monat"],
         ],
 
         'marrakech' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Dauer", "2 Monate", "2 Monate", "3 Monate", "3 Monate"],
+            'col2' => ["Dauer", "2 Monate", "2,5 Monate", "2,5 Monate", "3 Monate"],
             'col3' => ["Monatspreis", "1300 DH / Monat", "1300 DH / Monat", "1300 DH / Monat", "1300 DH / Monat"],
         ],
 
         'rabat' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Dauer", "2 Monate", "2 Monate", "3 Monate", "3 Monate"],
+            'col2' => ["Dauer", "2 Monate", "2,5 Monate", "2,5 Monate", "3 Monate"],
             'col3' => ["Monatspreis", "1400 DH / Monat", "1400 DH / Monat", "1400 DH / Monat", "1400 DH / Monat"],
         ],
 
         'kenitra' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Dauer", "2 Monate", "2 Monate", "3 Monate", "3 Monate"],
+            'col2' => ["Dauer", "2 Monate", "2,5 Monate", "2,5 Monate", "3 Monate"],
             'col3' => ["Monatspreis", "1300 DH / Monat", "1300 DH / Monat", "1300 DH / Monat", "1300 DH / Monat"],
         ],
 
         'sale' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Dauer", "2 Monate", "2 Monate", "3 Monate", "3 Monate"],
+            'col2' => ["Dauer", "2 Monate", "2,5 Monate", "2,5 Monate", "3 Monate"],
             'col3' => ["Monatspreis", "1300 DH / Monat", "1300 DH / Monat", "1300 DH / Monat", "1300 DH / Monat"],
         ],
 
         'agadir' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Dauer", "2 Monate", "2 Monate", "3 Monate", "3 Monate"],
+            'col2' => ["Dauer", "2 Monate", "2,5 Monate", "2,5 Monate", "3 Monate"],
             'col3' => ["Monatspreis", "1200 DH / Monat", "1200 DH / Monat", "1200 DH / Monat", "1200 DH / Monat"],
         ],
 

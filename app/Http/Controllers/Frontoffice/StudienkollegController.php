@@ -16,14 +16,17 @@ class StudienkollegController extends Controller
     {
         // Get filter inputs from query string
         $filters = $request->only([
-            'q', 'city', 'lang', 'course',
+            'q', 'city', 'lang', 'course', 'german_level',
             'uni_assist', 'entrance_exam',
             'certification_required', 'translation_required',
             'featured',
         ]);
 
-        // Clean up empty/null filters
+        // Clean up empty/null filters (keep '0' for uni_assist)
         $filters = array_filter($filters, fn ($value) => $value !== null && $value !== '');
+
+        // Build option lists for the filter UI
+        $allCourses = ['T', 'M', 'W', 'G', 'S', 'TI', 'WW', 'SW'];
 
         // Featured only if no filters applied
         $featured = null;
@@ -56,6 +59,8 @@ class StudienkollegController extends Controller
         return view('frontoffice.studienkollegs.index', [
             'featured'       => $featured,
             'studienkollegs' => $studienkollegs,
+            'allCourses'     => $allCourses,
+            'filters'        => $filters,
         ]);
     }
 

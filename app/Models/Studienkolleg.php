@@ -53,10 +53,19 @@ class Studienkolleg extends Model implements HasMedia
             $query->where('language_of_instruction', $filters['lang']);
         }
 
-        // Course (si "courses" est cast en array/json)
+        // Course (si "courses" est cast en array/json) — matches "T" or "T Course" stored values
         if (!empty($filters['course'])) {
-            // JSON: vérifie que la valeur existe dans le tableau
-            $query->whereJsonContains('courses', $filters['course']);
+            $code = strtoupper(trim($filters['course']));
+            $query->where(function ($sub) use ($code) {
+                $sub->whereJsonContains('courses', $code)
+                    ->orWhereJsonContains('courses', $code . ' Course');
+            });
+        }
+
+        // German level (B1 / B2) — stored as text inside requirements JSON
+        if (!empty($filters['german_level'])) {
+            $level = strtoupper(trim($filters['german_level']));
+            $query->where('requirements', 'like', '%German level: ' . $level . '%');
         }
 
         // Booleans (checkbox/select)

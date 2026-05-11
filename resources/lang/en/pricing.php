@@ -80,49 +80,49 @@ return [
         // ✅ ONLINE (1000 DH / month)
         'online' => [
             'col1' => ["", "A1 Online", "A2 Online", "B1 Online", "B2 Online"],
-            'col2' => ["Duration", "2 months", "2 months", "3 months", "3 months"],
+            'col2' => ["Duration", "2 months", "2.5 months", "2.5 months", "3 months"],
             'col3' => ["Monthly rate", "1000 DH / month", "1000 DH / month", "1000 DH / month", "1000 DH / month"],
         ],
 
         // ✅ Casablanca (1400 DH / month)
         'casablanca' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Duration", "2 months", "2 months", "3 months", "3 months"],
+            'col2' => ["Duration", "2 months", "2.5 months", "2.5 months", "3 months"],
             'col3' => ["Monthly rate", "1400 DH / month", "1400 DH / month", "1400 DH / month", "1400 DH / month"],
         ],
 
         // ✅ Marrakech (1300 DH / month)
         'marrakech' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Duration", "2 months", "2 months", "3 months", "3 months"],
+            'col2' => ["Duration", "2 months", "2.5 months", "2.5 months", "3 months"],
             'col3' => ["Monthly rate", "1300 DH / month", "1300 DH / month", "1300 DH / month", "1300 DH / month"],
         ],
 
         // ✅ Rabat (1400 DH / month)
         'rabat' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Duration", "2 months", "2 months", "3 months", "3 months"],
+            'col2' => ["Duration", "2 months", "2.5 months", "2.5 months", "3 months"],
             'col3' => ["Monthly rate", "1400 DH / month", "1400 DH / month", "1400 DH / month", "1400 DH / month"],
         ],
 
         // ✅ Kénitra (1300 DH / month)
         'kenitra' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Duration", "2 months", "2 months", "3 months", "3 months"],
+            'col2' => ["Duration", "2 months", "2.5 months", "2.5 months", "3 months"],
             'col3' => ["Monthly rate", "1300 DH / month", "1300 DH / month", "1300 DH / month", "1300 DH / month"],
         ],
 
         // ✅ Salé (1300 DH / month)
         'sale' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Duration", "2 months", "2 months", "3 months", "3 months"],
+            'col2' => ["Duration", "2 months", "2.5 months", "2.5 months", "3 months"],
             'col3' => ["Monthly rate", "1300 DH / month", "1300 DH / month", "1300 DH / month", "1300 DH / month"],
         ],
 
         // ✅ Agadir (1200 DH / month)
         'agadir' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Duration", "2 months", "2 months", "3 months", "3 months"],
+            'col2' => ["Duration", "2 months", "2.5 months", "2.5 months", "3 months"],
             'col3' => ["Monthly rate", "1200 DH / month", "1200 DH / month", "1200 DH / month", "1200 DH / month"],
         ],
 

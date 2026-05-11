@@ -80,49 +80,49 @@ return [
         // ✅ ONLINE (1000 DH / mois)
         'online' => [
             'col1' => ["", "A1 Online", "A2 Online", "B1 Online", "B2 Online"],
-            'col2' => ["Durée", "2 mois", "2 mois", "3 mois", "3 mois"],
+            'col2' => ["Durée", "2 mois", "2,5 mois", "2,5 mois", "3 mois"],
             'col3' => ["Tarif mensuel", "1000 DH / mois", "1000 DH / mois", "1000 DH / mois", "1000 DH / mois"],
         ],
 
         // ✅ Casablanca (1400 DH / mois)
         'casablanca' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Durée", "2 mois", "2 mois", "3 mois", "3 mois"],
+            'col2' => ["Durée", "2 mois", "2,5 mois", "2,5 mois", "3 mois"],
             'col3' => ["Tarif mensuel", "1400 DH / mois", "1400 DH / mois", "1400 DH / mois", "1400 DH / mois"],
         ],
 
         // ✅ Marrakech (1300 DH / mois)
         'marrakech' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Durée", "2 mois", "2 mois", "3 mois", "3 mois"],
+            'col2' => ["Durée", "2 mois", "2,5 mois", "2,5 mois", "3 mois"],
             'col3' => ["Tarif mensuel", "1300 DH / mois", "1300 DH / mois", "1300 DH / mois", "1300 DH / mois"],
         ],
 
         // ✅ Rabat (1400 DH / mois)
         'rabat' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Durée", "2 mois", "2 mois", "3 mois", "3 mois"],
+            'col2' => ["Durée", "2 mois", "2,5 mois", "2,5 mois", "3 mois"],
             'col3' => ["Tarif mensuel", "1400 DH / mois", "1400 DH / mois", "1400 DH / mois", "1400 DH / mois"],
         ],
 
         // ✅ Kénitra (1300 DH / mois)
         'kenitra' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Durée", "2 mois", "2 mois", "3 mois", "3 mois"],
+            'col2' => ["Durée", "2 mois", "2,5 mois", "2,5 mois", "3 mois"],
             'col3' => ["Tarif mensuel", "1300 DH / mois", "1300 DH / mois", "1300 DH / mois", "1300 DH / mois"],
         ],
 
         // ✅ Salé (1300 DH / mois)
         'sale' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Durée", "2 mois", "2 mois", "3 mois", "3 mois"],
+            'col2' => ["Durée", "2 mois", "2,5 mois", "2,5 mois", "3 mois"],
             'col3' => ["Tarif mensuel", "1300 DH / mois", "1300 DH / mois", "1300 DH / mois", "1300 DH / mois"],
         ],
 
         // ✅ Agadir (1200 DH / mois)
         'agadir' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
-            'col2' => ["Durée", "2 mois", "2 mois", "3 mois", "3 mois"],
+            'col2' => ["Durée", "2 mois", "2,5 mois", "2,5 mois", "3 mois"],
             'col3' => ["Tarif mensuel", "1200 DH / mois", "1200 DH / mois", "1200 DH / mois", "1200 DH / mois"],
         ],
 

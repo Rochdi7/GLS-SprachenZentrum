@@ -42,47 +42,106 @@
             $isActive = fn($key) => request()->boolean($key);
 
         @endphp
-        <div class="studienkollegs-filters reveal delay-1">
-            <div class="filters-actions">
+        @php
+            $courseLabels = [
+                'T'  => 'T — Engineering & Sciences',
+                'M'  => 'M — Medicine & Biology',
+                'W'  => 'W — Economics & Social',
+                'G'  => 'G — Humanities & Arts',
+                'S'  => 'S — Languages',
+                'TI' => 'TI — Technical (FH)',
+                'WW' => 'WW — Business (FH)',
+                'SW' => 'SW — Social Work',
+            ];
+            $hasAnyFilter = request()->hasAny(['course', 'german_level', 'uni_assist']);
+        @endphp
 
-                {{-- ALL --}}
-                <button
-                    class="filter-btn {{ !request()->hasAny(['online', 'uni_assist', 'open_now', 'entrance_exam']) ? 'filter-btn-primary' : '' }}"
-                    type="button" data-filter="all">
+        @php
+            // Build filter groups for the att-select pattern
+            $filterGroups = [
+                [
+                    'name'        => 'course',
+                    'placeholder' => 'Course (Kurs)',
+                    'icon'        => 'ph-book-open',
+                    'options'     => collect($allCourses)->mapWithKeys(fn($c) => [$c => $courseLabels[$c] ?? $c])->all(),
+                ],
+                [
+                    'name'        => 'german_level',
+                    'placeholder' => 'German Level',
+                    'icon'        => 'ph-translate',
+                    'options'     => ['B1' => 'B1', 'B2' => 'B2'],
+                ],
+                [
+                    'name'        => 'uni_assist',
+                    'placeholder' => 'Uni-Assist',
+                    'icon'        => 'ph-graduation-cap',
+                    'options'     => ['1' => 'Required', '0' => 'Not required'],
+                ],
+            ];
+        @endphp
+
+        <form method="GET" action="{{ url()->current() }}" class="studienkollegs-filters reveal delay-1" id="skFilters">
+            <div class="sk-filters-row">
+
+                {{-- ALL / RESET --}}
+                <a href="{{ url()->current() }}"
+                    class="sk-filter-reset {{ !$hasAnyFilter ? 'is-active' : '' }}">
                     <i class="ph-duotone ph-funnel"></i>
                     <span>All Filters</span>
-                </button>
+                </a>
 
-                {{-- ONLINE --}}
-                <button class="filter-btn {{ $isActive('online') ? 'filter-btn-primary' : '' }}" type="button"
-                    data-filter="online">
-                    <i class="ph-duotone ph-laptop"></i>
-                    <span>Online</span>
-                </button>
+                @foreach ($filterGroups as $group)
+                    @php
+                        $current = request($group['name']);
+                        $selectedLabel = $current !== null && $current !== '' && isset($group['options'][$current])
+                            ? $group['options'][$current]
+                            : null;
+                        $labelId = 'sk-filter-' . $group['name'] . '-label';
+                    @endphp
 
-                {{-- UNI ASSIST --}}
-                <button class="filter-btn {{ $isActive('uni_assist') ? 'filter-btn-primary' : '' }}" type="button"
-                    data-filter="uni_assist">
-                    <i class="ph-duotone ph-graduation-cap"></i>
-                    <span>Uni Assist</span>
-                </button>
+                    <div class="att-select sk-filter-select {{ $selectedLabel ? 'is-filled' : '' }}" data-att-select>
+                        <span id="{{ $labelId }}" class="sr-only">{{ $group['placeholder'] }}</span>
 
-                {{-- OPEN NOW --}}
-                <button class="filter-btn {{ $isActive('open_now') ? 'filter-btn-primary' : '' }}" type="button"
-                    data-filter="open_now">
-                    <i class="ph-duotone ph-calendar-check"></i>
-                    <span>Application Open Now</span>
-                </button>
+                        <select name="{{ $group['name'] }}" class="att-select__native"
+                                aria-labelledby="{{ $labelId }}"
+                                onchange="document.getElementById('skFilters').submit()">
+                            <option value="">{{ $group['placeholder'] }}</option>
+                            @foreach ($group['options'] as $value => $label)
+                                <option value="{{ $value }}" {{ (string) $current === (string) $value ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
 
-                {{-- ENTRANCE EXAM --}}
-                <button class="filter-btn {{ $isActive('entrance_exam') ? 'filter-btn-primary' : '' }}" type="button"
-                    data-filter="entrance_exam">
-                    <i class="ph-duotone ph-pen-nib"></i>
-                    <span>Entrance Exam</span>
-                </button>
+                        <button type="button" class="att-select__btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="{{ $labelId }}">
+                            <i class="ph-duotone {{ $group['icon'] }} sk-filter-icon"></i>
+                            <span class="att-select__value {{ $selectedLabel ? '' : 'att-select__value--placeholder' }}">
+                                {{ $selectedLabel ?? $group['placeholder'] }}
+                            </span>
+                            <svg class="att-select__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+
+                        <ul class="att-select__menu" role="listbox" tabindex="-1" aria-labelledby="{{ $labelId }}" hidden>
+                            <li class="att-select__opt" role="option" data-value="" tabindex="-1"
+                                aria-selected="{{ $current === null || $current === '' ? 'true' : 'false' }}">
+                                <span class="att-select__dot" aria-hidden="true"></span>
+                                <span class="att-select__opt-label">{{ $group['placeholder'] }}</span>
+                            </li>
+                            @foreach ($group['options'] as $value => $label)
+                                <li class="att-select__opt" role="option" data-value="{{ $value }}" tabindex="-1"
+                                    aria-selected="{{ (string) $current === (string) $value ? 'true' : 'false' }}">
+                                    <span class="att-select__dot" aria-hidden="true"></span>
+                                    <span class="att-select__opt-label">{{ $label }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endforeach
 
             </div>
-        </div>
+        </form>
 
         @if ($featured && $featured->featured)
             <ul class="studienkollegs-featured-list">
@@ -259,41 +318,5 @@
 
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="{{ asset('assets/js/favorites.js') }}"></script>
-    <script>
-        (function() {
-            const wrap = document.querySelector('.filters-actions');
-            if (!wrap) return;
-
-            const allowed = new Set(['online', 'uni_assist', 'open_now', 'entrance_exam']);
-
-            wrap.addEventListener('click', function(e) {
-                const btn = e.target.closest('.filter-btn');
-                if (!btn) return;
-
-                const key = btn.getAttribute('data-filter');
-                const url = new URL(window.location.href);
-
-                if (key === 'all') {
-                    // remove filter params only (keep other searches if you later add them)
-                    allowed.forEach(k => url.searchParams.delete(k));
-                    url.searchParams.delete('page');
-                    window.location.href = url.toString();
-                    return;
-                }
-
-                if (!allowed.has(key)) return;
-
-                // toggle filter
-                if (url.searchParams.get(key) === '1') {
-                    url.searchParams.delete(key);
-                } else {
-                    url.searchParams.set(key, '1');
-                }
-
-                url.searchParams.delete('page');
-                window.location.href = url.toString();
-            });
-        })();
-    </script>
 
 @endsection

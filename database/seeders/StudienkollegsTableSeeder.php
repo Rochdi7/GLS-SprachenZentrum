@@ -432,8 +432,8 @@ class StudienkollegsTableSeeder extends Seeder
                 'Passport copy',
             ],
             'deadlines' => [
-                'Winter Semester' => ['start' => null, 'end' => '15.06', 'note' => 'as provided'],
-                'Summer Semester' => ['start' => null, 'end' => '15.11', 'note' => 'as provided'],
+                'Winter Semester' => ['start' => null, 'end' => '15.11', 'note' => ''],
+                'Summer Semester' => ['start' => null, 'end' => '15.06', 'note' => ''],
             ],
             'requirements' => [
                 'German level: B1',
@@ -800,7 +800,7 @@ class StudienkollegsTableSeeder extends Seeder
 
             'featured' => false,
             'public' => true,
-            'uni_assist' => true,
+            'uni_assist' => false,
             'entrance_exam' => true,
 
             'duration_semesters' => 2,
@@ -1036,7 +1036,7 @@ class StudienkollegsTableSeeder extends Seeder
             'video_url' => null,
 
             'languages' => ['German'],
-            'courses' => $makeCourses(['M', 'T', 'W', 'G', 'S']),
+            'courses' => $makeCourses(['TI', 'T', 'WW', 'W']),
             'documents' => [
                 'School leaving certificate',
                 'Transcript of records',
