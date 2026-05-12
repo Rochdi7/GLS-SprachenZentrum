@@ -195,18 +195,6 @@
         <small class="text-muted">Total des paliers du parcours.</small>
     </div>
 
-    <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Appréciation</label>
-        <select name="erfolg" class="form-select" required>
-            @foreach($erfolgOptions as $value => $label)
-                <option value="{{ $value }}"
-                        {{ old('erfolg', $att->erfolg ?? 'Erfolg') === $value ? 'selected' : '' }}>
-                    {{ $label }}
-                </option>
-            @endforeach
-        </select>
-    </div>
-
     {{-- ============================================================ --}}
     {{--   MÉTHODOLOGIE / NOTE LÉGALE — caché, valeur préservée       --}}
     {{-- ============================================================ --}}

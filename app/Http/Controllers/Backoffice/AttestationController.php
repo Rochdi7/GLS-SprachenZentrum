@@ -276,6 +276,9 @@ class AttestationController extends Controller
         // Cours en cours : checkbox non cochée = false.
         $data['is_ongoing'] = !empty($data['is_ongoing']);
 
+        // Appréciation : toujours la liste complète, gérée côté backend.
+        $data['erfolg'] = 'Erfolg , mit gutem Erfolg , mit Erfolg , teilgenommen';
+
         return $data;
     }
 

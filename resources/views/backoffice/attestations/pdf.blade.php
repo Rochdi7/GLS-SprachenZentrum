@@ -337,7 +337,7 @@
 
     <div class="erfolg-line">
         @foreach($erfolgList as $i => $opt)
-            <span class="{{ $attestation->erfolg === $opt ? 'erfolg-active' : '' }}">{{ $opt }}</span>@if($i < count($erfolgList) - 1) , @endif
+            <span>{{ $opt }}</span>@if($i < count($erfolgList) - 1) , @endif
         @endforeach
         .
     </div>
