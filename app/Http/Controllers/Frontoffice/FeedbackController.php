@@ -28,12 +28,12 @@ class FeedbackController extends Controller
             'site_id'   => ['required', 'integer', 'exists:sites,id'],
             'message'   => ['required', 'string', 'min:5', 'max:5000'],
         ], [
-            'full_name.required' => 'Le nom complet est obligatoire.',
-            'site_id.required'   => 'Veuillez sélectionner votre centre GLS.',
-            'site_id.exists'     => 'Le centre sélectionné est invalide.',
-            'message.required'   => 'Le message est obligatoire.',
-            'message.min'        => 'Le message doit contenir au moins 5 caractères.',
-            'message.max'        => 'Le message ne peut pas dépasser 5000 caractères.',
+            'full_name.required' => __('feedback.v_full_name_required'),
+            'site_id.required'   => __('feedback.v_site_required'),
+            'site_id.exists'     => __('feedback.v_site_invalid'),
+            'message.required'   => __('feedback.v_message_required'),
+            'message.min'        => __('feedback.v_message_min'),
+            'message.max'        => __('feedback.v_message_max'),
         ]);
 
         $site = Site::find($validated['site_id']);

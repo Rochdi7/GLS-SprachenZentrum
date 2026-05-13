@@ -1,6 +1,6 @@
 @extends('frontoffice.layouts.app')
 
-@section('title', 'Votre avis — GLS Sprachenzentrum')
+@section('title', __('feedback.page_title'))
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/ressource/attestation-request.css') }}?v={{ @filemtime(public_path('assets/css/frontoffice/ressource/attestation-request.css')) ?: time() }}">
@@ -11,14 +11,14 @@
     {{-- ── HERO ─────────────────────────────────────── --}}
     <section class="att-hero">
         <div class="container att-hero-inner">
-            <span class="att-eyebrow"><span class="dot"></span> Espace étudiants GLS</span>
-            <h1>Partagez votre <span class="accent">avis</span></h1>
-            <p class="lead">Votre retour nous aide à améliorer continuellement la qualité des cours et de l'accueil dans nos centres.</p>
+            <span class="att-eyebrow"><span class="dot"></span> {{ __('feedback.eyebrow') }}</span>
+            <h1>{{ __('feedback.heading') }} <span class="accent">{{ __('feedback.heading_accent') }}</span></h1>
+            <p class="lead">{{ __('feedback.lead') }}</p>
 
             <div class="att-steps">
-                <div class="att-step-chip"><span class="num">1</span> Renseignez vos informations</div>
-                <div class="att-step-chip muted"><span class="num">2</span> Décrivez votre expérience</div>
-                <div class="att-step-chip muted"><span class="num">3</span> Envoyez votre message</div>
+                <div class="att-step-chip"><span class="num">1</span> {{ __('feedback.step_1') }}</div>
+                <div class="att-step-chip muted"><span class="num">2</span> {{ __('feedback.step_2') }}</div>
+                <div class="att-step-chip muted"><span class="num">3</span> {{ __('feedback.step_3') }}</div>
             </div>
         </div>
     </section>
@@ -30,8 +30,8 @@
             <div class="att-gls-only" role="note">
                 <div class="att-gls-only-icon"><i class="bi bi-chat-heart-fill"></i></div>
                 <div class="att-gls-only-body">
-                    <strong>Parlez-nous franchement</strong>
-                    <p>Dites-nous la vérité — ce que vous aimez, ce qui pourrait être mieux, vos idées. Votre honnêteté nous aide à améliorer votre expérience chez GLS. Aucun jugement, juste pour progresser ensemble.</p>
+                    <strong>{{ __('feedback.notice_title') }}</strong>
+                    <p>{{ __('feedback.notice_text') }}</p>
                 </div>
             </div>
 
@@ -39,7 +39,7 @@
 
                 @if ($errors->any())
                     <div class="att-error">
-                        <strong><i class="bi bi-exclamation-triangle-fill"></i> Veuillez corriger les erreurs ci-dessous</strong>
+                        <strong><i class="bi bi-exclamation-triangle-fill"></i> {{ __('feedback.errors_title') }}</strong>
                         <ul>
                             @foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach
                         </ul>
@@ -50,21 +50,21 @@
                     @csrf
 
                     {{-- IDENTITÉ --}}
-                    <h3 class="att-section-title"><i class="bi bi-person-vcard"></i> Vos informations</h3>
+                    <h3 class="att-section-title"><i class="bi bi-person-vcard"></i> {{ __('feedback.section_identity') }}</h3>
 
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label">Nom complet <span class="text-danger">*</span></label>
+                            <label class="form-label">{{ __('feedback.full_name') }} <span class="text-danger">*</span></label>
                             <input type="text" name="full_name" class="form-control" required
-                                   placeholder="Prénom et nom"
+                                   placeholder="{{ __('feedback.full_name_placeholder') }}"
                                    value="{{ old('full_name') }}">
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label" id="fb-site-label">Centre GLS <span class="text-danger">*</span></label>
+                            <label class="form-label" id="fb-site-label">{{ __('feedback.site') }} <span class="text-danger">*</span></label>
                             <div class="att-select" data-att-select>
                                 <select name="site_id" class="att-select__native" required aria-labelledby="fb-site-label">
-                                    <option value="">Sélectionnez votre centre</option>
+                                    <option value="">{{ __('feedback.site_select') }}</option>
                                     @foreach ($sites as $site)
                                         <option value="{{ $site->id }}" {{ (string) old('site_id') === (string) $site->id ? 'selected' : '' }}>
                                             {{ $site->name }}@if($site->city) — {{ $site->city }}@endif
@@ -72,7 +72,7 @@
                                     @endforeach
                                 </select>
                                 <button type="button" class="att-select__btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="fb-site-label">
-                                    <span class="att-select__value att-select__value--placeholder">Sélectionnez votre centre</span>
+                                    <span class="att-select__value att-select__value--placeholder">{{ __('feedback.site_select') }}</span>
                                     <svg class="att-select__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
                                 </button>
                                 <ul class="att-select__menu" role="listbox" tabindex="-1" aria-labelledby="fb-site-label" hidden>
@@ -90,31 +90,31 @@
                     <hr class="att-divider">
 
                     {{-- MESSAGE --}}
-                    <h3 class="att-section-title"><i class="bi bi-chat-quote"></i> Votre message</h3>
+                    <h3 class="att-section-title"><i class="bi bi-chat-quote"></i> {{ __('feedback.section_message') }}</h3>
 
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label" for="fb-message">Votre avis / suggestion <span class="text-danger">*</span></label>
+                            <label class="form-label" for="fb-message">{{ __('feedback.message') }} <span class="text-danger">*</span></label>
                             <textarea id="fb-message"
                                       name="message"
                                       class="form-control @error('message') is-invalid @enderror"
                                       rows="6"
                                       maxlength="5000"
                                       required
-                                      placeholder="Partagez librement votre expérience : qualité des cours, accueil, suggestions d'amélioration…">{{ old('message') }}</textarea>
+                                      placeholder="{{ __('feedback.message_placeholder') }}">{{ old('message') }}</textarea>
                             @error('message')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="help"><i class="bi bi-pencil-square"></i> Votre message est lu directement par l'équipe GLS.</small>
+                            <small class="help"><i class="bi bi-pencil-square"></i> {{ __('feedback.message_help') }}</small>
                         </div>
                     </div>
 
                     <div class="att-actions">
                         <span class="att-secure-note">
-                            <i class="bi bi-shield-lock-fill"></i> Vos informations restent confidentielles.
+                            <i class="bi bi-shield-lock-fill"></i> {{ __('feedback.secure_note') }}
                         </span>
                         <button type="submit" class="att-submit">
-                            <i class="bi bi-send-fill"></i> Envoyer mon avis
+                            <i class="bi bi-send-fill"></i> {{ __('feedback.submit') }}
                         </button>
                     </div>
                 </form>

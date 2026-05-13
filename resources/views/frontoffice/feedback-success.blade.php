@@ -1,9 +1,13 @@
 @extends('frontoffice.layouts.app')
 
-@section('title', 'Merci pour votre avis — GLS')
+@section('title', __('feedback.success_page_title'))
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/ressource/attestation-request.css') }}">
+
+@php
+    $successText = explode('|', __('feedback.success_text'));
+@endphp
 
 @section('content')
 <main class="att-success-page">
@@ -12,17 +16,17 @@
             <div class="icon">
                 <i class="bi bi-check-circle-fill"></i>
             </div>
-            <h1>Merci pour votre retour !</h1>
+            <h1>{{ __('feedback.success_heading') }}</h1>
             <p>
-                Votre message a bien été transmis à l'équipe GLS Sprachenzentrum.<br>
-                Chaque avis compte pour améliorer la qualité de nos services.
+                {{ $successText[0] ?? '' }}<br>
+                {{ $successText[1] ?? '' }}
             </p>
             <div class="att-success-actions">
                 <a href="{{ LaravelLocalization::localizeUrl(route('front.home')) }}" class="att-btn-primary">
-                    <i class="bi bi-house-door"></i> Retour à l'accueil
+                    <i class="bi bi-house-door"></i> {{ __('feedback.success_back_home') }}
                 </a>
                 <a href="{{ LaravelLocalization::localizeUrl(route('front.contact')) }}" class="att-btn-ghost">
-                    <i class="bi bi-chat-dots"></i> Nous contacter
+                    <i class="bi bi-chat-dots"></i> {{ __('feedback.success_contact') }}
                 </a>
             </div>
         </div>
