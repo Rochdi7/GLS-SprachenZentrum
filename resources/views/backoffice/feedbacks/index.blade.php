@@ -95,6 +95,7 @@
                                                class="avtar avtar-xs btn-link-secondary me-2" title="Voir">
                                                 <i class="ti ti-eye f-20"></i>
                                             </a>
+                                            @can('feedbacks.delete')
                                             <form action="{{ route('backoffice.feedbacks.destroy', $f->id) }}" method="POST" class="d-inline-block">
                                                 @csrf
                                                 @method('DELETE')
@@ -105,6 +106,7 @@
                                                     <i class="ti ti-trash f-20"></i>
                                                 </button>
                                             </form>
+                                            @endcan
                                         </td>
                                     </tr>
                                 @empty

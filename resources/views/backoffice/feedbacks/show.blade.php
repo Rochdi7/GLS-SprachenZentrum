@@ -57,6 +57,7 @@
         </div>
 
         <div class="col-lg-4">
+            @can('feedbacks.delete')
             <div class="card">
                 <div class="card-header">
                     <h6 class="mb-0">Actions</h6>
@@ -72,6 +73,7 @@
                     </form>
                 </div>
             </div>
+            @endcan
 
             <div class="mt-3">
                 <a href="{{ route('backoffice.feedbacks.index') }}" class="btn btn-link">
