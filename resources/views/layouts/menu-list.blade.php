@@ -7,6 +7,7 @@
         || request()->routeIs('backoffice.certificates.*')
         || request()->routeIs('backoffice.attestations.*')
         || request()->routeIs('backoffice.attestation_requests.*')
+        || request()->routeIs('backoffice.feedbacks.*')
         || request()->routeIs('backoffice.translations.*')
         || request()->routeIs('backoffice.studienkollegs.*')
         || request()->routeIs('backoffice.quizzes.*');
@@ -112,6 +113,13 @@
             </a>
         </li>
         @endcan
+        @auth
+        <li class="pc-item {{ request()->routeIs('backoffice.feedbacks.*') ? 'active' : '' }}">
+            <a href="{{ route('backoffice.feedbacks.index') }}" class="pc-link {{ request()->routeIs('backoffice.feedbacks.*') ? 'active' : '' }}">
+                <span class="pc-mtext">Avis & Feedbacks</span>
+            </a>
+        </li>
+        @endauth
         @can('translations.view')
         <li class="pc-item {{ request()->routeIs('backoffice.translations.*') ? 'active' : '' }}">
             <a href="{{ route('backoffice.translations.index') }}" class="pc-link {{ request()->routeIs('backoffice.translations.*') ? 'active' : '' }}">

@@ -19,6 +19,7 @@ use App\Http\Controllers\Backoffice\LevelFollowupController;
 use App\Http\Controllers\Backoffice\CertificateController;
 use App\Http\Controllers\Backoffice\AttestationController;
 use App\Http\Controllers\Backoffice\AttestationRequestController as BackofficeAttestationRequestController;
+use App\Http\Controllers\Backoffice\FeedbackController as BackofficeFeedbackController;
 use App\Http\Controllers\Backoffice\TranslationController;
 use App\Http\Controllers\Backoffice\QuizController;
 use App\Http\Controllers\Backoffice\QuizQuestionController;
@@ -226,6 +227,20 @@ Route::prefix('backoffice')
                 Route::post('/{id}/accept', [BackofficeAttestationRequestController::class, 'accept'])->middleware('permission:attestation_requests.create')->name('accept');
                 Route::post('/{id}/refuse', [BackofficeAttestationRequestController::class, 'refuse'])->middleware('permission:attestation_requests.edit')->name('refuse');
                 Route::delete('/{id}', [BackofficeAttestationRequestController::class, 'destroy'])->middleware('permission:attestation_requests.delete')->name('destroy');
+            });
+
+        /*
+        |----------------------------------------------------------------------
+        | AVIS / FEEDBACKS (étudiants — formulaire QR public)
+        |----------------------------------------------------------------------
+        */
+        Route::prefix('feedbacks')
+            ->name('feedbacks.')
+            ->group(function () {
+                Route::get('/', [BackofficeFeedbackController::class, 'index'])->name('index');
+                Route::get('/qr', [BackofficeFeedbackController::class, 'qr'])->name('qr');
+                Route::get('/{id}', [BackofficeFeedbackController::class, 'show'])->where('id', '[0-9]+')->name('show');
+                Route::delete('/{id}', [BackofficeFeedbackController::class, 'destroy'])->where('id', '[0-9]+')->name('destroy');
             });
 
         /*

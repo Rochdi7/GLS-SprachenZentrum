@@ -14,6 +14,7 @@ use App\Http\Controllers\Frontoffice\NewsletterController;
 use App\Http\Controllers\Frontoffice\GroupApplicationController;
 use App\Http\Controllers\Frontoffice\LevelQuizController;
 use App\Http\Controllers\Frontoffice\AttestationRequestController;
+use App\Http\Controllers\Frontoffice\FeedbackController;
 use App\Http\Controllers\Frontoffice\TranslationTrackingController;
 
 Route::middleware(CacheResponse::class)->group(function () {
@@ -44,6 +45,9 @@ Route::middleware(CacheResponse::class)->group(function () {
 
     Route::get('/demande-attestation', [AttestationRequestController::class, 'create'])->name('front.attestation-request.create');
     Route::get('/demande-attestation/success', [AttestationRequestController::class, 'success'])->name('front.attestation-request.success');
+
+    Route::get('/feedback', [FeedbackController::class, 'create'])->name('front.feedback.create');
+    Route::get('/feedback/success', [FeedbackController::class, 'success'])->name('front.feedback.success');
 
     Route::get('/exams/gls', [PageController::class, 'glsExams'])->name('front.exams.gls');
     Route::get('/exams/osd', [PageController::class, 'osdExams'])->name('front.exams.osd');
@@ -104,6 +108,7 @@ Route::post('/certificate-check', [PageController::class, 'certificateCheckPost'
 Route::post('/online-registration', [PageController::class, 'storeOnlineRegistration'])->name('front.online-registration.store');
 Route::post('/gls-inscription', [GlsController::class, 'store'])->name('gls.inscription');
 Route::post('/demande-attestation', [AttestationRequestController::class, 'store'])->name('front.attestation-request.store');
+Route::post('/feedback', [FeedbackController::class, 'store'])->name('front.feedback.store');
 Route::post('/consultation', [ConsultationController::class, 'store'])->name('front.consultation.store');
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 Route::post('/groups/apply', [GroupApplicationController::class, 'storeFromQuery'])->name('front.groups.apply');
