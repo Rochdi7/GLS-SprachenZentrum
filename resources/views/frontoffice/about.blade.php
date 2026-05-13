@@ -89,7 +89,7 @@
         <div class="container is-2-col-grid reveal delay-1">
 
             <div class="get-started-image reveal delay-2">
-                <img src="{{ asset('assets/images/about/subscribe.jpeg') }}" alt="{{ __('about.cta.image_alt') }}"
+                <img src="{{ asset('assets/images/about/ctagls.jpg') }}" alt="{{ __('about.cta.image_alt') }}"
                     class="full-image rounded-4" loading="lazy">
             </div>
 

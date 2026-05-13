@@ -19,7 +19,7 @@
     $contentOpen = request()->routeIs('backoffice.blog.*');
     $encaissementOpen = request()->routeIs('backoffice.encaissements.*');
     $rhOpen = request()->routeIs('backoffice.schedules.*') || request()->routeIs('backoffice.planning.*');
-    $adminOpen = request()->routeIs('backoffice.users.*') || request()->routeIs('backoffice.roles.*') || request()->routeIs('backoffice.enseignant_accounts.*');
+    $adminOpen = request()->routeIs('backoffice.users.*') || request()->routeIs('backoffice.roles.*');
     $whatsappOpen = request()->routeIs('backoffice.whatsapp_campaigns.*');
 @endphp
 
@@ -28,30 +28,6 @@
     <i class="ph-duotone ph-squares-four"></i>
 </li>
 
-@php
-    $isEnseignant = auth()->check() && auth()->user()->hasRole('Enseignant');
-@endphp
-
-@if($isEnseignant)
-    <li class="pc-item {{ request()->routeIs('enseignant.dashboard*') ? 'active' : '' }}">
-        <a href="{{ route('enseignant.dashboard') }}" class="pc-link {{ request()->routeIs('enseignant.dashboard*') ? 'active' : '' }}">
-            <span class="pc-micon"><i class="ph-duotone ph-gauge"></i></span>
-            <span class="pc-mtext">Mon tableau de bord</span>
-        </a>
-    </li>
-    <li class="pc-item {{ request()->routeIs('enseignant.weekly_reports.*') ? 'active' : '' }}">
-        <a href="{{ route('enseignant.weekly_reports.index') }}" class="pc-link {{ request()->routeIs('enseignant.weekly_reports.*') ? 'active' : '' }}">
-            <span class="pc-micon"><i class="ph-duotone ph-notebook"></i></span>
-            <span class="pc-mtext">Rapport semaine</span>
-        </a>
-    </li>
-    <li class="pc-item {{ request()->routeIs('enseignant.level_followups.*') ? 'active' : '' }}">
-        <a href="{{ route('enseignant.level_followups.index') }}" class="pc-link {{ request()->routeIs('enseignant.level_followups.*') ? 'active' : '' }}">
-            <span class="pc-micon"><i class="ph-duotone ph-stairs"></i></span>
-            <span class="pc-mtext">Suivi niveau</span>
-        </a>
-    </li>
-@else
 @can('dashboard.view')
 <li class="pc-item {{ $dashboardActive ? 'active' : '' }}">
     <a href="{{ route('dashboard') }}" class="pc-link {{ $dashboardActive ? 'active' : '' }}">
@@ -425,11 +401,6 @@
                 <span class="pc-mtext">Utilisateurs</span>
             </a>
         </li>
-        <li class="pc-item {{ request()->routeIs('backoffice.enseignant_accounts.*') ? 'active' : '' }}">
-            <a href="{{ route('backoffice.enseignant_accounts.index') }}" class="pc-link {{ request()->routeIs('backoffice.enseignant_accounts.*') ? 'active' : '' }}">
-                <span class="pc-mtext">Comptes enseignants</span>
-            </a>
-        </li>
         @endcan
         @can('roles.view')
         <li class="pc-item {{ request()->routeIs('backoffice.roles.*') ? 'active' : '' }}">
@@ -441,4 +412,3 @@
     </ul>
 </li>
 @endcanany
-@endif

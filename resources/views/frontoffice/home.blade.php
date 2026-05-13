@@ -82,7 +82,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
             <div class="container sites-grid">
 
                 <!-- 1. Rabat -->
-                <div class="site-card small">
+                <a href="{{ route('front.sites.show', 'gls-rabat') }}" class="site-card small">
                     <div class="site-video-wrapper">
                         <img src="{{ asset('assets/images/sites/rabat.jpg') }}" alt="GLS Rabat" class="site-image">
                     </div>
@@ -90,10 +90,10 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     <div class="site-overlay">
                         <h3>{{ __('gls.sites.rabat') }}</h3>
                     </div>
-                </div>
+                </a>
 
                 <!-- 2. Kénitra -->
-                <div class="site-card small">
+                <a href="{{ route('front.sites.show', 'gls-kenitra') }}" class="site-card small">
                     <div class="site-video-wrapper">
                         <img src="{{ asset('assets/images/sites/kenitra.jpg') }}" alt="GLS Kénitra" class="site-image">
                     </div>
@@ -101,10 +101,10 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     <div class="site-overlay">
                         <h3>{{ __('gls.sites.kenitra') }}</h3>
                     </div>
-                </div>
+                </a>
 
                 <!-- 3. Marrakech -->
-                <div class="site-card wide">
+                <a href="{{ route('front.sites.show', 'gls-marrakech') }}" class="site-card wide">
                     <div class="site-video-wrapper">
                         <img src="{{ asset('assets/images/sites/marrakech.webp') }}" alt="GLS Marrakech"
                             class="site-image">
@@ -113,10 +113,10 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     <div class="site-overlay">
                         <h3>{{ __('gls.sites.marrakech') }}</h3>
                     </div>
-                </div>
+                </a>
 
                 <!-- 4. Salé -->
-                <div class="site-card wide">
+                <a href="{{ route('front.sites.show', 'gls-sale') }}" class="site-card wide">
                     <div class="site-video-wrapper">
                         <img src="{{ asset('assets/images/sites/sale.webp') }}" alt="GLS Salé" class="site-image">
                     </div>
@@ -124,10 +124,10 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     <div class="site-overlay">
                         <h3>{{ __('gls.sites.sale') }}</h3>
                     </div>
-                </div>
+                </a>
 
                 <!-- 5. Agadir -->
-                <div class="site-card small">
+                <a href="{{ route('front.sites.show', 'gls-agadir') }}" class="site-card small">
                     <div class="site-video-wrapper">
                         <img src="{{ asset('assets/images/sites/agadir.avif') }}" alt="GLS Agadir" class="site-image">
                     </div>
@@ -135,10 +135,10 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     <div class="site-overlay">
                         <h3>{{ __('gls.sites.agadir') }}</h3>
                     </div>
-                </div>
+                </a>
 
                 <!-- 6. Casablanca -->
-                <div class="site-card small">
+                <a href="{{ route('front.sites.show', 'gls-casablanca') }}" class="site-card small">
                     <div class="site-video-wrapper">
                         <img src="{{ asset('assets/images/sites/casablanca.jpg') }}" alt="GLS Casablanca"
                             class="site-image">
@@ -147,7 +147,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     <div class="site-overlay">
                         <h3>{{ __('gls.sites.casablanca') }}</h3>
                     </div>
-                </div>
+                </a>
 
             </div>
         </section>

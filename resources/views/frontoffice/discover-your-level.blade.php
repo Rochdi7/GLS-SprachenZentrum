@@ -309,8 +309,8 @@
 
             {{-- Image --}}
             <div class="get-started-image reveal delay-2">
-                <img src="{{ asset('assets/images/about/subscribe.jpeg') }}"
-                    alt="Étudiants souriant au GLS Sprachenzentrum" class="full-image rounded-4" loading="lazy">
+                <img src="{{ asset('assets/images/about/ctagls.jpg') }}" alt="Étudiants souriant au GLS Sprachenzentrum"
+                    class="full-image rounded-4" loading="lazy">
             </div>
 
             {{-- Content --}}
@@ -339,8 +339,8 @@
     </section>
 
     <!-- ============================
-                                 CONTACT SECTION
-                            ============================= -->
+                                     CONTACT SECTION
+                                ============================= -->
     <section class="contact-section section reveal delay-1">
         <div class="container is-2-col-grid reveal delay-2">
 

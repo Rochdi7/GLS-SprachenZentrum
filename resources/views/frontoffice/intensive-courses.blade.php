@@ -8,8 +8,8 @@
 @section('content')
 
     <!-- =========================================================
-                             HERO SECTION
-                        ========================================================= -->
+                                 HERO SECTION
+                            ========================================================= -->
     <section class="hero-section section intensive-hero reveal delay-1">
         <div class="container is-hero reveal delay-2">
 
@@ -30,8 +30,8 @@
     </section>
 
     <!-- =========================================================
-                             RICH TEXT SECTION
-                        ========================================================= -->
+                                 RICH TEXT SECTION
+                            ========================================================= -->
     <section class="rich-text-section section reveal delay-1">
         <div class="container reveal delay-2">
             <div class="rich-text w-richtext reveal delay-3">
@@ -43,8 +43,8 @@
     </section>
 
     <!-- =========================================================
-                             COURSES GRID
-                        ========================================================= -->
+                                 COURSES GRID
+                            ========================================================= -->
     <section class="home-courses-section section reveal delay-1">
         <div class="container is-h-courses reveal delay-2">
 
@@ -128,8 +128,8 @@
     </section>
 
     <!-- =========================================================
-                             QUESTIONS + CONSULTATION SECTION
-                        ========================================================= -->
+                                 QUESTIONS + CONSULTATION SECTION
+                            ========================================================= -->
     <section class="rich-text-section section reveal delay-1">
         <div class="container reveal delay-2">
             <div class="rich-text w-richtext reveal delay-3">
@@ -148,8 +148,8 @@
     </section>
 
     <!-- =========================================================
-                             INLINE CTA
-                        ========================================================= -->
+                                 INLINE CTA
+                            ========================================================= -->
     <section class="inline-cta-section my-5 reveal delay-1">
         <div class="container reveal delay-2">
             <div class="inline-cta-block mx-auto reveal delay-3">
@@ -168,13 +168,13 @@
     </section>
 
     <!-- =========================================================
-                             GET STARTED
-                        ========================================================= -->
+                                 GET STARTED
+                            ========================================================= -->
     <section class="get-started-section section reveal delay-1">
         <div class="container is-2-col-grid reveal delay-2">
 
             <div class="get-started-image reveal delay-3">
-                <img src="{{ asset('assets/images/about/subscribe.jpeg') }}" alt="GLS Students"
+                <img src="{{ asset('assets/images/about/ctagls.jpg') }}" alt="GLS Students"
                     class="full-image rounded-4 reveal delay-1" loading="lazy">
             </div>
 
@@ -198,8 +198,8 @@
     </section>
 
     <!-- =========================================================
-                             CONTACT SECTION
-                        ========================================================= -->
+                                 CONTACT SECTION
+                            ========================================================= -->
     <section class="contact-section section reveal delay-1">
         <div class="container is-2-col-grid reveal delay-2">
 

@@ -7,8 +7,8 @@
 @section('content')
 
     <!-- ============================
-                         HERO SECTION
-                    ============================ -->
+                             HERO SECTION
+                        ============================ -->
     <section class="hero-section section about-hero reveal delay-1">
         <div class="container is-hero reveal delay-2">
 
@@ -30,8 +30,8 @@
 
 
     <!-- ============================
-                         PRICING TABS
-                    ============================ -->
+                             PRICING TABS
+                        ============================ -->
     <div class="container py-5 reveal delay-1">
 
         <div class="gls-tabs-menu d-flex flex-wrap justify-content-center gap-2 mb-4 reveal delay-2">
@@ -101,8 +101,8 @@
 
 
     <!-- ============================
-                         JS DYNAMIC PRICING
-                    ============================ -->
+                             JS DYNAMIC PRICING
+                        ============================ -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
@@ -160,13 +160,13 @@
     </script>
 
     <!-- ============================
-                         CTA BLOCK
-                    ============================ -->
+                             CTA BLOCK
+                        ============================ -->
     <section class="get-started-section section reveal delay-1">
         <div class="container is-2-col-grid reveal delay-2">
 
             <div class="get-started-image reveal delay-3">
-                <img src="{{ asset('assets/images/about/subscribe.jpeg') }}" alt="{{ __('pricing.cta.title') }}"
+                <img src="{{ asset('assets/images/about/ctagls.jpg') }}" alt="{{ __('pricing.cta.title') }}"
                     class="full-image rounded-4 reveal delay-1" loading="lazy">
             </div>
 

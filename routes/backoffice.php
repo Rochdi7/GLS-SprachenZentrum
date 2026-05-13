@@ -25,7 +25,6 @@ use App\Http\Controllers\Backoffice\QuizController;
 use App\Http\Controllers\Backoffice\QuizQuestionController;
 use App\Http\Controllers\Backoffice\HelpController;
 use App\Http\Controllers\Backoffice\UserController;
-use App\Http\Controllers\Backoffice\EnseignantAccountController;
 use App\Http\Controllers\Backoffice\RoleController;
 use App\Http\Controllers\Backoffice\WhatsAppCampaignController;
 use App\Http\Controllers\Backoffice\NewsletterSubscriberController;
@@ -345,22 +344,6 @@ Route::prefix('backoffice')
                 Route::get('/{user}/edit', [UserController::class, 'edit'])->middleware('permission:users.edit')->name('edit');
                 Route::put('/{user}', [UserController::class, 'update'])->middleware('permission:users.edit')->name('update');
                 Route::delete('/{user}', [UserController::class, 'destroy'])->middleware('permission:users.delete')->name('destroy');
-            });
-
-        /*
-        |----------------------------------------------------------------------
-        | COMPTES ENSEIGNANTS (Login accounts for teachers)
-        |----------------------------------------------------------------------
-        */
-        Route::prefix('enseignant-accounts')
-            ->name('enseignant_accounts.')
-            ->group(function () {
-                Route::get('/', [EnseignantAccountController::class, 'index'])->middleware('permission:users.view')->name('index');
-                Route::get('/create', [EnseignantAccountController::class, 'create'])->middleware('permission:users.create')->name('create');
-                Route::post('/', [EnseignantAccountController::class, 'store'])->middleware('permission:users.create')->name('store');
-                Route::get('/{account}/edit', [EnseignantAccountController::class, 'edit'])->middleware('permission:users.edit')->name('edit');
-                Route::put('/{account}', [EnseignantAccountController::class, 'update'])->middleware('permission:users.edit')->name('update');
-                Route::delete('/{account}', [EnseignantAccountController::class, 'destroy'])->middleware('permission:users.delete')->name('destroy');
             });
 
         /*
