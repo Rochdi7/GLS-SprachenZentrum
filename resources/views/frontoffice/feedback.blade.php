@@ -4,6 +4,14 @@
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/ressource/attestation-request.css') }}?v={{ @filemtime(public_path('assets/css/frontoffice/ressource/attestation-request.css')) ?: time() }}">
+<style>
+    .att-optional{
+        display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.02em;
+        color:#6b7280;background:#f3f4f6;border:1px solid #e5e7eb;
+        padding:1px 8px;border-radius:999px;margin-left:6px;vertical-align:middle;
+        text-transform:lowercase;
+    }
+</style>
 
 @section('content')
 <main>
@@ -54,10 +62,14 @@
 
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label">{{ __('feedback.full_name') }} <span class="text-danger">*</span></label>
-                            <input type="text" name="full_name" class="form-control" required
+                            <label class="form-label">
+                                {{ __('feedback.full_name') }}
+                                <span class="att-optional">({{ __('feedback.optional') }})</span>
+                            </label>
+                            <input type="text" name="full_name" class="form-control"
                                    placeholder="{{ __('feedback.full_name_placeholder') }}"
                                    value="{{ old('full_name') }}">
+                            <small class="help"><i class="bi bi-incognito"></i> {{ __('feedback.full_name_help') }}</small>
                         </div>
 
                         <div class="col-md-6">

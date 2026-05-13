@@ -22,6 +22,8 @@ return [
 
     'full_name'             => 'Vollständiger Name',
     'full_name_placeholder' => 'Vor- und Nachname',
+    'full_name_help'        => 'Sie können anonym bleiben — lassen Sie dieses Feld leer, wenn Sie möchten.',
+    'optional'              => 'optional',
 
     'site'            => 'GLS Zentrum',
     'site_select'     => 'Wählen Sie Ihr Zentrum',
@@ -34,7 +36,6 @@ return [
     'submit'          => 'Feedback senden',
 
     // Validation
-    'v_full_name_required' => 'Der vollständige Name ist erforderlich.',
     'v_site_required'      => 'Bitte wählen Sie Ihr GLS-Zentrum.',
     'v_site_invalid'       => 'Das ausgewählte Zentrum ist ungültig.',
     'v_message_required'   => 'Eine Nachricht ist erforderlich.',

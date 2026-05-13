@@ -36,7 +36,13 @@
                     <h6 class="fw-bold mb-3">Étudiant</h6>
                     <dl class="row mb-4">
                         <dt class="col-sm-4">Nom complet</dt>
-                        <dd class="col-sm-8">{{ $feedback->full_name }}</dd>
+                        <dd class="col-sm-8">
+                            @if (filled($feedback->full_name))
+                                {{ $feedback->full_name }}
+                            @else
+                                <em class="text-muted"><i class="ti ti-user-question"></i> Anonyme</em>
+                            @endif
+                        </dd>
 
                         <dt class="col-sm-4">Centre GLS</dt>
                         <dd class="col-sm-8">

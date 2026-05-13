@@ -22,6 +22,8 @@ return [
 
     'full_name'             => 'الاسم الكامل',
     'full_name_placeholder' => 'الاسم واللقب',
+    'full_name_help'        => 'يمكنك البقاء مجهول الهوية — اترك هذا الحقل فارغًا إذا رغبت.',
+    'optional'              => 'اختياري',
 
     'site'            => 'مركز GLS',
     'site_select'     => 'اختر مركزك',
@@ -34,7 +36,6 @@ return [
     'submit'          => 'إرسال رأيي',
 
     // Validation
-    'v_full_name_required' => 'الاسم الكامل مطلوب.',
     'v_site_required'      => 'الرجاء اختيار مركز GLS الخاص بك.',
     'v_site_invalid'       => 'المركز المحدد غير صالح.',
     'v_message_required'   => 'الرسالة مطلوبة.',

@@ -22,6 +22,8 @@ return [
 
     'full_name'             => 'Nom complet',
     'full_name_placeholder' => 'Prénom et nom',
+    'full_name_help'        => 'Vous pouvez rester anonyme — laissez ce champ vide si vous préférez.',
+    'optional'              => 'facultatif',
 
     'site'            => 'Centre GLS',
     'site_select'     => 'Sélectionnez votre centre',
@@ -34,7 +36,6 @@ return [
     'submit'          => 'Envoyer mon avis',
 
     // Validation
-    'v_full_name_required' => 'Le nom complet est obligatoire.',
     'v_site_required'      => 'Veuillez sélectionner votre centre GLS.',
     'v_site_invalid'       => 'Le centre sélectionné est invalide.',
     'v_message_required'   => 'Le message est obligatoire.',

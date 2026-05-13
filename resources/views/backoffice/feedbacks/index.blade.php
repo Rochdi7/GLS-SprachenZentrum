@@ -65,7 +65,11 @@
                                     <tr class="{{ !$f->is_read ? 'table-warning' : '' }}">
                                         <td>{{ $f->id }}</td>
                                         <td>
-                                            <strong>{{ $f->full_name }}</strong>
+                                            @if (filled($f->full_name))
+                                                <strong>{{ $f->full_name }}</strong>
+                                            @else
+                                                <em class="text-muted"><i class="ti ti-user-question"></i> Anonyme</em>
+                                            @endif
                                         </td>
                                         <td>
                                             @if ($f->site)

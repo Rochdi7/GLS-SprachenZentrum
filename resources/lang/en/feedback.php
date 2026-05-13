@@ -22,6 +22,8 @@ return [
 
     'full_name'             => 'Full name',
     'full_name_placeholder' => 'First and last name',
+    'full_name_help'        => 'You can stay anonymous — leave this field empty if you prefer.',
+    'optional'              => 'optional',
 
     'site'            => 'GLS centre',
     'site_select'     => 'Select your centre',
@@ -34,7 +36,6 @@ return [
     'submit'          => 'Send my feedback',
 
     // Validation
-    'v_full_name_required' => 'Full name is required.',
     'v_site_required'      => 'Please select your GLS centre.',
     'v_site_invalid'       => 'The selected centre is invalid.',
     'v_message_required'   => 'A message is required.',
