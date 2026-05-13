@@ -168,21 +168,59 @@
             .qr-cta .dot           { animation: none; }
         }
 
-        /* Print: clean, no animation, single page */
+        /* Print: only the QR card is visible, perfectly centered, one page */
         @media print {
-            .no-print { display: none !important; }
-            body { background: #fff !important; }
-            .card { border: none !important; box-shadow: none !important; }
-            .qr-stage { padding: 0; }
-            .qr-card-anim::before,
-            .qr-card-anim::after { display: none; }
+            @page { margin: 12mm; }
+
+            /* Hide everything by default… */
+            body * { visibility: hidden !important; }
+
+            /* …then bring back only the QR card subtree */
+            #qr-print-area, #qr-print-area * { visibility: visible !important; }
+
+            /* Strip every wrapper so the card sits alone, centered on the page */
+            html, body {
+                background: #fff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .pc-sidebar, .pc-header, .pc-footer,
+            header, footer, nav, aside,
+            .breadcrumb, .page-header,
+            .card-header, .no-print { display: none !important; }
+
+            #qr-print-area {
+                position: absolute;
+                inset: 0;
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                padding: 0 !important;
+            }
+
+            /* Card itself: clean black outline, no spinning ribbon */
             .qr-card-anim {
                 border: 2px solid var(--gls-ink);
-                padding: 0;
-                background: #fff;
+                border-radius: 24px;
+                padding: 0 !important;
+                background: #fff !important;
+                box-shadow: none !important;
+                max-width: 90mm;
+                page-break-inside: avoid;
             }
-            .qr-card-inner { box-shadow: none; }
-            .qr-cta .dot { animation: none; }
+            .qr-card-anim::before,
+            .qr-card-anim::after { display: none !important; }
+            .qr-card-inner {
+                box-shadow: none !important;
+                padding: 18px 18px 14px !important;
+            }
+            .qr-frame {
+                box-shadow: none !important;
+                padding: 6px !important;
+            }
+            .qr-frame svg { width: 70mm !important; height: 70mm !important; }
+            .qr-cta .dot { animation: none !important; }
         }
     </style>
 @endsection
@@ -204,7 +242,7 @@
                 </div>
 
                 <div class="card-body p-0">
-                    <div class="qr-stage">
+                    <div class="qr-stage" id="qr-print-area">
                         <div class="qr-card-anim">
                             <div class="qr-card-inner">
                                 <div class="qr-cta no-print">
