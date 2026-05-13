@@ -9,8 +9,26 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class FeedbackController extends Controller
 {
+    /**
+     * TEMP: while feedbacks is in beta, only these emails may access it.
+     * Delete this method and its calls when opening the module to all users.
+     */
+    private const BETA_TESTERS = [
+        'ichrak.fakroune@glszentrum.com',
+        'rochdi.karouali@glszentrum.com',
+    ];
+
+    private function ensureBetaTester(): void
+    {
+        if (!in_array(optional(auth()->user())->email, self::BETA_TESTERS, true)) {
+            abort(403);
+        }
+    }
+
     public function index(Request $request)
     {
+        $this->ensureBetaTester();
+
         $filter = $request->query('filter');
 
         $query = Feedback::query()->with('site')->latest();
@@ -38,6 +56,8 @@ class FeedbackController extends Controller
 
     public function show(string $id)
     {
+        $this->ensureBetaTester();
+
         $feedback = Feedback::with('site')->findOrFail($id);
 
         if (!$feedback->is_read) {
@@ -51,6 +71,8 @@ class FeedbackController extends Controller
 
     public function destroy(string $id)
     {
+        $this->ensureBetaTester();
+
         Feedback::findOrFail($id)->delete();
 
         return redirect()->route('backoffice.feedbacks.index')
@@ -62,6 +84,8 @@ class FeedbackController extends Controller
      */
     public function qr()
     {
+        $this->ensureBetaTester();
+
         $url = route('front.feedback.create');
 
         $qrSvg = QrCode::format('svg')

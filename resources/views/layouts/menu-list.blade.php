@@ -113,6 +113,8 @@
             </a>
         </li>
         @endcan
+        {{-- TEMP: feedbacks beta — visible only to whitelisted testers. Remove this block when opening to all. --}}
+        @if (auth()->check() && in_array(auth()->user()->email, ['ichrak.fakroune@glszentrum.com', 'rochdi.karouali@glszentrum.com'], true))
         @can('feedbacks.view')
         <li class="pc-item {{ request()->routeIs('backoffice.feedbacks.*') ? 'active' : '' }}">
             <a href="{{ route('backoffice.feedbacks.index') }}" class="pc-link {{ request()->routeIs('backoffice.feedbacks.*') ? 'active' : '' }}">
@@ -120,6 +122,7 @@
             </a>
         </li>
         @endcan
+        @endif
         @can('translations.view')
         <li class="pc-item {{ request()->routeIs('backoffice.translations.*') ? 'active' : '' }}">
             <a href="{{ route('backoffice.translations.index') }}" class="pc-link {{ request()->routeIs('backoffice.translations.*') ? 'active' : '' }}">
