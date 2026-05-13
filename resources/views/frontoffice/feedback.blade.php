@@ -28,10 +28,10 @@
         <div class="container">
 
             <div class="att-gls-only" role="note">
-                <div class="att-gls-only-icon"><i class="bi bi-shield-exclamation"></i></div>
+                <div class="att-gls-only-icon"><i class="bi bi-chat-heart-fill"></i></div>
                 <div class="att-gls-only-body">
-                    <strong>Réservé aux étudiants GLS</strong>
-                    <p>Ce formulaire est destiné aux étudiants inscrits dans l'un des centres GLS Sprachenzentrum. Merci de fournir des informations exactes.</p>
+                    <strong>Parlez-nous franchement</strong>
+                    <p>Dites-nous la vérité — ce que vous aimez, ce qui pourrait être mieux, vos idées. Votre honnêteté nous aide à améliorer votre expérience chez GLS. Aucun jugement, juste pour progresser ensemble.</p>
                 </div>
             </div>
 
