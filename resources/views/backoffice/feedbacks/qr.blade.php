@@ -170,19 +170,21 @@
 
         /* Print: only the QR card is visible, perfectly centered, one page */
         @media print {
-            @page { margin: 12mm; }
+            @page { size: A4; margin: 0; }
 
             /* Hide everything by default… */
-            body * { visibility: hidden !important; }
+            html body * { visibility: hidden !important; }
 
             /* …then bring back only the QR card subtree */
             #qr-print-area, #qr-print-area * { visibility: visible !important; }
 
-            /* Strip every wrapper so the card sits alone, centered on the page */
+            /* Strip layout that pushes the card down */
             html, body {
                 background: #fff !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
             }
 
             .pc-sidebar, .pc-header, .pc-footer,
@@ -190,37 +192,53 @@
             .breadcrumb, .page-header,
             .card-header, .no-print { display: none !important; }
 
+            /* Lock the card to the centre of the printed sheet */
             #qr-print-area {
-                position: absolute;
-                inset: 0;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
                 display: flex !important;
-                align-items: center;
-                justify-content: center;
+                align-items: center !important;
+                justify-content: center !important;
                 padding: 0 !important;
+                margin: 0 !important;
+                background: #fff !important;
+                z-index: 9999 !important;
             }
 
             /* Card itself: clean black outline, no spinning ribbon */
             .qr-card-anim {
+                position: relative !important;
                 border: 2px solid var(--gls-ink);
                 border-radius: 24px;
                 padding: 0 !important;
+                margin: 0 !important;
                 background: #fff !important;
                 box-shadow: none !important;
-                max-width: 90mm;
+                width: 95mm !important;
+                max-width: 95mm !important;
                 page-break-inside: avoid;
             }
             .qr-card-anim::before,
             .qr-card-anim::after { display: none !important; }
             .qr-card-inner {
                 box-shadow: none !important;
-                padding: 18px 18px 14px !important;
+                padding: 14mm 8mm 10mm !important;
             }
             .qr-frame {
                 box-shadow: none !important;
-                padding: 6px !important;
+                padding: 4mm !important;
+                margin: 4mm 0 !important;
             }
-            .qr-frame svg { width: 70mm !important; height: 70mm !important; }
+            .qr-frame svg { width: 72mm !important; height: 72mm !important; }
             .qr-cta .dot { animation: none !important; }
+
+            .qr-brand { font-size: 18pt !important; margin-bottom: 4mm !important; }
+            .qr-sub   { font-size: 10pt !important; }
         }
     </style>
 @endsection
