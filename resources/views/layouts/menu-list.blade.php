@@ -19,7 +19,8 @@
     $contentOpen = request()->routeIs('backoffice.blog.*');
     $encaissementOpen = request()->routeIs('backoffice.encaissements.*');
     $rhOpen = request()->routeIs('backoffice.schedules.*') || request()->routeIs('backoffice.planning.*');
-    $adminOpen = request()->routeIs('backoffice.users.*') || request()->routeIs('backoffice.roles.*');
+    $adminOpen = request()->routeIs('backoffice.users.*') || request()->routeIs('backoffice.roles.*') || request()->routeIs('backoffice.crm.*');
+    $crmOpen = request()->routeIs('backoffice.crm.*');
     $whatsappOpen = request()->routeIs('backoffice.whatsapp_campaigns.*');
 @endphp
 
@@ -123,6 +124,7 @@
         </li>
         @endcan
         @endif
+
         @can('translations.view')
         <li class="pc-item {{ request()->routeIs('backoffice.translations.*') ? 'active' : '' }}">
             <a href="{{ route('backoffice.translations.index') }}" class="pc-link {{ request()->routeIs('backoffice.translations.*') ? 'active' : '' }}">
@@ -390,7 +392,7 @@
 @endcan
 --}}
 
-@canany(['users.view', 'roles.view'])
+@canany(['users.view', 'roles.view', 'crm.view'])
 <li class="pc-item pc-hasmenu {{ $adminOpen ? 'pc-trigger' : '' }}">
     <a href="#!" class="pc-link">
         <span class="pc-micon"><i class="ph-duotone ph-user-gear"></i></span>
@@ -410,6 +412,110 @@
             <a href="{{ route('backoffice.roles.index') }}" class="pc-link {{ request()->routeIs('backoffice.roles.*') ? 'active' : '' }}">
                 <span class="pc-mtext">Rôles & Permissions</span>
             </a>
+        </li>
+        @endcan
+
+        {{-- CRM (Homeschool External API) — read-only proxy. Nested submenu. --}}
+        @can('crm.view')
+        <li class="pc-item pc-hasmenu {{ $crmOpen ? 'pc-trigger' : '' }}">
+            <a href="#!" class="pc-link">
+                <span class="pc-mtext">CRM (API)</span>
+                <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
+            </a>
+            <ul class="pc-submenu">
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.index') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.index') }}" class="pc-link {{ request()->routeIs('backoffice.crm.index') ? 'active' : '' }}">
+                        <span class="pc-mtext">Vue d'ensemble</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.stats') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.stats') }}" class="pc-link {{ request()->routeIs('backoffice.crm.stats') ? 'active' : '' }}">
+                        <span class="pc-mtext">Statistiques</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.duplicates') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.duplicates') }}" class="pc-link {{ request()->routeIs('backoffice.crm.duplicates') ? 'active' : '' }}">
+                        <span class="pc-mtext">Doublons</span>
+                    </a>
+                </li>
+                {{--
+                    Insights pages — hidden from the sidebar for now.
+                    Routes still work directly: /backoffice/crm/insights/*
+                    Uncomment to bring them back.
+                --}}
+                {{--
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.insights.cash-handlers') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.insights.cash-handlers') }}" class="pc-link {{ request()->routeIs('backoffice.crm.insights.cash-handlers') ? 'active' : '' }}">
+                        <span class="pc-mtext">Cash handlers</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.insights.reconciliation') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.insights.reconciliation') }}" class="pc-link {{ request()->routeIs('backoffice.crm.insights.reconciliation') ? 'active' : '' }}">
+                        <span class="pc-mtext">Réconciliation</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.insights.retention') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.insights.retention') }}" class="pc-link {{ request()->routeIs('backoffice.crm.insights.retention') ? 'active' : '' }}">
+                        <span class="pc-mtext">Rétention</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.insights.forecast') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.insights.forecast') }}" class="pc-link {{ request()->routeIs('backoffice.crm.insights.forecast') ? 'active' : '' }}">
+                        <span class="pc-mtext">Prévisions revenus</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.insights.payment-activity') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.insights.payment-activity') }}" class="pc-link {{ request()->routeIs('backoffice.crm.insights.payment-activity') ? 'active' : '' }}">
+                        <span class="pc-mtext">Activité paiements</span>
+                    </a>
+                </li>
+                --}}
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.students') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.students') }}" class="pc-link {{ request()->routeIs('backoffice.crm.students') ? 'active' : '' }}">
+                        <span class="pc-mtext">Étudiants</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.session-presence') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.session-presence') }}" class="pc-link {{ request()->routeIs('backoffice.crm.session-presence') ? 'active' : '' }}">
+                        <span class="pc-mtext">Présences sessions</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.registrations') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.registrations') }}" class="pc-link {{ request()->routeIs('backoffice.crm.registrations') ? 'active' : '' }}">
+                        <span class="pc-mtext">Inscriptions</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.payments') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.payments') }}" class="pc-link {{ request()->routeIs('backoffice.crm.payments') ? 'active' : '' }}">
+                        <span class="pc-mtext">Paiements</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.payment-checks') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.payment-checks') }}" class="pc-link {{ request()->routeIs('backoffice.crm.payment-checks') ? 'active' : '' }}">
+                        <span class="pc-mtext">Chèques</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.payment-allocations') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.payment-allocations') }}" class="pc-link {{ request()->routeIs('backoffice.crm.payment-allocations') ? 'active' : '' }}">
+                        <span class="pc-mtext">Allocations paiement</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.groups.classes') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.groups.classes') }}" class="pc-link {{ request()->routeIs('backoffice.crm.groups.classes') ? 'active' : '' }}">
+                        <span class="pc-mtext">Classes</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.groups.level-sessions') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.groups.level-sessions') }}" class="pc-link {{ request()->routeIs('backoffice.crm.groups.level-sessions') ? 'active' : '' }}">
+                        <span class="pc-mtext">Level sessions</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.lov') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.lov', ['kind' => 'banks']) }}" class="pc-link {{ request()->routeIs('backoffice.crm.lov') ? 'active' : '' }}">
+                        <span class="pc-mtext">Listes de valeurs (LOV)</span>
+                    </a>
+                </li>
+            </ul>
         </li>
         @endcan
     </ul>

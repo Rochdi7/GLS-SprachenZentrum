@@ -24,6 +24,12 @@ class Kernel extends ConsoleKernel
             ->dailyAt('00:15')
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/level-followups-schedule.log'));
+
+        // ✅ CRM payment snapshot: capture quotidienne pour audit + détection fraude
+        $schedule->command('crm:snapshot-payments')
+            ->dailyAt('01:30')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/crm-snapshot-payments.log'));
     }
 
     /**

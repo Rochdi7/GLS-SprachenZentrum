@@ -23,10 +23,17 @@ class Site extends Model implements HasMedia
         'video_url',
         'video_description',
         'is_active',
+        'crm_store_id',
+        'crm_token',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'is_active'    => 'boolean',
+        'crm_store_id' => 'integer',
+    ];
+
+    protected $hidden = [
+        'crm_token',
     ];
 
     // Relations

@@ -738,6 +738,40 @@ Route::prefix('backoffice')
                 Route::post('/force-reset', [WhatsAppCampaignController::class, 'forceReset'])
                     ->middleware('permission:whatsapp_campaigns.edit')->name('force_reset');
             });
+
+        /*
+        |--------------------------------------------------------------------------
+        | CRM (Homeschool External API) — READ-ONLY proxy pages
+        | Kept fully separated from the normal CRUD controllers above.
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('crm')
+            ->name('crm.')
+            ->middleware('permission:crm.view')
+            ->controller(\App\Http\Controllers\Backoffice\Crm\CrmController::class)
+            ->group(function () {
+                Route::get('/',                      'index')->name('index');
+                Route::get('/stats',                 'stats')->name('stats');
+                Route::get('/duplicates',            'duplicates')->name('duplicates');
+                Route::get('/insights/cash-handlers',   'cashHandlers')->name('insights.cash-handlers');
+                Route::get('/insights/reconciliation',  'reconciliation')->name('insights.reconciliation');
+                Route::get('/insights/retention',       'retention')->name('insights.retention');
+                Route::get('/insights/forecast',        'forecast')->name('insights.forecast');
+                Route::get('/insights/payment-activity',          'paymentActivity')->name('insights.payment-activity');
+                Route::get('/insights/payment-history/{paymentId}', 'paymentHistory')->name('insights.payment-history')
+                    ->where('paymentId', '[0-9]+');
+                Route::post('/center',               'setCenter')->name('set-center');
+                Route::get('/students',              'students')->name('students');
+                Route::get('/session-presence',      'sessionPresence')->name('session-presence');
+                Route::get('/registrations',         'registrations')->name('registrations');
+                Route::get('/payments',              'payments')->name('payments');
+                Route::get('/payment-checks',        'paymentChecks')->name('payment-checks');
+                Route::get('/payment-allocations',   'paymentAllocations')->name('payment-allocations');
+                Route::get('/groups/classes',        'groupsClasses')->name('groups.classes');
+                Route::get('/groups/level-sessions', 'groupsLevelSessions')->name('groups.level-sessions');
+                Route::get('/lov/{kind}',            'lov')->name('lov')
+                    ->where('kind', '[a-z0-9\-]+');
+            });
     });
 
 /*
