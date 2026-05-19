@@ -4,7 +4,8 @@ namespace App\Services\Crm\Stats;
 
 use App\Models\CrmPaymentSnapshot;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 /**
  * Diff engine over the crm_payment_snapshots table.
@@ -26,44 +27,66 @@ class PaymentActivityService
      *   previous_date: string,
      *   has_baseline: bool,
      *   counts: array<string,int>,
-     *   deleted: \Illuminate\Support\Collection,
-     *   created: \Illuminate\Support\Collection,
-     *   amount_changed: \Illuminate\Support\Collection,
-     *   late_edits: \Illuminate\Support\Collection,
-     *   user_changed: \Illuminate\Support\Collection,
+     *   deleted: LengthAwarePaginator,
+     *   created: LengthAwarePaginator,
+     *   amount_changed: LengthAwarePaginator,
+     *   late_edits: LengthAwarePaginator,
+     *   user_changed: LengthAwarePaginator,
      * }
      */
-    public function dailyDiff(?string $date = null, ?int $strStoreId = null): array
+    public function dailyDiff(?string $date = null, ?int $strStoreId = null, int $perPage = 50, ?int $page = null): array
     {
-        $today    = $date ? Carbon::parse($date)->toDateString() : Carbon::today()->toDateString();
-        $yesterday = Carbon::parse($today)->subDay()->toDateString();
+        $today = $date ? Carbon::parse($date)->toDateString() : Carbon::today()->toDateString();
+        $page  = $page ?: (int) (Paginator::resolveCurrentPage() ?: 1);
+
+        // Find the nearest available "previous" snapshot date (skip gaps).
+        // Example: snapshots on 2025-12-31 and 2026-05-17. When user picks
+        // 2026-05-17, the previous baseline is 2025-12-31, not 2026-05-16.
+        $previousSnapshotDate = CrmPaymentSnapshot::query()
+            ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId))
+            ->whereDate('snapshot_date', '<', $today)
+            ->max('snapshot_date');
+
+        $previous = $previousSnapshotDate ? Carbon::parse($previousSnapshotDate)->toDateString() : null;
 
         $todayQ = CrmPaymentSnapshot::whereDate('snapshot_date', $today)
             ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId));
-        $yestQ  = CrmPaymentSnapshot::whereDate('snapshot_date', $yesterday)
-            ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId));
 
         $todayCount = (clone $todayQ)->count();
-        $yestCount  = (clone $yestQ)->count();
+        $yestCount  = 0;
 
-        // If yesterday has no snapshot we can only show "today's state" — no diff possible.
-        if ($yestCount === 0) {
+        // No prior snapshot available → no diff possible (everything is "first seen").
+        if (!$previous) {
             return [
                 'date'             => $today,
-                'previous_date'    => $yesterday,
+                'previous_date'    => Carbon::parse($today)->subDay()->toDateString(),
                 'has_baseline'     => false,
                 'counts'           => ['today' => $todayCount, 'yesterday' => 0],
-                'deleted'          => collect(),
-                'created'          => collect(),
-                'amount_changed'   => collect(),
-                'late_edits'       => collect(),
-                'user_changed'     => collect(),
+                'deleted'          => $this->paginate(collect(), $perPage, $page, 'p_deleted'),
+                'created'          => $this->paginate(collect(), $perPage, $page, 'p_created'),
+                'amount_changed'   => $this->paginate(collect(), $perPage, $page, 'p_amount'),
+                'late_edits'       => $this->paginate(collect(), $perPage, $page, 'p_late'),
+                'user_changed'     => $this->paginate(collect(), $perPage, $page, 'p_user'),
             ];
         }
+
+        $yestQ = CrmPaymentSnapshot::whereDate('snapshot_date', $previous)
+            ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId));
+        $yestCount = (clone $yestQ)->count();
 
         // Pull both days indexed by crm_payment_id for fast lookup
         $today_rows = (clone $todayQ)->get()->keyBy('crm_payment_id');
         $yest_rows  = (clone $yestQ)->get()->keyBy('crm_payment_id');
+
+        // To avoid false positives across long gaps: a payment is only truly
+        // "deleted" if it doesn't appear in ANY snapshot taken on or after $today.
+        // Pull all crm_payment_ids that exist in snapshots ≥ $today — these are
+        // alive and should NOT be flagged as deleted.
+        $aliveIds = CrmPaymentSnapshot::query()
+            ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId))
+            ->whereDate('snapshot_date', '>=', $today)
+            ->pluck('crm_payment_id')
+            ->flip();
 
         $deleted        = collect();
         $created        = collect();
@@ -71,11 +94,11 @@ class PaymentActivityService
         $late_edits     = collect();
         $user_changed   = collect();
 
-        // 1. Deleted: existed yesterday, gone today (red flag for cash fraud)
+        // 1. Deleted: existed in previous snapshot, gone today AND never seen since.
         foreach ($yest_rows as $id => $y) {
-            if (!$today_rows->has($id)) {
-                $deleted->push($y);
-            }
+            if ($today_rows->has($id)) continue;
+            if ($aliveIds->has($id))   continue; // re-appears in a later snapshot → not deleted
+            $deleted->push($y);
         }
 
         // 2. Created today (could be legit OR could be back-dated fraud)
@@ -119,25 +142,51 @@ class PaymentActivityService
             }
         }
 
+        $deletedSorted    = $deleted->sortByDesc('amount')->values();
+        $createdSorted    = $created->sortByDesc('date_creation')->values();
+        $lateEditsSorted  = $late_edits->sortByDesc('date_update')->values();
+
         return [
             'date'             => $today,
-            'previous_date'    => $yesterday,
+            'previous_date'    => $previous,
             'has_baseline'     => true,
             'counts'           => [
                 'today'          => $todayCount,
                 'yesterday'      => $yestCount,
-                'deleted'        => $deleted->count(),
-                'created'        => $created->count(),
+                'deleted'        => $deletedSorted->count(),
+                'created'        => $createdSorted->count(),
                 'amount_changed' => $amount_changed->count(),
-                'late_edits'     => $late_edits->count(),
+                'late_edits'     => $lateEditsSorted->count(),
                 'user_changed'   => $user_changed->count(),
             ],
-            'deleted'          => $deleted->sortByDesc('amount')->values(),
-            'created'          => $created->sortByDesc('date_creation')->values(),
-            'amount_changed'   => $amount_changed,
-            'late_edits'       => $late_edits->sortByDesc('date_update')->values(),
-            'user_changed'     => $user_changed,
+            'deleted'          => $this->paginate($deletedSorted, $perPage, $page, 'p_deleted'),
+            'created'          => $this->paginate($createdSorted, $perPage, $page, 'p_created'),
+            'amount_changed'   => $this->paginate($amount_changed, $perPage, $page, 'p_amount'),
+            'late_edits'       => $this->paginate($lateEditsSorted, $perPage, $page, 'p_late'),
+            'user_changed'     => $this->paginate($user_changed, $perPage, $page, 'p_user'),
         ];
+    }
+
+    /**
+     * Paginate an in-memory collection using a dedicated page query param so
+     * each table on the page can be paginated independently.
+     */
+    private function paginate(\Illuminate\Support\Collection $items, int $perPage, int $page, string $pageName): LengthAwarePaginator
+    {
+        $current = max(1, (int) request()->query($pageName, 1));
+        $sliced  = $items->forPage($current, $perPage)->values();
+
+        return new LengthAwarePaginator(
+            $sliced,
+            $items->count(),
+            $perPage,
+            $current,
+            [
+                'path'     => Paginator::resolveCurrentPath(),
+                'query'    => request()->except($pageName),
+                'pageName' => $pageName,
+            ]
+        );
     }
 
     /**

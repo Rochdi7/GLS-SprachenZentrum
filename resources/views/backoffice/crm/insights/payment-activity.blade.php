@@ -11,7 +11,7 @@
     <form method="GET" class="card mb-3">
         <div class="card-body py-3 d-flex align-items-end gap-2 flex-wrap">
             <div>
-                <label class="form-label small text-muted mb-1">Date (compare cette date vs J-1)</label>
+                <label class="form-label small text-muted mb-1">Date (compare avec le snapshot précédent disponible)</label>
                 <input type="date" name="date" value="{{ $report['date'] }}" class="form-control form-control-sm" style="width: 200px;">
             </div>
             <button class="btn btn-sm btn-primary"><i class="ti ti-search me-1"></i> Comparer</button>
@@ -63,13 +63,16 @@
         </div>
 
         {{-- DELETED payments — top priority --}}
-        @if($report['deleted']->isNotEmpty())
+        @if($report['deleted']->total() > 0)
             <div class="card mb-3 border-danger shadow-sm">
-                <div class="card-header bg-light-danger">
+                <div class="card-header bg-light-danger d-flex flex-wrap align-items-center gap-2">
                     <h6 class="mb-0 text-danger">
                         <i class="ti ti-alert-triangle me-1"></i>
-                        Paiements supprimés depuis hier — {{ $report['deleted']->count() }}
+                        Paiements supprimés depuis hier — {{ number_format($report['deleted']->total(), 0, ',', ' ') }}
                     </h6>
+                    <span class="badge bg-light-danger text-danger ms-auto small">
+                        Page {{ $report['deleted']->currentPage() }} / {{ max(1, $report['deleted']->lastPage()) }}
+                    </span>
                 </div>
                 <div class="card-body">
                     <p class="small text-muted mb-3">
@@ -77,7 +80,7 @@
                         C'est le signal le plus fort de fraude potentielle (recevoir du cash, puis supprimer la trace).
                     </p>
                     <div class="table-responsive">
-                        <table class="table table-sm align-middle mb-0">
+                        <table class="table table-sm table-hover align-middle mb-0 text-nowrap">
                             <thead class="table-light">
                                 <tr>
                                     <th>ID</th>
@@ -111,8 +114,8 @@
                                         <td class="text-end fw-medium text-danger">{{ number_format($p->amount, 2, ',', ' ') }} DH</td>
                                         <td class="small">{{ $p->payment_method_name ?? '—' }}</td>
                                         <td class="small">{{ $p->user_creation_full_name ?? '—' }}</td>
-                                        <td class="small text-muted text-nowrap">{{ optional($p->date_creation)->format('Y-m-d H:i') }}</td>
-                                        <td class="small text-muted text-nowrap">{{ optional($p->date_update)->format('Y-m-d H:i') }}</td>
+                                        <td class="small text-muted">{{ optional($p->date_creation)->format('Y-m-d H:i') }}</td>
+                                        <td class="small text-muted">{{ optional($p->date_update)->format('Y-m-d H:i') }}</td>
                                         <td>
                                             <a href="{{ route('backoffice.crm.insights.payment-history', $p->crm_payment_id) }}"
                                                class="btn btn-sm btn-outline-danger" title="Voir historique">
@@ -124,22 +127,34 @@
                             </tbody>
                         </table>
                     </div>
+                    @if($report['deleted']->hasPages())
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 gap-2">
+                            <small class="text-muted">
+                                {{ $report['deleted']->firstItem() }}–{{ $report['deleted']->lastItem() }}
+                                sur {{ number_format($report['deleted']->total(), 0, ',', ' ') }}
+                            </small>
+                            {{ $report['deleted']->onEachSide(1)->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
         @endif
 
         {{-- AMOUNT CHANGED --}}
-        @if($report['amount_changed']->isNotEmpty())
+        @if($report['amount_changed']->total() > 0)
             <div class="card mb-3 border-warning shadow-sm">
-                <div class="card-header bg-light-warning">
+                <div class="card-header bg-light-warning d-flex flex-wrap align-items-center gap-2">
                     <h6 class="mb-0 text-warning">
                         <i class="ti ti-currency-dollar me-1"></i>
-                        Montants modifiés — {{ $report['amount_changed']->count() }}
+                        Montants modifiés — {{ number_format($report['amount_changed']->total(), 0, ',', ' ') }}
                     </h6>
+                    <span class="badge bg-light-warning text-warning ms-auto small">
+                        Page {{ $report['amount_changed']->currentPage() }} / {{ max(1, $report['amount_changed']->lastPage()) }}
+                    </span>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-sm align-middle mb-0">
+                        <table class="table table-sm table-hover align-middle mb-0 text-nowrap">
                             <thead class="table-light">
                                 <tr>
                                     <th>ID</th>
@@ -184,25 +199,37 @@
                             </tbody>
                         </table>
                     </div>
+                    @if($report['amount_changed']->hasPages())
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 gap-2">
+                            <small class="text-muted">
+                                {{ $report['amount_changed']->firstItem() }}–{{ $report['amount_changed']->lastItem() }}
+                                sur {{ number_format($report['amount_changed']->total(), 0, ',', ' ') }}
+                            </small>
+                            {{ $report['amount_changed']->onEachSide(1)->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
         @endif
 
         {{-- LATE EDITS --}}
-        @if($report['late_edits']->isNotEmpty())
+        @if($report['late_edits']->total() > 0)
             <div class="card mb-3 shadow-sm">
-                <div class="card-header bg-light">
+                <div class="card-header bg-light d-flex flex-wrap align-items-center gap-2">
                     <h6 class="mb-0 text-info">
                         <i class="ti ti-edit me-1"></i>
-                        Éditions tardives (> 24h après création) — {{ $report['late_edits']->count() }}
+                        Éditions tardives (> 24h après création) — {{ number_format($report['late_edits']->total(), 0, ',', ' ') }}
                     </h6>
+                    <span class="badge bg-light-info text-info ms-auto small">
+                        Page {{ $report['late_edits']->currentPage() }} / {{ max(1, $report['late_edits']->lastPage()) }}
+                    </span>
                 </div>
                 <div class="card-body">
                     <p class="small text-muted mb-3">
                         Paiements modifiés bien après leur création. Pas nécessairement frauduleux, mais à inspecter — surtout si même utilisateur crée + modifie.
                     </p>
                     <div class="table-responsive">
-                        <table class="table table-sm align-middle mb-0">
+                        <table class="table table-sm table-hover align-middle mb-0 text-nowrap">
                             <thead class="table-light">
                                 <tr>
                                     <th>ID</th>
@@ -247,12 +274,21 @@
                             </tbody>
                         </table>
                     </div>
+                    @if($report['late_edits']->hasPages())
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 gap-2">
+                            <small class="text-muted">
+                                {{ $report['late_edits']->firstItem() }}–{{ $report['late_edits']->lastItem() }}
+                                sur {{ number_format($report['late_edits']->total(), 0, ',', ' ') }}
+                            </small>
+                            {{ $report['late_edits']->onEachSide(1)->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
         @endif
 
         {{-- All-clear --}}
-        @if($report['deleted']->isEmpty() && $report['amount_changed']->isEmpty() && $report['late_edits']->isEmpty())
+        @if($report['deleted']->total() === 0 && $report['amount_changed']->total() === 0 && $report['late_edits']->total() === 0)
             <div class="alert alert-success">
                 <i class="ti ti-circle-check me-1"></i>
                 Aucune anomalie détectée entre <strong>{{ $report['previous_date'] }}</strong> et <strong>{{ $report['date'] }}</strong>. ✅

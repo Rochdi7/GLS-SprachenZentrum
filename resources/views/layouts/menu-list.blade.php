@@ -423,6 +423,10 @@
                 <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
             </a>
             <ul class="pc-submenu">
+                {{-- Hidden from sidebar — routes still work directly:
+                     /backoffice/crm           (Vue d'ensemble)
+                     /backoffice/crm/stats     (Statistiques)
+                     /backoffice/crm/duplicates (Doublons)
                 <li class="pc-item {{ request()->routeIs('backoffice.crm.index') ? 'active' : '' }}">
                     <a href="{{ route('backoffice.crm.index') }}" class="pc-link {{ request()->routeIs('backoffice.crm.index') ? 'active' : '' }}">
                         <span class="pc-mtext">Vue d'ensemble</span>
@@ -438,6 +442,7 @@
                         <span class="pc-mtext">Doublons</span>
                     </a>
                 </li>
+                --}}
                 {{--
                     Insights pages — hidden from the sidebar for now.
                     Routes still work directly: /backoffice/crm/insights/*
