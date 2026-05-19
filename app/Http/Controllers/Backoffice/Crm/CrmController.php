@@ -9,6 +9,7 @@ use App\Services\Crm\CrmException;
 use App\Services\Crm\Stats\CrmStatsService;
 use App\Services\Crm\Stats\DuplicateFinder;
 use App\Services\Crm\Stats\InsightsService;
+use App\Services\Crm\Stats\AdvancePaymentsService;
 use App\Services\Crm\Stats\PaymentActivityService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -229,6 +230,40 @@ class CrmController extends Controller
         return $this->view('backoffice.crm.insights.forecast', [
             'report' => $report,
             'months' => $months,
+        ]);
+    }
+
+    /**
+     * Liste des paiements de type "avance" (IS_AVANCE = Y).
+     * Filtre fait en PHP car l'API n'expose pas isAvance comme query param.
+     */
+    public function advances(Request $r, AdvancePaymentsService $svc): View
+    {
+        $urlOverride = $r->filled('strStoreId') ? (int) $r->query('strStoreId') : null;
+        $storeId     = $this->centers->currentStoreId($urlOverride);
+        $startDate   = $r->query('startDate') ?: null;
+        $endDate     = $r->query('endDate') ?: null;
+        $bustCache   = $r->boolean('refresh');
+        $showDupes   = $r->boolean('showDuplicates'); // false = dedup, true = show all rows
+
+        $report = $svc->list($storeId, $startDate, $endDate, $bustCache);
+
+        // If user wants to see everything, merge duplicates back into advances
+        if ($showDupes && !empty($report['duplicates'])) {
+            $report['advances'] = collect($report['advances'])
+                ->merge($report['duplicates'])
+                ->sortByDesc('DATE_CREATION')
+                ->values()
+                ->all();
+            // Recompute totals
+            $report['total_amount'] = array_sum(array_map(fn ($a) => (float) ($a['AMOUNT'] ?? 0), $report['advances']));
+        }
+
+        return $this->view('backoffice.crm.insights.advances', [
+            'report'    => $report,
+            'startDate' => $startDate,
+            'endDate'   => $endDate,
+            'showDupes' => $showDupes,
         ]);
     }
 

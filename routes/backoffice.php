@@ -760,6 +760,7 @@ Route::prefix('backoffice')
                 Route::get('/insights/payment-activity',          'paymentActivity')->name('insights.payment-activity');
                 Route::get('/insights/payment-history/{paymentId}', 'paymentHistory')->name('insights.payment-history')
                     ->where('paymentId', '[0-9]+');
+                Route::get('/insights/advances',                  'advances')->name('insights.advances');
                 Route::post('/center',               'setCenter')->name('set-center');
                 Route::get('/students',              'students')->name('students');
                 Route::get('/session-presence',      'sessionPresence')->name('session-presence');

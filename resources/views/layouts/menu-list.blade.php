@@ -474,6 +474,11 @@
                         <span class="pc-mtext">Activité paiements</span>
                     </a>
                 </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.insights.advances') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.insights.advances') }}" class="pc-link {{ request()->routeIs('backoffice.crm.insights.advances') ? 'active' : '' }}">
+                        <span class="pc-mtext">Avances</span>
+                    </a>
+                </li>
                 --}}
                 <li class="pc-item {{ request()->routeIs('backoffice.crm.students') ? 'active' : '' }}">
                     <a href="{{ route('backoffice.crm.students') }}" class="pc-link {{ request()->routeIs('backoffice.crm.students') ? 'active' : '' }}">

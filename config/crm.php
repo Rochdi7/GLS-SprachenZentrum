@@ -19,6 +19,11 @@ return [
 
     'timeout' => (int) env('CRM_API_TIMEOUT', 45),
 
+    // Cache GET responses for this many seconds (0 = disabled).
+    // Pagination clicks, page refreshes, and revisits within this window are
+    // served instantly from the local cache instead of round-tripping to Homeschool.
+    'cache_ttl' => (int) env('CRM_API_CACHE_TTL', 60),
+
     'connect_timeout' => (int) env('CRM_API_CONNECT_TIMEOUT', 5),
 
     /*
