@@ -5,9 +5,11 @@
       $crmCenters       : Collection<Site>
       $crmCurrentStore  : int|null  (selected strStoreId)
       $crmCurrentSite   : Site|null (resolved row, for the label)
---}}
 
-@include('backoffice.crm.partials._loader')
+    The page loader overlay is included globally in layouts.main (see
+    layouts/backoffice-loader.blade.php) so all backoffice pages — not just
+    CRM — get the same chargement UX.
+--}}
 
 <div class="card mb-3">
     <div class="card-body py-3">

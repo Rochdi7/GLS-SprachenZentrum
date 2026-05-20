@@ -15,6 +15,7 @@
     }
     .ge-table th { font-size: .78rem; text-transform: uppercase; letter-spacing: .03em; }
     .ge-table td { font-size: .85rem; vertical-align: middle; }
+    .ge-table .ge-cell-debut      { color: #6f42c1; font-weight: 600; }
     .ge-table .ge-cell-ajout      { color: #28a745; font-weight: 600; }
     .ge-table .ge-cell-quittant   { color: #dc3545; font-weight: 600; }
     .ge-table .ge-cell-changement { color: #fd7e14; font-weight: 600; }
@@ -120,13 +121,41 @@
 
     @php
         $groups = $report['groups'] ?? [];
-        $totals = $report['totals'] ?? ['ajouts' => 0, 'quittants' => 0, 'changements' => 0, 'actifs' => 0, 'groups' => 0];
+        $totals = $report['totals'] ?? ['debuts' => 0, 'ajouts' => 0, 'quittants' => 0, 'changements' => 0, 'actifs' => 0, 'groups' => 0];
+        $rateLimited = !empty($report['diag']['rate_limited']);
     @endphp
+
+    @if($rateLimited)
+        <div class="alert alert-warning border-0 shadow-sm">
+            <div class="d-flex align-items-start gap-2">
+                <i class="ti ti-alert-triangle text-warning" style="font-size: 1.3rem; line-height: 1;"></i>
+                <div>
+                    <strong>API CRM temporairement limitée (HTTP 429)</strong>
+                    <div class="small text-muted">
+                        L'API Homeschool a appliqué une limite de débit sur le token actuel.
+                        Les comptes Début/Ajouts/Quittant/Changement affichent <strong>0</strong>
+                        parce que les allocations n'ont pas pu être récupérées —
+                        ce n'est <em>pas</em> une absence de données.
+                        Attendez 5–15 minutes puis cliquez <strong>Recharger</strong> pour réessayer.
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     @if(empty($groups))
         <div class="alert alert-info border-0 shadow-sm">
             <i class="ti ti-info-circle me-1"></i>
-            Aucun groupe trouvé pour ce centre dans la plage de dates sélectionnée.
+            @if($rateLimited)
+                Aucun groupe affiché — l'API CRM est limitée (HTTP 429). Voir l'avertissement ci-dessus.
+            @elseif($crmCurrentStore)
+                Aucun groupe trouvé pour ce centre côté API.
+            @else
+                Aucun groupe à afficher. Sélectionnez un centre pour charger ses groupes.
+            @endif
+            <span class="small text-muted d-block mt-1">
+                (Les groupes ne sont pas filtrés par la plage de dates — la plage ne contrôle que les paiements analysés pour Début / Ajouts / Quittant / Changement.)
+            </span>
         </div>
     @else
         <div class="row g-3">
@@ -136,6 +165,7 @@
                     <div class="card-body">
                         <h5 class="text-center text-primary ge-card-title mb-3">ÉVOLUTION PAR GROUPE</h5>
                         <div class="mb-2 d-flex flex-wrap gap-3 justify-content-center">
+                            <span class="ge-legend"><span class="ge-dot" style="background:#6f42c1;"></span> Début (inscrits au démarrage)</span>
                             <span class="ge-legend"><span class="ge-dot" style="background:#28a745;"></span> Ajouts (Les ajouts)</span>
                             <span class="ge-legend"><span class="ge-dot" style="background:#dc3545;"></span> Départs définitifs (Quittant)</span>
                             <span class="ge-legend"><span class="ge-dot" style="background:#fd7e14;"></span> Changements de groupe</span>
@@ -157,6 +187,7 @@
                                     <tr>
                                         <th class="text-center">#</th>
                                         <th>Groupe</th>
+                                        <th class="text-center" style="color:#6f42c1;">Début</th>
                                         <th class="text-center text-success">Ajouts</th>
                                         <th class="text-center text-danger">Quittant</th>
                                         <th class="text-center" style="color:#fd7e14;">Changement</th>
@@ -168,6 +199,7 @@
                                         <tr>
                                             <td class="text-center text-muted">{{ $i + 1 }}</td>
                                             <td>{{ $g['name'] }}</td>
+                                            <td class="text-center ge-cell-debut">{{ $g['debuts'] ?? 0 }}</td>
                                             <td class="text-center ge-cell-ajout">{{ $g['ajouts'] }}</td>
                                             <td class="text-center ge-cell-quittant">{{ $g['quittants'] }}</td>
                                             <td class="text-center ge-cell-changement">{{ $g['changements'] }}</td>
@@ -178,6 +210,7 @@
                                 <tfoot>
                                     <tr>
                                         <td colspan="2" class="text-center">TOTAL</td>
+                                        <td class="text-center ge-cell-debut">{{ $totals['debuts'] ?? 0 }}</td>
                                         <td class="text-center ge-cell-ajout">{{ $totals['ajouts'] }}</td>
                                         <td class="text-center ge-cell-quittant">{{ $totals['quittants'] }}</td>
                                         <td class="text-center ge-cell-changement">{{ $totals['changements'] }}</td>
@@ -193,6 +226,14 @@
 
         {{-- KPI cards row --}}
         <div class="row g-3 mt-1">
+            <div class="col-6 col-md-4 col-xl">
+                <div class="card shadow-sm ge-kpi-card h-100"><div class="card-body text-center">
+                    <span class="ge-icon" style="background:#efe5fb; color:#6f42c1;"><i class="ti ti-flag-3"></i></span>
+                    <div class="small fw-semibold mt-2" style="color:#6f42c1;">Total au démarrage<br>(Début)</div>
+                    <div class="h2 mb-0 mt-1" style="color:#6f42c1;">{{ $totals['debuts'] ?? 0 }}</div>
+                    <div class="ge-help">Élèves présents dès le 1er mois du groupe</div>
+                </div></div>
+            </div>
             <div class="col-6 col-md-4 col-xl">
                 <div class="card shadow-sm ge-kpi-card h-100"><div class="card-body text-center">
                     <span class="ge-icon" style="background:#e3f2fd; color:#2196f3;"><i class="ti ti-users"></i></span>
@@ -235,14 +276,80 @@
             </div>
         </div>
 
+        {{-- Diagnostics (hidden unless ?debug=1) — surface API shape issues
+             so we can tell at a glance why all counts are zero. --}}
+        @if(request()->boolean('debug') && !empty($report['diag']))
+            @php $diag = $report['diag']; @endphp
+            <div class="card mt-3 border-warning shadow-sm">
+                <div class="card-body small">
+                    <h6 class="mb-2 text-warning">
+                        <i class="ti ti-bug me-1"></i> Diagnostic API (mode debug)
+                    </h6>
+                    <div class="row g-2">
+                        <div class="col-6 col-md-3"><strong>Classes récupérées :</strong> {{ $diag['classes_fetched'] }}</div>
+                        <div class="col-6 col-md-3"><strong>Classes avec START_DATE :</strong> {{ $diag['classes_with_start'] }}</div>
+                        <div class="col-6 col-md-3"><strong>Allocations récupérées :</strong> {{ $diag['allocations_fetched'] }}</div>
+                        <div class="col-6 col-md-3"><strong>Allocations avec CLASS_ID :</strong> {{ $diag['allocations_with_class'] }}</div>
+                        <div class="col-6 col-md-3"><strong>Couples (étudiant, classe) :</strong> {{ $diag['student_class_pairs'] }}</div>
+                        <div class="col-6 col-md-3"><strong>CLASS_IDs distincts :</strong> {{ count($diag['distinct_class_ids']) }}</div>
+                        <div class="col-6 col-md-3"><strong>Classes avec END_DATE :</strong> {{ $diag['classes_with_end'] ?? 0 }}</div>
+                        <div class="col-6 col-md-3"><strong>Bucket Début (étudiants) :</strong> {{ $diag['total_debuts_students'] ?? 0 }} / {{ $diag['total_debuts_keyed'] ?? 0 }} classes</div>
+                        <div class="col-6 col-md-3"><strong>Bucket Ajout (étudiants) :</strong> {{ $diag['total_ajouts_students'] ?? 0 }} / {{ $diag['total_ajouts_keyed'] ?? 0 }} classes</div>
+                    </div>
+                    @if(!empty($diag['sample_start_months']) || !empty($diag['sample_first_months']) || !empty($diag['sample_end_dates']))
+                        <div class="row g-2 mt-2">
+                            <div class="col-12 col-md-4">
+                                <strong>Échantillon START_DATE :</strong>
+                                <pre class="small bg-light p-2 rounded mb-0" style="max-height:140px; overflow:auto;">{{ json_encode($diag['sample_start_months'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <strong>Échantillon END_DATE :</strong>
+                                <pre class="small bg-light p-2 rounded mb-0" style="max-height:140px; overflow:auto;">{{ json_encode($diag['sample_end_dates'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <strong>Échantillon 1ers paiements :</strong>
+                                <pre class="small bg-light p-2 rounded mb-0" style="max-height:140px; overflow:auto;">{{ json_encode($diag['sample_first_months'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                            </div>
+                        </div>
+                    @endif
+                    @if(!empty($diag['distinct_service_types']))
+                        <div class="mt-2">
+                            <strong>Types de service distincts dans les allocations :</strong>
+                            <div class="mt-1" style="max-height: 200px; overflow-y: auto;">
+                                <table class="table table-sm mb-0">
+                                    <thead><tr><th>Service</th><th class="text-end">Occurrences</th></tr></thead>
+                                    <tbody>
+                                        @foreach($diag['distinct_service_types'] as $svc => $count)
+                                            <tr>
+                                                <td><code>{{ $svc }}</code></td>
+                                                <td class="text-end">{{ $count }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    @endif
+                    <div class="mt-2 text-muted">
+                        <strong>Comment lire :</strong>
+                        Si <em>Allocations récupérées</em> = 0, l'API ne renvoie rien pour la plage choisie (vérifiez le token / le scope <code>payments:read</code>).
+                        Si <em>Allocations avec CLASS_ID</em> = 0, les rows existent mais n'ont pas de <code>CLASS_ID</code> — impossible de les rattacher à un groupe.
+                        Si <em>Classes avec START_DATE</em> ≪ <em>Classes récupérées</em>, la détection Début/Ajouts ne fonctionne que sur une minorité de groupes.
+                        Les libellés affichés ci-dessus sont ceux comparés à la regex <code>inscription</code> — si le bon libellé n'apparaît jamais avec ce mot, la détection rate.
+                    </div>
+                </div>
+            </div>
+        @endif
+
         {{-- Methodology note --}}
         <div class="alert alert-light border mt-3 small">
             <i class="ti ti-info-circle me-1 text-primary"></i>
             <strong>Méthodologie :</strong>
             <ul class="mb-0 mt-1 ps-3">
-                <li><strong style="color:#28a745;">Ajouts</strong> — étudiants ayant payé leur <em>inscription</em> pour ce groupe dans la plage de dates.</li>
+                <li><strong style="color:#6f42c1;">Début</strong> — étudiants dont le 1<sup>er</sup> mois payé est le <em>même mois</em> que la date de démarrage du groupe (présents dès le lancement). Pour suivre le cycle complet, choisissez une plage qui couvre le mois de démarrage du groupe.</li>
+                <li><strong style="color:#28a745;">Ajouts</strong> — étudiants dont le 1<sup>er</sup> mois payé est <em>après</em> le mois de démarrage du groupe (arrivés en cours de route).</li>
                 <li><strong style="color:#dc3545;">Quittant</strong> — étudiants qui ont payé un mois mais n'ont pas payé le mois suivant (1 mois manqué), et ne paient aucun autre groupe.</li>
-                <li><strong style="color:#fd7e14;">Changement</strong> — étudiants ayant payé 2 groupes différents dans une fenêtre de {{ \App\Services\Crm\Stats\GroupEvolutionService::CHANGEMENT_WINDOW_DAYS }} jours. Le départ est crédité au groupe qu'ils ont quitté.</li>
+                <li><strong style="color:#fd7e14;">Changement</strong> — étudiants ayant payé 2 groupes différents avec des paiements consécutifs séparés de ≤ {{ \App\Services\Crm\Stats\GroupEvolutionService::CHANGEMENT_WINDOW_DAYS }} jours. Le départ est crédité au groupe qu'ils ont quitté.</li>
                 <li><strong style="color:#2196f3;">Actifs</strong> — compteur courant du CRM (<code>CLASS_COUNT_STUDENTS_ACTIVE</code>), pas une inférence.</li>
             </ul>
         </div>
@@ -255,6 +362,7 @@
     // a multi-line arrow function inside @json() — that combo trips its tokenizer.
     $chartGroups = array_map(fn ($g) => [
         'name'        => $g['name'],
+        'debuts'      => $g['debuts'] ?? 0,
         'ajouts'      => $g['ajouts'],
         'quittants'   => $g['quittants'],
         'changements' => $g['changements'],
@@ -281,12 +389,13 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         stroke: { show: true, width: 1, colors: ['transparent'] },
         series: [
+            { name: 'Début',       data: groups.map(g => g.debuts) },
             { name: 'Ajouts',      data: groups.map(g => g.ajouts) },
             { name: 'Quittant',    data: groups.map(g => g.quittants) },
             { name: 'Changement',  data: groups.map(g => g.changements) },
             { name: 'Actifs',      data: groups.map(g => g.actifs) },
         ],
-        colors: ['#28a745', '#dc3545', '#fd7e14', '#2196f3'],
+        colors: ['#6f42c1', '#28a745', '#dc3545', '#fd7e14', '#2196f3'],
         xaxis: {
             categories: groups.map(g => g.name),
             labels: { rotate: -35, style: { fontSize: '11px' } },

@@ -87,7 +87,7 @@ class HomeschoolClient
      * @param  array<string,mixed>  $baseQuery  Filters (excluding page/size)
      * @return array<int, array<string,mixed>>  Flat list of all rows
      */
-    public function pagedScan(string $path, array $baseQuery = [], int $pageSize = 100, int $maxPages = 100, int $concurrency = 10): array
+    public function pagedScan(string $path, array $baseQuery = [], int $pageSize = 100, int $maxPages = 100, int $concurrency = 3, int $interBatchDelayMs = 250): array
     {
         // First page sync to learn totalPages
         $first = $this->get($path, ['page' => 0, 'size' => $pageSize, 'includeTotal' => 'true'] + $baseQuery);
@@ -106,7 +106,13 @@ class HomeschoolClient
         $verify  = $this->verifySsl;
         $timeout = $this->timeout;
 
+        $batchIndex = 0;
         for ($start = 1; $start < $totalPages; $start += $concurrency) {
+            if ($batchIndex > 0 && $interBatchDelayMs > 0) {
+                usleep($interBatchDelayMs * 1000);
+            }
+            $batchIndex++;
+
             $end = min($start + $concurrency, $totalPages);
             $responses = \Illuminate\Support\Facades\Http::pool(function (\Illuminate\Http\Client\Pool $pool) use ($start, $end, $path, $baseQuery, $pageSize, $token, $baseUrl, $verify, $timeout) {
                 $requests = [];
@@ -126,14 +132,35 @@ class HomeschoolClient
                 return $requests;
             });
 
+            $batchHit429 = false;
             for ($p = $start; $p < $end; $p++) {
                 $resp = $responses["page_{$p}"] ?? null;
-                if ($resp && $resp->successful()) {
-                    $body = $resp->json();
-                    foreach ($body['data'] ?? [] as $row) {
-                        $rows[] = $row;
+                if ($resp instanceof Response) {
+                    if ($resp->status() === 429) {
+                        $batchHit429 = true;
+                        continue;
+                    }
+                    if ($resp->successful()) {
+                        $body = $resp->json();
+                        foreach ($body['data'] ?? [] as $row) {
+                            $rows[] = $row;
+                        }
                     }
                 }
+            }
+
+            if ($batchHit429) {
+                \Illuminate\Support\Facades\Cache::put(
+                    'crm.rate_limited:' . substr((string) $this->token, -8),
+                    true,
+                    60,
+                );
+                if ($this->logEnabled) {
+                    Log::channel($this->logChannel)->warning(
+                        "CRM API pagedScan batch hit 429 on {$path} — entering 60s cool-down."
+                    );
+                }
+                break;
             }
         }
 
@@ -160,7 +187,8 @@ class HomeschoolClient
         array $baseQuery,
         array $variantQueries,
         int $pageSize = 25,
-        int $concurrency = 10,
+        int $concurrency = 3,
+        int $interBatchDelayMs = 250,
     ): array {
         if (empty($variantQueries)) {
             return [];
@@ -173,8 +201,16 @@ class HomeschoolClient
         $url     = $baseUrl . '/' . ltrim($path, '/');
 
         $rows = [];
+        $batchIndex = 0;
 
         for ($start = 0; $start < count($variantQueries); $start += $concurrency) {
+            // Throttle between batches so we don't trigger the upstream rate
+            // limiter. First batch fires immediately; subsequent batches wait.
+            if ($batchIndex > 0 && $interBatchDelayMs > 0) {
+                usleep($interBatchDelayMs * 1000);
+            }
+            $batchIndex++;
+
             $end = min($start + $concurrency, count($variantQueries));
 
             $responses = \Illuminate\Support\Facades\Http::pool(function (\Illuminate\Http\Client\Pool $pool) use (
@@ -189,21 +225,47 @@ class HomeschoolClient
                     if (!$verify) {
                         $r = $r->withoutVerifying();
                     }
-                    $query = ['page' => 0, 'size' => $pageSize, 'includeTotal' => 'false']
-                        + $variantQueries[$i]
+                    // Order matters: variant overrides defaults, base fills the rest.
+                    // The `+` operator keeps LEFT keys on collision.
+                    $query = $variantQueries[$i]
+                        + ['page' => 0, 'size' => $pageSize, 'includeTotal' => 'false']
                         + $baseQuery;
                     $requests[] = $r->get($url, $query);
                 }
                 return $requests;
             });
 
+            $batchHit429 = false;
             for ($i = $start; $i < $end; $i++) {
                 $resp = $responses["variant_{$i}"] ?? null;
-                if ($resp && $resp->successful()) {
-                    foreach (($resp->json('data') ?? []) as $row) {
-                        $rows[] = $row;
+                if ($resp instanceof Response) {
+                    if ($resp->status() === 429) {
+                        $batchHit429 = true;
+                        continue;
+                    }
+                    if ($resp->successful()) {
+                        foreach (($resp->json('data') ?? []) as $row) {
+                            $rows[] = $row;
+                        }
                     }
                 }
+            }
+
+            // If any request in the batch was rate-limited, set the global
+            // cool-down so the next batches and any other callers fail-fast
+            // instead of piling on more rejected requests.
+            if ($batchHit429) {
+                \Illuminate\Support\Facades\Cache::put(
+                    'crm.rate_limited:' . substr((string) $this->token, -8),
+                    true,
+                    60,
+                );
+                if ($this->logEnabled) {
+                    Log::channel($this->logChannel)->warning(
+                        "CRM API parallelFetch batch hit 429 on {$path} — entering 60s cool-down."
+                    );
+                }
+                break; // stop firing further batches
             }
         }
 
@@ -257,6 +319,46 @@ class HomeschoolClient
                 Log::channel($this->logChannel)->warning($msg);
             }
             throw new CrmException($msg, 0, ['errorCode' => 'CONNECTION_ERROR', 'message' => $e->getMessage()], $e);
+        }
+
+        // Handle 429 (Too Many Requests) by honoring Retry-After and trying ONCE more.
+        // If still 429, set a short cool-down flag so subsequent calls in the same
+        // request fail-fast instead of piling on more requests.
+        if ($response->status() === 429) {
+            $cooldownKey = 'crm.rate_limited:' . substr((string) $this->token, -8);
+            if (\Illuminate\Support\Facades\Cache::has($cooldownKey)) {
+                throw new CrmException(
+                    "CRM API rate limited (still in cool-down). Wait a minute and retry.",
+                    429,
+                    ['errorCode' => 'RATE_LIMITED', 'message' => 'In cool-down; not retrying.'],
+                );
+            }
+
+            $retryAfter = (int) ($response->header('Retry-After') ?: 5);
+            $retryAfter = max(1, min($retryAfter, 30)); // clamp to [1, 30] seconds
+            if ($this->logEnabled) {
+                Log::channel($this->logChannel)->warning(
+                    "CRM API 429 on {$path} — sleeping {$retryAfter}s and retrying once."
+                );
+            }
+            sleep($retryAfter);
+
+            try {
+                $response = $request->send($method, $url, $options);
+            } catch (\Illuminate\Http\Client\ConnectionException $e) {
+                throw new CrmException($e->getMessage(), 0, ['errorCode' => 'CONNECTION_ERROR']);
+            }
+
+            if ($response->status() === 429) {
+                // Still rate limited — set cool-down for 60s so other calls
+                // in this request batch fail-fast instead of stacking more 429s.
+                \Illuminate\Support\Facades\Cache::put($cooldownKey, true, 60);
+                throw new CrmException(
+                    "CRM API rate limited (retried once, still 429). Cool-down 60s.",
+                    429,
+                    ['errorCode' => 'RATE_LIMITED', 'message' => 'Still 429 after retry.'],
+                );
+            }
         }
 
         return $this->handle($response, $method, $url);

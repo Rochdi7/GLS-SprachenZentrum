@@ -10,16 +10,25 @@ use Illuminate\Support\Facades\Cache;
  * Per-group evolution analyzer.
  *
  * For a given center + date range, classifies each (student, group) pair
- * into one of four buckets:
+ * into one of five buckets:
  *
- *   - Ajout (new arrival): student paid the **inscription** for this group
- *     inside the range — inscription happens exactly once per enrollment,
- *     so this is the cleanest "first day in the group" signal we have.
+ *   - Début (kick-off): student whose **first payment month** for this group
+ *     equals the group's START_DATE month. They were there on day one.
+ *     Sum of Début ≈ number of students the group launched with.
+ *
+ *   - Ajout (late arrival): student whose **first payment month** for this
+ *     group is STRICTLY AFTER the group's START_DATE month. Captures students
+ *     who joined an already-running group (e.g. group started in Sep 2025 and
+ *     the student's first payment is for Oct 2025 — that's an Ajout).
+ *     A service literally tagged "inscription" is also counted, as a fallback
+ *     for the rare cases where dates don't carry the right signal.
  *
  *   - Changement de groupe: student stopped paying group G AND started paying
  *     a DIFFERENT group within 30 days (typically same school year). Detected
  *     by comparing every student's payment-allocation classes within the
- *     range — appearing in 2+ classes ⇒ they moved.
+ *     range — appearing in 2+ classes with consecutive payment months ⇒
+ *     they moved. Works across long ranges (a1→b2) because the gap check
+ *     looks at consecutive class periods, not the full span.
  *
  *   - Quittant (départ définitif): student had a paid month in range, then
  *     **missed the next month** (1 missed month rule), and has NO other
@@ -51,8 +60,8 @@ class GroupEvolutionService
      * Build the full evolution report for a center + date range.
      *
      * @return array{
-     *   groups: array<int, array{class_id:int, name:string, ajouts:int, quittants:int, changements:int, actifs:int}>,
-     *   totals: array{ajouts:int, quittants:int, changements:int, actifs:int, groups:int},
+     *   groups: array<int, array{class_id:int, name:string, debuts:int, ajouts:int, quittants:int, changements:int, actifs:int}>,
+     *   totals: array{debuts:int, ajouts:int, quittants:int, changements:int, actifs:int, groups:int},
      *   range: array{start:string, end:string},
      * }
      */
@@ -70,16 +79,47 @@ class GroupEvolutionService
 
     protected function compute(?int $strStoreId, string $startDate, string $endDate): array
     {
-        // 1) The list of groups for this center — gives us the X-axis labels
-        //    and the "Actifs actuellement" count for free (no inference).
+        // 1) The list of groups for this center — gives us the X-axis labels,
+        //    the "Actifs actuellement" count, and (critically) the START_DATE
+        //    of each group which we need to detect late arrivals.
         $classes = $this->fetchClasses($strStoreId);
 
         if (empty($classes)) {
             return [
                 'groups' => [],
-                'totals' => ['ajouts' => 0, 'quittants' => 0, 'changements' => 0, 'actifs' => 0, 'groups' => 0],
+                'totals' => ['debuts' => 0, 'ajouts' => 0, 'quittants' => 0, 'changements' => 0, 'actifs' => 0, 'groups' => 0],
                 'range'  => ['start' => $startDate, 'end' => $endDate],
             ];
+        }
+
+        // 1b) Index each class's start month (and capture its END_DATE).
+        //     classStartMonth: classId => YYYY-MM, used to split Début vs Ajout.
+        //     classEndDate:    classId => YYYY-MM-DD, surfaced in diagnostics so
+        //                                 you can confirm the per-group window.
+        //     We DO NOT filter groups out based on END_DATE here — the user-set
+        //     date range only affects which allocations are pulled, never which
+        //     groups are listed.
+        $classStartMonth = [];
+        $classEndDate    = [];
+        foreach ($classes as $c) {
+            $cid   = (int) ($c['CLASS_ID'] ?? $c['ID'] ?? 0);
+            $start = $c['START_DATE'] ?? null;
+            $end   = $c['END_DATE']   ?? null;
+            if ($cid && $start) {
+                try {
+                    $classStartMonth[$cid] = Carbon::parse($start)->format('Y-m');
+                } catch (\Throwable) {
+                    // leave unset → student won't be classified as ajout for
+                    // this group (safer default than counting everyone).
+                }
+            }
+            if ($cid && $end) {
+                try {
+                    $classEndDate[$cid] = Carbon::parse($end)->toDateString();
+                } catch (\Throwable) {
+                    // ignore — END_DATE is informational only.
+                }
+            }
         }
 
         // 2) Every payment allocation in the range — the heart of the analysis.
@@ -87,46 +127,104 @@ class GroupEvolutionService
         $allocations = $this->fetchAllocations($strStoreId, $startDate, $endDate);
 
         // 3) Build helper indexes.
-        //    - perGroupNew[classId] = set of student IDs whose inscription payment
-        //      landed in the range and was tagged to this class.
         //    - studentClasses[studentId] = list of class IDs they paid in the range.
-        $perGroupNew   = [];
-        $studentClasses = [];
+        //    - studentFirstPaymentMonth[studentId][classId] = YYYY-MM of their
+        //      earliest in-range payment for that class. Drives Ajout detection.
+        //    - inscriptionTagged[classId] = student IDs whose service literally
+        //      said "inscription" — kept as a strong-signal override.
+        $studentClasses           = [];
+        $studentFirstPaymentMonth = [];
+        $inscriptionTagged        = [];
 
         foreach ($allocations as $alloc) {
             $sid     = $alloc['STUDENT_ID'] ?? null;
             $classId = $alloc['CLASS_ID']   ?? null;
             $service = (string) ($alloc['SERVICE_TYPE_NAME'] ?? '');
-            if (!$sid || !$classId) continue;
+            $rawDate = $alloc['EFFECTIVE_DATE_PAYMENT_ALLOCATION']
+                    ?? $alloc['EFFECTIVE_DATE_PAYMENT']
+                    ?? null;
+            if (!$sid || !$classId || !$rawDate) continue;
+
+            try {
+                $payMonth = Carbon::parse($rawDate)->format('Y-m');
+            } catch (\Throwable) {
+                continue;
+            }
 
             // Track all (student, class) pairs that saw money flow in the range —
-            // basis for "changement de groupe" detection (same student in 2+ classes).
+            // basis for "changement de groupe" detection.
             $studentClasses[$sid][$classId] = true;
 
-            // Inscription payments are the gold "new arrival" signal.
+            // Track each student's earliest payment month per class — used to
+            // decide if they joined the group AFTER it started ("Ajout").
+            $cur = $studentFirstPaymentMonth[$sid][$classId] ?? null;
+            if ($cur === null || $payMonth < $cur) {
+                $studentFirstPaymentMonth[$sid][$classId] = $payMonth;
+            }
+
+            // Strong-signal override: services explicitly tagged as inscription
+            // always count as Ajout regardless of timing.
             if ($this->isInscription($service)) {
-                $perGroupNew[$classId][$sid] = true;
+                $inscriptionTagged[$classId][$sid] = true;
             }
         }
 
-        // 4) Identify movers: students who paid in 2+ classes within the window
+        // 4) Compute Début vs Ajout per group based on the student's first
+        //    in-range payment month vs the group's START_DATE month:
+        //
+        //      first month  <  start month → ignored here (mainly historical
+        //                                     edits — those students started
+        //                                     even before the group's official
+        //                                     kickoff; they're already counted
+        //                                     in current "Actifs").
+        //      first month  == start month → DÉBUT (came in on day one).
+        //      first month  >  start month → AJOUT (joined later).
+        //
+        //    Inscription-tagged services still force AJOUT classification, as
+        //    a safety net for cases where the start-month signal is ambiguous.
+        $perGroupDebut = [];
+        $perGroupNew   = [];
+        foreach ($studentFirstPaymentMonth as $sid => $byClass) {
+            foreach ($byClass as $classId => $payMonth) {
+                $startMonth = $classStartMonth[$classId] ?? null;
+                $isTagged   = isset($inscriptionTagged[$classId][$sid]);
+
+                if ($startMonth === null) {
+                    // No start date in API — fall back to inscription-tag only.
+                    if ($isTagged) {
+                        $perGroupNew[$classId][$sid] = true;
+                    }
+                    continue;
+                }
+
+                if ($payMonth === $startMonth) {
+                    $perGroupDebut[$classId][$sid] = true;
+                } elseif ($payMonth > $startMonth || $isTagged) {
+                    $perGroupNew[$classId][$sid] = true;
+                }
+                // else: payMonth < startMonth → historical / edit; skip.
+            }
+        }
+
+        // 5) Identify movers: students who paid in 2+ classes within the window
         //    are transferring. For each pair (oldClass → newClass) the *old* class
         //    counts a "Changement de groupe" departure. We don't know the
         //    direction with 100% certainty, so we credit the change to whichever
         //    class has an EARLIER last allocation date for this student.
         $changementsByGroup = $this->detectChangements($allocations);
 
-        // 5) Detect Quittants — students who had a paid month in the range but
+        // 6) Detect Quittants — students who had a paid month in the range but
         //    skipped the very next due month (1-month rule per your request)
         //    AND are not classified as movers (no other active payment).
         $quittantsByGroup = $this->detectQuittants($strStoreId, $startDate, $endDate, $studentClasses, $changementsByGroup);
 
-        // 6) Roll everything up into the chart-ready per-group rows.
+        // 7) Roll everything up into the chart-ready per-group rows.
         $groups = [];
         foreach ($classes as $c) {
             $cid     = (int) ($c['CLASS_ID'] ?? $c['ID'] ?? 0);
             $name    = (string) ($c['NAME'] ?? $c['REFERENCE'] ?? "#{$cid}");
             $actifs  = (int) ($c['CLASS_COUNT_STUDENTS_ACTIVE'] ?? 0);
+            $debuts  = count($perGroupDebut[$cid] ?? []);
             $ajouts  = count($perGroupNew[$cid] ?? []);
             $changes = count($changementsByGroup[$cid] ?? []);
             $quits   = count($quittantsByGroup[$cid] ?? []);
@@ -134,6 +232,12 @@ class GroupEvolutionService
             $groups[] = [
                 'class_id'    => $cid,
                 'name'        => $name,
+                // Pull START_DATE / END_DATE straight from the API so the view
+                // can show the per-group window; this is the source of truth
+                // for whether a group is still running.
+                'start_date'  => $c['START_DATE'] ?? null,
+                'end_date'    => $c['END_DATE']   ?? null,
+                'debuts'      => $debuts,
                 'ajouts'      => $ajouts,
                 'quittants'   => $quits,
                 'changements' => $changes,
@@ -145,6 +249,7 @@ class GroupEvolutionService
         usort($groups, fn ($a, $b) => strcmp($a['name'], $b['name']));
 
         $totals = [
+            'debuts'      => array_sum(array_column($groups, 'debuts')),
             'ajouts'      => array_sum(array_column($groups, 'ajouts')),
             'quittants'   => array_sum(array_column($groups, 'quittants')),
             'changements' => array_sum(array_column($groups, 'changements')),
@@ -152,10 +257,50 @@ class GroupEvolutionService
             'groups'      => count($groups),
         ];
 
+        // Diagnostic snapshot — included in the response so the view can show
+        // it behind ?debug=1 without us guessing why all counts are zero.
+        $diag = [
+            'classes_fetched'       => count($classes),
+            'classes_with_start'    => count($classStartMonth),
+            'classes_with_end'      => count($classEndDate),
+            'allocations_fetched'   => count($allocations),
+            'allocations_with_class'=> 0,
+            'distinct_class_ids'    => [],
+            'distinct_service_types'=> [],
+            'student_class_pairs'   => 0,
+            // Computed bucket totals BEFORE the per-class rollup loop, so we
+            // can tell whether the rollup itself is dropping data or whether
+            // the classification step produced zeros.
+            'total_debuts_keyed'    => count($perGroupDebut),
+            'total_ajouts_keyed'    => count($perGroupNew),
+            'total_debuts_students' => array_sum(array_map('count', $perGroupDebut)),
+            'total_ajouts_students' => array_sum(array_map('count', $perGroupNew)),
+            'sample_first_months'   => array_slice($studentFirstPaymentMonth, 0, 3, true),
+            'sample_start_months'   => array_slice($classStartMonth, 0, 5, true),
+            'sample_end_dates'      => array_slice($classEndDate, 0, 5, true),
+        ];
+        foreach ($allocations as $alloc) {
+            if (!empty($alloc['CLASS_ID'])) {
+                $diag['allocations_with_class']++;
+                $diag['distinct_class_ids'][(int) $alloc['CLASS_ID']] = true;
+            }
+            $st = $alloc['SERVICE_TYPE_NAME'] ?? null;
+            if ($st) $diag['distinct_service_types'][$st] = ($diag['distinct_service_types'][$st] ?? 0) + 1;
+        }
+        $diag['distinct_class_ids']     = array_keys($diag['distinct_class_ids']);
+        $diag['student_class_pairs']    = array_sum(array_map('count', $studentClasses));
+
+        // Surface the rate-limit state so the diagnostic card can warn the user
+        // that "0 allocations" is throttling, not missing data.
+        $diag['rate_limited'] = \Illuminate\Support\Facades\Cache::has(
+            'crm.rate_limited:' . substr((string) (config('crm.token') ?? ''), -8),
+        );
+
         return [
             'groups' => $groups,
             'totals' => $totals,
             'range'  => ['start' => $startDate, 'end' => $endDate],
+            'diag'   => $diag,
         ];
     }
 
@@ -168,18 +313,31 @@ class GroupEvolutionService
                 baseQuery: array_filter(['strStoreId' => $strStoreId], fn ($v) => $v !== null),
                 pageSize: 25,
                 maxPages: 20,
-                concurrency: 10,
+                concurrency: 3,
             );
         } catch (\Throwable) {
             return [];
         }
     }
 
-    /** Pull all payment allocations within the date range. */
+    /**
+     * Pull all payment allocations within the date range.
+     *
+     * Strategy: page-walk the unsliced range first. The Homeschool API's
+     * `/payment-allocations` returns proper totalPages when you let it scan
+     * the whole window — splitting into per-month variants surprisingly hits
+     * a different code path on their side that responds empty for some
+     * centres (observed: GLS Marrakech with a 8-month window returns 193 rows
+     * on a single ranged query but 0 when each month is queried separately).
+     *
+     * If the unsliced call returns nothing we fall back to per-month fan-out
+     * as a last resort.
+     */
     protected function fetchAllocations(?int $strStoreId, string $startDate, string $endDate): array
     {
+        // 1) Primary path: single ranged query, page-walked via pagedScan.
         try {
-            return $this->crm->client()->pagedScan(
+            $rows = $this->crm->client()->pagedScan(
                 path: '/api/external/v1/payment-allocations',
                 baseQuery: array_filter([
                     'strStoreId' => $strStoreId,
@@ -188,7 +346,43 @@ class GroupEvolutionService
                 ], fn ($v) => $v !== null),
                 pageSize: 25,
                 maxPages: 80,    // 80 × 25 = 2000 allocations per range — plenty
-                concurrency: 10,
+                concurrency: 3,
+            );
+            if (!empty($rows)) return $rows;
+        } catch (\Throwable) {
+            // fall through to fallback
+        }
+
+        // 2) Fallback: per-month fan-out via parallelFetch. Slower but resilient
+        //    if the unsliced query was rejected by the API gateway.
+        try {
+            $start = Carbon::parse($startDate)->startOfMonth();
+            $end   = Carbon::parse($endDate)->startOfMonth();
+        } catch (\Throwable) {
+            return [];
+        }
+        if ($end->lt($start)) return [];
+
+        $variants = [];
+        $cursor = $start->copy();
+        while ($cursor->lte($end)) {
+            for ($p = 0; $p < 4; $p++) {
+                $variants[] = [
+                    'page'      => $p,
+                    'startDate' => $cursor->copy()->startOfMonth()->toDateString(),
+                    'endDate'   => $cursor->copy()->endOfMonth()->toDateString(),
+                ];
+            }
+            $cursor->addMonth();
+        }
+
+        try {
+            return $this->crm->client()->parallelFetch(
+                path: '/api/external/v1/payment-allocations',
+                baseQuery: array_filter(['strStoreId' => $strStoreId], fn ($v) => $v !== null),
+                variantQueries: $variants,
+                pageSize: 25,
+                concurrency: 3,
             );
         } catch (\Throwable) {
             return [];
@@ -236,17 +430,28 @@ class GroupEvolutionService
             asort($byClass);
             $classIds = array_keys($byClass);
 
-            // Are the dates within the configured window? If a student paid
-            // class A in January and class B in June, that's two separate
-            // enrollments, not a transfer — skip.
-            $firstDate = reset($byClass);
-            $lastDate  = end($byClass);
-            try {
-                $gap = Carbon::parse($firstDate)->diffInDays(Carbon::parse($lastDate));
-            } catch (\Throwable) {
-                continue;
+            // Detect transfers by looking at consecutive months, not by a hard
+            // gap cap. If the student stopped paying class A in month M and
+            // started paying class B in month M+1 or M+2 (i.e. within
+            // CHANGEMENT_WINDOW_DAYS of each other), it's a transfer. With
+            // long timeline filters (e.g. a1→b2 = 9+ months) a hard cap on
+            // the FULL date span would wrongly disqualify legitimate transfers
+            // detected from history — so we use the gap between *consecutive*
+            // class periods instead.
+            $sortedDates = array_values($byClass);
+            $isTransfer  = false;
+            for ($i = 0; $i < count($sortedDates) - 1; $i++) {
+                try {
+                    $gap = Carbon::parse($sortedDates[$i])->diffInDays(Carbon::parse($sortedDates[$i + 1]));
+                } catch (\Throwable) {
+                    continue;
+                }
+                if ($gap <= self::CHANGEMENT_WINDOW_DAYS) {
+                    $isTransfer = true;
+                    break;
+                }
             }
-            if ($gap > self::CHANGEMENT_WINDOW_DAYS * 3) continue; // far apart ⇒ not a transfer
+            if (!$isTransfer) continue; // far apart ⇒ separate enrollments, not a transfer
 
             // The earliest class is the one they left — credit it.
             $leftClass = (int) array_shift($classIds);
@@ -290,7 +495,7 @@ class GroupEvolutionService
                 ], fn ($v) => $v !== null),
                 pageSize: 25,
                 maxPages: 80,
-                concurrency: 10,
+                concurrency: 3,
             );
         } catch (\Throwable) {
             $collection = [];

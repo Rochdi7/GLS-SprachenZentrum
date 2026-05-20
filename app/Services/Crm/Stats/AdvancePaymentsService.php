@@ -61,7 +61,7 @@ class AdvancePaymentsService
                     baseQuery: $baseQuery,
                     pageSize: self::PAGE_SIZE,
                     maxPages: self::MAX_PAGES,
-                    concurrency: 10,
+                    concurrency: 3,
                 );
 
                 foreach ($allRows as $row) {

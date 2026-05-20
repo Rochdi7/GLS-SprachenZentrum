@@ -258,7 +258,7 @@ class CrmController extends Controller
                         baseQuery: $baseQuery + array_filter(['date' => $shared['date']]),
                         pageSize: 25,
                         maxPages: 80,
-                        concurrency: 10,
+                        concurrency: 3,
                     );
                     $rowsBefore = count($allRows);
                 }
@@ -705,6 +705,7 @@ class CrmController extends Controller
             ));
             // Recompute totals from the visible slice so KPI cards stay coherent.
             $report['totals'] = [
+                'debuts'      => array_sum(array_column($filteredGroups, 'debuts')),
                 'ajouts'      => array_sum(array_column($filteredGroups, 'ajouts')),
                 'quittants'   => array_sum(array_column($filteredGroups, 'quittants')),
                 'changements' => array_sum(array_column($filteredGroups, 'changements')),
@@ -887,7 +888,7 @@ class CrmController extends Controller
                 baseQuery: $baseQuery,
                 pageSize: 25,
                 maxPages: 80,
-                concurrency: 10,
+                concurrency: 3,
             );
         }
 
@@ -903,7 +904,7 @@ class CrmController extends Controller
             baseQuery: $baseQuery,
             variantQueries: $variants,
             pageSize: 25,
-            concurrency: 10,
+            concurrency: 3,
         );
     }
 
