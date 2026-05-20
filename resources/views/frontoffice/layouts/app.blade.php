@@ -90,7 +90,7 @@
 
     <!-- GLS ENROLL MODAL -->
     <div class="modal fade" id="glsEnrollModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width:620px;">
             <div class="modal-content p-0" style="background:none;border:none;border-radius:0;">
                 <div class="modal-body p-0">
                     @include('frontoffice.templates.gls-form')

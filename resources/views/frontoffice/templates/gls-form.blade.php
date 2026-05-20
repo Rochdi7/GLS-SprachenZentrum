@@ -52,32 +52,34 @@
                 <!-- STEP 1 — INFORMATIONS -->
                 <div class="form-step active" data-step="1">
 
-                    <div class="form-group">
-                        <label for="glsNom">{{ __('templates/gls-form.fields.nom.label') }} <span
-                                class="required">*</span></label>
-                        <input type="text" id="glsNom" name="nom"
-                            placeholder="{{ __('templates/gls-form.fields.nom.placeholder') }}" required>
-                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="glsNom">{{ __('templates/gls-form.fields.nom.label') }} <span
+                                    class="required">*</span></label>
+                            <input type="text" id="glsNom" name="nom"
+                                placeholder="{{ __('templates/gls-form.fields.nom.placeholder') }}" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="glsPrenom">{{ __('templates/gls-form.fields.prenom.label') }} <span
-                                class="required">*</span></label>
-                        <input type="text" id="glsPrenom" name="prenom"
-                            placeholder="{{ __('templates/gls-form.fields.prenom.placeholder') }}" required>
-                    </div>
+                        <div class="form-group">
+                            <label for="glsPrenom">{{ __('templates/gls-form.fields.prenom.label') }} <span
+                                    class="required">*</span></label>
+                            <input type="text" id="glsPrenom" name="prenom"
+                                placeholder="{{ __('templates/gls-form.fields.prenom.placeholder') }}" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="glsEmail">{{ __('templates/gls-form.fields.email.label') }} <span
-                                class="required">*</span></label>
-                        <input type="email" id="glsEmail" name="email"
-                            placeholder="{{ __('templates/gls-form.fields.email.placeholder') }}" required>
-                    </div>
+                        <div class="form-group">
+                            <label for="glsEmail">{{ __('templates/gls-form.fields.email.label') }} <span
+                                    class="required">*</span></label>
+                            <input type="email" id="glsEmail" name="email"
+                                placeholder="{{ __('templates/gls-form.fields.email.placeholder') }}" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="glsPhone">{{ __('templates/gls-form.fields.phone.label') }} <span
-                                class="required">*</span></label>
-                        <input type="tel" id="glsPhone" name="phone"
-                            placeholder="{{ __('templates/gls-form.fields.phone.placeholder') }}" required>
+                        <div class="form-group">
+                            <label for="glsPhone">{{ __('templates/gls-form.fields.phone.label') }} <span
+                                    class="required">*</span></label>
+                            <input type="tel" id="glsPhone" name="phone"
+                                placeholder="{{ __('templates/gls-form.fields.phone.placeholder') }}" required>
+                        </div>
                     </div>
 
                     <div class="form-group">

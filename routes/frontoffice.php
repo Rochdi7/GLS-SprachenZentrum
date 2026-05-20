@@ -79,6 +79,14 @@ Route::middleware(CacheResponse::class)->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| AD LANDING PAGES (Meta & Google) - NOT cached so tracking fires fresh
+|--------------------------------------------------------------------------
+*/
+Route::get('/lp/meta', [PageController::class, 'lpMeta'])->name('front.lp.meta');
+Route::get('/lp/google', [PageController::class, 'lpGoogle'])->name('front.lp.google');
+
+/*
+|--------------------------------------------------------------------------
 | QUIZ PAGE (dynamic) - better NOT cached
 |--------------------------------------------------------------------------
 | This renders resources/views/frontoffice/quiz/index.blade.php

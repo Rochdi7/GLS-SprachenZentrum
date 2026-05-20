@@ -194,4 +194,14 @@ class PageController extends Controller
     {
         return view('frontoffice.gls-success');
     }
+
+    public function lpMeta()
+    {
+        return view('frontoffice.landing.meta');
+    }
+
+    public function lpGoogle()
+    {
+        return view('frontoffice.landing.google');
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Services\Crm\Stats;
 
 use App\Services\Crm\Crm;
+use App\Services\Crm\CrmException;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -79,6 +80,9 @@ class GroupEvolutionService
 
     protected function compute(?int $strStoreId, string $startDate, string $endDate): array
     {
+        // Reset per-call so cached calls don't leak state.
+        $this->lastFetchError = null;
+
         // 1) The list of groups for this center — gives us the X-axis labels,
         //    the "Actifs actuellement" count, and (critically) the START_DATE
         //    of each group which we need to detect late arrivals.
@@ -89,6 +93,11 @@ class GroupEvolutionService
                 'groups' => [],
                 'totals' => ['debuts' => 0, 'ajouts' => 0, 'quittants' => 0, 'changements' => 0, 'actifs' => 0, 'groups' => 0],
                 'range'  => ['start' => $startDate, 'end' => $endDate],
+                'diag'   => [
+                    'classes_fetched'  => 0,
+                    'fetch_error'      => $this->lastFetchError,
+                    'rate_limited'     => $this->lastFetchError === 'rate_limited',
+                ],
             ];
         }
 
@@ -122,9 +131,27 @@ class GroupEvolutionService
             }
         }
 
-        // 2) Every payment allocation in the range — the heart of the analysis.
+        // 2) Every payment allocation in the analysis window. We expand the
+        //    fetch window BACKWARD to cover the earliest class start month, so
+        //    that students who paid their inscription in (say) September show
+        //    up even when the user is filtering October→May. Without this
+        //    expansion, the "first payment" we see is October — already after
+        //    the September start → wrongly classified as Ajout instead of Début.
+        //
         //    Row shape: STUDENT_ID, CLASS_ID, SERVICE_TYPE_NAME, EFFECTIVE_DATE_PAYMENT, ...
-        $allocations = $this->fetchAllocations($strStoreId, $startDate, $endDate);
+        $fetchStart = $startDate;
+        if (!empty($classStartMonth)) {
+            $earliestStart = min($classStartMonth); // YYYY-MM string compare works
+            try {
+                $earliestStartDate = Carbon::createFromFormat('Y-m', $earliestStart)->startOfMonth()->toDateString();
+                if ($earliestStartDate < $fetchStart) {
+                    $fetchStart = $earliestStartDate;
+                }
+            } catch (\Throwable) {
+                // keep $fetchStart as-is
+            }
+        }
+        $allocations = $this->fetchAllocations($strStoreId, $fetchStart, $endDate);
 
         // 3) Build helper indexes.
         //    - studentClasses[studentId] = list of class IDs they paid in the range.
@@ -263,6 +290,8 @@ class GroupEvolutionService
             'classes_fetched'       => count($classes),
             'classes_with_start'    => count($classStartMonth),
             'classes_with_end'      => count($classEndDate),
+            'fetch_window'          => $fetchStart . ' → ' . $endDate,
+            'requested_window'      => $startDate . ' → ' . $endDate,
             'allocations_fetched'   => count($allocations),
             'allocations_with_class'=> 0,
             'distinct_class_ids'    => [],
@@ -291,10 +320,14 @@ class GroupEvolutionService
         $diag['student_class_pairs']    = array_sum(array_map('count', $studentClasses));
 
         // Surface the rate-limit state so the diagnostic card can warn the user
-        // that "0 allocations" is throttling, not missing data.
-        $diag['rate_limited'] = \Illuminate\Support\Facades\Cache::has(
-            'crm.rate_limited:' . substr((string) (config('crm.token') ?? ''), -8),
-        );
+        // that "0 allocations" is throttling, not missing data. We check BOTH
+        // the recent error from fetchClasses AND the cool-down cache flag —
+        // the flag may have expired between requests but the error is fresh.
+        $diag['fetch_error']  = $this->lastFetchError;
+        $diag['rate_limited'] = $this->lastFetchError === 'rate_limited'
+            || \Illuminate\Support\Facades\Cache::has(
+                'crm.rate_limited:' . substr((string) (config('crm.token') ?? ''), -8),
+            );
 
         return [
             'groups' => $groups,
@@ -303,6 +336,12 @@ class GroupEvolutionService
             'diag'   => $diag,
         ];
     }
+
+    /**
+     * Last fetch error (if any). Set by fetchClasses() so compute() can tell
+     * the view whether the empty result is due to rate limiting vs no data.
+     */
+    protected ?string $lastFetchError = null;
 
     /** Pull all classes for a center (page-walked via the existing client helper). */
     protected function fetchClasses(?int $strStoreId): array
@@ -315,7 +354,14 @@ class GroupEvolutionService
                 maxPages: 20,
                 concurrency: 3,
             );
+        } catch (CrmException $e) {
+            // Persist the error so the view can distinguish "rate limited"
+            // from "actually no classes". 429 / RATE_LIMITED is by far the
+            // most common cause of empty groups during a heavy session.
+            $this->lastFetchError = $e->status === 429 ? 'rate_limited' : ('http_' . $e->status);
+            return [];
         } catch (\Throwable) {
+            $this->lastFetchError = 'unknown';
             return [];
         }
     }
