@@ -145,4 +145,83 @@ class Payments extends Resource
             'endDate'                        => $endDate,
         ], fn ($v) => $v !== null));
     }
+
+    /**
+     * GET /api/external/v1/payment-collection — List payment collection / receivables
+     *
+     * Required scope: payments:read. Tenant/module is resolved from the token.
+     * Pagination is mandatory; size is capped at 25 by the backend.
+     * includeTotal defaults to false for performance — set true only when
+     * totalElements/totalPages are actually needed.
+     *
+     * Filters (all optional unless noted):
+     *   strStoreId                — store identifier (validated against token scope)
+     *   schoolYearId              — school year filter
+     *   id                        — collection row identifier
+     *   registrationId            — registration identifier
+     *   registrationStatusId      — registration status identifier
+     *   subscriptionServiceId     — subscription service identifier
+     *   prestationId              — prestation identifier
+     *   prestationTypeId          — prestation type identifier
+     *   orderId                   — order identifier
+     *   studentId                 — student identifier
+     *   classId                   — class / group identifier
+     *   levelSessionId            — level session identifier
+     *   levelSessionPackageId     — single level session package identifier
+     *   levelSessionPackageIds    — comma-separated list, e.g. "10,11,12"
+     *   serviceTypeIds            — comma-separated list, e.g. "1,2,3"
+     *   dueDateStartDate          — ISO yyyy-MM-dd, start of due-date range
+     *   dueDateEndDate            — ISO yyyy-MM-dd, end of due-date range
+     *   startDay                  — minimum payment delay days
+     *   endDay                    — maximum payment delay days
+     */
+    public function collection(
+        int $page = 0,
+        int $size = 10,
+        bool $includeTotal = false,
+        ?int $strStoreId = null,
+        ?int $schoolYearId = null,
+        ?int $id = null,
+        ?int $registrationId = null,
+        ?int $registrationStatusId = null,
+        ?int $subscriptionServiceId = null,
+        ?int $prestationId = null,
+        ?int $prestationTypeId = null,
+        ?int $orderId = null,
+        ?int $studentId = null,
+        ?int $classId = null,
+        ?int $levelSessionId = null,
+        ?int $levelSessionPackageId = null,
+        ?string $levelSessionPackageIds = null,
+        ?string $serviceTypeIds = null,
+        ?string $dueDateStartDate = null,
+        ?string $dueDateEndDate = null,
+        ?int $startDay = null,
+        ?int $endDay = null,
+    ): array {
+        return $this->client->get('/api/external/v1/payment-collection', array_filter([
+            'page'                   => $page,
+            'size'                   => $size,
+            'includeTotal'           => $includeTotal,
+            'strStoreId'             => $strStoreId,
+            'schoolYearId'           => $schoolYearId,
+            'id'                     => $id,
+            'registrationId'         => $registrationId,
+            'registrationStatusId'   => $registrationStatusId,
+            'subscriptionServiceId'  => $subscriptionServiceId,
+            'prestationId'           => $prestationId,
+            'prestationTypeId'       => $prestationTypeId,
+            'orderId'                => $orderId,
+            'studentId'              => $studentId,
+            'classId'                => $classId,
+            'levelSessionId'         => $levelSessionId,
+            'levelSessionPackageId'  => $levelSessionPackageId,
+            'levelSessionPackageIds' => $levelSessionPackageIds,
+            'serviceTypeIds'         => $serviceTypeIds,
+            'dueDateStartDate'       => $dueDateStartDate,
+            'dueDateEndDate'         => $dueDateEndDate,
+            'startDay'               => $startDay,
+            'endDay'                 => $endDay,
+        ], fn ($v) => $v !== null));
+    }
 }

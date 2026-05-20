@@ -9,13 +9,12 @@
 
     @include('backoffice.crm.partials._filters', ['fields' => [
         'checkNumber'          => ['label' => 'N° chèque'],
-        'studentId'            => ['label' => 'Student ID', 'type' => 'number'],
-        'paymentCheckStatusId' => ['label' => 'Status ID', 'type' => 'number'],
-        'bankId'               => ['label' => 'Bank ID', 'type' => 'number'],
-        'dueDateMin'           => ['label' => 'Due date (min)', 'type' => 'date'],
-        'dueDateMax'           => ['label' => 'Due date (max)', 'type' => 'date'],
-        'schoolYearId'         => ['label' => 'School Year ID', 'type' => 'number'],
-        'strStoreId'           => ['label' => 'Store ID', 'type' => 'number'],
+        'studentId'            => ['label' => 'Étudiant', 'type' => 'student-autocomplete'],
+        'paymentCheckStatusId' => ['label' => 'Statut chèque', 'type' => 'select', 'options' => $lovPaymentCheckStatuses, 'empty' => '— Tous les statuts —'],
+        'bankId'               => ['label' => 'Banque', 'type' => 'select', 'options' => $lovBanks, 'empty' => '— Toutes les banques —'],
+        'dueDateMin'           => ['label' => 'Échéance min', 'type' => 'date'],
+        'dueDateMax'           => ['label' => 'Échéance max', 'type' => 'date'],
+        'schoolYearId'         => ['label' => 'Année scolaire', 'type' => 'select', 'options' => $lovSchoolYears, 'empty' => '— Toutes les années —'],
     ]])
 
     <div class="card"><div class="card-body">

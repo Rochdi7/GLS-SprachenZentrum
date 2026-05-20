@@ -141,6 +141,76 @@ class HomeschoolClient
     }
 
     /**
+     * Fire one parallel GET per query-variant and merge their `data` arrays.
+     *
+     * Use this when the API doesn't support a range filter (e.g. session-presence
+     * only accepts a single `date`) but you need data across many values of that
+     * filter. Each variant becomes its own HTTP call, fanned out 10-at-a-time.
+     *
+     * @param  string  $path          API path (e.g. /api/external/v1/session-presence)
+     * @param  array   $baseQuery     Shared filters applied to every variant
+     * @param  array   $variantQueries  List of variant-specific query arrays
+     *                                  (e.g. [['date' => '2026-05-01'], ['date' => '2026-05-02'], ...])
+     * @param  int     $pageSize      Page size per call (capped at API max)
+     * @param  int     $concurrency   How many requests to fire in parallel per batch
+     * @return array<int, array<string,mixed>>  Flat list of all rows
+     */
+    public function parallelFetch(
+        string $path,
+        array $baseQuery,
+        array $variantQueries,
+        int $pageSize = 25,
+        int $concurrency = 10,
+    ): array {
+        if (empty($variantQueries)) {
+            return [];
+        }
+
+        $token   = $this->token;
+        $baseUrl = $this->baseUrl;
+        $verify  = $this->verifySsl;
+        $timeout = $this->timeout;
+        $url     = $baseUrl . '/' . ltrim($path, '/');
+
+        $rows = [];
+
+        for ($start = 0; $start < count($variantQueries); $start += $concurrency) {
+            $end = min($start + $concurrency, count($variantQueries));
+
+            $responses = \Illuminate\Support\Facades\Http::pool(function (\Illuminate\Http\Client\Pool $pool) use (
+                $start, $end, $variantQueries, $baseQuery, $pageSize, $token, $url, $verify, $timeout,
+            ) {
+                $requests = [];
+                for ($i = $start; $i < $end; $i++) {
+                    $r = $pool->as("variant_{$i}")
+                        ->withToken($token)
+                        ->acceptJson()
+                        ->timeout($timeout);
+                    if (!$verify) {
+                        $r = $r->withoutVerifying();
+                    }
+                    $query = ['page' => 0, 'size' => $pageSize, 'includeTotal' => 'false']
+                        + $variantQueries[$i]
+                        + $baseQuery;
+                    $requests[] = $r->get($url, $query);
+                }
+                return $requests;
+            });
+
+            for ($i = $start; $i < $end; $i++) {
+                $resp = $responses["variant_{$i}"] ?? null;
+                if ($resp && $resp->successful()) {
+                    foreach (($resp->json('data') ?? []) as $row) {
+                        $rows[] = $row;
+                    }
+                }
+            }
+        }
+
+        return $rows;
+    }
+
+    /**
      * Return a clone of this client that uses the given Bearer token instead of
      * the default one loaded from config('crm.token').
      *

@@ -12,10 +12,9 @@
         'firstName'          => ['label' => 'Prénom'],
         'lastName'           => ['label' => 'Nom'],
         'phoneNumber'        => ['label' => 'Téléphone'],
-        'categoryId'         => ['label' => 'Category ID', 'type' => 'number'],
+        'categoryId'         => ['label' => 'Catégorie', 'type' => 'select', 'options' => $lovCategories, 'empty' => '— Toutes les catégories —'],
         'registrationStatus' => ['label' => 'Statut inscription'],
-        'strStoreId'         => ['label' => 'Store ID', 'type' => 'number'],
-        'size'               => ['label' => 'Page size', 'type' => 'number', 'placeholder' => '20'],
+        'size'               => ['label' => 'Taille de page', 'type' => 'number', 'placeholder' => '20'],
     ]])
 
     <div class="card">

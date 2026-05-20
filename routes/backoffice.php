@@ -761,6 +761,7 @@ Route::prefix('backoffice')
                 Route::get('/insights/payment-history/{paymentId}', 'paymentHistory')->name('insights.payment-history')
                     ->where('paymentId', '[0-9]+');
                 Route::get('/insights/advances',                  'advances')->name('insights.advances');
+                Route::get('/group-evolution',                    'groupEvolution')->name('group-evolution');
                 Route::post('/center',               'setCenter')->name('set-center');
                 Route::get('/students',              'students')->name('students');
                 Route::get('/session-presence',      'sessionPresence')->name('session-presence');
@@ -768,6 +769,8 @@ Route::prefix('backoffice')
                 Route::get('/payments',              'payments')->name('payments');
                 Route::get('/payment-checks',        'paymentChecks')->name('payment-checks');
                 Route::get('/payment-allocations',   'paymentAllocations')->name('payment-allocations');
+                Route::get('/payment-collection',    'paymentCollection')->name('payment-collection');
+                Route::get('/api/students-search',   'studentsSearch')->name('api.students-search');
                 Route::get('/groups/classes',        'groupsClasses')->name('groups.classes');
                 Route::get('/groups/level-sessions', 'groupsLevelSessions')->name('groups.level-sessions');
                 Route::get('/lov/{kind}',            'lov')->name('lov')

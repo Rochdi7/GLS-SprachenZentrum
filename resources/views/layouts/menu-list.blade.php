@@ -510,6 +510,16 @@
                         <span class="pc-mtext">Allocations paiement</span>
                     </a>
                 </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.payment-collection') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.payment-collection') }}" class="pc-link {{ request()->routeIs('backoffice.crm.payment-collection') ? 'active' : '' }}">
+                        <span class="pc-mtext">Recouvrement</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.group-evolution') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.group-evolution') }}" class="pc-link {{ request()->routeIs('backoffice.crm.group-evolution') ? 'active' : '' }}">
+                        <span class="pc-mtext">Évolution par groupe</span>
+                    </a>
+                </li>
                 <li class="pc-item {{ request()->routeIs('backoffice.crm.groups.classes') ? 'active' : '' }}">
                     <a href="{{ route('backoffice.crm.groups.classes') }}" class="pc-link {{ request()->routeIs('backoffice.crm.groups.classes') ? 'active' : '' }}">
                         <span class="pc-mtext">Classes</span>

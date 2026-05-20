@@ -7,6 +7,8 @@
       $crmCurrentSite   : Site|null (resolved row, for the label)
 --}}
 
+@include('backoffice.crm.partials._loader')
+
 <div class="card mb-3">
     <div class="card-body py-3">
         <form method="POST" action="{{ route('backoffice.crm.set-center') }}" class="row g-2 align-items-end">

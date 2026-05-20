@@ -47,6 +47,7 @@
             ['Paiements',             'backoffice.crm.payments',             'ti-cash',            'payments:read',         'Encaissements et reçus'],
             ['Chèques',               'backoffice.crm.payment-checks',       'ti-receipt',         'payment-checks:read',   'Suivi des chèques en attente'],
             ['Allocations paiement',  'backoffice.crm.payment-allocations',  'ti-arrows-split',    'payments:read',         'Répartition des paiements'],
+            ['Recouvrement',          'backoffice.crm.payment-collection',   'ti-report-money',    'payments:read',         'Créances et échéances en attente'],
             ['Classes',               'backoffice.crm.groups.classes',       'ti-school',          'groups:read',           'Groupes / classes en cours'],
             ['Level sessions',        'backoffice.crm.groups.level-sessions','ti-calendar-event',  'groups:read',           'Sessions par niveau'],
         ];

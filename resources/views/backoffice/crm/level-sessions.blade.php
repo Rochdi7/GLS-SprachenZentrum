@@ -8,8 +8,7 @@
     @include('backoffice.crm.partials._center')
 
     @include('backoffice.crm.partials._filters', ['fields' => [
-        'schoolYearId' => ['label' => 'School Year ID', 'type' => 'number'],
-        'strStoreId'   => ['label' => 'Store ID', 'type' => 'number'],
+        'schoolYearId' => ['label' => 'Année scolaire', 'type' => 'select', 'options' => $lovSchoolYears, 'empty' => '— Toutes les années —'],
     ]])
 
     <div class="card"><div class="card-body">
