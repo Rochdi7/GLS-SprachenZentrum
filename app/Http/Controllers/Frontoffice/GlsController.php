@@ -116,7 +116,7 @@ class GlsController extends Controller
 
         // Send emails (wrapped so email failure doesn't break the flow)
         try {
-            Mail::to('info@glssprachenzentrum.ma')
+            Mail::to('info@gls-sprachzentrum.ma')
                 ->send(new GlsInscriptionMail($emailData, $centre, $group));
 
             Mail::to($validated['email'])

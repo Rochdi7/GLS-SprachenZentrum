@@ -7,8 +7,8 @@
 @section('content')
 
     <!-- ============================
-                     HERO
-                ============================= -->
+                                 HERO
+                            ============================= -->
     <section class="hero-section section about-hero reveal delay-1">
         <div class="container is-hero reveal delay-2">
             <div class="hero_subtitle reveal delay-1">{{ __('goethe.hero.subtitle') }}</div>
@@ -25,8 +25,8 @@
     </section>
 
     <!-- ============================
-                     INTRO
-                ============================= -->
+                                 INTRO
+                            ============================= -->
     <div class="rich-text-section section reveal delay-1">
         <div class="container reveal delay-2">
             <div class="rich-text w-richtext reveal delay-3">
@@ -39,8 +39,8 @@
     </div>
 
     <!-- ============================
-                     4 STEPS
-                ============================= -->
+                                 4 STEPS
+                            ============================= -->
     <section class="gls-more-info section reveal delay-1">
         <div class="container gls-more-info-container reveal delay-2">
 
@@ -91,8 +91,8 @@
     </section>
 
     <!-- ============================
-                     LEVEL DETAILS
-                ============================= -->
+                                 LEVEL DETAILS
+                            ============================= -->
     <div class="rich-text-section section reveal delay-1">
         <div class="container reveal delay-2">
             <div class="rich-text w-richtext reveal delay-3">
@@ -126,8 +126,8 @@
     </div>
 
     <!-- ============================
-                     EXAM CARDS
-                ============================= -->
+                                 EXAM CARDS
+                            ============================= -->
     <div class="courses-section section reveal delay-1">
         <div class="container is-h-courses reveal delay-2">
 
@@ -181,8 +181,8 @@
 
 
     <!-- ============================
-                     CONTACT SECTION
-                ============================= -->
+                                 CONTACT SECTION
+                            ============================= -->
     <section class="contact-section section reveal delay-1">
         <div class="container is-2-col-grid reveal delay-2">
 
@@ -198,14 +198,14 @@
                     <a href="tel:+212669515019" class="link-block reveal delay-1">
                         <div class="text-block-3 reveal delay-2">
                             <span class="text-span reveal delay-3">{{ __('goethe.contact.call') }}<br></span>
-                            +212 6 03 16 02 77
+                            +212 6 69 51 50 19
                         </div>
                     </a>
 
-                    <a href="mailto:info@glssprachenzentrum.ma" class="link-block-2 reveal delay-3">
+                    <a href="mailto:info@gls-sprachzentrum.ma" class="link-block-2 reveal delay-3">
                         <div class="text-block-3 reveal delay-1">
                             <span class="text-span reveal delay-2">{{ __('goethe.contact.email') }}<br></span>
-                            info@glssprachenzentrum.ma
+                            info@gls-sprachzentrum.ma
                         </div>
                     </a>
 

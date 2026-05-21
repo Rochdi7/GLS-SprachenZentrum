@@ -156,14 +156,14 @@
                     <a href="tel:+212669515019" class="link-block reveal delay-1">
                         <div class="text-block-3 reveal delay-2">
                             <span class="text-span reveal delay-3">{!! __('home.contact.call_label') !!}<br></span>
-                            +212 6 03 16 02 77
+                            +212 6 69 51 50 19
                         </div>
                     </a>
 
-                    <a href="mailto:info@glssprachenzentrum.ma" class="link-block-2 reveal delay-3">
+                    <a href="mailto:info@gls-sprachzentrum.ma" class="link-block-2 reveal delay-3">
                         <div class="text-block-3 reveal delay-1">
                             <span class="text-span reveal delay-2">{!! __('home.contact.email_label') !!}<br></span>
-                            info@glssprachenzentrum.ma
+                            info@gls-sprachzentrum.ma
                         </div>
                     </a>
                 </div>

@@ -26,7 +26,7 @@ return [
         ],
 
         'global' => [
-            'email' => 'info@glssprachenzentrum.ma',
+            'email' => 'info@gls-sprachzentrum.ma',
             'hours' => [
                 'Mon - Fri' => '09:30 - 21:30',
                 'Sat'       => 'Closed',
@@ -41,7 +41,7 @@ return [
                 'image' => asset('assets/images/sites/casablanca.jpg'),
                 'address' => '14 Bd de Paris, 1st floor N8, Casablanca 20000',
                 'phone' => '+212 80-8549717',
-                'email' => 'info@glssprachenzentrum.ma',
+                'email' => 'info@gls-sprachzentrum.ma',
                 'maps_query' => '14 Bd de Paris, 1st floor N8, Casablanca 20000',
             ],
             [
@@ -50,7 +50,7 @@ return [
                 'image' => asset('assets/images/sites/marrakech.webp'),
                 'address' => 'Avenue Yacoub El Mansour, Espace Guéliz Building, 3rd floor Office 28, Marrakech',
                 'phone' => '+212 80-86 639 83',
-                'email' => 'info@glssprachenzentrum.ma',
+                'email' => 'info@gls-sprachzentrum.ma',
                 'maps_query' => 'Avenue Yacoub El Mansour, Espace Guéliz Building, 3rd floor Office 28, Marrakech',
             ],
             [
@@ -59,7 +59,7 @@ return [
                 'image' => asset('assets/images/sites/rabat.jpg'),
                 'address' => 'Avenue Fal Ould Oumeir, Building 77, 1st floor number 1, Agdal, Rabat',
                 'phone' => '+212 80-85 735 09',
-                'email' => 'info@glssprachenzentrum.ma',
+                'email' => 'info@gls-sprachzentrum.ma',
                 'maps_query' => 'Avenue Fal Ould Oumeir, Building 77, 1st floor number 1, Agdal, Rabat',
             ],
             [
@@ -68,7 +68,7 @@ return [
                 'image' => asset('assets/images/sites/kenitra.jpg'),
                 'address' => 'Avenue Mohammed V, Rania Offices, 7th floor, Kénitra',
                 'phone' => '+212 80-86 514 50',
-                'email' => 'info@glssprachenzentrum.ma',
+                'email' => 'info@gls-sprachzentrum.ma',
                 'maps_query' => 'Avenue Mohammed V, Rania Offices, 7th floor, Kénitra',
             ],
             [
@@ -77,7 +77,7 @@ return [
                 'image' => asset('assets/images/sites/sale.webp'),
                 'address' => 'Avenue Mohamed V, Rue Halima N12 Diyar, Salé',
                 'phone' => '+212 80-85 40 625',
-                'email' => 'info@glssprachenzentrum.ma',
+                'email' => 'info@gls-sprachzentrum.ma',
                 'maps_query' => 'Avenue Mohamed V, Rue Halima N12 Diyar, Salé',
             ],
             [
@@ -86,7 +86,7 @@ return [
                 'image' => asset('assets/images/sites/agadir.avif'),
                 'address' => 'Av. Massoude AL Wafkaoui, Places des taxi, Hay Essalam, Agadir',
                 'phone' => '+212 606-48 40 51',
-                'email' => 'info@glssprachenzentrum.ma',
+                'email' => 'info@gls-sprachzentrum.ma',
                 'maps_query' => 'Av. Massoude AL Wafkaoui, Places des taxi, Hay Essalam, Agadir',
             ],
         ],

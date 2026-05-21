@@ -16,7 +16,7 @@ class SitesTableSeeder extends Seeder
                 'city'    => 'Casablanca',
                 'address' => '14 Bd de Paris, 1er étage N°8, Casablanca 20000',
                 'phone'   => '+212 80-8549717',
-                'email'   => 'info@glssprachenzentrum.ma',
+                'email'   => 'info@gls-sprachzentrum.ma',
             ],
             [
                 'name'    => 'GLS Marrakech',
@@ -24,7 +24,7 @@ class SitesTableSeeder extends Seeder
                 'city'    => 'Marrakech',
                 'address' => 'Avenue Yacoub El Mansour, Immeuble Espace Guéliz, 3ème étage, Bureau 28, Marrakech',
                 'phone'   => '+212 80-86 639 83',
-                'email'   => 'info@glssprachenzentrum.ma',
+                'email'   => 'info@gls-sprachzentrum.ma',
             ],
             [
                 'name'    => 'GLS Rabat',
@@ -32,7 +32,7 @@ class SitesTableSeeder extends Seeder
                 'city'    => 'Rabat',
                 'address' => 'Avenue Fal Ould Oumeir, Immeuble 77, 1er étage N°1, Agdal, Rabat',
                 'phone'   => '+212 80-85 735 09',
-                'email'   => 'info@glssprachenzentrum.ma',
+                'email'   => 'info@gls-sprachzentrum.ma',
             ],
             [
                 'name'    => 'GLS Kénitra',
@@ -40,7 +40,7 @@ class SitesTableSeeder extends Seeder
                 'city'    => 'Kenitra',
                 'address' => 'Avenue Mohammed V, Bureaux Rania, 7ème étage, Kénitra',
                 'phone'   => '+212 80-86 514 50',
-                'email'   => 'info@glssprachenzentrum.ma',
+                'email'   => 'info@gls-sprachzentrum.ma',
             ],
             [
                 'name'    => 'GLS Salé',
@@ -48,7 +48,7 @@ class SitesTableSeeder extends Seeder
                 'city'    => 'Salé',
                 'address' => 'Avenue Mohamed V, Rue Halima N°12 Diyar, Salé',
                 'phone'   => '+212 80-85 40 625',
-                'email'   => 'info@glssprachenzentrum.ma',
+                'email'   => 'info@gls-sprachzentrum.ma',
             ],
             [
                 'name'    => 'GLS Agadir',
@@ -56,7 +56,7 @@ class SitesTableSeeder extends Seeder
                 'city'    => 'Agadir',
                 'address' => 'Av. Massoude Al Wafkaoui, Place des Taxis, Hay Essalam, Agadir',
                 'phone'   => '+212 606-48 40 51',
-                'email'   => 'info@glssprachenzentrum.ma',
+                'email'   => 'info@gls-sprachzentrum.ma',
             ],
         ];
 

@@ -118,12 +118,12 @@
                 <div class="div-block-21">
                     <a href="tel:+212669515019" class="link-block">
                         <div class="text-block-3">
-                            <span class="text-span">{{ __('about.contact.call') }}<br></span>+212 6 03 16 02 77
+                            <span class="text-span">{{ __('about.contact.call') }}<br></span>+212 6 69 51 50 19
                         </div>
                     </a>
-                    <a href="mailto:info@glssprachenzentrum.ma" class="link-block-2">
+                    <a href="mailto:info@gls-sprachzentrum.ma" class="link-block-2">
                         <div class="text-block-3">
-                            <span class="text-span">{{ __('about.contact.email') }}<br></span>info@glssprachenzentrum.ma
+                            <span class="text-span">{{ __('about.contact.email') }}<br></span>info@gls-sprachzentrum.ma
                         </div>
                     </a>
                 </div>

@@ -339,8 +339,8 @@
     </section>
 
     <!-- ============================
-                                     CONTACT SECTION
-                                ============================= -->
+                                                 CONTACT SECTION
+                                            ============================= -->
     <section class="contact-section section reveal delay-1">
         <div class="container is-2-col-grid reveal delay-2">
 
@@ -354,14 +354,14 @@
                     <a href="tel:+212669515019" class="link-block reveal delay-1">
                         <div class="text-block-3">
                             <span class="text-span">{{ __('quiz/level_test.contact.call') }}<br></span>
-                            +212 6 03 16 02 77
+                            +212 6 69 51 50 19
                         </div>
                     </a>
 
-                    <a href="mailto:info@glssprachenzentrum.ma" class="link-block-2 reveal delay-2">
+                    <a href="mailto:info@gls-sprachzentrum.ma" class="link-block-2 reveal delay-2">
                         <div class="text-block-3">
                             <span class="text-span">{{ __('quiz/level_test.contact.email') }}<br></span>
-                            info@glssprachenzentrum.ma
+                            info@gls-sprachzentrum.ma
                         </div>
                     </a>
                 </div>

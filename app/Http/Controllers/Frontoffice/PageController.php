@@ -132,7 +132,7 @@ class PageController extends Controller
             'message' => 'required|string|min:5',
         ]);
 
-        Mail::to('info@glssprachenzentrum.ma')->send(new ContactMessageMail($request->all()));
+        Mail::to('info@gls-sprachzentrum.ma')->send(new ContactMessageMail($request->all()));
 
         return back()->with('success', 'Votre message a bien été envoyé.');
     }
