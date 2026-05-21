@@ -96,6 +96,7 @@
   .footer-social-link.fb:hover { color: #1877f2; }  /* Facebook */
   .footer-social-link.yt:hover { color: #ff0000; }  /* YouTube */
   .footer-social-link.wa:hover { color: #25d366; }  /* WhatsApp */
+  .footer-social-link.tt:hover { color: #ff0050; }  /* TikTok */
   
   /* ===============================
      MAP
@@ -155,4 +156,144 @@
       padding-right: 1.5rem;
     }
   }
+
+  /* ===============================
+       Centers accordion — click to expand → address links to Google Maps
+     =============================== */
+  .visit-block .gls-address-list {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .gls-address-row + .gls-address-row {
+    border-top: 1px solid rgba(255, 255, 255, .08);
+  }
+
+  .gls-address-details { width: 100%; }
+
+  .gls-address-summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--off-white, #fff);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  .gls-address-summary::-webkit-details-marker { display: none; }
+  .gls-address-summary::marker { content: ''; }
+
+  .gls-address-city {
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .gls-address-branch {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, .7);
+    background: rgba(255, 255, 255, .08);
+    border-radius: 999px;
+    vertical-align: middle;
+  }
+
+  .gls-address-chevron {
+    flex-shrink: 0;
+    transition: transform .25s ease;
+    opacity: .6;
+  }
+
+  .gls-address-details[open] > .gls-address-summary .gls-address-chevron {
+    transform: rotate(180deg);
+    opacity: 1;
+  }
+
+  .gls-address-body {
+    padding: 0 0 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: glsAddressSlide .25s ease-out;
+  }
+
+  @keyframes glsAddressSlide {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .gls-address-link {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "label arrow"
+      "text arrow";
+    column-gap: 10px;
+    row-gap: 2px;
+    padding: 10px 12px;
+    text-decoration: none;
+    color: rgba(255, 255, 255, .85);
+    background: rgba(255, 255, 255, .04);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, .06);
+    transition: background .2s ease, border-color .2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .gls-address-branch-label {
+    grid-area: label;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, .55);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  .gls-address-link .gls-address-text {
+    grid-area: text;
+    font-size: 0.92rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, .82);
+  }
+
+  .gls-address-arrow {
+    grid-area: arrow;
+    align-self: center;
+    color: rgba(255, 255, 255, .55);
+    transition: opacity .2s ease, transform .2s ease, color .2s ease;
+    opacity: .7;
+  }
+
+  .gls-address-link:hover {
+    background: rgba(255, 255, 255, .07);
+    border-color: rgba(255, 255, 255, .12);
+  }
+
+  .gls-address-link:hover .gls-address-arrow {
+    opacity: 1;
+    color: #fff;
+    transform: translate(1px, -1px);
+  }
+
+  .gls-address-link:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, .35);
+    outline-offset: 2px;
+  }
+
+  /* RTL — flip arrow direction visually */
+  [dir="rtl"] .gls-address-arrow { transform: scaleX(-1); }
+  [dir="rtl"] .gls-address-link:hover .gls-address-arrow { transform: translate(-1px, -1px) scaleX(-1); }
   

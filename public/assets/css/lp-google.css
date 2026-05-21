@@ -1337,6 +1337,144 @@
 
 .lp-google-scope .lp-contact-addresses br { display: block; }
 
+/* Centers accordion → click to expand, address links to Google Maps */
+.lp-google-scope .gls-address-list {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.lp-google-scope .gls-address-row + .gls-address-row {
+    border-top: 1px solid rgba(255, 255, 255, .12);
+}
+
+.lp-google-scope .gls-address-details { width: 100%; }
+
+.lp-google-scope .gls-address-summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.lp-google-scope .gls-address-summary::-webkit-details-marker { display: none; }
+.lp-google-scope .gls-address-summary::marker { content: ''; }
+
+.lp-google-scope .gls-address-city {
+    flex: 1;
+    line-height: 1.4;
+    color: #fff;
+}
+
+.lp-google-scope .gls-address-branch {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, .7);
+    background: rgba(255, 255, 255, .08);
+    border-radius: 999px;
+    vertical-align: middle;
+}
+
+.lp-google-scope .gls-address-chevron {
+    flex-shrink: 0;
+    transition: transform .25s ease;
+    opacity: .6;
+}
+
+.lp-google-scope .gls-address-details[open] > .gls-address-summary .gls-address-chevron {
+    transform: rotate(180deg);
+    opacity: 1;
+}
+
+.lp-google-scope .gls-address-body {
+    padding: 0 0 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: lpAddressSlide .25s ease-out;
+}
+
+@keyframes lpAddressSlide {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.lp-google-scope .lp-address-link {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+        "label arrow"
+        "text arrow";
+    column-gap: 10px;
+    row-gap: 2px;
+    padding: 10px 12px;
+    text-decoration: none;
+    color: rgba(255, 255, 255, .85);
+    background: rgba(255, 255, 255, .04);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, .06);
+    transition: background .2s ease, border-color .2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.lp-google-scope .gls-address-branch-label {
+    grid-area: label;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, .55);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.lp-google-scope .lp-address-link .gls-address-text {
+    grid-area: text;
+    font-size: 0.92rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, .82);
+}
+
+.lp-google-scope .lp-address-link .gls-address-arrow {
+    grid-area: arrow;
+    align-self: center;
+    color: rgba(255, 255, 255, .55);
+    opacity: .7;
+    transition: opacity .2s ease, transform .2s ease, color .2s ease;
+}
+
+.lp-google-scope .lp-address-link:hover {
+    background: rgba(255, 255, 255, .07);
+    border-color: rgba(255, 255, 255, .12);
+}
+
+.lp-google-scope .lp-address-link:hover .gls-address-arrow {
+    opacity: 1;
+    color: #fff;
+    transform: translate(1px, -1px);
+}
+
+.lp-google-scope .lp-address-link:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, .35);
+    outline-offset: 2px;
+}
+
+[dir="rtl"] .lp-google-scope .gls-address-arrow { transform: scaleX(-1); }
+[dir="rtl"] .lp-google-scope .lp-address-link:hover .gls-address-arrow { transform: translate(-1px, -1px) scaleX(-1); }
+
 .lp-google-scope .lp-contact-social {
     margin-top: auto;
     display: flex;
@@ -1382,13 +1520,14 @@
     border: 1px solid var(--line);
     background: #fffee8;
     box-shadow: var(--shadow-lg);
+    /* Match the contact card's height — both grid children stretch */
+    height: 100%;
     min-height: 480px;
-    aspect-ratio: 4 / 5;
-    max-height: 720px;
 }
 
 @media (max-width: 900px) {
     .lp-google-scope .lp-contact-map {
+        height: auto;
         aspect-ratio: 4 / 3;
         min-height: 360px;
         max-height: 460px;

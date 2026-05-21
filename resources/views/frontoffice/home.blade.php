@@ -956,8 +956,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     </div>
 
                     <div class="text-block-3 visit-block reveal delay-3">
-                        <span class="text-span reveal delay-1">{!! __('home.contact.visit_label') !!}</span><br>
-                        {!! __('home.contact.addresses') !!}
+                        <span class="text-span reveal delay-1">{!! __('home.contact.visit_label') !!}</span>
+                        @include('frontoffice.partials.gls-centers-links')
                     </div>
 
                     <div class="footer-socials-block reveal delay-1">
@@ -986,6 +986,12 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                                 class="footer-social-link wa" target="_blank" rel="noopener noreferrer"
                                 aria-label="Contacter GLS Sprachenzentrum sur WhatsApp">
                                 <i class="bi bi-whatsapp"></i>
+                            </a>
+
+                            <a href="https://www.tiktok.com/@gls.sprachenzentrum?is_from_webapp=1&sender_device=pc"
+                                class="footer-social-link tt" target="_blank" rel="noopener noreferrer"
+                                aria-label="GLS Sprachenzentrum sur TikTok">
+                                <i class="bi bi-tiktok"></i>
                             </a>
 
                         </div>
@@ -1017,7 +1023,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                                 lat: 33.9976668,
                                 lng: -6.8485901,
                                 color: '#1c45db',
-                                gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Rabat'
+                                gmap: 'https://maps.app.goo.gl/mUnSAVYEnGToS8i2A'
                             },
                             {
                                 name: 'GLS Salé',
@@ -1025,7 +1031,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                                 lat: 34.0400773,
                                 lng: -6.8172275,
                                 color: '#009d5a',
-                                gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Sale'
+                                gmap: 'https://maps.app.goo.gl/pbSW4y4tt9RThx4a7'
                             },
                             {
                                 name: 'GLS Kénitra',
@@ -1033,7 +1039,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                                 lat: 34.2582587,
                                 lng: -6.5876841,
                                 color: '#ff7a08',
-                                gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Kenitra'
+                                gmap: 'https://maps.app.goo.gl/pEsso9L8ygWpdSor5'
                             },
                             {
                                 name: 'GLS Casablanca',
@@ -1041,7 +1047,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                                 lat: 33.5936893,
                                 lng: -7.6210973,
                                 color: '#9767f8',
-                                gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachzentrum+Casablanca'
+                                gmap: 'https://maps.app.goo.gl/EdqBoa3KWEYjuzoq7'
                             },
                             {
                                 name: 'GLS Marrakech',
@@ -1049,7 +1055,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                                 lat: 31.6379228,
                                 lng: -8.009762,
                                 color: '#d22730',
-                                gmap: 'https://www.google.com/maps/place/?q=place_id:ChIJUQDoLv3-2g0RABMT_OdCVvA'
+                                gmap: 'https://maps.app.goo.gl/krR8pGZue3DW3yyv6'
                             },
                             {
                                 name: 'GLS Agadir',
@@ -1057,7 +1063,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                                 lat: 30.4017457,
                                 lng: -9.5471754,
                                 color: '#fc0',
-                                gmap: 'https://www.google.com/maps/search/?api=1&query=GLS+Sprachenzentrum+Agadir'
+                                gmap: 'https://maps.app.goo.gl/VX48ZDGFyXCyxsGU7'
                             },
                         ];
 

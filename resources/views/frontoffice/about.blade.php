@@ -157,6 +157,12 @@
                             <i class="bi bi-whatsapp"></i>
                         </a>
 
+                        <a href="https://www.tiktok.com/@gls.sprachenzentrum?is_from_webapp=1&sender_device=pc"
+                            class="footer-social-link tt" target="_blank" rel="noopener noreferrer"
+                            aria-label="GLS Sprachenzentrum sur TikTok">
+                            <i class="bi bi-tiktok"></i>
+                        </a>
+
                     </div>
                 </div>
             </div>

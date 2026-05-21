@@ -246,6 +246,48 @@ return [
             Avenue Mohamed V Rue Halima N°12 Diyar, Salé<br>
             Av. Massoude Al Wafkaoui, Place des taxis, Hay Essalam, Agadir
         ",
+
+        'address_by_city' => [
+            'casablanca' => '14 Bd de Paris, 1er étage N°8, Casablanca 20000',
+            'marrakech'  => 'Avenue Yacoub El Mansour, Immeuble Espace Guéliz, 3ème étage Bureau 28, Marrakech',
+            'rabat'      => 'Avenue Fal Ould Oumeir, Immeuble 77, 1er étage N°1, Agdal, Rabat',
+            'kenitra'    => 'Avenue Mohammed V, Bureaux Rania, 7ème étage, Kénitra',
+            'sale'       => 'Avenue Mohamed V Rue Halima N°12 Diyar, Salé',
+            'agadir'     => 'Av. Massoude Al Wafkaoui, Place des taxis, Hay Essalam, Agadir',
+        ],
+
+        'maps_url_by_city' => [
+            'casablanca' => 'https://maps.app.goo.gl/EdqBoa3KWEYjuzoq7',
+            'marrakech'  => 'https://maps.app.goo.gl/krR8pGZue3DW3yyv6',
+            'rabat'      => 'https://maps.app.goo.gl/mUnSAVYEnGToS8i2A',
+            'kenitra'    => 'https://maps.app.goo.gl/pEsso9L8ygWpdSor5',
+            'sale'       => 'https://maps.app.goo.gl/pbSW4y4tt9RThx4a7',
+            'agadir'     => 'https://maps.app.goo.gl/VX48ZDGFyXCyxsGU7',
+        ],
+
+        'branch_label' => 'filière',
+
+        'centers_list' => [
+            'casablanca' => [
+                ['address' => '14 Bd de Paris, 1er étage N°8, Casablanca 20000', 'maps_url' => 'https://maps.app.goo.gl/EdqBoa3KWEYjuzoq7'],
+            ],
+            'marrakech' => [
+                ['address' => 'Avenue Yacoub El Mansour, Immeuble Espace Guéliz, 3ème étage Bureau 28, Marrakech', 'maps_url' => 'https://maps.app.goo.gl/krR8pGZue3DW3yyv6'],
+            ],
+            'rabat' => [
+                ['address' => 'Avenue Fal Ould Oumeir, Immeuble 77, 1er étage numéro 1, Rabat 10000', 'maps_url' => 'https://maps.app.goo.gl/mUnSAVYEnGToS8i2A'],
+                ['address' => '1er étage, 99 Av. Fal Ould Oumeir, Rabat 10000',                       'maps_url' => 'https://maps.app.goo.gl/dnXUTeupDvomfjg89'],
+            ],
+            'kenitra' => [
+                ['address' => 'Avenue Mohammed V, Bureaux Rania, 7ème étage, Kénitra', 'maps_url' => 'https://maps.app.goo.gl/pEsso9L8ygWpdSor5'],
+            ],
+            'sale' => [
+                ['address' => 'Avenue Mohamed V Rue Halima N°12 Diyar, Salé', 'maps_url' => 'https://maps.app.goo.gl/pbSW4y4tt9RThx4a7'],
+            ],
+            'agadir' => [
+                ['address' => 'Av. Massoude Al Wafkaoui, Place des taxis, Hay Essalam, Agadir', 'maps_url' => 'https://maps.app.goo.gl/VX48ZDGFyXCyxsGU7'],
+            ],
+        ],
     ],
 
     'site_modal' => [

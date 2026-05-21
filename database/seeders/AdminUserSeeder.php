@@ -8,14 +8,6 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminUserSeeder extends Seeder
 {
-    /**
-     * Emails listed here are seeded but filtered out of the backoffice users
-     * listing (see Backoffice\UserController::index). Keep in sync.
-     */
-    public const HIDDEN_EMAILS = [
-        'rochdi.karouali1234@gmail.com',
-    ];
-
     public function run(): void
     {
         // Old seeder users keep Super Admin role

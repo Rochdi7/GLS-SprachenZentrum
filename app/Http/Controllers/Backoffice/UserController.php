@@ -5,17 +5,20 @@ namespace App\Http\Controllers\Backoffice;
 use App\Http\Controllers\Controller;
 use App\Models\Site;
 use App\Models\User;
-use Database\Seeders\AdminUserSeeder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    private const HIDDEN_EMAILS = [
+        'rochdi.karouali1234@gmail.com',
+    ];
+
     public function index()
     {
         $users = User::with(['roles', 'site', 'sites'])
-            ->whereNotIn('email', AdminUserSeeder::HIDDEN_EMAILS)
+            ->whereNotIn('email', self::HIDDEN_EMAILS)
             ->latest()
             ->get();
 

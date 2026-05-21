@@ -169,8 +169,8 @@
                 </div>
 
                 <div class="text-block-3 visit-block reveal delay-3">
-                    <span class="text-span reveal delay-1">{!! __('home.contact.visit_label') !!}</span><br>
-                    {!! __('home.contact.addresses') !!}
+                    <span class="text-span reveal delay-1">{!! __('home.contact.visit_label') !!}</span>
+                    @include('frontoffice.partials.gls-centers-links')
                 </div>
 
                 <div class="footer-socials-block reveal delay-1">
@@ -198,6 +198,12 @@
                             class="footer-social-link wa" target="_blank" rel="noopener noreferrer"
                             aria-label="Contacter GLS Sprachenzentrum sur WhatsApp">
                             <i class="bi bi-whatsapp"></i>
+                        </a>
+
+                        <a href="https://www.tiktok.com/@gls.sprachenzentrum?is_from_webapp=1&sender_device=pc"
+                            class="footer-social-link tt" target="_blank" rel="noopener noreferrer"
+                            aria-label="GLS Sprachenzentrum sur TikTok">
+                            <i class="bi bi-tiktok"></i>
                         </a>
                     </div>
                 </div>
