@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backoffice;
 use App\Http\Controllers\Controller;
 use App\Models\Site;
 use App\Models\User;
+use Database\Seeders\AdminUserSeeder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
@@ -13,7 +14,10 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with(['roles', 'site', 'sites'])->latest()->get();
+        $users = User::with(['roles', 'site', 'sites'])
+            ->whereNotIn('email', AdminUserSeeder::HIDDEN_EMAILS)
+            ->latest()
+            ->get();
 
         return view('backoffice.users.index', compact('users'));
     }
