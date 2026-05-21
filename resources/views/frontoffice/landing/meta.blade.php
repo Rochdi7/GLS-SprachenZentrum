@@ -551,10 +551,11 @@
                         </h2>
 
                         <div class="lp-contact-links">
-                            <a href="tel:+212669515019" class="lp-contact-link">
+                            <div class="lp-contact-link lp-contact-link--phones">
                                 <span class="lp-contact-label">{!! __('home.contact.call_label') !!}</span>
-                                <span class="lp-contact-value">+212 6 69 51 50 19</span>
-                            </a>
+                                <a href="tel:+212669515019" class="lp-contact-value">+212 6 69 51 50 19</a>
+                                <a href="tel:+212537372003" class="lp-contact-value">+212 5 37 37 20 03</a>
+                            </div>
 
                             <a href="mailto:info@gls-sprachzentrum.ma" class="lp-contact-link">
                                 <span class="lp-contact-label">{!! __('home.contact.email_label') !!}</span>

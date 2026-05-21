@@ -1250,11 +1250,11 @@
     background: var(--ink);
     color: #fff;
     border-radius: var(--radius);
-    padding: clamp(28px, 3.4vw, 44px);
+    padding: clamp(20px, 2.4vw, 32px);
     box-shadow: var(--shadow-lg);
     display: flex;
     flex-direction: column;
-    gap: 26px;
+    gap: 18px;
     position: relative;
     overflow: hidden;
 }
@@ -1273,9 +1273,9 @@
 }
 
 .lp-google-scope .lp-contact-title {
-    font-size: clamp(26px, 3vw, 36px);
+    font-size: clamp(22px, 2.4vw, 28px);
     font-weight: 800;
-    line-height: 1.1;
+    line-height: 1.15;
     letter-spacing: -0.01em;
     margin: 0;
     color: #fff;
@@ -1283,9 +1283,16 @@
 }
 
 .lp-google-scope .lp-contact-links {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 24px;
+    align-items: start;
+}
+
+@media (max-width: 560px) {
+    .lp-google-scope .lp-contact-links {
+        grid-template-columns: 1fr;
+    }
 }
 
 .lp-google-scope .lp-contact-link {
@@ -1294,12 +1301,9 @@
     gap: 2px;
     color: #fff;
     text-decoration: none;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, .12);
+    padding: 4px 0;
     transition: color .2s ease, transform .2s ease;
 }
-
-.lp-google-scope .lp-contact-link:last-child { border-bottom: 0; }
 
 .lp-google-scope .lp-contact-link:hover {
     color: var(--g-yellow);
@@ -1307,19 +1311,45 @@
 }
 
 .lp-google-scope .lp-contact-label {
-    font-size: 0.9rem;
+    font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0;
+    letter-spacing: .04em;
     text-transform: uppercase;
     color: #d3d3d3;
     display: block;
+    margin-bottom: 2px;
 }
 
 .lp-google-scope .lp-contact-value {
-    font-size: 1rem;
+    font-size: 0.88rem;
     font-weight: 600;
-    line-height: 1.6;
+    line-height: 1.45;
     color: #fff;
+}
+
+.lp-google-scope .lp-contact-link--phones {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px;
+    padding: 4px 0;
+    width: 100%;
+}
+
+.lp-google-scope .lp-contact-link--phones > * {
+    display: block;
+    width: 100%;
+}
+
+.lp-google-scope .lp-contact-link--phones a.lp-contact-value {
+    text-decoration: none;
+    color: #fff;
+    transition: color .2s ease, transform .2s ease;
+}
+
+.lp-google-scope .lp-contact-link--phones a.lp-contact-value:hover {
+    color: var(--g-yellow);
+    transform: translateX(2px);
 }
 
 .lp-google-scope .lp-contact-visit {
@@ -1329,9 +1359,9 @@
 }
 
 .lp-google-scope .lp-contact-addresses {
-    font-size: 1rem;
+    font-size: 0.88rem;
     font-weight: 600;
-    line-height: 1.6;
+    line-height: 1.5;
     color: #fff;
 }
 
@@ -1360,7 +1390,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 12px 0;
+    padding: 9px 0;
+    font-size: 0.92rem;
     font-size: 1rem;
     font-weight: 600;
     color: #fff;
@@ -1489,13 +1520,14 @@
 }
 
 .lp-google-scope .lp-social-link {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     background: rgba(255, 255, 255, .08);
+    font-size: 16px;
     color: #fff;
     font-size: 18px;
     text-decoration: none;
@@ -1522,7 +1554,7 @@
     box-shadow: var(--shadow-lg);
     /* Match the contact card's height — both grid children stretch */
     height: 100%;
-    min-height: 480px;
+    min-height: 380px;
 }
 
 @media (max-width: 900px) {

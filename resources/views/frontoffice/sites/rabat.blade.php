@@ -313,12 +313,13 @@
 
                 <div class="div-block-21 reveal delay-2">
 
-                    <a href="tel:{{ __('sites/rabat.contact.phone_link') }}" class="link-block reveal delay-1">
+                    <div class="link-block reveal delay-1">
                         <div class="text-block-3 reveal delay-2">
                             <span class="text-span reveal delay-3">{!! __('sites/rabat.contact.call_label') !!}<br></span>
-                            {{ __('sites/rabat.contact.phone_display') }}
+                            <a href="tel:{{ __('sites/rabat.contact.phone_link') }}">{{ __('sites/rabat.contact.phone_display') }}</a><br>
+                            <a href="tel:+212537372003">+212 5 37 37 20 03</a>
                         </div>
-                    </a>
+                    </div>
 
                     <a href="mailto:{{ __('sites/rabat.contact.email') }}" class="link-block-2 reveal delay-3">
                         <div class="text-block-3 reveal delay-1">
@@ -331,7 +332,7 @@
 
                 <div class="text-block-3 visit-block reveal delay-3">
                     <span class="text-span reveal delay-1">{!! __('sites/rabat.contact.visit_label') !!}</span><br>
-                    {!! __('sites/rabat.contact.addresses') !!}
+                    @include('frontoffice.partials.gls-centers-links')
                 </div>
 
                 <div class="footer-socials-block reveal delay-1">

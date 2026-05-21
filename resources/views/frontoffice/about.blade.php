@@ -116,11 +116,13 @@
                 <h2 class="h-section-subtitle fade-blur-title">{!! __('about.contact.title') !!}</h2>
 
                 <div class="div-block-21">
-                    <a href="tel:+212669515019" class="link-block">
+                    <div class="link-block">
                         <div class="text-block-3">
-                            <span class="text-span">{{ __('about.contact.call') }}<br></span>+212 6 69 51 50 19
+                            <span class="text-span">{{ __('about.contact.call') }}<br></span>
+                            <a href="tel:+212669515019">+212 6 69 51 50 19</a><br>
+                            <a href="tel:+212537372003">+212 5 37 37 20 03</a>
                         </div>
-                    </a>
+                    </div>
                     <a href="mailto:info@gls-sprachzentrum.ma" class="link-block-2">
                         <div class="text-block-3">
                             <span class="text-span">{{ __('about.contact.email') }}<br></span>info@gls-sprachzentrum.ma
@@ -130,7 +132,7 @@
 
                 <div class="text-block-3 visit-block">
                     <span class="text-span">{{ __('about.contact.visit') }}<br></span>
-                    {!! __('about.contact.addresses') !!}
+                    @include('frontoffice.partials.gls-centers-links')
                 </div>
 
                 <div class="footer-socials-block">

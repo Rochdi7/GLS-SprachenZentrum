@@ -9,34 +9,6 @@
             <img src="{{ asset('assets/images/logo/gls-blanc.webp') }}" alt="GLS Sprachenzentrum Logo">
         </div>
 
-        {{-- ===== Newsletter ===== --}}
-        <div class="col align-items-center mb-4">
-            <div class="col-12 col-md-6 {{ app()->getLocale() == 'ar' ? 'text-end' : '' }}">
-                <h6 class="footer-title mb-2">{{ __('footer.newsletter.title') }}</h6>
-                <p class="mb-0 mb-4 mt-4 small">{{ __('footer.newsletter.text') }}</p>
-            </div>
-
-            <div class="col-12 col-md-6 mt-3 mt-md-0">
-                {{-- wrapper pour limiter la largeur comme sur ton screenshot --}}
-                <div style="max-width: 520px; {{ app()->getLocale() == 'ar' ? 'margin-left:auto;' : '' }}">
-                    <form id="newsletterForm" class="d-flex gap-2" action="{{ route('newsletter.subscribe') }}"
-                        method="POST">
-                        @csrf
-                        <input type="hidden" name="source" value="footer">
-
-                        <input id="newsletterEmail" type="email" name="email" class="form-control"
-                            placeholder="{{ __('footer.newsletter.placeholder') }}" required autocomplete="email">
-
-                        <button id="newsletterBtn" type="submit" class="btn btn-light">
-                            {{ __('footer.newsletter.button') }}
-                        </button>
-                    </form>
-
-                    <div id="newsletterMsg" class="small mt-2"></div>
-                </div>
-            </div>
-        </div>
-
         {{-- ===== Footer Columns ===== --}}
         <div class="row footer-columns pt-4 border-top border-dark">
 
@@ -147,16 +119,16 @@
                     </li>
 
                     <li>
-                        <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.a1')) }}">A1</a>
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.a1')) }}">{{ __('footer.level_links.a1') }}</a>
                     </li>
                     <li>
-                        <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.a2')) }}">A2</a>
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.a2')) }}">{{ __('footer.level_links.a2') }}</a>
                     </li>
                     <li>
-                        <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.b1')) }}">B1</a>
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.b1')) }}">{{ __('footer.level_links.b1') }}</a>
                     </li>
                     <li>
-                        <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.b2')) }}">B2</a>
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.b2')) }}">{{ __('footer.level_links.b2') }}</a>
                     </li>
                 </ul>
             </div>
@@ -206,6 +178,27 @@
             </div>
 
 
+        </div>
+
+        {{-- ===== Newsletter (compact, full width above bottom bar) ===== --}}
+        <div class="footer-newsletter mt-3 pt-3 border-top border-dark {{ app()->getLocale() == 'ar' ? 'rtl' : '' }}">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+                <div class="footer-newsletter-copy">
+                    <h6 class="footer-title mb-1">{{ __('footer.newsletter.title') }}</h6>
+                    <p class="mb-0 small text-muted-light">{{ __('footer.newsletter.text') }}</p>
+                </div>
+                <form id="newsletterForm" class="footer-newsletter-form d-flex gap-2"
+                    action="{{ route('newsletter.subscribe') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="source" value="footer">
+                    <input id="newsletterEmail" type="email" name="email" class="form-control form-control-sm"
+                        placeholder="{{ __('footer.newsletter.placeholder') }}" required autocomplete="email">
+                    <button id="newsletterBtn" type="submit" class="btn btn-light btn-sm">
+                        {{ __('footer.newsletter.button') }}
+                    </button>
+                </form>
+            </div>
+            <div id="newsletterMsg" class="small mt-1"></div>
         </div>
     </div>
 

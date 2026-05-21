@@ -315,3 +315,75 @@ clip:rect(0,0,0,0) !important;
 white-space:nowrap !important;
 border:0 !important;
 }
+
+/* =========================================================
+   Compact Newsletter (between footer-columns and footer-bottom)
+   ========================================================= */
+.site-footer .footer-newsletter {
+  padding-bottom: 0;
+}
+
+.site-footer .footer-newsletter .footer-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--off-white, #fff);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.site-footer .footer-newsletter .text-muted-light {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, .55);
+  line-height: 1.35;
+}
+
+.site-footer .footer-newsletter-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.site-footer .footer-newsletter-form {
+  flex: 0 1 auto;
+  width: 100%;
+  max-width: 380px;
+}
+
+.site-footer .footer-newsletter-form .form-control {
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .12);
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+}
+
+.site-footer .footer-newsletter-form .form-control::placeholder {
+  color: rgba(255, 255, 255, .45);
+}
+
+.site-footer .footer-newsletter-form .form-control:focus {
+  background: rgba(255, 255, 255, .08);
+  border-color: rgba(255, 255, 255, .25);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .08);
+  color: #fff;
+  outline: none;
+}
+
+.site-footer .footer-newsletter-form .btn {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.site-footer .footer-newsletter.rtl .footer-newsletter-form {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+@media (max-width: 768px) {
+  .site-footer .footer-newsletter-form {
+    max-width: 100%;
+  }
+}

@@ -212,12 +212,13 @@
 
                 <div class="div-block-21 reveal delay-2">
 
-                    <a href="tel:+212669515019" class="link-block reveal delay-1">
+                    <div class="link-block reveal delay-1">
                         <div class="text-block-3 reveal delay-2">
                             <span class="text-span reveal delay-3">{{ __('intensive.contact.call') }}<br></span>
-                            +212 6 69 51 50 19
+                            <a href="tel:+212669515019">+212 6 69 51 50 19</a><br>
+                            <a href="tel:+212537372003">+212 5 37 37 20 03</a>
                         </div>
-                    </a>
+                    </div>
 
                     <a href="mailto:info@gls-sprachzentrum.ma" class="link-block-2 reveal delay-3">
                         <div class="text-block-3 reveal delay-1">
@@ -230,7 +231,7 @@
 
                 <div class="text-block-3 visit-block reveal delay-3">
                     <span class="text-span reveal delay-1">{{ __('intensive.contact.visit') }}</span><br>
-                    {!! __('intensive.contact.addresses') !!}
+                    @include('frontoffice.partials.gls-centers-links')
                 </div>
 
                 <div class="footer-socials-block reveal delay-1">

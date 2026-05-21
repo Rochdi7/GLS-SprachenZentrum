@@ -112,9 +112,9 @@
   font-size: var(--small-size);
 }
 .contact-section-subtitle {
-  font-size: clamp(2rem, 6vw, 2.75rem);
+  font-size: clamp(1.55rem, 3.4vw, 2.1rem);
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.15;
   color: var(--color-surface) !important;
 }
 
