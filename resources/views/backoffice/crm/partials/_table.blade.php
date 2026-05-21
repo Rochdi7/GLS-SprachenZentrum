@@ -241,12 +241,23 @@
                                     </span>
                                 @elseif($c === 'SEXE' && in_array($v, ['M', 'F'], true))
                                     <span class="badge bg-{{ $v === 'F' ? 'light-danger text-danger' : 'light-info text-info' }}">{{ $v }}</span>
-                                @elseif(in_array($c, ['DATE_CREATION', 'DATE_UPDATE', 'START_DATE', 'END_DATE', 'EFFECTIVE_DATE', 'BIRTHDAY', 'REGISTRATION_DATE']) && $v)
+                                @elseif(
+                                    (
+                                        str_ends_with($c, '_DATE')
+                                        || str_starts_with($c, 'DATE_')
+                                        || in_array($c, ['BIRTHDAY', 'DUE_DATE', 'EFFECTIVE_DATE_PAYMENT', 'EFFECTIVE_DATE_PAYMENT_ALLOCATION', 'SESSION_DATE'], true)
+                                        || (is_string($v) && preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/', $v))
+                                    )
+                                    && $v
+                                )
                                     @php
-                                        try { $d = \Carbon\Carbon::parse($v); } catch (\Throwable $e) { $d = null; }
+                                        try { $d = \Carbon\Carbon::parse($v)->setTimezone('Africa/Casablanca'); }
+                                        catch (\Throwable $e) { $d = null; }
+                                        // Show time only when the value carries a real (non-zero) clock.
+                                        $hasTime = $d && (int) $d->format('His') !== 0;
                                     @endphp
                                     @if($d)
-                                        <span class="text-nowrap">{{ $d->format('Y-m-d') }}</span>
+                                        <span class="text-nowrap">{{ $d->format($hasTime ? 'd/m/Y H:i' : 'd/m/Y') }}</span>
                                     @else
                                         {{ $v }}
                                     @endif

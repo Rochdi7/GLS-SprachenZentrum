@@ -5,13 +5,13 @@
    ========================================================================== */
 
 .lp-meta-scope {
-    --m-primary: #0866ff;         /* Meta blue */
-    --m-primary-dark: #5a189a;    /* deep purple for hover */
-    --m-red: #ec4899;             /* pink for required asterisks */
-    --m-accent: #c026d3;          /* magenta accent */
+    --m-primary: #211e1d;         /* black (rebrand from Meta blue) */
+    --m-primary-dark: #000000;    /* pure black for hover */
+    --m-red: #211e1d;             /* black for required asterisks */
+    --m-accent: #3a3735;          /* soft charcoal accent */
     --m-green: #16a34a;           /* trust ticks only */
-    --m-grad: linear-gradient(135deg, #0866ff 0%, #7e22ce 50%, #ec4899 100%);
-    --m-grad-soft: linear-gradient(180deg, #eef4ff 0%, #ffffff 55%, #ffeef6 100%);
+    --m-grad: linear-gradient(135deg, #211e1d 0%, #3a3735 50%, #000000 100%);
+    --m-grad-soft: linear-gradient(180deg, #f4f4f4 0%, #ffffff 55%, #ededed 100%);
     --ink: #0f0f0f;
     --ink-soft: #4b5563;
     --line: #e5e7eb;
@@ -19,12 +19,28 @@
     --radius: 22px;
     --shadow-lg: 0 30px 60px -25px rgba(15, 15, 15, 0.22);
     --shadow-sm: 0 4px 16px -6px rgba(15, 15, 15, 0.10);
-    background: var(--m-grad-soft);
+    background: #ffffff;
     min-height: 100vh;
-    padding: clamp(40px, 6vw, 90px) 0 80px;
+    padding: clamp(40px, 6vw, 90px) 0 0;
     position: relative;
     overflow: hidden;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Now', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.lp-meta-scope h1,
+.lp-meta-scope h2,
+.lp-meta-scope h3,
+.lp-meta-scope h4,
+.lp-meta-scope p,
+.lp-meta-scope span,
+.lp-meta-scope a,
+.lp-meta-scope b,
+.lp-meta-scope strong,
+.lp-meta-scope label,
+.lp-meta-scope button,
+.lp-meta-scope input,
+.lp-meta-scope select {
+    font-family: inherit;
 }
 
 .lp-meta-scope::before,
@@ -43,16 +59,16 @@
     width: 380px;
     height: 380px;
     background: radial-gradient(circle, var(--m-primary), transparent 60%);
-    opacity: 0.32;
+    opacity: 0.10;
 }
 
 .lp-meta-scope::after {
-    bottom: -160px;
-    right: -120px;
-    width: 460px;
-    height: 460px;
-    background: radial-gradient(circle, var(--m-red), transparent 60%);
-    opacity: 0.32;
+    top: 30%;
+    right: -160px;
+    width: 360px;
+    height: 360px;
+    background: radial-gradient(circle, var(--m-accent), transparent 60%);
+    opacity: 0.10;
 }
 
 .lp-meta-scope .lp-container {
@@ -215,6 +231,10 @@
     box-shadow: var(--shadow-lg);
     overflow: hidden;
     position: relative;
+    max-width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
 }
 
 .lp-meta-scope .lp-video-card-top {
@@ -255,13 +275,10 @@
 }
 
 .lp-meta-scope .lp-video-card-top .lp-live-dot::before {
-    content: "";
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
-    animation: lpPulse 1.5s infinite;
+    content: "▶";
+    font-size: 9px;
+    color: #fff;
+    line-height: 1;
 }
 
 @keyframes lpPulse {
@@ -271,7 +288,7 @@
 
 .lp-meta-scope .lp-video-frame {
     position: relative;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 9 / 16;
     background: #000;
 }
 
@@ -444,10 +461,17 @@
 
 .lp-meta-scope .lp-gallery-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 22px;
-    max-width: 820px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    max-width: 1080px;
     margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+    .lp-meta-scope .lp-gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 560px;
+    }
 }
 
 /* MOBILE CAROUSEL — at <=900px, gallery becomes horizontally scrollable */
@@ -470,11 +494,13 @@
         gap: 14px;
         padding: 0 20px;
         width: max-content;
+        max-width: none;
+        margin: 0;
     }
 
     .lp-meta-scope .lp-gallery-item {
-        flex: 0 0 78vw;
-        max-width: 320px;
+        flex: 0 0 62vw;
+        max-width: 260px;
         scroll-snap-align: center;
     }
 }
@@ -498,12 +524,6 @@
     background: #000;
 }
 
-@media (max-width: 900px) {
-    .lp-meta-scope .lp-gallery-video {
-        aspect-ratio: 4 / 5;
-        max-height: 56vh;
-    }
-}
 
 .lp-meta-scope .lp-gallery-video iframe {
     position: absolute;
@@ -531,6 +551,7 @@
 .lp-meta-scope .lp-gallery-meta-dot.green { background: var(--m-green); }
 .lp-meta-scope .lp-gallery-meta-dot.yellow { background: var(--m-accent); }
 .lp-meta-scope .lp-gallery-meta-dot.red { background: var(--m-red); }
+.lp-meta-scope .lp-gallery-meta-dot.purple { background: #9767f8; }
 
 .lp-meta-scope .lp-gallery-meta b {
     font-size: 14px;
@@ -569,12 +590,14 @@
     margin: 0 0 6px;
     font-weight: 700;
     font-size: 22px;
+    color: #ffffff;
 }
 
 .lp-meta-scope .lp-card-top p {
     margin: 0;
     opacity: 0.95;
     font-size: 14px;
+    color: #ffffff;
 }
 
 .lp-meta-scope .lp-form {
@@ -822,4 +845,521 @@
     width: 14px;
     height: 14px;
     color: var(--m-green);
+}
+
+/* ==========================================================================
+   CITIES MARQUEE  (auto-scrolling, continuous loop)
+   ========================================================================== */
+.lp-meta-scope .lp-cities-marquee {
+    margin-top: clamp(56px, 7vw, 90px);
+    position: relative;
+    overflow: hidden;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding: 8px 0 12px;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 80px, #000 calc(100% - 80px), transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 80px, #000 calc(100% - 80px), transparent 100%);
+}
+
+.lp-meta-scope .lp-cities-track {
+    display: flex;
+    gap: 22px;
+    width: max-content;
+    animation: lpMarqueeScroll 40s linear infinite;
+    will-change: transform;
+}
+
+.lp-meta-scope .lp-cities-marquee:hover .lp-cities-track {
+    animation-play-state: paused;
+}
+
+@keyframes lpMarqueeScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+.lp-meta-scope .lp-city-card {
+    position: relative;
+    flex: 0 0 auto;
+    width: clamp(260px, 32vw, 380px);
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    box-shadow: var(--shadow-lg);
+    background: #111;
+    -webkit-user-drag: none;
+}
+
+.lp-meta-scope .lp-city-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+    transition: transform .6s ease;
+}
+.lp-meta-scope .lp-city-card:hover img { transform: scale(1.06); }
+
+.lp-meta-scope .lp-city-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: 20px 24px;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.6) 100%);
+}
+.lp-meta-scope .lp-city-overlay h3 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(18px, 1.9vw, 24px);
+    font-weight: 800;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 12px rgba(0,0,0,.55);
+}
+
+/* ==========================================================================
+   FULL-WIDTH MAP at the bottom
+   ========================================================================== */
+.lp-meta-scope .lp-map-section {
+    margin-top: clamp(56px, 7vw, 90px);
+}
+
+.lp-meta-scope .lp-map-wrap {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: #fafafa;
+    box-shadow: var(--shadow-lg);
+    height: clamp(360px, 55vw, 560px);
+    margin-top: clamp(24px, 3vw, 36px);
+}
+.lp-meta-scope #lpCentresMap {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.lp-meta-scope .lp-map-legend {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    z-index: 401;
+    list-style: none;
+    margin: 0;
+    padding: 12px 14px;
+    background: rgba(255,255,255,.96);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+}
+.lp-meta-scope .lp-map-legend li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color .2s ease;
+}
+.lp-meta-scope .lp-map-legend li:hover { color: var(--m-primary); }
+.lp-meta-scope .lp-map-legend .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.lp-meta-scope .gls-pin-icon { background: none !important; border: none !important; }
+.lp-meta-scope .gls-pin-wrap {
+    position: relative;
+    display: inline-block;
+    transform: translate(-50%, -100%);
+}
+.lp-meta-scope .gls-pin {
+    width: 22px;
+    height: 22px;
+    border-radius: 50% 50% 50% 0;
+    background: var(--pin-color, var(--m-primary));
+    transform: rotate(-45deg);
+    box-shadow: 0 4px 10px rgba(0,0,0,.25);
+    border: 2px solid #fff;
+}
+
+@media (max-width: 640px) {
+    .lp-meta-scope .lp-cities-track { animation-duration: 28s; }
+    .lp-meta-scope .lp-city-card { width: 72vw; aspect-ratio: 5 / 4; }
+    .lp-meta-scope .lp-map-legend {
+        font-size: 12px;
+        padding: 10px 12px;
+        left: 10px;
+        bottom: 10px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .lp-meta-scope .lp-cities-track { animation: none; }
+}
+
+/* ==========================================================================
+   OUR GLS CENTRES — auto-scrolling horizontal carousel
+   ========================================================================== */
+.lp-meta-scope .lp-sites {
+    margin-top: clamp(56px, 7vw, 90px);
+    position: relative;
+    z-index: 1;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 80px, #000 calc(100% - 80px), transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 80px, #000 calc(100% - 80px), transparent 100%);
+}
+
+.lp-meta-scope .lp-sites .lp-section-head {
+    padding: 0 20px;
+    -webkit-mask-image: none;
+            mask-image: none;
+}
+
+.lp-meta-scope .lp-sites-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 22px;
+    width: max-content;
+    padding: 8px 20px 12px;
+    animation: lpMetaSitesAutoScroll 38s linear infinite alternate;
+    will-change: transform;
+}
+
+.lp-meta-scope .lp-sites-grid:hover { animation-play-state: paused; }
+
+@keyframes lpMetaSitesAutoScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(calc(-100% + 100vw - 40px)); }
+}
+
+.lp-meta-scope .lp-site-card {
+    position: relative;
+    flex: 0 0 auto;
+    display: block;
+    width: clamp(240px, 28vw, 340px);
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    background: transparent;
+    box-shadow: var(--shadow-lg);
+    isolation: isolate;
+    -webkit-user-drag: none;
+}
+
+.lp-meta-scope .lp-site-card.wide {
+    width: clamp(340px, 40vw, 480px);
+    aspect-ratio: 16 / 10;
+}
+
+.lp-meta-scope .lp-site-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+}
+
+.lp-meta-scope .lp-site-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: 18px 22px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, .65) 100%);
+}
+
+.lp-meta-scope .lp-site-overlay h3 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(16px, 1.6vw, 22px);
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .55);
+}
+
+@media (max-width: 640px) {
+    .lp-meta-scope .lp-sites-grid { animation-duration: 26s; }
+    .lp-meta-scope .lp-site-card { width: 72vw; aspect-ratio: 5 / 4; }
+    .lp-meta-scope .lp-site-card.wide { width: 84vw; aspect-ratio: 16 / 10; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lp-meta-scope .lp-sites-grid {
+        animation: none;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+    }
+    .lp-meta-scope .lp-site-card { scroll-snap-align: center; }
+}
+
+/* ==========================================================================
+   CONTACT + INTERACTIVE MAP (left dark card + right map)
+   ========================================================================== */
+.lp-meta-scope .lp-contact {
+    margin-top: clamp(56px, 7vw, 90px);
+    padding-bottom: clamp(40px, 6vw, 80px);
+    position: relative;
+    z-index: 1;
+}
+
+.lp-meta-scope .lp-contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: 22px;
+    align-items: stretch;
+}
+
+@media (max-width: 900px) {
+    .lp-meta-scope .lp-contact-grid { grid-template-columns: 1fr; }
+}
+
+.lp-meta-scope .lp-contact-card {
+    background: var(--m-primary);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: clamp(28px, 3.4vw, 44px);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    position: relative;
+    overflow: hidden;
+}
+
+.lp-meta-scope .lp-contact-card::after {
+    content: "";
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--m-accent), transparent 65%);
+    opacity: .35;
+    pointer-events: none;
+}
+
+.lp-meta-scope .lp-contact-title {
+    font-size: clamp(26px, 3vw, 36px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: #fff;
+    position: relative;
+}
+
+.lp-meta-scope .lp-contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.lp-meta-scope .lp-contact-link {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+    transition: color .2s ease, transform .2s ease;
+}
+
+.lp-meta-scope .lp-contact-link:last-child { border-bottom: 0; }
+
+.lp-meta-scope .lp-contact-link:hover {
+    color: #c9c4c0;
+    transform: translateX(2px);
+}
+
+.lp-meta-scope .lp-contact-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: #d3d3d3;
+    display: block;
+}
+
+.lp-meta-scope .lp-contact-value {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.6;
+    color: #fff;
+}
+
+.lp-meta-scope .lp-contact-visit {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lp-meta-scope .lp-contact-addresses {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.6;
+    color: #fff;
+}
+
+.lp-meta-scope .lp-contact-social {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.lp-meta-scope .lp-contact-social-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.lp-meta-scope .lp-social-link {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+    font-size: 18px;
+    text-decoration: none;
+    transition: background .2s ease, transform .2s ease, color .2s ease;
+}
+
+.lp-meta-scope .lp-social-link:hover {
+    background: var(--m-grad);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.lp-meta-scope .lp-contact.rtl { direction: rtl; }
+.lp-meta-scope .lp-contact.rtl .lp-contact-link:hover { transform: translateX(-2px); }
+
+.lp-meta-scope .lp-contact-map {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: #f8f8f8;
+    box-shadow: var(--shadow-lg);
+    min-height: 480px;
+    aspect-ratio: 4 / 5;
+    max-height: 720px;
+}
+
+@media (max-width: 900px) {
+    .lp-meta-scope .lp-contact-map {
+        aspect-ratio: 4 / 3;
+        min-height: 360px;
+        max-height: 460px;
+    }
+}
+
+@media (max-width: 560px) {
+    .lp-meta-scope .lp-contact-map {
+        aspect-ratio: 5 / 6;
+        min-height: 420px;
+        max-height: 520px;
+    }
+}
+
+.lp-meta-scope .lp-contact-map #glsCentresMap {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.lp-meta-scope .lp-contact-map-legend {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    z-index: 401;
+    list-style: none;
+    margin: 0;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, .96);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.lp-meta-scope .lp-contact-map-legend li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color .2s ease;
+}
+
+.lp-meta-scope .lp-contact-map-legend li:hover { color: var(--m-primary); }
+
+.lp-meta-scope .lp-contact-map-legend .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+@media (max-width: 900px) {
+    .lp-meta-scope .lp-contact-grid { gap: 14px; }
+    .lp-meta-scope .lp-contact { padding-bottom: 24px; }
+}
+
+@media (max-width: 640px) {
+    .lp-meta-scope .lp-contact-map-legend {
+        font-size: 11.5px;
+        padding: 8px 10px;
+        gap: 2px 12px;
+        left: 8px;
+        bottom: 8px;
+        max-width: calc(100% - 16px);
+    }
+    .lp-meta-scope .lp-contact-map-legend .dot {
+        width: 8px;
+        height: 8px;
+    }
+    .lp-meta-scope .lp-contact-grid { gap: 12px; }
+    .lp-meta-scope .lp-contact { padding-bottom: 16px; }
+    .lp-meta-scope { padding-bottom: 0; }
+}
+
+/* Leaflet pin styling (shared from home page) */
+.lp-meta-scope .gls-pin-icon { background: none !important; border: none !important; }
+.lp-meta-scope .gls-pin-wrap {
+    position: relative;
+    display: inline-block;
+    transform: translate(-50%, -100%);
+}
+.lp-meta-scope .gls-pin {
+    width: 22px;
+    height: 22px;
+    border-radius: 50% 50% 50% 0;
+    background: var(--pin-color, var(--m-primary));
+    transform: rotate(-45deg);
+    box-shadow: 0 4px 10px rgba(0,0,0,.25);
+    border: 2px solid #fff;
 }

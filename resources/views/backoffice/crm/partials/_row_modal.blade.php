@@ -181,10 +181,21 @@ function crmRowModalInit() {
                 </span>`;
     };
 
+    // Render a CRM date/datetime value as `DD/MM/YYYY` or `DD/MM/YYYY HH:mm`
+    // in Africa/Casablanca. ISO strings from the API are UTC; without an
+    // explicit zone, evening Casablanca sessions slip to the previous day.
     const fmtDate = (s) => {
         if (!s) return '—';
         const d = new Date(s);
-        return isNaN(d) ? esc(s) : d.toISOString().slice(0, 10);
+        if (isNaN(d)) return esc(s);
+        const parts = new Intl.DateTimeFormat('fr-FR', {
+            timeZone: 'Africa/Casablanca',
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', hour12: false,
+        }).formatToParts(d).reduce((acc, p) => (acc[p.type] = p.value, acc), {});
+        const date = `${parts.day}/${parts.month}/${parts.year}`;
+        const hasTime = !(parts.hour === '00' && parts.minute === '00');
+        return hasTime ? `${date} ${parts.hour}:${parts.minute}` : date;
     };
 
     const fmtMoney = (n) => {
@@ -402,8 +413,8 @@ function crmRowModalInit() {
             if (['PRICE','AMOUNT','TOTAL','REST_AMOUNT'].includes(col) && !isNaN(Number(val))) {
                 return Number(val).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
-            // Dates
-            if (col === 'DUE_DATE' || col === 'START_DATE' || col === 'END_DATE' || col === 'BIRTHDAY' || col === 'REGISTRATION_START_DATE') {
+            // Dates — column-name match OR a raw ISO-8601 string
+            if (looksLikeDate(col, val)) {
                 return fmtDate(val);
             }
             // ID columns dimmed
@@ -470,7 +481,7 @@ function crmRowModalInit() {
                     ? `<span class="badge bg-light-primary text-primary"><i class="ti ti-building me-1"></i>${esc(name)}</span> <span class="text-muted small">(#${esc(v)})</span>`
                     : `<span class="text-muted small">#${esc(v)}</span>`;
             }
-            if (DATE_KEYS.has(k)) {
+            if (DATE_KEYS.has(k) || looksLikeDate(k, v)) {
                 return `<span class="text-nowrap">${fmtDate(v)}</span>`;
             }
             if (AMOUNT_KEYS.has(k) && !isNaN(Number(v))) {
@@ -524,14 +535,17 @@ function crmRowModalInit() {
     const studentsModalBody  = document.getElementById('crmStudentsModalBody');
     const studentsModal      = studentsModalEl ? bootstrap.Modal.getOrCreateInstance(studentsModalEl) : null;
 
-    const fmtDateFR = (s) => {
-        if (!s) return '—';
-        const d = new Date(s);
-        if (isNaN(d)) return esc(s);
-        const dd = String(d.getDate()).padStart(2, '0');
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        return `${dd}/${mm}/${d.getFullYear()}`;
-    };
+    // Reuse the smart fmtDate (Casablanca tz, time only when non-zero) for the
+    // students-table view — historically this was a separate helper.
+    const fmtDateFR = fmtDate;
+
+    // Treat any value that matches the ISO-8601 pattern as a date, regardless
+    // of its column name. Catches CRM fields like SESSION_DATE,
+    // EFFECTIVE_DATE_PAYMENT, LAST_PRESENCE_DATE, etc. without an allow-list.
+    const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
+    const looksLikeDate = (k, v) =>
+        (typeof v === 'string' && ISO_DATE_RE.test(v))
+        || /(_DATE$|^DATE_|^BIRTHDAY$|^DUE_DATE$)/.test(k);
 
     const renderStudentsTable = (students, opts = {}) => {
         const clean = cleanStudents(students);
