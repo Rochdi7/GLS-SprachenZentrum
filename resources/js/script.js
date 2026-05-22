@@ -15,19 +15,25 @@ Description:  this file will contains behavior, properties,
 'use strict';
 var flg = '0';
 document.addEventListener('DOMContentLoaded', function () {
-  // feather icon start
-  feather.replace();
-  // feather icon end
-
   // remove pre-loader start
-  setTimeout(function () {
+  var removeGlobalLoader = function () {
     var loaderBg = document.querySelector('.loader-bg');
     if (loaderBg) {
       loaderBg.remove();
     }
-  }, 400);
+  };
+  setTimeout(removeGlobalLoader, 400);
 
   // remove pre-loader end
+  // Never let a missing icon lib keep the whole backoffice page white.
+  try {
+    if (typeof feather !== 'undefined' && feather && typeof feather.replace === 'function') {
+      feather.replace();
+    }
+  } catch (e) {
+    console.warn('feather.replace() failed', e);
+  }
+
   if (document.body.hasAttribute('data-pc-layout') && document.body.getAttribute('data-pc-layout') === 'horizontal') {
     if (window.innerWidth <= 1024) {
       add_scroller();
