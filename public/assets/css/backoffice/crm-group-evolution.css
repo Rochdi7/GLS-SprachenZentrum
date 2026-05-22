@@ -1,0 +1,27 @@
+/*
+ * CRM — Évolution par groupe page.
+ * Loaded by resources/views/backoffice/crm/group-evolution.blade.php.
+ */
+.ge-page h1 { font-size: 1.5rem; font-weight: 600; }
+.ge-card-title { font-weight: 700; letter-spacing: .02em; }
+.ge-kpi-card .ge-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.7rem;
+}
+.ge-table th { font-size: .78rem; text-transform: uppercase; letter-spacing: .03em; }
+.ge-table td { font-size: .85rem; vertical-align: middle; }
+.ge-table .ge-cell-debut      { color: #6f42c1; font-weight: 600; }
+.ge-table .ge-cell-ajout      { color: #28a745; font-weight: 600; }
+.ge-table .ge-cell-quittant   { color: #dc3545; font-weight: 600; }
+.ge-table .ge-cell-changement { color: #fd7e14; font-weight: 600; }
+.ge-table .ge-cell-actif      { color: #2196f3; font-weight: 600; }
+.ge-table tfoot td { font-weight: 700; background: #fafbfc; }
+.ge-legend {
+    display: inline-flex; align-items: center; gap: .35rem;
+    font-size: .8rem; color: #495057;
+}
+.ge-legend .ge-dot {
+    width: 12px; height: 12px; border-radius: 2px; display: inline-block;
+}
+.ge-help { font-size: .8rem; color: #6c757d; }

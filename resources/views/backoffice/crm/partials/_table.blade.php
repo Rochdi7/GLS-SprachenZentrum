@@ -104,29 +104,12 @@
     ];
 @endphp
 
-{{-- Avatar styling — clamp every photo / logo into the same 36x36 circle --}}
-<style>
-    .crm-avatar {
-        display: inline-block;
-        width: 36px;
-        height: 36px;
-        min-width: 36px;
-        min-height: 36px;
-        max-width: 36px;
-        max-height: 36px;
-        border-radius: 50%;
-        background: #f8f9fa;
-        border: 1px solid var(--bs-border-color, #dee2e6);
-        overflow: hidden;
-        vertical-align: middle;
-    }
-    .crm-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-</style>
+{{-- Avatar styling extracted to public/assets/css/backoffice/crm-table.css.
+     @once so it's not duplicated when this partial is included multiple
+     times (which would be once per CRM list page). --}}
+@once
+    <link rel="stylesheet" href="{{ asset('assets/css/backoffice/crm-table.css') }}">
+@endonce
 
 @if($error)
     @php

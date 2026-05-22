@@ -114,8 +114,8 @@
         </div>
     </div>
 
-    <style>
-        .lov-chip { border: 1px solid transparent; transition: all .15s; }
-        .lov-chip:hover { background: var(--bs-light); border-color: var(--bs-border-color); }
-    </style>
+@endsection
+
+@section('css')
+    <link rel="stylesheet" href="{{ asset('assets/css/backoffice/crm-index.css') }}">
 @endsection

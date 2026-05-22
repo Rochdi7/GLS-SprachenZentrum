@@ -4,6 +4,10 @@
 @section('breadcrumb-item', 'CRM')
 @section('breadcrumb-item-active', 'Présences sessions')
 
+@section('css')
+    <link rel="stylesheet" href="{{ asset('assets/css/backoffice/crm-session-presence.css') }}">
+@endsection
+
 @php
     $classId = request()->filled('classId') ? (int) request()->query('classId') : null;
 @endphp
@@ -381,74 +385,6 @@
             <div class="card mb-3"><div class="card-body">
                 <h6 class="mb-3"><i class="ti ti-layout-grid me-1"></i> Absence par groupe</h6>
 
-                <style>
-                    .presence-matrix {
-                        border-collapse: separate; border-spacing: 2px;
-                        /* Width grows with cell count instead of stretching to fill */
-                        width: auto;
-                    }
-                    .presence-matrix th, .presence-matrix td {
-                        text-align: center; vertical-align: middle;
-                        font-size: .78rem; padding: 0;
-                    }
-                    .presence-matrix thead th {
-                        font-weight: 500; color: #6c757d; background: transparent;
-                        border-bottom: 1px solid #e9ecef; padding: .35rem .25rem;
-                        white-space: nowrap; width: 38px;
-                    }
-                    .presence-matrix tbody td {
-                        width: 38px;   /* match thead column width */
-                    }
-                    .presence-matrix tbody td:first-child,
-                    .presence-matrix thead th:first-child {
-                        text-align: left; padding-left: .5rem; padding-right: .5rem;
-                        width: 240px; min-width: 240px;
-                        background: #fff; position: sticky; left: 0; z-index: 1;
-                        font-weight: 500; font-size: .82rem;
-                    }
-                    .presence-matrix .pm-cell {
-                        width: 34px; height: 34px; line-height: 34px;
-                        font-weight: 700; color: #1f2d3d;
-                        border-radius: 4px;
-                        margin: 0 auto;
-                    }
-                    .presence-matrix .pm-P { background: #6ee775; }
-                    .presence-matrix .pm-Q { background: #f17b75; }
-                    .presence-matrix .pm-none { background: #e9ecef; }
-                    .presence-matrix .pm-student {
-                        display: inline-flex; align-items: center; gap: .5rem;
-                        text-transform: uppercase; letter-spacing: .02em;
-                    }
-                    .presence-matrix .pm-avatar {
-                        width: 28px; height: 28px; border-radius: 50%;
-                        background: #eef0f3; display: inline-flex;
-                        align-items: center; justify-content: center;
-                        color: #6c757d; flex-shrink: 0;
-                    }
-                    .presence-matrix tbody tr:hover td:first-child { background: #f8f9fa; }
-
-                    /* Registration-status row tints — match the reference CRM
-                       where cancelled / archived students are shaded so they
-                       don't visually mix with the active roster. */
-                    .presence-matrix tbody tr.pm-row-canceled td:first-child {
-                        background: #f17b75; color: #fff;
-                    }
-                    .presence-matrix tbody tr.pm-row-canceled:hover td:first-child {
-                        background: #ee6862; color: #fff;
-                    }
-                    .presence-matrix tbody tr.pm-row-canceled .pm-avatar {
-                        background: rgba(255,255,255,.25); color: #fff;
-                    }
-                    .presence-matrix tbody tr.pm-row-archived td:first-child {
-                        background: #c8ced4; color: #6c757d;
-                    }
-                    .presence-matrix tbody tr.pm-row-archived:hover td:first-child {
-                        background: #b9c0c7; color: #6c757d;
-                    }
-                    .presence-matrix tbody tr.pm-row-archived .pm-avatar {
-                        background: rgba(255,255,255,.5); color: #8a9099;
-                    }
-                </style>
 
                 <div class="table-responsive" style="max-height: 600px;">
                     <table class="presence-matrix">

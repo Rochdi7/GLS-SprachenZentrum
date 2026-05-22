@@ -1,0 +1,6 @@
+/*
+ * CRM student autocomplete widget.
+ * Loaded by resources/views/backoffice/crm/partials/_student_autocomplete.blade.php.
+ */
+.crm-student-ac-menu .list-group-item-action { cursor: pointer; }
+.crm-student-ac-menu .list-group-item-action:hover { background: #f8f9fa; }
