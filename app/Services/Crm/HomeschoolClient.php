@@ -3,7 +3,9 @@
 namespace App\Services\Crm;
 
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -11,7 +13,7 @@ use Illuminate\Support\Facades\Log;
  * Low-level HTTP client for the Homeschool External API v1.
  *
  * Holds the Bearer token, base URL, retry and timeout policy. All resource
- * classes go through this — never call Http::get() directly elsewhere in the
+ * classes go through this - never call Http::get() directly elsewhere in the
  * CRM module.
  *
  * Intentionally separate from the Laravel CRUD layer: this never touches
@@ -64,10 +66,10 @@ class HomeschoolClient
         $key = 'crm.http:' . substr((string) $this->token, -8) . ':' . sha1($path . '|' . http_build_query($query));
 
         if ($fresh) {
-            \Illuminate\Support\Facades\Cache::forget($key);
+            Cache::forget($key);
         }
 
-        return \Illuminate\Support\Facades\Cache::remember($key, $ttl, function () use ($path, $query) {
+        return Cache::remember($key, $ttl, function () use ($path, $query) {
             return $this->send('GET', $path, query: $query);
         });
     }
@@ -82,12 +84,116 @@ class HomeschoolClient
      *
      * Falls back to sequential pagination if the API doesn't return totalPages
      * (e.g. when includeTotal=false). For lighter payloads, pass includeTotal=false
-     * in the base query — Homeschool's COUNT query is the slowest part.
+     * in the base query - Homeschool's COUNT query is the slowest part.
      *
      * @param  array<string,mixed>  $baseQuery  Filters (excluding page/size)
      * @return array<int, array<string,mixed>>  Flat list of all rows
      */
+    public function pagedScan(
+        string $path,
+        array $baseQuery,
+        int $pageSize = 25,
+        int $maxPages = 80,
+        int $concurrency = 2,
+        int $interBatchDelayMs = 300,
+    ): array {
+        $firstPage = $this->send('GET', $path, query: [
+            'page' => 0,
+            'size' => $pageSize,
+            'includeTotal' => 'true',
+        ] + $baseQuery);
 
+        $rows = is_array($firstPage['data'] ?? null) ? array_values($firstPage['data']) : [];
+        $totalPages = $firstPage['pagination']['totalPages']
+            ?? $firstPage['totalPages']
+            ?? null;
+
+        if (!is_numeric($totalPages)) {
+            return $this->pagedScanSequentialFallback(
+                path: $path,
+                baseQuery: $baseQuery,
+                pageSize: $pageSize,
+                maxPages: $maxPages,
+                rows: $rows,
+            );
+        }
+
+        $lastPage = min(max(1, (int) $totalPages), $maxPages);
+        if ($lastPage <= 1) {
+            return $rows;
+        }
+
+        $token = $this->token;
+        $url   = $this->baseUrl . '/' . ltrim($path, '/');
+
+        $pendingPages = range(1, $lastPage - 1);
+
+        for ($attempt = 1; $attempt <= 3 && !empty($pendingPages); $attempt++) {
+            if ($attempt === 2) {
+                sleep(1);
+            } elseif ($attempt === 3) {
+                sleep(3);
+            }
+
+            $attemptPages = $pendingPages;
+            $pendingPages = [];
+            $batchIndex = 0;
+
+            for ($start = 0; $start < count($attemptPages); $start += $concurrency) {
+                if ($batchIndex > 0 && $interBatchDelayMs > 0) {
+                    usleep($interBatchDelayMs * 1000);
+                }
+                $batchIndex++;
+
+                $pageBatch = array_slice($attemptPages, $start, $concurrency);
+
+                $responses = Http::pool(function (Pool $pool) use (
+                    $pageBatch, $baseQuery, $pageSize, $token, $url
+                ) {
+                    $requests = [];
+                    foreach ($pageBatch as $page) {
+                        $request = $this->poolRequest($pool, "page_{$page}", $token);
+                        $requests[] = $request->get($url, [
+                            'page' => $page,
+                            'size' => $pageSize,
+                            'includeTotal' => 'false',
+                        ] + $baseQuery);
+                    }
+                    return $requests;
+                });
+
+                foreach ($pageBatch as $page) {
+                    $resp = $responses["page_{$page}"] ?? null;
+                    if (!$resp instanceof Response) {
+                        throw new CrmException(
+                            "CRM API GET {$url} failed during paged scan.",
+                            0,
+                            ['errorCode' => 'POOL_ERROR', 'message' => "Missing pooled response for page {$page}."],
+                        );
+                    }
+
+                    if ($resp->status() === 429) {
+                        $pendingPages[] = $page;
+                        continue;
+                    }
+
+                    if (!$resp->successful()) {
+                        $this->handle($resp, 'GET', $url);
+                    }
+
+                    foreach (($resp->json('data') ?? []) as $row) {
+                        $rows[] = $row;
+                    }
+                }
+            }
+        }
+
+        if (!empty($pendingPages)) {
+            $this->throwRateLimited($path, 'pagedScan', count($pendingPages));
+        }
+
+        return $rows;
+    }
 
     /**
      * Fire one parallel GET per query-variant and merge their `data` arrays.
@@ -96,12 +202,11 @@ class HomeschoolClient
      * only accepts a single `date`) but you need data across many values of that
      * filter. Each variant becomes its own HTTP call, fanned out 10-at-a-time.
      *
-     * @param  string  $path          API path (e.g. /api/external/v1/session-presence)
-     * @param  array   $baseQuery     Shared filters applied to every variant
-     * @param  array   $variantQueries  List of variant-specific query arrays
-     *                                  (e.g. [['date' => '2026-05-01'], ['date' => '2026-05-02'], ...])
-     * @param  int     $pageSize      Page size per call (capped at API max)
-     * @param  int     $concurrency   How many requests to fire in parallel per batch
+     * @param  string  $path            API path (e.g. /api/external/v1/session-presence)
+     * @param  array<string,mixed>  $baseQuery  Shared filters applied to every variant
+     * @param  array<int, array<string,mixed>>  $variantQueries  Variant-specific query arrays
+     * @param  int     $pageSize        Page size per call (capped at API max)
+     * @param  int     $concurrency     How many requests to fire in parallel per batch
      * @return array<int, array<string,mixed>>  Flat list of all rows
      */
     public function parallelFetch(
@@ -109,86 +214,80 @@ class HomeschoolClient
         array $baseQuery,
         array $variantQueries,
         int $pageSize = 25,
-        int $concurrency = 3,
-        int $interBatchDelayMs = 250,
+        int $concurrency = 2,
+        int $interBatchDelayMs = 300,
     ): array {
         if (empty($variantQueries)) {
             return [];
         }
 
-        $token   = $this->token;
-        $baseUrl = $this->baseUrl;
-        $verify  = $this->verifySsl;
-        $timeout = $this->timeout;
-        $url     = $baseUrl . '/' . ltrim($path, '/');
+        $token = $this->token;
+        $url   = $this->baseUrl . '/' . ltrim($path, '/');
 
         $rows = [];
-        $batchIndex = 0;
+        $pendingIdxs = array_keys($variantQueries);
 
-        for ($start = 0; $start < count($variantQueries); $start += $concurrency) {
-            // Throttle between batches so we don't trigger the upstream rate
-            // limiter. First batch fires immediately; subsequent batches wait.
-            if ($batchIndex > 0 && $interBatchDelayMs > 0) {
-                usleep($interBatchDelayMs * 1000);
+        for ($attempt = 1; $attempt <= 3 && !empty($pendingIdxs); $attempt++) {
+            if ($attempt === 2) {
+                sleep(1);
+            } elseif ($attempt === 3) {
+                sleep(3);
             }
-            $batchIndex++;
 
-            $end = min($start + $concurrency, count($variantQueries));
+            $attemptIdxs = $pendingIdxs;
+            $pendingIdxs = [];
+            $batchIndex = 0;
 
-            $responses = \Illuminate\Support\Facades\Http::pool(function (\Illuminate\Http\Client\Pool $pool) use (
-                $start, $end, $variantQueries, $baseQuery, $pageSize, $token, $url, $verify, $timeout,
-            ) {
-                $requests = [];
-                for ($i = $start; $i < $end; $i++) {
-                    $r = $pool->as("variant_{$i}")
-                        ->withToken($token)
-                        ->acceptJson()
-                        ->timeout($timeout);
-                    if (!$verify) {
-                        $r = $r->withoutVerifying();
-                    }
-                    // Order matters: variant overrides defaults, base fills the rest.
-                    // The `+` operator keeps LEFT keys on collision.
-                    $query = $variantQueries[$i]
-                        + ['page' => 0, 'size' => $pageSize, 'includeTotal' => 'false']
-                        + $baseQuery;
-                    $requests[] = $r->get($url, $query);
+            for ($start = 0; $start < count($attemptIdxs); $start += $concurrency) {
+                if ($batchIndex > 0 && $interBatchDelayMs > 0) {
+                    usleep($interBatchDelayMs * 1000);
                 }
-                return $requests;
-            });
+                $batchIndex++;
 
-            $batchHit429 = false;
-            for ($i = $start; $i < $end; $i++) {
-                $resp = $responses["variant_{$i}"] ?? null;
-                if ($resp instanceof Response) {
+                $idxBatch = array_slice($attemptIdxs, $start, $concurrency);
+
+                $responses = Http::pool(function (Pool $pool) use (
+                    $idxBatch, $variantQueries, $baseQuery, $pageSize, $token, $url
+                ) {
+                    $requests = [];
+                    foreach ($idxBatch as $i) {
+                        $request = $this->poolRequest($pool, "variant_{$i}", $token);
+                        $query = $variantQueries[$i]
+                            + ['page' => 0, 'size' => $pageSize, 'includeTotal' => 'false']
+                            + $baseQuery;
+                        $requests[] = $request->get($url, $query);
+                    }
+                    return $requests;
+                });
+
+                foreach ($idxBatch as $i) {
+                    $resp = $responses["variant_{$i}"] ?? null;
+                    if (!$resp instanceof Response) {
+                        throw new CrmException(
+                            "CRM API GET {$url} failed during parallel fetch.",
+                            0,
+                            ['errorCode' => 'POOL_ERROR', 'message' => "Missing pooled response for variant {$i}."],
+                        );
+                    }
+
                     if ($resp->status() === 429) {
-                        $batchHit429 = true;
+                        $pendingIdxs[] = $i;
                         continue;
                     }
-                    if ($resp->successful()) {
-                        foreach (($resp->json('data') ?? []) as $row) {
-                            $rows[] = $row;
-                        }
+
+                    if (!$resp->successful()) {
+                        $this->handle($resp, 'GET', $url);
+                    }
+
+                    foreach (($resp->json('data') ?? []) as $row) {
+                        $rows[] = $row;
                     }
                 }
             }
+        }
 
-            // If any request in the batch was rate-limited, set the global
-            // cool-down so the next batches and any other callers fail-fast
-            // instead of piling on more rejected requests.
-            if ($batchHit429) {
-                \Illuminate\Support\Facades\Cache::put(
-                    'crm.rate_limited:' . substr((string) $this->token, -8),
-                    true,
-                    60,
-                );
-                if ($this->logEnabled) {
-                    Log::channel($this->logChannel)->warning(
-                        "CRM API parallelFetch batch hit 429 on {$path} — entering 60s cool-down."
-                    );
-                }
-                break; // stop firing further batches
-            }
+        if (!empty($pendingIdxs)) {
+            $this->throwRateLimited($path, 'parallelFetch', count($pendingIdxs));
         }
 
         return $rows;
@@ -212,7 +311,7 @@ class HomeschoolClient
     }
 
     /**
-     * Generic dispatch — kept protected to force callers through typed verbs.
+     * Generic dispatch - kept protected to force callers through typed verbs.
      *
      * @param  array<string,mixed>  $query
      * @param  array<string,mixed>|null  $json
@@ -234,7 +333,7 @@ class HomeschoolClient
         try {
             $response = $request->send($method, $url, $options);
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            // Network-level failures (timeout, DNS, refused, SSL) — surface as a
+            // Network-level failures (timeout, DNS, refused, SSL) - surface as a
             // typed CrmException so callers can catch a single exception type.
             $msg = "CRM API {$method} {$url} unreachable: " . $e->getMessage();
             if ($this->logEnabled) {
@@ -248,7 +347,7 @@ class HomeschoolClient
         // request fail-fast instead of piling on more requests.
         if ($response->status() === 429) {
             $cooldownKey = 'crm.rate_limited:' . substr((string) $this->token, -8);
-            if (\Illuminate\Support\Facades\Cache::has($cooldownKey)) {
+            if (Cache::has($cooldownKey)) {
                 throw new CrmException(
                     "CRM API rate limited (still in cool-down). Wait a minute and retry.",
                     429,
@@ -257,10 +356,10 @@ class HomeschoolClient
             }
 
             $retryAfter = (int) ($response->header('Retry-After') ?: 5);
-            $retryAfter = max(1, min($retryAfter, 30)); // clamp to [1, 30] seconds
+            $retryAfter = max(1, min($retryAfter, 30));
             if ($this->logEnabled) {
                 Log::channel($this->logChannel)->warning(
-                    "CRM API 429 on {$path} — sleeping {$retryAfter}s and retrying once."
+                    "CRM API 429 on {$path} - sleeping {$retryAfter}s and retrying once."
                 );
             }
             sleep($retryAfter);
@@ -272,9 +371,7 @@ class HomeschoolClient
             }
 
             if ($response->status() === 429) {
-                // Still rate limited — set cool-down for 60s so other calls
-                // in this request batch fail-fast instead of stacking more 429s.
-                \Illuminate\Support\Facades\Cache::put($cooldownKey, true, 60);
+                Cache::put($cooldownKey, true, 60);
                 throw new CrmException(
                     "CRM API rate limited (retried once, still 429). Cool-down 60s.",
                     429,
@@ -338,5 +435,79 @@ class HomeschoolClient
         if (empty($this->token)) {
             throw new CrmException('CRM_API_TOKEN is not configured. Set it in .env then run `php artisan config:clear`.');
         }
+    }
+
+    protected function poolRequest(Pool $pool, string $name, ?string $token)
+    {
+        $request = $pool->as($name)
+            ->withToken($token)
+            ->acceptJson()
+            ->timeout($this->timeout)
+            ->connectTimeout($this->connectTimeout);
+
+        if (!$this->verifySsl) {
+            $request = $request->withoutVerifying();
+        }
+
+        return $request;
+    }
+
+    /**
+     * @param  array<int, array<string,mixed>>  $rows
+     * @return array<int, array<string,mixed>>
+     */
+    protected function pagedScanSequentialFallback(
+        string $path,
+        array $baseQuery,
+        int $pageSize,
+        int $maxPages,
+        array $rows,
+    ): array {
+        for ($page = 1; $page < $maxPages; $page++) {
+            $payload = $this->send('GET', $path, query: [
+                'page' => $page,
+                'size' => $pageSize,
+                'includeTotal' => 'false',
+            ] + $baseQuery);
+
+            $pageRows = is_array($payload['data'] ?? null) ? array_values($payload['data']) : [];
+            foreach ($pageRows as $row) {
+                $rows[] = $row;
+            }
+
+            $hasNext = $payload['pagination']['hasNext']
+                ?? $payload['pagination']['hasMore']
+                ?? null;
+
+            if ($hasNext === false || count($pageRows) < $pageSize) {
+                break;
+            }
+        }
+
+        return $rows;
+    }
+
+    protected function throwRateLimited(string $path, string $operation, int $pendingCount): void
+    {
+        Cache::put(
+            'crm.rate_limited:' . substr((string) $this->token, -8),
+            true,
+            60,
+        );
+
+        if ($this->logEnabled) {
+            Log::channel($this->logChannel)->warning(
+                "CRM API {$operation} exhausted 429 retries on {$path}; {$pendingCount} request(s) still pending. Entering 60s cool-down."
+            );
+        }
+
+        throw new CrmException(
+            "Trop de requêtes vers l'API CRM. Veuillez attendre 60 secondes.",
+            429,
+            [
+                'errorCode' => 'RATE_LIMITED',
+                'message' => "Trop de requêtes vers l'API CRM. Veuillez attendre 60 secondes.",
+            ],
+        );
     }
 }
