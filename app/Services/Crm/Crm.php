@@ -2,11 +2,13 @@
 
 namespace App\Services\Crm;
 
+use App\Services\Crm\Resources\EmployeeSalaries;
 use App\Services\Crm\Resources\Groups;
 use App\Services\Crm\Resources\Lov;
 use App\Services\Crm\Resources\Payments;
 use App\Services\Crm\Resources\Registrations;
 use App\Services\Crm\Resources\Students;
+use App\Services\Crm\Resources\SubscriptionServices;
 
 /**
  * Entry point for the Homeschool CRM integration.
@@ -51,6 +53,16 @@ class Crm
     public function lov(): Lov
     {
         return $this->resources[Lov::class] ??= new Lov($this->client);
+    }
+
+    public function subscriptionServices(): SubscriptionServices
+    {
+        return $this->resources[SubscriptionServices::class] ??= new SubscriptionServices($this->client);
+    }
+
+    public function employeeSalaries(): EmployeeSalaries
+    {
+        return $this->resources[EmployeeSalaries::class] ??= new EmployeeSalaries($this->client);
     }
 
     public function client(): HomeschoolClient

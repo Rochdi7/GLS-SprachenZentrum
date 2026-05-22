@@ -171,6 +171,25 @@
     animation-direction: normal;
     flex-direction: row-reverse;
   }
+
+  /* RTL: cards use margin-right for LTR spacing; in Arabic this creates
+     visible black gaps (especially on the row-reverse track). The track
+     `gap` already handles spacing — drop the margin in RTL. */
+  .reviews-carousel-section.rtl .review-block {
+    margin-right: 0;
+    margin-left: 0;
+    direction: rtl;
+    text-align: right;
+  }
+
+  /* RTL: the document is dir="rtl", so flex tracks lay out right-to-left.
+     That breaks the translateX(-50%) loop on the top track — the duplicated
+     set ends up on the wrong side and a black gap appears before respawn.
+     Force the TRACK to LTR so the seamless loop works; cards keep their
+     own dir:rtl above so Arabic text renders correctly inside. */
+  .reviews-carousel-section.rtl .review-carousel_track {
+    direction: ltr;
+  }
   
   /* ===================================
      Mobile Adjustments (max-width: 479px)

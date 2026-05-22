@@ -143,4 +143,28 @@ class Lov extends Resource
             'limit' => $limit,
         ]);
     }
+
+    /**
+     * GET /api/external/v1/subscription-services — List subscription services
+     *
+     * Required scope: lov:read (treated as reference data — the published spec
+     * shows no parameter schema beyond pagination, so this is wired with the
+     * standard page/size/includeTotal triple plus an optional strStoreId.)
+     *
+     * Filters (all optional):
+     *   strStoreId    — store identifier (validated against token scope when provided)
+     */
+    public function subscriptionServices(
+        int $page = 0,
+        int $size = 25,
+        bool $includeTotal = false,
+        ?int $strStoreId = null,
+    ): array {
+        return $this->client->get('/api/external/v1/subscription-services', array_filter([
+            'page'         => $page,
+            'size'         => $size,
+            'includeTotal' => $includeTotal,
+            'strStoreId'   => $strStoreId,
+        ], fn ($v) => $v !== null));
+    }
 }

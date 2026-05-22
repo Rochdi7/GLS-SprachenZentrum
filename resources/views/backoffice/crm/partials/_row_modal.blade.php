@@ -31,6 +31,33 @@
     </div>
 </div>
 
+{{-- Fullscreen matrix modal — "Statistique de groupe" per class, mirrors the
+     reference CRM screenshot: rows = active students, cols = subscription
+     service labels (months), cells = paid/partial/unpaid/n.a. --}}
+<div class="modal fade" id="crmPaymentMatrixModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="crmPaymentMatrixTitle">
+                    <i class="ti ti-table text-success me-1"></i> Statistique de groupe
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body" id="crmPaymentMatrixBody">
+                <div class="text-center text-muted py-5">
+                    <i class="ti ti-loader spin"></i> Chargement de la matrice...
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-success" id="crmPaymentMatrixExport">
+                    <i class="ti ti-file-spreadsheet me-1"></i> Télécharger EXCEL
+                </button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Dedicated XL modal for the "click on a count pill" student-table view --}}
 <div class="modal fade" id="crmStudentsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
@@ -60,6 +87,76 @@
     .crm-students-view:hover { filter: brightness(0.94); }
     .crm-service-row { display: flex; justify-content: space-between; padding: .35rem .5rem; border-bottom: 1px solid var(--bs-border-color-translucent); }
     .crm-service-row:last-child { border-bottom: 0; }
+
+    /* Payment matrix — colored cells like the reference CRM.
+       Bootstrap 5 paints table cells with --bs-table-bg, so we override the
+       custom property (background-color alone gets overridden by .table). */
+    .crm-matrix-table { font-size: .8rem; border-collapse: separate; }
+    .crm-matrix-table th,
+    .crm-matrix-table td {
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+        font-weight: 600;
+        border: 1px solid #fff;
+    }
+    .crm-matrix-table thead th {
+        --bs-table-bg: #f8f9fa;
+        background-color: #f8f9fa !important;
+        text-transform: uppercase;
+        font-size: .72rem;
+        letter-spacing: .02em;
+        color: var(--bs-secondary);
+    }
+    .crm-matrix-table td.cell-num,
+    .crm-matrix-table td.cell-name {
+        --bs-table-bg: #fff;
+        background-color: #fff;
+    }
+    .crm-matrix-table td.cell-num  { color: var(--bs-secondary); width: 48px; }
+    .crm-matrix-table td.cell-name { text-align: left; min-width: 220px; text-transform: uppercase; }
+
+    /* Cells — set --bs-table-bg so Bootstrap's table machinery uses our color */
+    .crm-matrix-cell-paid    { --bs-table-bg: #b3e6c2; background-color: #b3e6c2 !important; color: #14532d; }
+    .crm-matrix-cell-partial { --bs-table-bg: #f5c98a; background-color: #f5c98a !important; color: #7a3e00; }
+    .crm-matrix-cell-unpaid  { --bs-table-bg: #f1a8a0; background-color: #f1a8a0 !important; color: #7f1d1d; }
+    .crm-matrix-cell-na      { --bs-table-bg: #d9d9d9; background-color: #d9d9d9 !important; color: #495057; }
+
+    /* Row bands for student status (matches reference CRM):
+       - active fully-unpaid → red band on N° + ÉTUDIANT
+       - archived            → grey band on N° + ÉTUDIANT
+       - canceled            → red band on N° + ÉTUDIANT (same as fully-unpaid) */
+    .crm-matrix-row-unpaid td.cell-num,
+    .crm-matrix-row-unpaid td.cell-name,
+    .crm-matrix-row-canceled td.cell-num,
+    .crm-matrix-row-canceled td.cell-name {
+        --bs-table-bg: #f1a8a0;
+        background-color: #f1a8a0 !important;
+        color: #7f1d1d;
+    }
+    .crm-matrix-row-archived td.cell-num,
+    .crm-matrix-row-archived td.cell-name {
+        --bs-table-bg: #d9d9d9;
+        background-color: #d9d9d9 !important;
+        color: #495057;
+    }
+
+    /* Total row */
+    .crm-matrix-total td {
+        --bs-table-bg: #fff;
+        background-color: #fff !important;
+        font-weight: 700;
+        border-top: 2px solid #495057;
+    }
+
+    /* Legend pills */
+    .crm-matrix-legend-pill {
+        display: inline-block;
+        padding: .15rem .55rem;
+        border-radius: 999px;
+        font-size: .75rem;
+        font-weight: 600;
+    }
 </style>
 
 <script>
@@ -346,7 +443,7 @@ function crmRowModalInit() {
         'EFFECTIVE_DATE', 'BIRTHDAY', 'REGISTRATION_DATE', 'DUE_DATE',
     ]);
     // Columns rendered as monetary amounts.
-    const AMOUNT_KEYS = new Set(['AMOUNT', 'OPEN_AMOUNT', 'TOTAL_PRICE', 'REST_AMOUNT', 'PRICE']);
+    const AMOUNT_KEYS = new Set(['AMOUNT', 'OPEN_AMOUNT', 'TOTAL_PRICE', 'REST_AMOUNT', 'PRICE', 'MONTHLY_SALARY', 'REMAINING_AMOUNT']);
 
     const renderGeneric = (row) => {
         const fullName = [row.FIRST_NAME, row.LAST_NAME].filter(Boolean).join(' ').trim()
@@ -529,6 +626,169 @@ function crmRowModalInit() {
         return header + `<div class="row">${rows || '<div class="text-muted">Aucune donnée affichable.</div>'}</div>`;
     };
 
+    // ---- Payment matrix modal --------------------------------------------
+    const matrixModalEl = document.getElementById('crmPaymentMatrixModal');
+    const matrixTitle   = document.getElementById('crmPaymentMatrixTitle');
+    const matrixBody    = document.getElementById('crmPaymentMatrixBody');
+    const matrixExport  = document.getElementById('crmPaymentMatrixExport');
+    const matrixModal   = matrixModalEl ? bootstrap.Modal.getOrCreateInstance(matrixModalEl) : null;
+    // Last loaded matrix data (used by the Excel export button).
+    let lastMatrixData = null;
+
+    const matrixCellHtml = (cell) => {
+        if (!cell) return '<td class="crm-matrix-cell-na"></td>';
+        const cls = {
+            paid:    'crm-matrix-cell-paid',
+            partial: 'crm-matrix-cell-partial',
+            unpaid:  'crm-matrix-cell-unpaid',
+            na:      'crm-matrix-cell-na',
+        }[cell.status] || 'crm-matrix-cell-na';
+        if (cell.status === 'na') return `<td class="${cls}"></td>`;
+        if (cell.status === 'unpaid') return `<td class="${cls}">0 DH</td>`;
+        const amount = (cell.status === 'partial')
+            ? `${Math.round(cell.paid)} DH`
+            : `${Math.round(cell.total)} DH`;
+        return `<td class="${cls}">${amount}</td>`;
+    };
+
+    const renderMatrix = (data) => {
+        const services = data.services || [];
+        const students = data.students || [];
+        const totals   = data.totals   || {};
+        const className = (data.class && (data.class.name || data.class.reference)) || '';
+        matrixTitle.innerHTML = `<i class="ti ti-table text-success me-1"></i> Statistique de groupe ${className ? `— <span class="text-muted">${esc(className)}</span>` : ''}`;
+
+        if (!students.length) {
+            return `<div class="alert alert-info mb-0">Aucun étudiant actif dans ce groupe.</div>`;
+        }
+        if (!services.length) {
+            return `<div class="alert alert-warning mb-0">Aucun service d'abonnement trouvé pour les étudiants de ce groupe.</div>`;
+        }
+
+        const headerCells = services.map(s => `<th>${esc(s)}</th>`).join('');
+        const bodyRows = students.map((s, idx) => {
+            // Row band by status:
+            //   - canceled   → red band (annulé)
+            //   - archived   → grey band (archivé)
+            //   - active + zero paid services + at least one unpaid → red band
+            //   - otherwise  → normal
+            let hasPaid = false, hasUnpaid = false;
+            for (const label of services) {
+                const st = s.cells[label]?.status;
+                if (st === 'paid' || st === 'partial') hasPaid = true;
+                else if (st === 'unpaid') hasUnpaid = true;
+            }
+            const rowCls =
+                s.bucket === 'canceled' ? 'crm-matrix-row-canceled'
+              : s.bucket === 'archived' ? 'crm-matrix-row-archived'
+              : (!hasPaid && hasUnpaid) ? 'crm-matrix-row-unpaid'
+              : '';
+            const cells = services.map(label => matrixCellHtml(s.cells[label])).join('');
+            return `
+                <tr class="${rowCls}">
+                    <td class="cell-num">#${idx}</td>
+                    <td class="cell-name">${esc(s.name)}</td>
+                    ${cells}
+                </tr>
+            `;
+        }).join('');
+
+        // Footer with column totals.
+        const totalCells = services.map(label => {
+            const v = totals[label] || 0;
+            return `<td>${v ? `${Math.round(v)} DH` : '0 DH'}</td>`;
+        }).join('');
+
+        // Bucket counts for the legend.
+        const buckets = students.reduce((acc, s) => ((acc[s.bucket || 'active'] = (acc[s.bucket || 'active'] || 0) + 1), acc), {});
+
+        return `
+            <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                <span class="crm-matrix-legend-pill crm-matrix-cell-paid">Payé</span>
+                <span class="crm-matrix-legend-pill crm-matrix-cell-partial">Partiel</span>
+                <span class="crm-matrix-legend-pill crm-matrix-cell-unpaid">Non payé</span>
+                <span class="crm-matrix-legend-pill crm-matrix-cell-na">Non applicable</span>
+                <span class="text-muted small mx-2">|</span>
+                <span class="crm-matrix-legend-pill crm-matrix-cell-na">Archivé (${buckets.archived || 0})</span>
+                <span class="crm-matrix-legend-pill crm-matrix-cell-unpaid">Annulé (${buckets.canceled || 0})</span>
+                <div class="ms-auto small text-muted">
+                    ${students.length} étudiant(s) · ${services.length} service(s)
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm crm-matrix-table mb-0">
+                    <thead>
+                        <tr>
+                            <th class="cell-num">N°</th>
+                            <th class="cell-name">Étudiant</th>
+                            ${headerCells}
+                        </tr>
+                    </thead>
+                    <tbody>${bodyRows}</tbody>
+                    <tfoot>
+                        <tr class="crm-matrix-total">
+                            <td colspan="2" class="text-end">Total</td>
+                            ${totalCells}
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        `;
+    };
+
+    // Excel (.xlsx) export — POST the matrix payload to the server so
+    // PhpSpreadsheet can generate a properly styled, colored spreadsheet
+    // that matches the on-screen matrix exactly. A client-side CSV cannot
+    // carry cell backgrounds, so we round-trip through the server here.
+    const exportMatrixXlsx = () => {
+        if (!lastMatrixData) return;
+        const cls = lastMatrixData.class || {};
+        const classId = cls.id;
+        if (!classId) return;
+
+        // Build a transient form, submit it, then drop it from the DOM.
+        const form = document.createElement('form');
+        form.method = 'POST';
+        const exportUrl = new URL(
+            PAYMENT_MATRIX_URL.replace('{id}', encodeURIComponent(classId)) + '/export',
+            window.location.origin,
+        );
+        const currentSid = new URLSearchParams(window.location.search).get('strStoreId');
+        if (currentSid) exportUrl.searchParams.set('strStoreId', currentSid);
+        form.action = exportUrl.toString();
+        form.style.display = 'none';
+
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+        const addInput = (name, value) => {
+            const i = document.createElement('input');
+            i.type = 'hidden';
+            i.name = name;
+            i.value = value;
+            form.appendChild(i);
+        };
+        addInput('_token', csrf);
+        // The server rebuilds the matrix from these — same shape as the
+        // JSON endpoint so the layout/coloring never diverges from the modal.
+        addInput('students', JSON.stringify(
+            (lastMatrixData.students || []).map(s => ({
+                STUDENT_ID:         s.student_id,
+                REGISTRATION_ID:    s.registration_id,
+                STUDENT_FIRST_NAME: s.name?.split(' ')[0] || '',
+                STUDENT_LAST_NAME:  s.name?.split(' ').slice(1).join(' ') || '',
+                STUDENT_REFERENCE:  s.reference || null,
+                _bucket:            s.bucket || 'active',
+            })),
+        ));
+        addInput('className',    cls.name || '');
+        addInput('classRef',     cls.reference || '');
+        addInput('classTeacher', cls.teacher || '');
+
+        document.body.appendChild(form);
+        form.submit();
+        setTimeout(() => form.remove(), 1000);
+    };
+    if (matrixExport) matrixExport.addEventListener('click', exportMatrixXlsx);
+
     // ---- Students-table modal (clicked from a count pill) -----------------
     const studentsModalEl    = document.getElementById('crmStudentsModal');
     const studentsModalTitle = document.getElementById('crmStudentsModalTitle');
@@ -619,7 +879,93 @@ function crmRowModalInit() {
 
     // --- click handlers ----------------------------------------------------
 
+    // Matrix endpoint — Laravel-resolved at render time so the URL respects
+    // the deployment's base path and route prefix.
+    const PAYMENT_MATRIX_URL = @json(rtrim(url('/'), '/')) + '/backoffice/crm/groups/classes/{id}/payment-matrix';
+
     document.addEventListener('click', function (e) {
+        // "Statistique de groupe" button on a class row
+        const matrixBtn = e.target.closest('.crm-payment-matrix');
+        if (matrixBtn) {
+            // Hard-stop the click — the button sits in a row that may bubble
+            // into other handlers or, if anything ever wraps the table in a
+            // form, into a submit. We render the modal client-side only.
+            e.preventDefault();
+            e.stopPropagation();
+            if (!matrixModal) return;
+            const classId = matrixBtn.dataset.classId;
+            if (!classId) return;
+            const className = matrixBtn.dataset.className || '';
+
+            // Pull the class row from the in-memory JSON blob the table
+            // already exposes — no need to re-fetch /groups/classes from
+            // the API (and that re-fetch would break when a filter hides
+            // the row from page 0). Send all three buckets so the matrix
+            // mirrors the reference CRM (archived = grey band, canceled =
+            // red band) instead of only listing active students.
+            const row = getRow(matrixBtn.dataset.tableId, matrixBtn.dataset.rowIndex);
+            const tag = (arr, bucket) => cleanStudents(safeParse(arr)).map(s => ({ ...s, _bucket: bucket }));
+            const students = row
+                ? [
+                    ...tag(row.LIST_STUDENT_ACTIVE,    'active'),
+                    ...tag(row.LIST_STUDENT_ARCHIVED,  'archived'),
+                    ...tag(row.LIST_STUDENT_CANCELED,  'canceled'),
+                  ]
+                : [];
+
+            matrixTitle.innerHTML = `<i class="ti ti-table text-success me-1"></i> Statistique de groupe ${className ? `— <span class="text-muted">${esc(className)}</span>` : ''}`;
+            matrixBody.innerHTML = `<div class="text-center text-muted py-5"><i class="ti ti-loader spin"></i> Chargement de la matrice (${students.length} étudiant(s))...</div>`;
+            matrixModal.show();
+            lastMatrixData = null;
+
+            // Preserve strStoreId from the current URL so the request stays
+            // scoped to the active center.
+            const url = new URL(PAYMENT_MATRIX_URL.replace('{id}', encodeURIComponent(classId)), window.location.origin);
+            const currentSid = new URLSearchParams(window.location.search).get('strStoreId');
+            if (currentSid) url.searchParams.set('strStoreId', currentSid);
+
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+            // Send SERVICE_LIST too so the server can seed expected dues per
+            // active student without an extra subscription-services scan.
+            const serviceList = row ? safeParse(row.SERVICE_LIST) : [];
+
+            fetch(url.toString(), {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    // Opt the matrix request out of the global BO loader so
+                    // the fullscreen overlay doesn't cover the modal while
+                    // we render the spinner inside the modal instead.
+                    'X-No-Loader': '1',
+                    'X-CSRF-TOKEN': csrf,
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    students,
+                    serviceList,
+                    className,
+                    classRef:     row?.REFERENCE || null,
+                    classTeacher: row?.EMPLOYEE_TEACHER_FULL_NAME || null,
+                }),
+            })
+                .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
+                .then(({ ok, data }) => {
+                    if (!ok || !data.success) {
+                        matrixBody.innerHTML = `<div class="alert alert-danger">${esc(data.message || 'Impossible de charger la matrice.')}</div>`;
+                        return;
+                    }
+                    lastMatrixData = data;
+                    matrixBody.innerHTML = renderMatrix(data);
+                })
+                .catch(err => {
+                    matrixBody.innerHTML = `<div class="alert alert-danger">Erreur réseau : ${esc(err.message || String(err))}</div>`;
+                });
+            return;
+        }
+
         // Row "view details" eye button
         const btn = e.target.closest('.crm-row-view');
         if (btn) {

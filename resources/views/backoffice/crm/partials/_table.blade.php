@@ -59,6 +59,19 @@
             'USER_CREATION_FULL_NAME'   => 'Créé par',
             'USER_UPDATE_FULL_NAME'     => 'MAJ par',
             'CASH_BOX_ACCOUNT_DESIGNATION' => 'Compte caisse',
+            // Subscription services
+            'SERVICE_TYPE_NAME'         => 'Service',
+            'DUE_DATE'                  => 'Échéance',
+            'SUBSCRIPTION_SERVICE_STATUS_NAME' => 'Statut service',
+            'LEVEL_SESSION_PACKAGE_NAME'=> 'Package',
+            // Employee calculated salary classes
+            'EMPLOYEE_ID'               => 'ID employé',
+            'CLASS_ID'                  => 'ID classe',
+            'OPERATION_YEAR'            => 'Année',
+            'OPERATION_MONTH'           => 'Mois',
+            'MONTHLY_SALARY'            => 'Salaire mensuel',
+            'REMAINING_AMOUNT'          => 'Reste à verser',
+            'PK'                        => 'Clé',
         ];
         if (isset($renames[$col])) return $renames[$col];
         $isAr = str_ends_with($col, '_AR');
@@ -211,7 +224,7 @@
                     @if($isClass)
                         <th class="small text-nowrap">Étudiants</th>
                     @endif
-                    <th class="small text-end" style="width: 80px;">Actions</th>
+                    <th class="small text-end" style="width: 120px;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -261,7 +274,7 @@
                                     @else
                                         {{ $v }}
                                     @endif
-                                @elseif(in_array($c, ['AMOUNT', 'OPEN_AMOUNT', 'TOTAL_PRICE', 'REST_AMOUNT', 'PRICE']) && is_numeric($v))
+                                @elseif(in_array($c, ['AMOUNT', 'OPEN_AMOUNT', 'TOTAL_PRICE', 'REST_AMOUNT', 'PRICE', 'MONTHLY_SALARY', 'REMAINING_AMOUNT']) && is_numeric($v))
                                     <span class="text-nowrap fw-medium">{{ number_format((float) $v, 2, ',', ' ') }}</span>
                                 @elseif(is_array($v) || is_object($v))
                                     <span class="text-muted small">—</span>
@@ -299,7 +312,18 @@
                         @endif
 
                         {{-- Action: open modal with friendly detail view --}}
-                        <td class="text-end">
+                        <td class="text-end text-nowrap">
+                            @if($isClass)
+                                <button type="button"
+                                        class="btn btn-sm btn-light-success text-success crm-payment-matrix me-1"
+                                        data-class-id="{{ $row['CLASS_ID'] ?? $row['ID'] ?? '' }}"
+                                        data-class-name="{{ $row['NAME'] ?? '' }}"
+                                        data-table-id="{{ $tableId }}"
+                                        data-row-index="{{ $rowIndex }}"
+                                        title="Statistique de groupe (paiements)">
+                                    <i class="ti ti-table"></i>
+                                </button>
+                            @endif
                             <button type="button"
                                     class="btn btn-sm btn-light crm-row-view"
                                     data-row-kind="{{ $rowKind ?? ($isClass ? 'class' : 'generic') }}"

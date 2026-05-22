@@ -773,6 +773,12 @@ Route::prefix('backoffice')
                 Route::get('/api/students-search',   'studentsSearch')->name('api.students-search');
                 Route::get('/groups/classes',        'groupsClasses')->name('groups.classes');
                 Route::get('/groups/level-sessions', 'groupsLevelSessions')->name('groups.level-sessions');
+                Route::post('/groups/classes/{classId}/payment-matrix', 'classPaymentMatrix')->name('groups.classes.payment-matrix')
+                    ->where('classId', '[0-9]+');
+                Route::post('/groups/classes/{classId}/payment-matrix/export', 'classPaymentMatrixExport')->name('groups.classes.payment-matrix.export')
+                    ->where('classId', '[0-9]+');
+                Route::get('/subscription-services', 'subscriptionServices')->name('subscription-services');
+                Route::get('/employee-salaries',     'employeeSalaries')->name('employee-salaries');
                 Route::get('/lov/{kind}',            'lov')->name('lov')
                     ->where('kind', '[a-z0-9\-]+');
             });

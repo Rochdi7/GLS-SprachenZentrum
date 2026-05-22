@@ -1,16 +1,20 @@
 <footer class="site-footer mt-5 {{ app()->getLocale() == 'ar' ? 'rtl' : '' }}">
-    <div class="container footer-inner py-5">
+    <div class="container footer-inner pt-5 pb-0">
 
-        {{-- ===== Footer Intro (with GLS Logo) ===== --}}
-        <div class="footer-intro mb-4 {{ app()->getLocale() == 'ar' ? 'text-end' : '' }}">
-            <p>
-                {{ __('footer.intro_text') }}
-            </p>
-            <img src="{{ asset('assets/images/logo/gls-blanc.webp') }}" alt="GLS Sprachenzentrum Logo">
+        {{-- ===== Footer Intro (text left + logo right; logo first on mobile) ===== --}}
+        <div class="footer-intro row align-items-center mb-3 g-3 {{ app()->getLocale() == 'ar' ? 'rtl' : '' }}">
+            <div class="col-12 col-md-7 order-2 order-md-1 footer-intro-text {{ app()->getLocale() == 'ar' ? 'text-end' : '' }}">
+                <p class="mb-0">
+                    {{ __('footer.intro_text') }}
+                </p>
+            </div>
+            <div class="col-12 col-md-5 order-1 order-md-2 footer-intro-logo text-center {{ app()->getLocale() == 'ar' ? 'text-md-start' : 'text-md-end' }}">
+                <img src="{{ asset('assets/images/logo/gls-blanc.webp') }}" alt="GLS Sprachenzentrum Logo">
+            </div>
         </div>
 
         {{-- ===== Footer Columns ===== --}}
-        <div class="row footer-columns pt-4 border-top border-dark">
+        <div class="row footer-columns pt-3 border-top border-dark">
 
             {{-- Column 1 – About --}}
             <div class="col-6 col-md-3 mb-4">

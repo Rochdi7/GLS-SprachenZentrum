@@ -256,6 +256,13 @@
             if (e.persisted) { pendingXhr = 0; hide(); }
         });
 
+        // Endpoints that should NOT trigger the fullscreen overlay — usually
+        // because they render their own in-modal spinner. The matrix builder
+        // takes 5-15s for big classes and we don't want to lock the UI.
+        var NO_LOADER_PATHS = [
+            /\/crm\/groups\/classes\/\d+\/payment-matrix(\/export)?$/,
+        ];
+
         // Same-origin backoffice-bound URL? Covers /backoffice/*, /crm/* (legacy),
         // and root-relative links inside the BO sidebar.
         function isBoUrl(url) {
@@ -263,6 +270,10 @@
             try {
                 var u = new URL(url, window.location.origin);
                 if (u.origin !== window.location.origin) return false;
+                // Opt-out paths (modal-owned XHRs).
+                for (var i = 0; i < NO_LOADER_PATHS.length; i++) {
+                    if (NO_LOADER_PATHS[i].test(u.pathname)) return false;
+                }
                 return /\/(backoffice|crm)(\/|$|\?)/.test(u.pathname + u.search);
             } catch (e) {
                 return false;

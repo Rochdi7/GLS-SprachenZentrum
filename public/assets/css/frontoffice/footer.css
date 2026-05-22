@@ -17,26 +17,27 @@ font-family: "Now", sans-serif;
 FOOTER INTRO SECTION
 ========================================================= */
 .footer-intro {
-display: flex;
-justify-content: space-between;
-align-items: center;
-width: 100%;
-gap: 2rem;
+  width: 100%;
 }
 
-.footer-intro img {
-height: 120px;
-width: auto;
-margin-right: 15px;
+.footer-intro-text,
+.footer-intro-logo {
+  padding-left: 25px;
+  padding-right: 25px;
 }
 
-.footer-intro p {
-color: var(--color-surface);
-font-size: 0.95rem;
-line-height: 1.6;
-margin-bottom: 0;
-flex: 1;
-max-width: 450px;
+.footer-intro-text p {
+  color: var(--color-surface);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 520px;
+}
+
+.footer-intro-logo img {
+  height: 110px;
+  width: auto;
+  max-width: 100%;
 }
 
 /* =========================================================
@@ -140,14 +141,27 @@ RESPONSIVE
 @media (max-width: 768px) {
 
 .footer-intro {
-flex-direction: column-reverse;
-text-align: center;
+  text-align: center;
 }
 
-.footer-intro img {
-height: 120px;
-margin-top: 0;
-margin-bottom: 1.25rem;
+.footer-intro-text,
+.footer-intro-logo {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.footer-intro-text p {
+  margin: 0 auto;
+  max-width: 100%;
+  text-align: center;
+}
+
+.footer-intro-logo {
+  margin-bottom: 0.5rem;
+}
+
+.footer-intro-logo img {
+  height: 80px;
 }
 
 .footer-legal {
@@ -320,7 +334,17 @@ border:0 !important;
    Compact Newsletter (between footer-columns and footer-bottom)
    ========================================================= */
 .site-footer .footer-newsletter {
-  padding-bottom: 0;
+  padding-bottom: 1rem;
+  margin-bottom: 0;
+}
+
+.site-footer .footer-bottom {
+  padding-top: 0;
+}
+
+.site-footer .footer-bottom > .container {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
 }
 
 .site-footer .footer-newsletter .footer-title {
@@ -345,16 +369,19 @@ border:0 !important;
 .site-footer .footer-newsletter-form {
   flex: 0 1 auto;
   width: 100%;
-  max-width: 380px;
+  max-width: 460px;
 }
 
 .site-footer .footer-newsletter-form .form-control {
   background: rgba(255, 255, 255, .06);
   border: 1px solid rgba(255, 255, 255, .12);
   color: #fff;
-  font-size: 0.85rem;
-  padding: 0.45rem 0.75rem;
+  font-size: 0.82rem;
+  padding: 0.4rem 0.85rem;
   border-radius: 8px;
+  height: auto;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .site-footer .footer-newsletter-form .form-control::placeholder {
@@ -370,16 +397,35 @@ border:0 !important;
 }
 
 .site-footer .footer-newsletter-form .btn {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  padding: 0.45rem 1rem;
+  padding: 0.4rem 0.9rem;
   border-radius: 8px;
   white-space: nowrap;
+  line-height: 1.3;
 }
 
 .site-footer .footer-newsletter.rtl .footer-newsletter-form {
   margin-left: 0;
   margin-right: auto;
+}
+
+/* RTL (Arabic): title block must sit flush to the right edge (reading
+   start) and form flush to the left edge. The flex row's natural order
+   in dir="rtl" leaves a gap in the middle, so explicitly reorder via
+   flex `order` and right-align the text inside the copy block. */
+.site-footer .footer-newsletter.rtl .footer-newsletter-copy {
+  text-align: right;
+  order: 2;
+}
+
+.site-footer .footer-newsletter.rtl .footer-newsletter-form {
+  order: 1;
+}
+
+.site-footer .footer-newsletter.rtl .footer-newsletter-copy .footer-title,
+.site-footer .footer-newsletter.rtl .footer-newsletter-copy p {
+  text-align: right;
 }
 
 @media (max-width: 768px) {

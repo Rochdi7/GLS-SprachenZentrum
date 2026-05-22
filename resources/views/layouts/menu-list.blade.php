@@ -530,6 +530,16 @@
                         <span class="pc-mtext">Level sessions</span>
                     </a>
                 </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.subscription-services') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.subscription-services') }}" class="pc-link {{ request()->routeIs('backoffice.crm.subscription-services') ? 'active' : '' }}">
+                        <span class="pc-mtext">Services d'abonnement</span>
+                    </a>
+                </li>
+                <li class="pc-item {{ request()->routeIs('backoffice.crm.employee-salaries') ? 'active' : '' }}">
+                    <a href="{{ route('backoffice.crm.employee-salaries') }}" class="pc-link {{ request()->routeIs('backoffice.crm.employee-salaries') ? 'active' : '' }}">
+                        <span class="pc-mtext">Salaires employés</span>
+                    </a>
+                </li>
                 <li class="pc-item {{ request()->routeIs('backoffice.crm.lov') ? 'active' : '' }}">
                     <a href="{{ route('backoffice.crm.lov', ['kind' => 'banks']) }}" class="pc-link {{ request()->routeIs('backoffice.crm.lov') ? 'active' : '' }}">
                         <span class="pc-mtext">Listes de valeurs (LOV)</span>

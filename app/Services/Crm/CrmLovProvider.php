@@ -240,6 +240,25 @@ class CrmLovProvider
         });
     }
 
+    /**
+     * Subscription services dropdown — scoped to the active store.
+     *
+     * Source endpoint is /api/external/v1/subscription-services which uses
+     * paginated transactional shape (page/size, cap 25). We page-walk until
+     * a partial page is returned, capped at 20 pages = 500 rows.
+     */
+    public function subscriptionServices(?int $strStoreId): array
+    {
+        return $this->cached('subscription_services', $strStoreId, function () use ($strStoreId) {
+            $rows = $this->walkPaged(
+                fn (int $page, int $size) => $this->crm->lov()->subscriptionServices(
+                    page: $page, size: $size, includeTotal: false, strStoreId: $strStoreId,
+                ),
+            );
+            return $this->normalize($rows, ['ID'], ['NAME', 'DESIGNATION', 'REFERENCE']);
+        });
+    }
+
     // ───────────────────────── plumbing ───────────────────────────────────────
 
     /**

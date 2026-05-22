@@ -12,14 +12,14 @@
                 <ul class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Accueil</a></li>
                     @if ($breadcrumbItem !== '' && ! $isDuplicateHome)
-                        <li class="breadcrumb-item"><a href="@yield('breadcrumb-item-link', 'javascript: void(0)')">{{ $breadcrumbItem }}</a></li>
+                        <li class="breadcrumb-item"><a href="@yield('breadcrumb-item-link', 'javascript: void(0)')">{!! $breadcrumbItem !!}</a></li>
                     @endif
-                    <li class="breadcrumb-item" aria-current="page">{{ $breadcrumbItemActive }}</li>
+                    <li class="breadcrumb-item" aria-current="page">{!! $breadcrumbItemActive !!}</li>
                 </ul>
             </div>
             <div class="col-md-12">
                 <div class="page-header-title">
-                    <h2 class="mb-0">{{ $breadcrumbItemActive }}</h2>
+                    <h2 class="mb-0">{!! $breadcrumbItemActive !!}</h2>
                 </div>
             </div>
         </div>
