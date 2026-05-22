@@ -1,119 +1,14 @@
-{{--
-    Reusable Bootstrap modal that displays a CRM row in a human-friendly format.
-
-    The table partial injects a `data-row-json="…"` attribute into each row's
-    eye button. The JS at the bottom of this partial:
-      1. Catches clicks on .crm-row-view buttons
-      2. Parses the JSON
-      3. Re-renders Classes / Payments / Students rows into clean tabs/lists
-      4. Falls back to a generic property list for unknown row shapes
---}}
-
-<div class="modal fade" id="crmRowModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title" id="crmRowModalTitle">
-                    <i class="ti ti-info-circle text-primary me-1"></i>
-                    Détails
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-            </div>
-            <div class="modal-body" id="crmRowModalBody">
-                <div class="text-center text-muted py-4">
-                    <i class="ti ti-loader spin"></i> Chargement...
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- Fullscreen matrix modal — "Statistique de groupe" per class, mirrors the
-     reference CRM screenshot: rows = active students, cols = subscription
-     service labels (months), cells = paid/partial/unpaid/n.a. --}}
-<div class="modal fade" id="crmPaymentMatrixModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title" id="crmPaymentMatrixTitle">
-                    <i class="ti ti-table text-success me-1"></i> Statistique de groupe
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-            </div>
-            <div class="modal-body" id="crmPaymentMatrixBody">
-                <div class="crm-matrix-loader">
-                    <div class="crm-matrix-loader__spinner" aria-hidden="true"></div>
-                    <div class="crm-matrix-loader__title">
-                        Chargement de la matrice<span class="crm-matrix-loader__dots"><span>.</span><span>.</span><span>.</span></span>
-                    </div>
-                    <div class="crm-matrix-loader__sub">Préparation...</div>
-                    <div class="crm-matrix-loader__bar" aria-hidden="true"></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-success" id="crmPaymentMatrixExport">
-                    <i class="ti ti-file-spreadsheet me-1"></i> Télécharger EXCEL
-                </button>
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- Dedicated XL modal for the "click on a count pill" student-table view --}}
-<div class="modal fade" id="crmStudentsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title" id="crmStudentsModalTitle">
-                    <i class="ti ti-users text-primary me-1"></i> La liste d'étudiants
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-            </div>
-            <div class="modal-body" id="crmStudentsModalBody"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- Styles extracted to public/assets/css/backoffice/crm-row-modal.css.
-     @once ensures the <link> is emitted only on the first include — this
-     partial is included from multiple CRM pages but the asset is identical. --}}
-@once
-    <link rel="stylesheet" href="{{ asset('assets/css/backoffice/crm-row-modal.css') }}">
-@endonce
-
-{{-- Script extracted to public/assets/js/backoffice/crm-row-modal.js.
-     Three values must reach JS at render time:
-       - CRM_DEFAULT_AVATAR     : asset URL the JS uses when avatars 404
-       - CRM_STORE_ID_NAMES     : storeId → human centre name (from the sites table)
-       - CRM_PAYMENT_MATRIX_URL : matrix endpoint with {id} placeholder
-
-     We expose them as window.* globals BEFORE the external file loads.
-     The inline bootstrap is tiny and contains only @json output — the rest
-     of the logic lives in the cacheable static .js file. --}}
-@once
-    <script>
-        window.CRM_DEFAULT_AVATAR     = @json(asset('build/images/user/avatar-1.jpg'));
-        window.CRM_STORE_ID_NAMES     = @json(app(\App\Services\Crm\CenterContext::class)->storeIdToName());
-        window.CRM_PAYMENT_MATRIX_URL = @json(rtrim(url('/'), '/')) + '/backoffice/crm/groups/classes/{id}/payment-matrix';
-    </script>
-    <script src="{{ asset('assets/js/backoffice/crm-row-modal.js') }}" defer></script>
-@endonce
-
-@php /* INLINE-SCRIPT-MARKER: everything from here to the end of file used to
-       be the modal's inline <script>. It was extracted to the external .js
-       above. The remaining lines are NO-OP for safety: kept in an @if(false)
-       block so the original code is still readable in git blame history,
-       but the browser never receives it. Safe to delete once verified. */ @endphp
-@if(false)
-@verbatim
-<script>
+/*
+ * CRM row-detail modal + payment matrix.
+ * Loaded by resources/views/backoffice/crm/partials/_row_modal.blade.php.
+ *
+ * Three values are injected by Blade at render time and exposed as
+ * globals BEFORE this script loads:
+ *   - window.CRM_DEFAULT_AVATAR     : asset URL for the fallback avatar
+ *   - window.CRM_STORE_ID_NAMES     : { storeId: humanName } map
+ *   - window.CRM_PAYMENT_MATRIX_URL : "{baseUrl}/backoffice/crm/groups/classes/{id}/payment-matrix"
+ *                                     ({id} is replaced at click time)
+ */
 // Wait for DOM + Bootstrap JS (loaded by layouts.footerjs after this partial).
 function crmRowModalInit() {
     if (typeof bootstrap === 'undefined' || !bootstrap.Modal) {
@@ -133,10 +28,10 @@ function crmRowModalInit() {
 
     // Default avatar served for students without a SMALL_AVATAR_PATH or when
     // the remote image fails to load.
-    const DEFAULT_AVATAR = @json(asset('build/images/user/avatar-1.jpg'));
+    const DEFAULT_AVATAR = window.CRM_DEFAULT_AVATAR || '';
 
     // Map of CRM store id → human-readable center name (from the sites table).
-    const STORE_ID_NAMES = @json(app(\App\Services\Crm\CenterContext::class)->storeIdToName());
+    const STORE_ID_NAMES = window.CRM_STORE_ID_NAMES || {};
 
     // Friendly French labels per column.
     const COLUMN_LABELS = {
@@ -428,12 +323,11 @@ function crmRowModalInit() {
             : '';
 
         // Build the set of *_ID columns to hide when a *_NAME companion exists.
-        // (e.g. drop PAYMENT_METHOD_ID if PAYMENT_METHOD_NAME is present.)
         const keys = Object.keys(row);
         const redundantIds = new Set();
         for (const k of keys) {
             if (!k.endsWith('_ID')) continue;
-            const stem = k.slice(0, -3); // PAYMENT_METHOD
+            const stem = k.slice(0, -3);
             const candidates = [`${stem}_NAME`, `${stem}_FULL_NAME`, `${stem}_DESIGNATION`, `${stem}_NAME_FR`];
             if (candidates.some(c => keys.includes(c) && row[c])) {
                 redundantIds.add(k);
@@ -446,48 +340,35 @@ function crmRowModalInit() {
             'LIST_STUDENT','LIST_STUDENT_ACTIVE','LIST_STUDENT_ARCHIVED','LIST_STUDENT_CANCELED','SERVICE_LIST',
             // Already shown in the header card
             'SMALL_AVATAR_PATH','FIRST_NAME','LAST_NAME','REFERENCE','SEXE','BIRTHDAY','PHONE_NUMBER','EMAIL',
-            // Hide every *_NAME_AR and *_FULL_NAME_AR; we render the non-AR one.
         ]);
 
-        // --- helpers for the inner list table ---
         const innerCellFor = (col, val) => {
             if (val === null || val === '') return '<span class="text-muted">—</span>';
-            // ACTIVE / IS_AVANCE → Oui/Non pill
             if ((col === 'ACTIVE' || col === 'IS_AVANCE') && (val === 'Y' || val === 'N')) {
                 return `<span class="badge bg-light-${val === 'Y' ? 'success text-success' : 'secondary text-muted'}">${val === 'Y' ? 'Oui' : 'Non'}</span>`;
             }
-            // Store id → center name
             if (col === 'STR_STORE_ID' && STORE_ID_NAMES[val]) {
                 return `<span class="badge bg-light-primary text-primary">${esc(STORE_ID_NAMES[val])}</span>`;
             }
-            // Amount-ish columns
             if (['PRICE','AMOUNT','TOTAL','REST_AMOUNT'].includes(col) && !isNaN(Number(val))) {
                 return Number(val).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             }
-            // Dates — column-name match OR a raw ISO-8601 string
             if (looksLikeDate(col, val)) {
                 return fmtDate(val);
             }
-            // ID columns dimmed
             if (col.endsWith('_ID') || col === 'ID') {
                 return `<span class="text-muted small">#${esc(val)}</span>`;
             }
             return esc(val);
         };
 
-        /**
-         * Render an array of objects as a clean Bootstrap table.
-         * Skips _AR columns and any column where every value is null.
-         */
         const renderObjectList = (arr) => {
             const clean = arr.filter(x => x && typeof x === 'object');
             if (clean.length === 0) return '<div class="text-muted small">Liste vide.</div>';
 
-            // Collect all keys, then drop _AR and all-null columns
             const allKeys = Array.from(new Set(clean.flatMap(o => Object.keys(o))));
             const cols = allKeys.filter(k => {
                 if (k.endsWith('_AR')) return false;
-                // drop the column entirely if every row has null/empty there
                 return clean.some(o => o[k] !== null && o[k] !== '' && o[k] !== undefined);
             });
 
@@ -507,12 +388,6 @@ function crmRowModalInit() {
             `;
         };
 
-        /**
-         * Try to interpret a value as a list-of-objects. Accepts:
-         *   - an actual array
-         *   - a JSON string starting with [ that decodes to an array of objects
-         * Returns the parsed array or null.
-         */
         const asObjectList = (v) => {
             if (Array.isArray(v) && v.length && typeof v[0] === 'object') return v;
             if (typeof v === 'string' && v.trim().startsWith('[')) {
@@ -525,7 +400,6 @@ function crmRowModalInit() {
         };
 
         const formatValue = (k, v) => {
-            // Centre lookup
             if (k === 'STR_STORE_ID') {
                 const name = STORE_ID_NAMES[v];
                 return name
@@ -543,7 +417,6 @@ function crmRowModalInit() {
                     return `<span class="badge bg-light-${v === 'Y' ? 'success text-success' : 'secondary text-muted'}">${v === 'Y' ? 'Oui' : 'Non'}</span>`;
                 }
             }
-            // List-of-objects (e.g. LEVEL_SESSION_PACKAGE_LIST, SERVICE_LIST, LIST_STUDENT_*)
             const list = asObjectList(v);
             if (list) return renderObjectList(list);
 
@@ -554,7 +427,6 @@ function crmRowModalInit() {
             return esc(v);
         };
 
-        // Columns that always render full-width because they contain tables
         const FULL_WIDTH_COLS = new Set([
             'LEVEL_SESSION_PACKAGE_LIST',
             'SERVICE_LIST',
@@ -621,11 +493,6 @@ function crmRowModalInit() {
 
         const headerCells = services.map(s => `<th>${esc(s)}</th>`).join('');
         const bodyRows = students.map((s, idx) => {
-            // Row band by status:
-            //   - canceled   → red band (annulé)
-            //   - archived   → grey band (archivé)
-            //   - active + zero paid services + at least one unpaid → red band
-            //   - otherwise  → normal
             let hasPaid = false, hasUnpaid = false;
             for (const label of services) {
                 const st = s.cells[label]?.status;
@@ -690,17 +557,13 @@ function crmRowModalInit() {
         `;
     };
 
-    // Excel (.xlsx) export — POST the matrix payload to the server so
-    // PhpSpreadsheet can generate a properly styled, colored spreadsheet
-    // that matches the on-screen matrix exactly. A client-side CSV cannot
-    // carry cell backgrounds, so we round-trip through the server here.
+    // Excel (.xlsx) export — POST the matrix payload to the server.
     const exportMatrixXlsx = () => {
         if (!lastMatrixData) return;
         const cls = lastMatrixData.class || {};
         const classId = cls.id;
         if (!classId) return;
 
-        // Build a transient form, submit it, then drop it from the DOM.
         const form = document.createElement('form');
         form.method = 'POST';
         const exportUrl = new URL(
@@ -721,8 +584,6 @@ function crmRowModalInit() {
             form.appendChild(i);
         };
         addInput('_token', csrf);
-        // The server rebuilds the matrix from these — same shape as the
-        // JSON endpoint so the layout/coloring never diverges from the modal.
         addInput('students', JSON.stringify(
             (lastMatrixData.students || []).map(s => ({
                 STUDENT_ID:         s.student_id,
@@ -757,9 +618,7 @@ function crmRowModalInit() {
     // students-table view — historically this was a separate helper.
     const fmtDateFR = fmtDate;
 
-    // Treat any value that matches the ISO-8601 pattern as a date, regardless
-    // of its column name. Catches CRM fields like SESSION_DATE,
-    // EFFECTIVE_DATE_PAYMENT, LAST_PRESENCE_DATE, etc. without an allow-list.
+    // Treat any value that matches the ISO-8601 pattern as a date.
     const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
     const looksLikeDate = (k, v) =>
         (typeof v === 'string' && ISO_DATE_RE.test(v))
@@ -815,9 +674,6 @@ function crmRowModalInit() {
     };
 
     // --- data lookup -------------------------------------------------------
-    // Each table emits a <script type="application/json" id="crm-rows-data-{tableId}">
-    // and tags each button with data-table-id + data-row-index. We use that to
-    // pull the full row object (avoids 100KB+ data attributes on every button).
     const rowCache = new Map();
     const getRow = (tableId, rowIndex) => {
         const cacheKey = tableId + ':' + rowIndex;
@@ -837,17 +693,13 @@ function crmRowModalInit() {
 
     // --- click handlers ----------------------------------------------------
 
-    // Matrix endpoint — Laravel-resolved at render time so the URL respects
-    // the deployment's base path and route prefix.
-    const PAYMENT_MATRIX_URL = @json(rtrim(url('/'), '/')) + '/backoffice/crm/groups/classes/{id}/payment-matrix';
+    // Matrix endpoint — injected by Blade as window.CRM_PAYMENT_MATRIX_URL.
+    const PAYMENT_MATRIX_URL = window.CRM_PAYMENT_MATRIX_URL || '';
 
     document.addEventListener('click', function (e) {
         // "Statistique de groupe" button on a class row
         const matrixBtn = e.target.closest('.crm-payment-matrix');
         if (matrixBtn) {
-            // Hard-stop the click — the button sits in a row that may bubble
-            // into other handlers or, if anything ever wraps the table in a
-            // form, into a submit. We render the modal client-side only.
             e.preventDefault();
             e.stopPropagation();
             if (!matrixModal) return;
@@ -855,12 +707,6 @@ function crmRowModalInit() {
             if (!classId) return;
             const className = matrixBtn.dataset.className || '';
 
-            // Pull the class row from the in-memory JSON blob the table
-            // already exposes — no need to re-fetch /groups/classes from
-            // the API (and that re-fetch would break when a filter hides
-            // the row from page 0). Send all three buckets so the matrix
-            // mirrors the reference CRM (archived = grey band, canceled =
-            // red band) instead of only listing active students.
             const row = getRow(matrixBtn.dataset.tableId, matrixBtn.dataset.rowIndex);
             const tag = (arr, bucket) => cleanStudents(safeParse(arr)).map(s => ({ ...s, _bucket: bucket }));
             const students = row
@@ -887,8 +733,6 @@ function crmRowModalInit() {
             matrixModal.show();
             lastMatrixData = null;
 
-            // Rotate the sub-line every 1.6s so the wait feels alive. Each
-            // message reflects a real step in the matrix build pipeline.
             const stages = [
                 `${students.length} étudiant(s) — connexion au CRM...`,
                 'Récupération des paiements alloués...',
@@ -904,16 +748,12 @@ function crmRowModalInit() {
             }, 1600);
             const stopStages = () => clearInterval(stageTimer);
 
-            // Preserve strStoreId from the current URL so the request stays
-            // scoped to the active center.
             const url = new URL(PAYMENT_MATRIX_URL.replace('{id}', encodeURIComponent(classId)), window.location.origin);
             const currentSid = new URLSearchParams(window.location.search).get('strStoreId');
             if (currentSid) url.searchParams.set('strStoreId', currentSid);
 
             const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
 
-            // Send SERVICE_LIST too so the server can seed expected dues per
-            // active student without an extra subscription-services scan.
             const serviceList = row ? safeParse(row.SERVICE_LIST) : [];
 
             fetch(url.toString(), {
@@ -922,9 +762,6 @@ function crmRowModalInit() {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
-                    // Opt the matrix request out of the global BO loader so
-                    // the fullscreen overlay doesn't cover the modal while
-                    // we render the spinner inside the modal instead.
                     'X-No-Loader': '1',
                     'X-CSRF-TOKEN': csrf,
                 },
@@ -944,11 +781,6 @@ function crmRowModalInit() {
                         matrixBody.innerHTML = `<div class="alert alert-danger">${esc(data.message || 'Impossible de charger la matrice.')}</div>`;
                         return;
                     }
-                    // Keep the original SERVICE_LIST alongside the matrix
-                    // result so the Excel export can re-seed columns the same
-                    // way the JSON endpoint did. Without this the export
-                    // collapses to "services with payments only" and unpaid
-                    // months (Frais de Juin, Juillet…) silently disappear.
                     data._serviceList = serviceList;
                     lastMatrixData = data;
                     matrixBody.innerHTML = renderMatrix(data);
@@ -1013,5 +845,3 @@ if (document.readyState === 'loading') {
 } else {
     crmRowModalInit();
 }
-</script>
-@endif

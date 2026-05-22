@@ -275,11 +275,27 @@ frontofficefrontoffice-primary:hover {
     position: relative;
     border-radius: 22px;
     overflow: hidden;
+    direction: ltr;
+    text-align: left;
     border: 1px solid var(--color-border, #e6e2c5);
     background: var(--color-surface, #fffee8);
     box-shadow: 0 18px 44px rgba(0,0,0,.08);
     aspect-ratio: 4 / 3;
     min-height: 420px;
+}
+
+/* Leaflet positions tiles/markers via absolute offsets; under dir="rtl"
+   those offsets are visually mirrored and the map renders shifted, with
+   half of Morocco clipped (Fes/Oujda push off-screen, Agadir/Marrakesh
+   anchor left). Force the Leaflet container and all internal panes to
+   LTR so tile math operates in its native coordinate space. */
+.gls-map-wrap #glsCentresMap,
+.gls-map-wrap .leaflet-container,
+.gls-map-wrap .leaflet-pane,
+.gls-map-wrap .leaflet-marker-pane,
+.gls-map-wrap .leaflet-popup-pane,
+.gls-map-wrap .leaflet-tile-pane {
+    direction: ltr;
 }
 .gls-centres-map {
     width: 100%;

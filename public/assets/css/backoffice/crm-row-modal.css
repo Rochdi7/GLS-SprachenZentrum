@@ -1,0 +1,147 @@
+/*
+ * CRM row-detail modal + payment matrix.
+ * Loaded by resources/views/backoffice/crm/partials/_row_modal.blade.php
+ * via an @once <link> tag so it ships once per page even when the partial
+ * is included multiple times.
+ */
+
+/* Subtle student-list rows in the modal */
+.crm-student-row { padding: .4rem .6rem; border-radius: .35rem; }
+.crm-student-row:hover { background: var(--bs-light); }
+.crm-student-row .crm-ref { font-size: .7rem; color: var(--bs-secondary); }
+.crm-student-row a.tel { text-decoration: none; }
+.crm-tabs .nav-link { padding: .4rem .9rem; font-size: .85rem; }
+.crm-students-view { cursor: pointer; transition: filter .15s; }
+.crm-students-view:hover { filter: brightness(0.94); }
+.crm-service-row { display: flex; justify-content: space-between; padding: .35rem .5rem; border-bottom: 1px solid var(--bs-border-color-translucent); }
+.crm-service-row:last-child { border-bottom: 0; }
+
+/* Payment matrix — colored cells like the reference CRM.
+   Bootstrap 5 paints table cells with --bs-table-bg, so we override the
+   custom property (background-color alone gets overridden by .table). */
+.crm-matrix-table { font-size: .8rem; border-collapse: separate; }
+.crm-matrix-table th,
+.crm-matrix-table td {
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    font-weight: 600;
+    border: 1px solid #fff;
+}
+.crm-matrix-table thead th {
+    --bs-table-bg: #f8f9fa;
+    background-color: #f8f9fa !important;
+    text-transform: uppercase;
+    font-size: .72rem;
+    letter-spacing: .02em;
+    color: var(--bs-secondary);
+}
+.crm-matrix-table td.cell-num,
+.crm-matrix-table td.cell-name {
+    --bs-table-bg: #fff;
+    background-color: #fff;
+}
+.crm-matrix-table td.cell-num  { color: var(--bs-secondary); width: 48px; }
+.crm-matrix-table td.cell-name { text-align: left; min-width: 220px; text-transform: uppercase; }
+
+/* Cells — set --bs-table-bg so Bootstrap's table machinery uses our color */
+.crm-matrix-cell-paid    { --bs-table-bg: #b3e6c2; background-color: #b3e6c2 !important; color: #14532d; }
+.crm-matrix-cell-partial { --bs-table-bg: #f5c98a; background-color: #f5c98a !important; color: #7a3e00; }
+.crm-matrix-cell-unpaid  { --bs-table-bg: #f1a8a0; background-color: #f1a8a0 !important; color: #7f1d1d; }
+.crm-matrix-cell-na      { --bs-table-bg: #d9d9d9; background-color: #d9d9d9 !important; color: #495057; }
+
+/* Row bands for student status (matches reference CRM):
+   - active fully-unpaid → red band on N° + ÉTUDIANT
+   - archived            → grey band on N° + ÉTUDIANT
+   - canceled            → red band on N° + ÉTUDIANT (same as fully-unpaid) */
+.crm-matrix-row-unpaid td.cell-num,
+.crm-matrix-row-unpaid td.cell-name,
+.crm-matrix-row-canceled td.cell-num,
+.crm-matrix-row-canceled td.cell-name {
+    --bs-table-bg: #f1a8a0;
+    background-color: #f1a8a0 !important;
+    color: #7f1d1d;
+}
+.crm-matrix-row-archived td.cell-num,
+.crm-matrix-row-archived td.cell-name {
+    --bs-table-bg: #d9d9d9;
+    background-color: #d9d9d9 !important;
+    color: #495057;
+}
+
+/* Total row */
+.crm-matrix-total td {
+    --bs-table-bg: #fff;
+    background-color: #fff !important;
+    font-weight: 700;
+    border-top: 2px solid #495057;
+}
+
+/* Legend pills */
+.crm-matrix-legend-pill {
+    display: inline-block;
+    padding: .15rem .55rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+/* Matrix loader — shown while the server fetches/aggregates payment
+   allocations. Spinner + animated progress bar + rotating status lines. */
+.crm-matrix-loader { padding: 3rem 1rem; text-align: center; color: #6c757d; }
+.crm-matrix-loader__spinner {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 1.25rem;
+    border-radius: 50%;
+    border: 4px solid #e9ecef;
+    border-top-color: #ff9127;
+    animation: crm-matrix-spin .9s linear infinite;
+}
+.crm-matrix-loader__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: .25rem;
+}
+.crm-matrix-loader__sub {
+    font-size: .85rem;
+    color: #6c757d;
+    min-height: 1.2em;
+    margin-bottom: 1rem;
+}
+.crm-matrix-loader__bar {
+    width: min(320px, 80%);
+    height: 4px;
+    margin: 0 auto;
+    background: #e9ecef;
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+}
+.crm-matrix-loader__bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, #ff9127 50%, transparent);
+    border-radius: 999px;
+    animation: crm-matrix-bar 1.4s ease-in-out infinite;
+}
+.crm-matrix-loader__dots span {
+    display: inline-block;
+    animation: crm-matrix-dot 1.4s infinite;
+}
+.crm-matrix-loader__dots span:nth-child(2) { animation-delay: .2s; }
+.crm-matrix-loader__dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes crm-matrix-spin {
+    to { transform: rotate(360deg); }
+}
+@keyframes crm-matrix-bar {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(350%);  }
+}
+@keyframes crm-matrix-dot {
+    0%, 80%, 100% { opacity: .3; }
+    40%           { opacity: 1; }
+}

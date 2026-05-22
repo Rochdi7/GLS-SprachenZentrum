@@ -71,14 +71,19 @@
   100% { transform: translateX(-50%); }
 }
 
-/* RTL (Arabic): the document is dir="rtl", which makes the inline-flex
-   track lay out right-to-left. That puts the duplicated set on the wrong
-   side and the translateX(-50%) loop scrolls into empty space, leaving
-   only one logo visible. Force the track to LTR so the duplicated set
-   sits to the right of the first (loop math works exactly like in the
-   reviews carousel). The standard partnersScroll keyframe stays as-is. */
+/* RTL (Arabic): the document is dir="rtl" makes both the marquee's
+   inline-level box positioning AND the inline-flex track flow right-to
+   -left, breaking the seamless loop. Force BOTH the marquee container
+   and the track to LTR so the duplicated set sits to the right of the
+   first set and the standard partnersScroll keyframe (0% → -50%) loops
+   identically across the boundary. */
+.partners-section.rtl .partners-marquee,
 .partners-section.rtl .partners-track {
   direction: ltr;
+}
+
+.partners-section.rtl .partners-marquee {
+  text-align: left;
 }
 
 .partners-logos-noscript {

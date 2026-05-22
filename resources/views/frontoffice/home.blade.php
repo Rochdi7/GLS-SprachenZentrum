@@ -1072,7 +1072,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                             zoomControl: true,
                             scrollWheelZoom: false,
                             attributionControl: false,
-                        }).setView([32.0, -7.5], 6);
+                        }).setView([32.0, -7.5], 7);
 
                         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                             maxZoom: 18,
