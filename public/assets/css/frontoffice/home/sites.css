@@ -41,6 +41,8 @@
   overflow: hidden;
   cursor: pointer;
   transition: transform .3s ease, box-shadow .3s ease;
+  color: #fff;
+  text-decoration: none;
 }
 
 .site-card:hover {
@@ -119,10 +121,13 @@
 
 .site-overlay h3,
 .site-overlay .site-card-label {
-  color: #fff;
+  color: #fff !important;
   font-size: 1.5rem;
   font-weight: 700;
   text-transform: uppercase;
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
 }
 
 /* Size Variants */

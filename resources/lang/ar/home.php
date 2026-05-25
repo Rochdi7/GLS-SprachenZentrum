@@ -106,7 +106,7 @@ return [
                 'a1' => [
                     'letter' => 'A',
                     'number' => '1',
-                    'title' => 'تعلّم<br>الألمانية A1',
+                    'title' => 'ألمانية A1<br>مبتدئ',
                     'text' => 'تعلّم أساسيات اللغة الألمانية.<br>مثالي للبدء!',
                     'button' => 'مستوى A1',
                     'route' => 'front.online-courses',
@@ -114,7 +114,7 @@ return [
                 'a2' => [
                     'letter' => 'A',
                     'number' => '2',
-                    'title' => 'تعلّم<br>الألمانية A2',
+                    'title' => 'ألمانية A2<br>أساسي',
                     'text' => 'ابنِ أساساً متيناً في اللغة الألمانية.',
                     'button' => 'مستوى A2',
                     'route' => 'front.exams.gls',
@@ -122,7 +122,7 @@ return [
                 'b1' => [
                     'letter' => 'B',
                     'number' => '1',
-                    'title' => 'تعلّم<br>الألمانية B1',
+                    'title' => 'ألمانية B1<br>متوسط',
                     'text' => 'طوّر مهاراتك في اللغة الألمانية.',
                     'button' => 'تحضير غوته B1',
                     'route' => 'front.exams.goethe',
@@ -130,7 +130,7 @@ return [
                 'b2' => [
                     'letter' => 'B',
                     'number' => '2',
-                    'title' => 'تعلّم<br>الألمانية B2',
+                    'title' => 'ألمانية B2<br>متقدم',
                     'text' => 'وصل إلى مستوى متقدم في الألمانية مع برنامجنا B2.',
                     'button' => 'برنامج B2',
                     'route' => 'front.online-courses',

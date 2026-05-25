@@ -155,7 +155,7 @@ return [
                 'a1' => [
                     'letter' => 'A',
                     'number' => '1',
-                    'title' => 'Deutsch lernen<br>A1',
+                    'title' => 'Deutsch A1<br>Anfänger',
                     'text' => 'Lernen Sie die Grundlagen der deutschen Sprache.<br>Perfekt zum Einstieg!',
                     'button' => 'Kurs A1 ansehen',
                     'route' => 'front.online-courses',
@@ -163,7 +163,7 @@ return [
                 'a2' => [
                     'letter' => 'A',
                     'number' => '2',
-                    'title' => 'Deutsch lernen<br>A2',
+                    'title' => 'Deutsch A2<br>Grundstufe',
                     'text' => 'Bauen Sie eine solide Grundlage in der deutschen Sprache auf.',
                     'button' => 'Niveau A2 entdecken',
                     'route' => 'front.exams.gls',
@@ -171,7 +171,7 @@ return [
                 'b1' => [
                     'letter' => 'B',
                     'number' => '1',
-                    'title' => 'Deutsch lernen<br>B1',
+                    'title' => 'Deutsch B1<br>Mittelstufe',
                     'text' => 'Entwickeln Sie Ihre Deutschkenntnisse weiter.',
                     'button' => 'Goethe-Vorbereitung B1',
                     'route' => 'front.exams.goethe',
@@ -179,7 +179,7 @@ return [
                 'b2' => [
                     'letter' => 'B',
                     'number' => '2',
-                    'title' => 'Deutsch lernen<br>B2',
+                    'title' => 'Deutsch B2<br>Fortgeschritten',
                     'text' => 'Erreichen Sie ein fortgeschrittenes Niveau in Deutsch mit unserem B2-Programm.',
                     'button' => 'Programm B2 ansehen',
                     'route' => 'front.online-courses',

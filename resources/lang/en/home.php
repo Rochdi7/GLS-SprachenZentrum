@@ -105,7 +105,7 @@ return [
                 'a1' => [
                     'letter' => 'A',
                     'number' => '1',
-                    'title' => 'Learn<br>German A1',
+                    'title' => 'German A1<br>Beginner',
                     'text' => 'Learn the basics of German.<br>Perfect for beginners!',
                     'button' => 'View A1 course',
                     'route' => 'front.online-courses',
@@ -113,7 +113,7 @@ return [
                 'a2' => [
                     'letter' => 'A',
                     'number' => '2',
-                    'title' => 'Learn<br>German A2',
+                    'title' => 'German A2<br>Elementary',
                     'text' => 'Build a solid foundation in German language.',
                     'button' => 'Explore A2 level',
                     'route' => 'front.exams.gls',
@@ -121,7 +121,7 @@ return [
                 'b1' => [
                     'letter' => 'B',
                     'number' => '1',
-                    'title' => 'Learn<br>German B1',
+                    'title' => 'German B1<br>Intermediate',
                     'text' => 'Develop your German language skills.',
                     'button' => 'Goethe prep B1',
                     'route' => 'front.exams.goethe',
@@ -129,7 +129,7 @@ return [
                 'b2' => [
                     'letter' => 'B',
                     'number' => '2',
-                    'title' => 'Learn<br>German B2',
+                    'title' => 'German B2<br>Advanced',
                     'text' => 'Reach an advanced level in German with our B2 program.',
                     'button' => 'B2 program',
                     'route' => 'front.online-courses',

@@ -138,70 +138,76 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
             <div class="container sites-grid">
 
                 <!-- 1. Rabat -->
-                <a href="{{ route('front.sites.show', 'gls-rabat') }}" class="site-card small">
+                <a href="{{ route('front.sites.show', 'gls-rabat') }}" class="site-card small"
+                    aria-label="{{ __('home.site_heading.rabat') }}">
                     <div class="site-video-wrapper">
                         <img src="{{ asset('assets/images/sites/rabat.jpg') }}" alt="{{ __('home.site_image_alt.rabat', [], false) ?: 'GLS Rabat' }}" class="site-image" loading="lazy" decoding="async">
                     </div>
 
                     <div class="site-overlay">
-                        <p class="site-card-label mb-0">{{ __('home.site_heading.rabat') }}</p>
+                        <p class="site-card-label mb-0">{{ __('gls.sites.rabat') }}</p>
                     </div>
                 </a>
 
                 <!-- 2. Kénitra -->
-                <a href="{{ route('front.sites.show', 'gls-kenitra') }}" class="site-card small">
+                <a href="{{ route('front.sites.show', 'gls-kenitra') }}" class="site-card small"
+                    aria-label="{{ __('home.site_heading.kenitra') }}">
                     <div class="site-video-wrapper">
                         <img src="{{ asset('assets/images/sites/kenitra.jpg') }}" alt="{{ __('home.site_image_alt.kenitra', [], false) ?: 'GLS Kénitra' }}" class="site-image" loading="lazy" decoding="async">
                     </div>
 
                     <div class="site-overlay">
-                        <p class="site-card-label mb-0">{{ __('home.site_heading.kenitra') }}</p>
+                        <p class="site-card-label mb-0">{{ __('gls.sites.kenitra') }}</p>
                     </div>
                 </a>
 
                 <!-- 3. Marrakech -->
-                <a href="{{ route('front.sites.show', 'gls-marrakech') }}" class="site-card wide">
+                <a href="{{ route('front.sites.show', 'gls-marrakech') }}" class="site-card wide"
+                    aria-label="{{ __('home.site_heading.marrakech') }}">
                     <div class="site-video-wrapper">
                         <img src="{{ asset('assets/images/sites/marrakech.webp') }}" alt="{{ __('home.site_image_alt.marrakech', [], false) ?: 'GLS Marrakech' }}"
                             class="site-image" loading="lazy" decoding="async">
                     </div>
 
                     <div class="site-overlay">
-                        <p class="site-card-label mb-0">{{ __('home.site_heading.marrakech') }}</p>
+                        <p class="site-card-label mb-0">{{ __('gls.sites.marrakech') }}</p>
                     </div>
                 </a>
 
                 <!-- 4. Salé -->
-                <a href="{{ route('front.sites.show', 'gls-sale') }}" class="site-card wide">
+                <a href="{{ route('front.sites.show', 'gls-sale') }}" class="site-card wide"
+                    aria-label="{{ __('home.site_heading.sale') }}">
                     <div class="site-video-wrapper">
                         <img src="{{ asset('assets/images/sites/sale.webp') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.sale') ? __('home.site_image_alt.sale') : 'GLS Salé' }}" class="site-image" loading="lazy" decoding="async">
                     </div>
 
                     <div class="site-overlay">
-                        <p class="site-card-label mb-0">{{ __('home.site_heading.sale') }}</p>
+                        <p class="site-card-label mb-0">{{ __('gls.sites.sale') }}</p>
                     </div>
                 </a>
 
                 <!-- 5. Agadir -->
-                <a href="{{ route('front.sites.show', 'gls-agadir') }}" class="site-card small">
+                <a href="{{ route('front.sites.show', 'gls-agadir') }}" class="site-card small"
+                    aria-label="{{ __('home.site_heading.agadir') }}">
                     <div class="site-video-wrapper">
                         <img src="{{ asset('assets/images/sites/agadir.avif') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.agadir') ? __('home.site_image_alt.agadir') : 'GLS Agadir' }}" class="site-image" loading="lazy" decoding="async">
                     </div>
 
                     <div class="site-overlay">
-                        <p class="site-card-label mb-0">{{ __('home.site_heading.agadir') }}</p>
+                        <p class="site-card-label mb-0">{{ __('gls.sites.agadir') }}</p>
                     </div>
                 </a>
 
                 <!-- 6. Casablanca -->
-                <a href="{{ route('front.sites.show', 'gls-casablanca') }}" class="site-card small">
+                <a href="{{ route('front.sites.show', 'gls-casablanca') }}" class="site-card small"
+                    aria-label="{{ __('home.site_heading.casablanca') }}">
                     <div class="site-video-wrapper">
                         <img src="{{ asset('assets/images/sites/casablanca.jpg') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.casablanca') ? __('home.site_image_alt.casablanca') : 'GLS Casablanca' }}"
                             class="site-image" loading="lazy" decoding="async">
                     </div>
 
                     <div class="site-overlay">
-                        <p class="site-card-label mb-0">{{ __('home.site_heading.casablanca') }}</p>
+                        <p class="site-card-label mb-0">{{ __('gls.sites.casablanca') }}</p>
                     </div>
                 </a>
 
@@ -233,35 +239,29 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 </div>
             </div>
 
+            @php
+                $reviewItems = __('home.reviews.items');
+                $reviewHalf = (int) ceil(count($reviewItems) / 2);
+                $reviewTrackLeft = array_slice($reviewItems, 0, $reviewHalf);
+                $reviewTrackRight = array_slice($reviewItems, $reviewHalf);
+            @endphp
             <div class="div-block-28 review-grid-layout reveal delay-3">
 
-                {{-- Track 1 (Left) --}}
+                {{-- Track 1 (Left) — unique reviews; JS clones for seamless loop --}}
                 <div class="review-carousel_track is-animating-left reveal delay-1">
-
-                    @foreach (__('home.reviews.items') as $review)
+                    @foreach ($reviewTrackLeft as $review)
                         <div class="review-block review-card-inspired reveal delay-2">
                             <div class="review-stars reveal delay-3">@include('frontoffice.partials.svg-stars')</div>
                             <div class="text-block-9 reveal delay-1">"{{ $review['text'] }}"</div>
                             <div class="text-block-10 reveal delay-2">– {{ $review['name'] }} ({{ $review['year'] }})
-                            </div>
-                        </div>
-                    @endforeach
-
-                    {{-- Duplicate --}}
-                    @foreach (__('home.reviews.items') as $review)
-                        <div class="review-block review-card-inspired reveal delay-3">
-                            <div class="review-stars reveal delay-1">@include('frontoffice.partials.svg-stars')</div>
-                            <div class="text-block-9 reveal delay-2">"{{ $review['text'] }}"</div>
-                            <div class="text-block-10 reveal delay-3">– {{ $review['name'] }} ({{ $review['year'] }})
                             </div>
                         </div>
                     @endforeach
                 </div>
 
-                {{-- Track 2 (Right) --}}
+                {{-- Track 2 (Right) — other half, no duplicate testimonial text --}}
                 <div class="review-carousel_track is-alt is-animating-right reveal delay-1">
-
-                    @foreach (__('home.reviews.items') as $review)
+                    @foreach ($reviewTrackRight as $review)
                         <div class="review-block review-card-inspired reveal delay-2">
                             <div class="review-stars reveal delay-3">@include('frontoffice.partials.svg-stars')</div>
                             <div class="text-block-9 reveal delay-1">"{{ $review['text'] }}"</div>
@@ -269,16 +269,6 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                             </div>
                         </div>
                     @endforeach
-
-                    @foreach (__('home.reviews.items') as $review)
-                        <div class="review-block review-card-inspired reveal delay-3">
-                            <div class="review-stars reveal delay-1">@include('frontoffice.partials.svg-stars')</div>
-                            <div class="text-block-9 reveal delay-2">"{{ $review['text'] }}"</div>
-                            <div class="text-block-10 reveal delay-3">– {{ $review['name'] }} ({{ $review['year'] }})
-                            </div>
-                        </div>
-                    @endforeach
-
                 </div>
 
             </div>
@@ -520,7 +510,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
                                         <div
                                             class="learn-card-bottom d-flex align-items-center justify-content-between w-100">
-                                            <p class="fw-bold fs-4 mb-0">{!! $card['title'] !!}</p>
+                                            <p class="fw-bold fs-4 mb-0 learn-card-title">{!! $card['title'] !!}</p>
 
                                             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
                                                 fill="currentColor" viewBox="0 0 20 20">
@@ -1167,3 +1157,18 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.review-carousel_track').forEach(function(track) {
+                track.querySelectorAll('.review-block:not(.review-block--clone)').forEach(function(card) {
+                    var clone = card.cloneNode(true);
+                    clone.classList.add('review-block--clone');
+                    clone.setAttribute('aria-hidden', 'true');
+                    track.appendChild(clone);
+                });
+            });
+        });
+    </script>
+@endpush

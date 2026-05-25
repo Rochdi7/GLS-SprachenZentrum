@@ -28,10 +28,10 @@ return [
 
     'levels' => 'Niveaus',
     'level_links' => [
-        'a1' => 'Deutschkurs A1 (Anfänger)',
-        'a2' => 'Deutschkurs A2 (Grundstufe)',
-        'b1' => 'Deutschkurs B1 (Mittelstufe)',
-        'b2' => 'Deutschkurs B2 (Fortgeschritten)',
+        'a1' => 'Deutsch A1',
+        'a2' => 'Deutsch A2',
+        'b1' => 'Deutsch B1',
+        'b2' => 'Deutsch B2',
     ],
     'partner_fc_marokko' => 'FC Marokko Partnerschaft',
 
