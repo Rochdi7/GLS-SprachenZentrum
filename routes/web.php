@@ -141,17 +141,29 @@ Route::get('/debug-crm-token', function() {
 Route::get('/debug-crm-raw-data', function() {
     $crm = app(\App\Services\Crm\Crm::class);
     try {
-        // Fetch first 5 classes to see their STR_STORE_ID
-        $resp = $crm->client()->get('/api/external/v1/groups/classes', ['page' => 0, 'size' => 5]);
+        // Scan many classes to find all unique Store IDs
+        $resp = $crm->client()->get('/api/external/v1/groups/classes', ['page' => 0, 'size' => 500]);
+        $data = $resp['data'] ?? [];
+        $stores = [];
+        
+        foreach ($data as $class) {
+            $sid = $class['STR_STORE_ID'] ?? 'MISSING';
+            if (!isset($stores[$sid])) {
+                $stores[$sid] = [
+                    'store_id' => $sid,
+                    'example_class' => $class['NAME'],
+                    'teacher' => $class['EMPLOYEE_TEACHER_FULL_NAME'] ?? 'N/A',
+                ];
+            }
+        }
+        
         return [
             'success' => true,
-            'classes_sample' => $resp,
+            'discovered_stores' => array_values($stores),
+            'total_scanned' => count($data)
         ];
     } catch (\Throwable $e) {
-        return [
-            'success' => false,
-            'error' => $e->getMessage(),
-        ];
+        return ['success' => false, 'error' => $e->getMessage()];
     }
 })->middleware('auth');
 

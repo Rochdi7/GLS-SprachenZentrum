@@ -13,8 +13,8 @@ class SyncCrmCentersCommand extends Command
     public function handle()
     {
         $map = [
-            'Rabat'      => 2,
-            'Marrakech'  => 1,
+            'Rabat'      => 50994,
+            'Marrakech'  => 50995,
             'Kenitra'    => 4,
             'Agadir'     => 5,
             'Casablanca' => 6,
