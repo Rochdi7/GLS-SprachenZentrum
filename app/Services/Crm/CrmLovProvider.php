@@ -27,7 +27,7 @@ class CrmLovProvider
     /** Local request-level cache to avoid redundant scans for one-off page loads. */
     protected array $requestCache = [];
 
-    public function __construct(protected Crm $crm)
+    public function __construct(protected Crm $crm, protected CenterContext $centers)
     {
     }
 
@@ -44,13 +44,17 @@ class CrmLovProvider
             return $this->requestCache[$key];
         }
 
-        // Parallel scan for classes to extract LOV data in one pass (approx 1-2s total)
-        return $this->requestCache[$key] = $this->crm->client()->pagedScan(
+        // Ensure we use the correct token for this store
+        $token = $this->centers->currentToken($strStoreId);
+        $scopedCrm = $this->crm->withToken($token);
+
+        // Parallel scan for classes to extract LOV data in one pass (approx 2-3s total)
+        return $this->requestCache[$key] = $scopedCrm->client()->pagedScan(
             path: '/api/external/v1/groups/classes',
-            baseQuery: array_filter(['strStoreId' => $strStoreId, 'includeTotal' => false], fn($v) => $v !== null),
+            baseQuery: array_filter(['strStoreId' => $strStoreId], fn($v) => $v !== null),
             pageSize: 25,
             maxPages: 30,
-            concurrency: 4,
+            concurrency: 2, // Conservative for production rate limits
         );
     }
 
@@ -140,8 +144,10 @@ class CrmLovProvider
     public function levelSessions(?int $strStoreId): array
     {
         return $this->cached('level_sessions', $strStoreId, function () use ($strStoreId) {
+            $token = $this->centers->currentToken($strStoreId);
+            $scopedCrm = $this->crm->withToken($token);
             $rows = $this->walkPaged(
-                fn (int $page, int $size) => $this->crm->groups()->levelSessions(
+                fn (int $page, int $size) => $scopedCrm->groups()->levelSessions(
                     page: $page, size: $size, includeTotal: false, strStoreId: $strStoreId,
                 ),
             );
@@ -218,7 +224,9 @@ class CrmLovProvider
     public function schoolLevels(?int $strStoreId): array
     {
         return $this->cached('school_levels', $strStoreId, function () use ($strStoreId) {
-            $rows = $this->safe(fn () => $this->crm->lov()->schoolLevels(limit: 100, strStoreId: $strStoreId));
+            $token = $this->centers->currentToken($strStoreId);
+            $scopedCrm = $this->crm->withToken($token);
+            $rows = $this->safe(fn () => $scopedCrm->lov()->schoolLevels(limit: 100, strStoreId: $strStoreId));
             return $this->normalize($rows, ['ID'], ['NAME']);
         });
     }
@@ -227,7 +235,9 @@ class CrmLovProvider
     public function levelSessionPackages(?int $strStoreId): array
     {
         return $this->cached('level_session_packages', $strStoreId, function () use ($strStoreId) {
-            $rows = $this->safe(fn () => $this->crm->lov()->levelSessionPackages(limit: 200, strStoreId: $strStoreId));
+            $token = $this->centers->currentToken($strStoreId);
+            $scopedCrm = $this->crm->withToken($token);
+            $rows = $this->safe(fn () => $scopedCrm->lov()->levelSessionPackages(limit: 200, strStoreId: $strStoreId));
             return $this->normalize($rows, ['ID'], ['NAME', 'REFERENCE']);
         });
     }
@@ -242,8 +252,10 @@ class CrmLovProvider
     public function subscriptionServices(?int $strStoreId): array
     {
         return $this->cached('subscription_services', $strStoreId, function () use ($strStoreId) {
+            $token = $this->centers->currentToken($strStoreId);
+            $scopedCrm = $this->crm->withToken($token);
             $rows = $this->walkPaged(
-                fn (int $page, int $size) => $this->crm->lov()->subscriptionServices(
+                fn (int $page, int $size) => $scopedCrm->lov()->subscriptionServices(
                     page: $page, size: $size, includeTotal: false, strStoreId: $strStoreId,
                 ),
             );
