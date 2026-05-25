@@ -1,6 +1,10 @@
 <?php
 
 return [
+
+    'meta_title' => 'Apprendre l’allemand au Maroc | Cours d’allemand GLS',
+    'meta_description' => 'Centre de langue allemande au Maroc : cours intensifs A1–B2, préparation Goethe et certifications. 6 centres — Rabat, Casablanca et plus.',
+
     // ========================
     // 🔵 HERO SECTION
     // ========================

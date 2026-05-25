@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /backoffice
+Disallow: /api/
 
 Sitemap: https://gls-sprachzentrum.ma/sitemap.xml
+Host: gls-sprachzentrum.ma

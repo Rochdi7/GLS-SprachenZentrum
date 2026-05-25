@@ -13,7 +13,7 @@
                     <div class="form-content">
 
                         <div class="form-header" id="consultationFormHeader">
-                            <h1 class="form-title">{{ __('templates/consultation-form.header.title') }}</h1>
+                            <h2 class="form-title">{{ __('templates/consultation-form.header.title') }}</h2>
                             <p class="form-subtitle">
                                 {{ __('templates/consultation-form.header.subtitle') }}
                             </p>

@@ -12,6 +12,7 @@ class Kernel extends HttpKernel
     protected $middleware = [
         // \App\Http\Middleware\CacheWarmupHandler::class, // License check disabled
         \App\Http\Middleware\TrustProxies::class,
+        \App\Http\Middleware\ForceCanonicalHost::class,
         \Illuminate\Http\Middleware\HandleCors::class,
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
@@ -19,6 +20,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\MinifyHtml::class, // Minify HTML in production
         \App\Http\Middleware\ConvertLocaleRedirectsTo301::class, // SEO: 302 → 301 for locale redirects
+        \App\Http\Middleware\SecurityHeaders::class,
     ];
 
     /**

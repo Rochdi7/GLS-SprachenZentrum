@@ -1,6 +1,10 @@
 <?php
 
 return [
+
+    'meta_title' => 'Learn German in Morocco | German Courses at GLS',
+    'meta_description' => 'German language center in Morocco: intensive A1–B2 courses, Goethe exam prep and certifications. Six centers including Rabat and Casablanca.',
+
     // ========================
     // 🔵 HERO SECTION
     // ========================

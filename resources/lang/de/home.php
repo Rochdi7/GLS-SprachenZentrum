@@ -1,11 +1,15 @@
 <?php
 
 return [
+
+    'meta_title' => 'Deutsch lernen in Marokko | Deutschkurs & Sprachzentrum GLS',
+    'meta_description' => 'Deutschschule in Marokko: Deutschkurse A1–B2, Goethe-Vorbereitung, Zertifikate und Beratung für Studium & Visum in Deutschland. 6 Standorte – Rabat, Casablanca & mehr.',
+
     // ========================
     // 🔵 HERO SECTION
     // ========================
     'hero' => [
-        'title' => 'Lernen Sie Deutsch in Marokko – GLS',
+        'title' => 'Deutsch lernen in Marokko – Ihr Deutschkurs bei GLS',
 
         'badge1' => 'Jawohl',
         'badge2' => 'Wunderbar',
@@ -17,10 +21,59 @@ return [
     // 🟢 INTRO SECTION
     // ========================
     'intro' => [
-        'tagline' => 'Deutsch bei GLS lernen',
+        'tagline' => 'Deutschschule & Sprachzentrum Marokko',
         'heading' => 'Lernen. Verbinden. Entdecken.',
-        'description' => 'Unser Ziel ist es, unsere Studierenden durch ein immersives und motivierendes Spracherlebnis zu unterstützen.',
-        'button' => 'Unsere Kurse ansehen',
+        'description' => 'GLS Sprachenzentrum ist Ihre Deutschschule in Marokko: strukturierte Deutschkurse von A1 bis B2, erfahrene Lehrkräfte und eine Lernatmosphäre, die Sie sicher auf Goethe-Prüfungen, Studium und den Weg nach Deutschland vorbereitet.',
+        'button' => 'Deutschkurse entdecken',
+    ],
+
+    'pathways' => [
+        'title' => 'Ihr Weg mit Deutsch – von Marokko nach Deutschland',
+        'items' => [
+            [
+                'title' => 'Goethe-Zertifikat vorbereiten',
+                'text' => 'Gezielte Vorbereitung auf Goethe A1–B2 mit erprobten Methoden und Prüfungssimulationen in unserem Sprachzentrum.',
+                'link_text' => 'Goethe-Vorbereitung',
+            ],
+            [
+                'title' => 'Studium & Ausbildung in Deutschland',
+                'text' => 'Beratung zu Studienkolleg, Hochschulzugang und den Sprachvoraussetzungen für Ihre Bewerbung.',
+                'link_text' => 'Studienweg planen',
+            ],
+            [
+                'title' => 'Visum & offizielle Nachweise',
+                'text' => 'Unterstützung bei anerkannten Zertifikaten und Dokumenten für Visum-, Studien- und Arbeitsanträge.',
+                'link_text' => 'Zertifikate & Nachweise',
+            ],
+        ],
+    ],
+
+    'site_image_alt' => [
+        'rabat' => 'Deutschkurs Rabat – GLS Sprachzentrum',
+        'kenitra' => 'Deutschkurs Kénitra – GLS Sprachzentrum',
+        'marrakech' => 'Deutschkurs Marrakesch – GLS Sprachzentrum',
+        'sale' => 'Deutschkurs Salé – GLS Sprachzentrum',
+        'casablanca' => 'Deutschkurs Casablanca – GLS Sprachzentrum',
+        'agadir' => 'Deutschkurs Agadir – GLS Sprachzentrum',
+    ],
+
+    'faq_schema' => [
+        [
+            'question' => 'Wo kann ich in Marokko Deutsch lernen?',
+            'answer' => 'Bei GLS Sprachenzentrum an sechs Standorten: Rabat, Casablanca, Marrakesch, Salé, Kénitra und Agadir – mit Präsenz- und Online-Deutschkursen.',
+        ],
+        [
+            'question' => 'Bereitet GLS auf die Goethe-Prüfung vor?',
+            'answer' => 'Ja. Unsere Goethe-Vorbereitungskurse decken die Niveaus A1 bis B2 ab und orientieren sich an den offiziellen Prüfungsformaten.',
+        ],
+        [
+            'question' => 'Welche Deutschzertifikate werden für Deutschland anerkannt?',
+            'answer' => 'GLS-Zertifikate sowie Vorbereitung auf Goethe, telc und ÖSD erfüllen die Anforderungen vieler deutscher Behörden für Studium, Visum und Arbeit.',
+        ],
+        [
+            'question' => 'Gibt es intensive Deutschkurse in Marokko?',
+            'answer' => 'Ja – intensive Deutschkurse A1–B2, montags bis freitags, mit kleinen Gruppen und zertifizierten Lehrkräften.',
+        ],
     ],
     'reviews' => [
         'title' => 'Treten Sie der am höchsten bewerteten Deutschschule in Marokko bei',

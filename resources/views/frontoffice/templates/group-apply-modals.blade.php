@@ -22,7 +22,7 @@
                         <div class="form-content">
 
                             <div class="form-header" id="applyGroupFormHeader">
-                                <h1 class="form-title">{{ __('templates/group-apply-modals.header.title') }}</h1>
+                                <h2 class="form-title">{{ __('templates/group-apply-modals.header.title') }}</h2>
                                 <p class="form-subtitle">{{ __('templates/group-apply-modals.header.subtitle') }}</p>
                             </div>
 

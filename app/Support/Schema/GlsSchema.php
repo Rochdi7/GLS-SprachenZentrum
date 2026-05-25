@@ -68,4 +68,64 @@ class GlsSchema
             ->educationalCredentialAwarded('Studienkolleg Certificate')
             ->toScript();
     }
+
+    /**
+     * Homepage: EducationalOrganization + LanguageSchool
+     */
+    public static function homePage(string $locale = 'de'): string
+    {
+        $name = 'GLS Sprachenzentrum';
+        $description = match ($locale) {
+            'de' => 'Deutschschule und Sprachzentrum in Marokko mit Deutschkursen A1–B2, Goethe-Vorbereitung und Zertifizierungen.',
+            'en' => 'German language school in Morocco offering A1–B2 courses, Goethe exam preparation and certifications.',
+            'ar' => 'مركز تعليم اللغة الألمانية في المغرب مع دورات A1–B2 وتحضير امتحان غوته.',
+            default => 'Centre de langue allemande au Maroc : cours A1–B2, préparation Goethe et certifications.',
+        };
+
+        return Schema::educationalOrganization()
+            ->name($name)
+            ->alternateName('GLS Sprachen Zentrum')
+            ->description($description)
+            ->url(url('/'))
+            ->logo(asset('assets/images/logo/gls-logo.webp'))
+            ->image(asset('assets/images/IMG_4399.webp'))
+            ->areaServed('Morocco')
+            ->sameAs([
+                'https://www.facebook.com/glssprachenzentrum',
+                'https://www.instagram.com/glssprachenzentrum',
+            ])
+            ->address(
+                Schema::postalAddress()
+                    ->addressCountry('MA')
+                    ->addressLocality('Rabat')
+            )
+            ->toScript();
+    }
+
+    /**
+     * FAQPage from translation array (home.faq_schema or faq.questions)
+     */
+    public static function faqFromTranslations(array $items): string
+    {
+        $mainEntity = [];
+
+        foreach ($items as $item) {
+            if (empty($item['question']) || empty($item['answer'])) {
+                continue;
+            }
+            $mainEntity[] = Schema::question()
+                ->name($item['question'])
+                ->acceptedAnswer(
+                    Schema::answer()->text(strip_tags($item['answer']))
+                );
+        }
+
+        if ($mainEntity === []) {
+            return '';
+        }
+
+        return Schema::fAQPage()
+            ->mainEntity($mainEntity)
+            ->toScript();
+    }
 }

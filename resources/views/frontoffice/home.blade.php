@@ -1,6 +1,29 @@
 ﻿@extends('frontoffice.layouts.app')
 
+@php
+    $homeSeoTitle = \Illuminate\Support\Facades\Lang::has('home.meta_title')
+        ? __('home.meta_title')
+        : config('seo.defaults.' . app()->getLocale() . '.title', config('seo.defaults.fr.title'));
+    $homeSeoDescription = \Illuminate\Support\Facades\Lang::has('home.meta_description')
+        ? __('home.meta_description')
+        : config('seo.defaults.' . app()->getLocale() . '.description', config('seo.defaults.fr.description'));
+@endphp
+@section('title', $homeSeoTitle)
+@section('meta_description', $homeSeoDescription)
+
+@push('seo-schema')
+    {!! \App\Support\Schema\GlsSchema::homePage(app()->getLocale()) !!}
+    @php
+        $faqSchemaItems = \Illuminate\Support\Facades\Lang::has('home.faq_schema') ? __('home.faq_schema') : [];
+        $faqSchema = \App\Support\Schema\GlsSchema::faqFromTranslations(is_array($faqSchemaItems) ? $faqSchemaItems : []);
+    @endphp
+    @if ($faqSchema)
+        {!! $faqSchema !!}
+    @endif
+@endpush
+
 @push('head')
+    <link rel="preload" as="image" href="{{ asset('assets/images/IMG_4399.webp') }}" fetchpriority="high">
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://basemaps.cartocdn.com" crossorigin>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -8,7 +31,7 @@
 @endpush
 
 @section('content')
-    <main class="home-page">
+    <div class="home-page">
         {{-- ===========================
      HERO SECTION
 =========================== --}}
@@ -52,9 +75,9 @@
                     </div>
 
                     {{-- Heading --}}
-                    <h1 class="fw-bold mb-3 intro-heading reveal fade-blur-title delay-1">
+                    <h2 class="fw-bold mb-3 intro-heading reveal fade-blur-title delay-1">
                         {{ __('home.intro.heading') }}
-                    </h1>
+                    </h2>
 
                     {{-- Description --}}
                     <p class="lead text-muted mb-4 intro-desc reveal delay-2">
@@ -70,6 +93,38 @@
             </div>
         </section>
 
+        @if (\Illuminate\Support\Facades\Lang::has('home.pathways.items') && count(__('home.pathways.items')) > 0)
+            <section class="py-5 bg-light" aria-labelledby="home-pathways-title">
+                <div class="container">
+                    <h2 id="home-pathways-title" class="text-center fw-bold mb-4 reveal delay-1">
+                        {{ __('home.pathways.title') }}
+                    </h2>
+                    <div class="row g-4">
+                        @foreach (__('home.pathways.items') as $index => $pathway)
+                            <div class="col-md-4">
+                                <article class="h-100 p-4 bg-white rounded-4 shadow-sm reveal delay-{{ ($index % 3) + 1 }}">
+                                    <h3 class="h5 fw-bold mb-2">{{ $pathway['title'] }}</h3>
+                                    <p class="text-muted mb-3">{{ $pathway['text'] }}</p>
+                                    @php
+                                        $pathwayRoutes = [
+                                            route('front.exams.goethe'),
+                                            route('front.studienkollegs.index'),
+                                            route('front.certificates.check'),
+                                        ];
+                                        $pathwayRoute = $pathwayRoutes[$index] ?? route('front.faq');
+                                    @endphp
+                                    <a href="{{ LaravelLocalization::localizeUrl($pathwayRoute) }}"
+                                        class="fw-semibold text-success text-decoration-none">
+                                        {{ $pathway['link_text'] }} →
+                                    </a>
+                                </article>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </section>
+        @endif
+
         {{-- =========================
 SITES — Images only (NO iframe, NO yt-holder, NO video)
 ========================= --}}
@@ -84,7 +139,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <!-- 1. Rabat -->
                 <a href="{{ route('front.sites.show', 'gls-rabat') }}" class="site-card small">
                     <div class="site-video-wrapper">
-                        <img src="{{ asset('assets/images/sites/rabat.jpg') }}" alt="GLS Rabat" class="site-image">
+                        <img src="{{ asset('assets/images/sites/rabat.jpg') }}" alt="{{ __('home.site_image_alt.rabat', [], false) ?: 'GLS Rabat' }}" class="site-image" loading="lazy" decoding="async">
                     </div>
 
                     <div class="site-overlay">
@@ -95,7 +150,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <!-- 2. Kénitra -->
                 <a href="{{ route('front.sites.show', 'gls-kenitra') }}" class="site-card small">
                     <div class="site-video-wrapper">
-                        <img src="{{ asset('assets/images/sites/kenitra.jpg') }}" alt="GLS Kénitra" class="site-image">
+                        <img src="{{ asset('assets/images/sites/kenitra.jpg') }}" alt="{{ __('home.site_image_alt.kenitra', [], false) ?: 'GLS Kénitra' }}" class="site-image" loading="lazy" decoding="async">
                     </div>
 
                     <div class="site-overlay">
@@ -106,8 +161,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <!-- 3. Marrakech -->
                 <a href="{{ route('front.sites.show', 'gls-marrakech') }}" class="site-card wide">
                     <div class="site-video-wrapper">
-                        <img src="{{ asset('assets/images/sites/marrakech.webp') }}" alt="GLS Marrakech"
-                            class="site-image">
+                        <img src="{{ asset('assets/images/sites/marrakech.webp') }}" alt="{{ __('home.site_image_alt.marrakech', [], false) ?: 'GLS Marrakech' }}"
+                            class="site-image" loading="lazy" decoding="async">
                     </div>
 
                     <div class="site-overlay">
@@ -118,7 +173,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <!-- 4. Salé -->
                 <a href="{{ route('front.sites.show', 'gls-sale') }}" class="site-card wide">
                     <div class="site-video-wrapper">
-                        <img src="{{ asset('assets/images/sites/sale.webp') }}" alt="GLS Salé" class="site-image">
+                        <img src="{{ asset('assets/images/sites/sale.webp') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.sale') ? __('home.site_image_alt.sale') : 'GLS Salé' }}" class="site-image" loading="lazy" decoding="async">
                     </div>
 
                     <div class="site-overlay">
@@ -129,7 +184,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <!-- 5. Agadir -->
                 <a href="{{ route('front.sites.show', 'gls-agadir') }}" class="site-card small">
                     <div class="site-video-wrapper">
-                        <img src="{{ asset('assets/images/sites/agadir.avif') }}" alt="GLS Agadir" class="site-image">
+                        <img src="{{ asset('assets/images/sites/agadir.avif') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.agadir') ? __('home.site_image_alt.agadir') : 'GLS Agadir' }}" class="site-image" loading="lazy" decoding="async">
                     </div>
 
                     <div class="site-overlay">
@@ -140,8 +195,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <!-- 6. Casablanca -->
                 <a href="{{ route('front.sites.show', 'gls-casablanca') }}" class="site-card small">
                     <div class="site-video-wrapper">
-                        <img src="{{ asset('assets/images/sites/casablanca.jpg') }}" alt="GLS Casablanca"
-                            class="site-image">
+                        <img src="{{ asset('assets/images/sites/casablanca.jpg') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.casablanca') ? __('home.site_image_alt.casablanca') : 'GLS Casablanca' }}"
+                            class="site-image" loading="lazy" decoding="async">
                     </div>
 
                     <div class="site-overlay">
@@ -554,7 +609,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <header class="ssn-header reveal delay-2">
                     <div>
                         <div class="ssn-eyebrow">
-                            <img class="flag" src="{{ asset('assets/images/germany-flag-icon.svg') }}" alt=""
+                            <img class="flag" src="{{ asset('assets/images/germany-flag-icon.svg') }}" alt="" role="presentation"
                                 aria-hidden="true">
                             {{ __('home.student_services.eyebrow') }}
                         </div>
@@ -1124,5 +1179,5 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
             </div>
         </section>
 
-    </main>
+    </div>
 @endsection

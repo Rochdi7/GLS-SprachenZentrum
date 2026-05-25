@@ -24,7 +24,7 @@
         <div class="form-content">
 
             <div class="form-header" id="glsFormHeader">
-                <h1 class="form-title">{{ __('templates/gls-form.header.title') }}</h1>
+                <h2 class="form-title">{{ __('templates/gls-form.header.title') }}</h2>
                 <p class="form-subtitle">{{ __('templates/gls-form.header.subtitle') }}</p>
             </div>
 

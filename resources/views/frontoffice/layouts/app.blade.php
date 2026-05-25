@@ -4,20 +4,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>GLS Sprachenzentrum – Learning Center Morocco</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="facebook-domain-verification" content="21382f16lc5kb1hxg8a19ch6iwvzoc" />
 
-    {{-- Canonical + hreflang (SEO: language alternates) --}}
-    @php
-        $canonicalUrl = LaravelLocalization::getLocalizedURL(app()->getLocale(), null, [], true);
-    @endphp
-    <link rel="canonical" href="{{ $canonicalUrl }}">
-    @foreach (LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
-        <link rel="alternate" hreflang="{{ $localeCode }}"
-            href="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], true) }}">
-    @endforeach
-    <link rel="alternate" hreflang="x-default" href="{{ LaravelLocalization::getLocalizedURL('fr', null, [], true) }}">
+    @include('frontoffice.partials.seo-head')
 
     <!-- Favicons -->
     <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('assets/images/favicon/favicon-96x96.png') }}">
@@ -118,7 +108,7 @@
         </div>
     </div>
 
-    <button id="backToTop" aria-label="Back to top">
+    <button id="backToTop" type="button" aria-label="Back to top">
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
             <path d="M6 14l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round" />
