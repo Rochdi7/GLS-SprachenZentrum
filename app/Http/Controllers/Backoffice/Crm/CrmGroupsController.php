@@ -22,11 +22,15 @@ class CrmGroupsController extends BaseCrmController
     {
         $strStoreId = $this->currentStrStoreId();
 
+        // "Fast First 5" strategy: if on page 0 and no size is specified, 
+        // default to 5 for an instant first-paint, then preload.
+        $size = (int) $r->query('size', 5);
+
         return $this->render(
             'backoffice.crm.classes',
-            fn (?int $sid) => $this->scopedCrm()->groups()->classes(
+            fn (?int $sid) => tap($this->scopedCrm()->groups()->classes(
                 page: (int) $r->query('page', 0),
-                size: (int) $r->query('size', 20),
+                size: $size,
                 strStoreId: $sid,
                 schoolYearId: $r->filled('schoolYearId') ? (int) $r->query('schoolYearId') : null,
                 schoolDepartmentId: $r->filled('schoolDepartmentId') ? (int) $r->query('schoolDepartmentId') : null,
@@ -35,7 +39,22 @@ class CrmGroupsController extends BaseCrmController
                 employeeTeacherId: $r->filled('employeeTeacherId') ? (int) $r->query('employeeTeacherId') : null,
                 statusId: $r->filled('statusId') ? (int) $r->query('statusId') : null,
                 history: $r->query('history') ?: null,
-            ),
+            ), function () use ($sid, $r) {
+                // Background preload: fetch the STANDARD size (20) and next 3 pages
+                $preloadQuery = array_filter([
+                    'strStoreId'         => $sid,
+                    'schoolYearId'       => $r->query('schoolYearId'),
+                    'schoolDepartmentId' => $r->query('schoolDepartmentId'),
+                    'schoolStageId'      => $r->query('schoolStageId'),
+                    'schoolLevelId'      => $r->query('schoolLevelId'),
+                    'employeeTeacherId'  => $r->query('employeeTeacherId'),
+                    'statusId'           => $r->query('statusId'),
+                    'history'            => $r->query('history'),
+                    'size'               => 20, // Always preload at standard size
+                ], fn($v) => $v !== null);
+
+                $this->scopedCrm()->client()->preload('/api/external/v1/groups/classes', $preloadQuery, 4, 0);
+            }),
             extra: [
                 'lovSchoolLevels'      => $this->lovs->schoolLevels($strStoreId),
                 'lovTeachers'          => $this->lovs->teachers($strStoreId),

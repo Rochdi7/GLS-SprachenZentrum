@@ -8,29 +8,32 @@ use App\Models\Site;
 use App\Models\Group;
 
 Route::get('/centers', function () {
-    return Site::select('id', 'name', 'city')
-                ->where('is_active', 1)
-                ->get();
+    return \Illuminate\Support\Facades\Cache::remember('api.centers', 3600, function () {
+        return Site::select('id', 'name', 'city')
+                    ->where('is_active', 1)
+                    ->get();
+    });
 });
 
 Route::get('/groups/{site_id}', function ($site_id) {
+    return \Illuminate\Support\Facades\Cache::remember("api.groups.{$site_id}", 3600, function () use ($site_id) {
+        $groups = Group::where('site_id', $site_id)
+                    ->where('status', 'active')
+                    ->select('id', 'name', 'name_fr', 'level', 'time_range')
+                    ->get();
 
-    $groups = Group::where('site_id', $site_id)
-                ->where('status', 'active')
-                ->select('id', 'name', 'name_fr', 'level', 'time_range')
-                ->get();
-
-    foreach ($groups as $index => $g) {
-        if ($g->name_fr) {
-            $g->display_name = $g->name_fr;
-        } elseif ($g->name) {
-            $g->display_name = $g->name;
-        } else {
-            $g->display_name = "Groupe " . ($index + 1);
+        foreach ($groups as $index => $g) {
+            if ($g->name_fr) {
+                $g->display_name = $g->name_fr;
+            } elseif ($g->name) {
+                $g->display_name = $g->name;
+            } else {
+                $g->display_name = "Groupe " . ($index + 1);
+            }
         }
-    }
 
-    return $groups;
+        return $groups;
+    });
 });
 
 Route::get('/groups/dates/{group_id}', [GroupApiController::class, 'getDates']);

@@ -31,6 +31,30 @@ class HomeschoolClient
     protected string $logChannel;
     protected bool $verifySsl;
 
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function getBaseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    /**
+     * Dispatch a background job to preload and cache multiple pages of a resource.
+     */
+    public function preload(string $path, array $query, int $pages = 3, int $startPage = 0): void
+    {
+        \App\Jobs\Crm\PreloadCrmResourceJob::dispatch(
+            $path,
+            $query,
+            $this->token,
+            $startPage,
+            $pages
+        );
+    }
+
     public function __construct(?array $config = null)
     {
         $config ??= config('crm');

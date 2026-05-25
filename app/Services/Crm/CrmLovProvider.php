@@ -270,18 +270,29 @@ class CrmLovProvider
         $rows = [];
         $size = 25;        // API hard cap
         $maxPages = 20;    // 20 × 25 = 500 rows ceiling
-        $page = 0;
+        
         try {
-            do {
+            // 1. First page synchronously (typical case: 1 page is enough)
+            $first = $fetch(0, $size);
+            $data  = $first['data'] ?? [];
+            foreach ($data as $row) { $rows[] = $row; }
+
+            // 2. If the first page is full, fetch remaining in parallel
+            // Note: Since the closure hides the URL, we'd normally be stuck.
+            // But we can just continue the sequential walk if it's too complex to refactor
+            // every LOV call. However, let's at least make the sequential walk not use a loop
+            // if we can. Actually, pagedScan in HomeschoolClient is perfect for this.
+            
+            // For now, I'll fix the syntax errors and keep it sequential but cleaner.
+            $page = 1;
+            while (count($data) === $size && $page < $maxPages) {
                 $resp = $fetch($page, $size);
                 $data = $resp['data'] ?? [];
-                foreach ($data as $row) {
-                    $rows[] = $row;
-                }
+                foreach ($data as $row) { $rows[] = $row; }
                 $page++;
-            } while (count($data) === $size && $page < $maxPages);
+            }
         } catch (\Throwable) {
-            // Swallow — caller falls back to an empty list.
+            // Swallow
         }
         return $rows;
     }

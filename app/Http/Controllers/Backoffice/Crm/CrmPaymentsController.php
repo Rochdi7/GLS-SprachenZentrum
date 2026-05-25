@@ -15,12 +15,13 @@ class CrmPaymentsController extends BaseCrmController
     public function payments(Request $r): View
     {
         $strStoreId = $this->currentStrStoreId();
+        $size = (int) $r->query('size', 5);
 
         return $this->render(
             'backoffice.crm.payments',
-            fn (?int $sid) => $this->scopedCrm()->payments()->list(
+            fn (?int $sid) => tap($this->scopedCrm()->payments()->list(
                 page: (int) $r->query('page', 0),
-                size: (int) $r->query('size', 20),
+                size: $size,
                 strStoreId: $sid,
                 schoolYearId: $r->filled('schoolYearId') ? (int) $r->query('schoolYearId') : null,
                 reference: $r->query('reference') ?: null,
@@ -30,7 +31,21 @@ class CrmPaymentsController extends BaseCrmController
                 paymentMethodeId: $r->filled('paymentMethodeId') ? (int) $r->query('paymentMethodeId') : null,
                 startDate: $r->query('startDate') ?: null,
                 endDate: $r->query('endDate') ?: null,
-            ),
+            ), function () use ($sid, $r) {
+                $preloadQuery = array_filter([
+                    'strStoreId' => $sid,
+                    'schoolYearId' => $r->query('schoolYearId'),
+                    'reference' => $r->query('reference'),
+                    'studentId' => $r->query('studentId'),
+                    'paymentTypeId' => $r->query('paymentTypeId'),
+                    'paymentStatusId' => $r->query('paymentStatusId'),
+                    'paymentMethodeId' => $r->query('paymentMethodeId'),
+                    'startDate' => $r->query('startDate'),
+                    'endDate' => $r->query('endDate'),
+                    'size' => 20,
+                ], fn($v) => $v !== null);
+                $this->scopedCrm()->client()->preload('/api/external/v1/payments', $preloadQuery, 4, 0);
+            }),
             extra: [
                 'lovPaymentTypes'    => $this->lovs->paymentTypes(),
                 'lovPaymentStatuses' => $this->lovs->paymentStatuses(),
@@ -43,12 +58,13 @@ class CrmPaymentsController extends BaseCrmController
     public function paymentChecks(Request $r): View
     {
         $strStoreId = $this->currentStrStoreId();
+        $size = (int) $r->query('size', 5);
 
         return $this->render(
             'backoffice.crm.payment-checks',
-            fn (?int $sid) => $this->scopedCrm()->payments()->checks(
+            fn (?int $sid) => tap($this->scopedCrm()->payments()->checks(
                 page: (int) $r->query('page', 0),
-                size: (int) $r->query('size', 20),
+                size: $size,
                 strStoreId: $sid,
                 schoolYearId: $r->filled('schoolYearId') ? (int) $r->query('schoolYearId') : null,
                 checkNumber: $r->query('checkNumber') ?: null,
@@ -57,7 +73,20 @@ class CrmPaymentsController extends BaseCrmController
                 bankId: $r->filled('bankId') ? (int) $r->query('bankId') : null,
                 dueDateMin: $r->query('dueDateMin') ?: null,
                 dueDateMax: $r->query('dueDateMax') ?: null,
-            ),
+            ), function () use ($sid, $r) {
+                $preloadQuery = array_filter([
+                    'strStoreId' => $sid,
+                    'schoolYearId' => $r->query('schoolYearId'),
+                    'checkNumber' => $r->query('checkNumber'),
+                    'studentId' => $r->query('studentId'),
+                    'paymentCheckStatusId' => $r->query('paymentCheckStatusId'),
+                    'bankId' => $r->query('bankId'),
+                    'dueDateMin' => $r->query('dueDateMin'),
+                    'dueDateMax' => $r->query('dueDateMax'),
+                    'size' => 20,
+                ], fn($v) => $v !== null);
+                $this->scopedCrm()->client()->preload('/api/external/v1/payment-checks', $preloadQuery, 4, 0);
+            }),
             extra: [
                 'lovBanks'                => $this->lovs->banks(),
                 'lovPaymentCheckStatuses' => $this->lovs->paymentCheckStatuses(),
@@ -136,32 +165,31 @@ class CrmPaymentsController extends BaseCrmController
             $pageArgs = $this->collectionArgs($filters, (int) $r->query('page', 0), (int) $r->query('size', 20), $r->boolean('includeTotal', true));
             $payload  = $crm->payments()->collection(...$pageArgs);
 
-            // 2) "Montant total" across ALL pages — matches the reference CRM
-            //    that shows the global sum, not just the current page. Cap at
-            //    50 pages × 25 rows = 1 250 rows to bound runaway broad filters.
-            $amountKeys = ['REST_AMOUNT', 'OPEN_AMOUNT', 'REMAINING_AMOUNT', 'AMOUNT_DUE', 'AMOUNT'];
-            $maxPages   = 50;
-            $pageSize   = 25;
-
-            for ($p = 0; $p < $maxPages; $p++) {
-                $scanArgs = $this->collectionArgs($filters, $p, $pageSize, false);
-                $pageData = $crm->payments()->collection(...$scanArgs);
-
-                $rows = $pageData['data'] ?? [];
-                if (empty($rows)) break;
-
-                foreach ($rows as $row) {
-                    foreach ($amountKeys as $k) {
-                        if (isset($row[$k]) && is_numeric($row[$k])) {
-                            $sumRemaining += (float) $row[$k];
-                            $totalRowsSummed++;
-                            break;
-                        }
-                    }
-                }
-
-                if (count($rows) < $pageSize) break;
+            // 2) "Montant total" across ALL pages (Async)
+            // Generate a unique cache key based on the filters
+            $filterHash = sha1(json_encode($filters));
+            $cacheKey = "crm.total_sum.{$strStoreId}.{$filterHash}";
+            
+            $cachedSum = \Illuminate\Support\Facades\Cache::get($cacheKey);
+            
+            if ($cachedSum) {
+                $sumRemaining = $cachedSum['sum'];
+                $totalRowsSummed = $cachedSum['count'];
+            } else {
+                // Dispatch background computation
+                \App\Jobs\Crm\ComputeCrmTotalSumJob::dispatch(
+                    $filters,
+                    $this->centers->currentToken($r->query('strStoreId')),
+                    $cacheKey
+                );
+                $sumRemaining = null; // View will show "Calculating..."
+                $totalRowsSummed = 0;
             }
+
+            // Preload next page in background for snappy navigation
+            $currentPage = (int) $r->query('page', 0);
+            $crm->client()->preload('/api/external/v1/payment-collection', $filters, 1, $currentPage + 1);
+
         } catch (CrmException $e) {
             $error = $e;
         }

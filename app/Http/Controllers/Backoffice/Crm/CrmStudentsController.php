@@ -16,11 +16,13 @@ class CrmStudentsController extends BaseCrmController
 {
     public function students(Request $r): View
     {
+        $size = (int) $r->query('size', 5);
+
         return $this->render(
             'backoffice.crm.students',
-            fn (?int $strStoreId) => $this->scopedCrm()->students()->list(
+            fn (?int $strStoreId) => tap($this->scopedCrm()->students()->list(
                 page: (int) $r->query('page', 0),
-                size: (int) $r->query('size', 20),
+                size: $size,
                 strStoreId: $strStoreId,
                 reference: $r->query('reference') ?: null,
                 firstName: $r->query('firstName') ?: null,
@@ -28,7 +30,19 @@ class CrmStudentsController extends BaseCrmController
                 phoneNumber: $r->query('phoneNumber') ?: null,
                 categoryId: $r->filled('categoryId') ? (int) $r->query('categoryId') : null,
                 registrationStatus: $r->query('registrationStatus') ?: null,
-            ),
+            ), function () use ($strStoreId, $r) {
+                $preloadQuery = array_filter([
+                    'strStoreId' => $strStoreId,
+                    'reference' => $r->query('reference'),
+                    'firstName' => $r->query('firstName'),
+                    'lastName' => $r->query('lastName'),
+                    'phoneNumber' => $r->query('phoneNumber'),
+                    'categoryId' => $r->query('categoryId'),
+                    'registrationStatus' => $r->query('registrationStatus'),
+                    'size' => 20,
+                ], fn($v) => $v !== null);
+                $this->scopedCrm()->client()->preload('/api/external/v1/students', $preloadQuery, 4, 0);
+            }),
             extra: [
                 'lovCategories' => $this->lovs->categories(),
             ],
@@ -114,6 +128,12 @@ class CrmStudentsController extends BaseCrmController
                         'strategy'   => $shouldFetchByDay ? 'per-day-parallel' : 'paged-scan',
                     ],
                 ];
+
+                // Preload: if we are in per-day mode, the parallel fetch already did the range.
+                // If we are in paged-scan mode, preload the next 3 pages.
+                if (!$shouldFetchByDay) {
+                    $crm->client()->preload('/api/external/v1/session-presence', $baseQuery, 3, 1);
+                }
             }
         } catch (CrmException $e) {
             $error = $e;
@@ -133,12 +153,13 @@ class CrmStudentsController extends BaseCrmController
     public function registrations(Request $r): View
     {
         $strStoreId = $this->currentStrStoreId();
+        $size = (int) $r->query('size', 5);
 
         return $this->render(
             'backoffice.crm.registrations',
-            fn (?int $sid) => $this->scopedCrm()->registrations()->list(
+            fn (?int $sid) => tap($this->scopedCrm()->registrations()->list(
                 page: (int) $r->query('page', 0),
-                size: (int) $r->query('size', 20),
+                size: $size,
                 strStoreId: $sid,
                 schoolYearId: $r->filled('schoolYearId') ? (int) $r->query('schoolYearId') : null,
                 reference: $r->query('reference') ?: null,
@@ -147,7 +168,20 @@ class CrmStudentsController extends BaseCrmController
                 levelSessionId: $r->filled('levelSessionId') ? (int) $r->query('levelSessionId') : null,
                 startDate: $r->query('startDate') ?: null,
                 endDate: $r->query('endDate') ?: null,
-            ),
+            ), function () use ($sid, $r) {
+                $preloadQuery = array_filter([
+                    'strStoreId' => $sid,
+                    'schoolYearId' => $r->query('schoolYearId'),
+                    'reference' => $r->query('reference'),
+                    'studentId' => $r->query('studentId'),
+                    'registrationStatusId' => $r->query('registrationStatusId'),
+                    'levelSessionId' => $r->query('levelSessionId'),
+                    'startDate' => $r->query('startDate'),
+                    'endDate' => $r->query('endDate'),
+                    'size' => 20,
+                ], fn($v) => $v !== null);
+                $this->scopedCrm()->client()->preload('/api/external/v1/registrations', $preloadQuery, 4, 0);
+            }),
             extra: [
                 'lovRegistrationStatus' => $this->lovs->registrationStatuses(),
                 'lovLevelSessions'      => $this->lovs->levelSessions($strStoreId),
