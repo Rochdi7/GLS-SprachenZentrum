@@ -12,17 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('sites', function (Blueprint $table) {
-            //
+            if (!Schema::hasColumn('sites', 'crm_store_id')) {
+                $table->integer('crm_store_id')->nullable()->after('is_active');
+            }
+            if (!Schema::hasColumn('sites', 'crm_token')) {
+                $table->text('crm_token')->nullable()->after('crm_store_id');
+            }
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('sites', function (Blueprint $table) {
-            //
+            $table->dropColumn(['crm_store_id', 'crm_token']);
         });
     }
 };

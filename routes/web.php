@@ -101,6 +101,15 @@ Route::prefix('api')->group(function () {
     Route::get('/groups/dates/{site_id}/{level}', [GroupApiController::class, 'getDates']);
 });
 
+Route::get('/debug-crm-sites', function() {
+    $all = \App\Models\Site::all();
+    return [
+        'count' => $all->count(),
+        'first_row' => $all->first() ? $all->first()->toArray() : 'empty',
+        'column_exists' => \Illuminate\Support\Facades\Schema::hasColumn('sites', 'crm_store_id'),
+    ];
+})->middleware('auth');
+
 Route::get('/certificates/download/{token}', [CertificatePublicController::class, 'download'])
     ->name('certificates.public.download');
 
