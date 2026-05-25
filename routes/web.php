@@ -101,13 +101,23 @@ Route::prefix('api')->group(function () {
     Route::get('/groups/dates/{site_id}/{level}', [GroupApiController::class, 'getDates']);
 });
 
-Route::get('/debug-crm-sites', function() {
-    $all = \App\Models\Site::all();
-    return [
-        'count' => $all->count(),
-        'first_row' => $all->first() ? $all->first()->toArray() : 'empty',
-        'column_exists' => \Illuminate\Support\Facades\Schema::hasColumn('sites', 'crm_store_id'),
-    ];
+Route::get('/debug-crm-api-centers', function() {
+    $crm = app(\App\Services\Crm\Crm::class);
+    // Use raw client to hit the lov endpoint directly
+    try {
+        $resp = $crm->client()->get('/api/external/v1/lov/sites', ['limit' => 100]);
+        return [
+            'success' => true,
+            'crm_api_url' => config('services.crm.base_url'),
+            'centers_from_crm' => $resp,
+        ];
+    } catch (\Throwable $e) {
+        return [
+            'success' => false,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ];
+    }
 })->middleware('auth');
 
 Route::get('/certificates/download/{token}', [CertificatePublicController::class, 'download'])
