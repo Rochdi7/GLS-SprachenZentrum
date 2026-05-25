@@ -17,7 +17,7 @@ return [
 
     'token' => env('CRM_API_TOKEN'),
 
-    'timeout' => (int) env('CRM_API_TIMEOUT', 45),
+    'timeout' => (int) env('CRM_API_TIMEOUT', 15),
 
     // Cache GET responses for this many seconds (0 = disabled).
     // Pagination clicks, page refreshes, and revisits within this window are
