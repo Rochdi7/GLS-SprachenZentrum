@@ -18,6 +18,10 @@ class ForceCanonicalHost
             return $next($request);
         }
 
+        if ($request->isMethod('POST')) {
+            return $next($request);
+        }
+
         $canonicalHost = config('seo.canonical_host');
 
         if (! $canonicalHost || $request->getHost() === $canonicalHost) {

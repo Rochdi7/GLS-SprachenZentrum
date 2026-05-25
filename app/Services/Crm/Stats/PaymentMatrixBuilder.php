@@ -50,10 +50,10 @@ class PaymentMatrixBuilder
         $allocRows = $crm->client()->pagedScan(
             path: '/api/external/v1/payment-allocations',
             baseQuery: $baseQuery + ['classId' => $classId],
-            pageSize: 25,
-            maxPages: 40,
-            concurrency: 2,
-            interBatchDelayMs: 400,
+            pageSize: 100,
+            maxPages: 10,
+            concurrency: 3,
+            interBatchDelayMs: 200,
         );
 
         // 3) Build the matrix.
