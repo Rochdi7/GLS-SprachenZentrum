@@ -136,8 +136,8 @@ class CrmInsightsController extends BaseCrmController
         $storeId   = $this->currentStrStoreId();
         $bustCache = $r->boolean('refresh');
 
-        $startDate = $r->query('startDate') ?: now()->startOfMonth()->toDateString();
-        $endDate   = $r->query('endDate')   ?: now()->endOfMonth()->toDateString();
+        $startDate = $r->query('startDate') ?: now()->subDays(30)->toDateString();
+        $endDate   = $r->query('endDate')   ?: now()->toDateString();
 
         $report = $svc->build($storeId, $startDate, $endDate, $bustCache);
 

@@ -48,7 +48,7 @@ use Illuminate\Support\Facades\Cache;
  */
 class GroupEvolutionService
 {
-    public const CACHE_TTL = 300; // 5 minutes — same as other CRM dashboards
+    public const CACHE_TTL = 1800; // 30 minutes
 
     /** Window (days) inside which a stop-then-start counts as a transfer. */
     public const CHANGEMENT_WINDOW_DAYS = 30;
@@ -349,9 +349,9 @@ class GroupEvolutionService
                 path: '/api/external/v1/groups/classes',
                 baseQuery: array_filter(['strStoreId' => $strStoreId], fn($v) => $v !== null),
                 pageSize: 100,
-                maxPages: 10,
-                concurrency: 3,
-                interBatchDelayMs: 200,
+                maxPages: 5,
+                concurrency: 4,
+                interBatchDelayMs: 100,
             );
         } catch (CrmException $e) {
             $this->lastFetchError = $e->status === 429 ? 'rate_limited' : ('http_' . $e->status);
@@ -378,7 +378,7 @@ class GroupEvolutionService
     protected function fetchAllocations(?int $strStoreId, string $startDate, string $endDate): array
     {
         try {
-            $rows = $this->crm->client()->pagedScan(
+            return $this->crm->client()->pagedScan(
                 path: '/api/external/v1/payment-allocations',
                 baseQuery: array_filter([
                     'strStoreId' => $strStoreId,
@@ -386,42 +386,9 @@ class GroupEvolutionService
                     'endDate'    => $endDate,
                 ], fn($v) => $v !== null),
                 pageSize: 100,
-                maxPages: 20,
-                concurrency: 3,
-                interBatchDelayMs: 200,
-            );
-            if (!empty($rows)) return $rows;
-        } catch (\Throwable) {
-        }
-
-        try {
-            $start = Carbon::parse($startDate)->startOfMonth();
-            $end   = Carbon::parse($endDate)->startOfMonth();
-        } catch (\Throwable) {
-            return [];
-        }
-        if ($end->lt($start)) return [];
-
-        $variants = [];
-        $cursor = $start->copy();
-        while ($cursor->lte($end)) {
-            for ($p = 0; $p < 2; $p++) {
-                $variants[] = [
-                    'page'      => $p,
-                    'startDate' => $cursor->copy()->startOfMonth()->toDateString(),
-                    'endDate'   => $cursor->copy()->endOfMonth()->toDateString(),
-                ];
-            }
-            $cursor->addMonth();
-        }
-
-        try {
-            return $this->crm->client()->parallelFetch(
-                path: '/api/external/v1/payment-allocations',
-                baseQuery: array_filter(['strStoreId' => $strStoreId], fn($v) => $v !== null),
-                variantQueries: $variants,
-                pageSize: 50,
+                maxPages: 10,
                 concurrency: 4,
+                interBatchDelayMs: 100,
             );
         } catch (\Throwable) {
             return [];
@@ -532,9 +499,9 @@ class GroupEvolutionService
                     'dueDateEndDate'   => $endDate,
                 ], fn($v) => $v !== null),
                 pageSize: 100,
-                maxPages: 20,
-                concurrency: 3,
-                interBatchDelayMs: 200,
+                maxPages: 5,
+                concurrency: 4,
+                interBatchDelayMs: 100,
             );
         } catch (\Throwable) {
             $collection = [];
