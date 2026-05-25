@@ -20,7 +20,17 @@ return [
     // ========================
     // 🟢 INTRO SECTION
     // ========================
+    'site_heading' => [
+        'rabat'      => 'Cours d’allemand à Rabat – GLS',
+        'kenitra'    => 'Centre GLS à Kénitra',
+        'marrakech'  => 'École d’allemand à Marrakech',
+        'sale'       => 'Cours d’allemand à Salé – GLS',
+        'agadir'     => 'Campus GLS Agadir',
+        'casablanca' => 'Cours d’allemand à Casablanca',
+    ],
+
     'intro' => [
+        'logo_alt' => 'Logo GLS Sprachenzentrum',
         'tagline' => 'Apprenez l’allemand chez GLS',
         'heading' => 'Apprendre. Connecter. Découvrir.',
         'description' => 'Notre objectif est d’accompagner nos étudiants à travers une expérience linguistique immersive et motivante.',
@@ -98,7 +108,7 @@ return [
                     'number' => '1',
                     'title' => 'Apprendre<br>l’allemand A1',
                     'text' => 'Apprenez les bases de l’allemand.<br>Parfait pour débuter !',
-                    'button' => 'En savoir plus',
+                    'button' => 'Cours A1',
                     'route' => 'front.online-courses',
                 ],
                 'a2' => [
@@ -106,7 +116,7 @@ return [
                     'number' => '2',
                     'title' => 'Apprendre<br>l’allemand A2',
                     'text' => 'Construisez une base solide en langue allemande.',
-                    'button' => 'En savoir plus',
+                    'button' => 'Niveau A2',
                     'route' => 'front.exams.gls',
                 ],
                 'b1' => [
@@ -114,7 +124,7 @@ return [
                     'number' => '1',
                     'title' => 'Apprendre<br>l’allemand B1',
                     'text' => 'Développez vos compétences en langue allemande.',
-                    'button' => 'En savoir plus',
+                    'button' => 'Préparation Goethe B1',
                     'route' => 'front.exams.goethe',
                 ],
                 'b2' => [
@@ -122,7 +132,7 @@ return [
                     'number' => '2',
                     'title' => 'Apprendre<br>l’allemand B2',
                     'text' => 'Atteignez un niveau avancé en allemand avec notre programme B2.',
-                    'button' => 'En savoir plus',
+                    'button' => 'Programme B2',
                     'route' => 'front.online-courses',
                 ],
             ],
@@ -136,7 +146,7 @@ return [
                 'online' => [
                     'title' => 'Cours<br>en ligne',
                     'text' => 'Apprenez l’allemand depuis le confort de votre domicile.',
-                    'button' => 'En savoir plus',
+                    'button' => 'Cours en ligne',
                     'route' => 'front.online-courses',
                 ],
                 'gls' => [

@@ -10,6 +10,10 @@ class SecurityHeaders
 {
     public function handle(Request $request, Closure $next): Response
     {
+        if (function_exists('header_remove')) {
+            header_remove('X-Powered-By');
+        }
+
         $response = $next($request);
 
         $response->headers->remove('X-Powered-By');

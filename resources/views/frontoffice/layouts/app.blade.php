@@ -130,7 +130,6 @@
     @stack('scripts')
 
     @include('frontoffice.templates.consultation-form')
-    @include('frontoffice.templates.group-apply-modals')
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17817493313"></script>
     <script>

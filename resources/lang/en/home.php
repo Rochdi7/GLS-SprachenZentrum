@@ -19,7 +19,17 @@ return [
     // ========================
     // 🟢 INTRO SECTION
     // ========================
+    'site_heading' => [
+        'rabat'      => 'German course Rabat – GLS campus',
+        'kenitra'    => 'GLS language center Kénitra',
+        'marrakech'  => 'German school Marrakech – GLS',
+        'sale'       => 'Learn German in Salé – GLS',
+        'agadir'     => 'German course Agadir – GLS',
+        'casablanca' => 'German school Casablanca – GLS',
+    ],
+
     'intro' => [
+        'logo_alt' => 'GLS Sprachenzentrum logo',
         'tagline' => 'Learn German at GLS',
         'heading' => 'Learn. Connect. Discover.',
         'description' => 'Our goal is to support our students through an immersive and motivating language experience.',
@@ -97,7 +107,7 @@ return [
                     'number' => '1',
                     'title' => 'Learn<br>German A1',
                     'text' => 'Learn the basics of German.<br>Perfect for beginners!',
-                    'button' => 'Learn more',
+                    'button' => 'View A1 course',
                     'route' => 'front.online-courses',
                 ],
                 'a2' => [
@@ -105,7 +115,7 @@ return [
                     'number' => '2',
                     'title' => 'Learn<br>German A2',
                     'text' => 'Build a solid foundation in German language.',
-                    'button' => 'Learn more',
+                    'button' => 'Explore A2 level',
                     'route' => 'front.exams.gls',
                 ],
                 'b1' => [
@@ -113,7 +123,7 @@ return [
                     'number' => '1',
                     'title' => 'Learn<br>German B1',
                     'text' => 'Develop your German language skills.',
-                    'button' => 'Learn more',
+                    'button' => 'Goethe prep B1',
                     'route' => 'front.exams.goethe',
                 ],
                 'b2' => [
@@ -121,7 +131,7 @@ return [
                     'number' => '2',
                     'title' => 'Learn<br>German B2',
                     'text' => 'Reach an advanced level in German with our B2 program.',
-                    'button' => 'Learn more',
+                    'button' => 'B2 program',
                     'route' => 'front.online-courses',
                 ],
             ],
@@ -135,7 +145,7 @@ return [
                 'online' => [
                     'title' => 'Online<br>Courses',
                     'text' => 'Learn German from the comfort of your home.',
-                    'button' => 'Learn more',
+                    'button' => 'Online courses',
                     'route' => 'front.online-courses',
                 ],
                 'gls' => [

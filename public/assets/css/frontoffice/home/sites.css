@@ -117,7 +117,8 @@
   z-index: 2;
 }
 
-.site-overlay h3 {
+.site-overlay h3,
+.site-overlay .site-card-label {
   color: #fff;
   font-size: 1.5rem;
   font-weight: 700;
@@ -141,7 +142,8 @@
 /* Mobile */
 @media (max-width: 575px) {
   .sites-maroc-section { padding: 0; background: #fff; }
-  .site-overlay h3 { font-size: 1.3rem; }
+  .site-overlay h3,
+  .site-overlay .site-card-label { font-size: 1.3rem; }
 }
 
 /* Mobile Full Video Cover Fix */

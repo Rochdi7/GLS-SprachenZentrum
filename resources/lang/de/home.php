@@ -21,6 +21,7 @@ return [
     // 🟢 INTRO SECTION
     // ========================
     'intro' => [
+        'logo_alt' => 'GLS Sprachenzentrum – Logo',
         'tagline' => 'Deutschschule & Sprachzentrum Marokko',
         'heading' => 'Lernen. Verbinden. Entdecken.',
         'description' => 'GLS Sprachenzentrum ist Ihre Deutschschule in Marokko: strukturierte Deutschkurse von A1 bis B2, erfahrene Lehrkräfte und eine Lernatmosphäre, die Sie sicher auf Goethe-Prüfungen, Studium und den Weg nach Deutschland vorbereitet.',
@@ -46,6 +47,15 @@ return [
                 'link_text' => 'Zertifikate & Nachweise',
             ],
         ],
+    ],
+
+    'site_heading' => [
+        'rabat'      => 'Deutschkurs Rabat – Campus GLS',
+        'kenitra'    => 'Sprachzentrum Kénitra – GLS',
+        'marrakech'  => 'Deutschschule Marrakesch – GLS',
+        'sale'       => 'Deutsch lernen in Salé – GLS',
+        'agadir'     => 'Deutschkurs Agadir – GLS',
+        'casablanca' => 'Deutschschule Casablanca – GLS',
     ],
 
     'site_image_alt' => [
@@ -147,7 +157,7 @@ return [
                     'number' => '1',
                     'title' => 'Deutsch lernen<br>A1',
                     'text' => 'Lernen Sie die Grundlagen der deutschen Sprache.<br>Perfekt zum Einstieg!',
-                    'button' => 'Mehr erfahren',
+                    'button' => 'Kurs A1 ansehen',
                     'route' => 'front.online-courses',
                 ],
                 'a2' => [
@@ -155,7 +165,7 @@ return [
                     'number' => '2',
                     'title' => 'Deutsch lernen<br>A2',
                     'text' => 'Bauen Sie eine solide Grundlage in der deutschen Sprache auf.',
-                    'button' => 'Mehr erfahren',
+                    'button' => 'Niveau A2 entdecken',
                     'route' => 'front.exams.gls',
                 ],
                 'b1' => [
@@ -163,7 +173,7 @@ return [
                     'number' => '1',
                     'title' => 'Deutsch lernen<br>B1',
                     'text' => 'Entwickeln Sie Ihre Deutschkenntnisse weiter.',
-                    'button' => 'Mehr erfahren',
+                    'button' => 'Goethe-Vorbereitung B1',
                     'route' => 'front.exams.goethe',
                 ],
                 'b2' => [
@@ -171,7 +181,7 @@ return [
                     'number' => '2',
                     'title' => 'Deutsch lernen<br>B2',
                     'text' => 'Erreichen Sie ein fortgeschrittenes Niveau in Deutsch mit unserem B2-Programm.',
-                    'button' => 'Mehr erfahren',
+                    'button' => 'Programm B2 ansehen',
                     'route' => 'front.online-courses',
                 ],
             ],
@@ -185,7 +195,7 @@ return [
                 'online' => [
                     'title' => 'Online-<br>Kurse',
                     'text' => 'Lernen Sie Deutsch bequem von zu Hause aus.',
-                    'button' => 'Mehr erfahren',
+                    'button' => 'Online-Kurse',
                     'route' => 'front.online-courses',
                 ],
                 'gls' => [
@@ -256,7 +266,7 @@ return [
             'description' => 'Die Kosten sollten Sie nicht vom Deutschlernen abhalten! Treten Sie unserem vollständigen A1-Nachmittagskurs auf Pay-What-You-Want-Basis bei. Begrenzte Plätze, registrieren Sie sich persönlich in unserem Campus.',
             'start_date' => 'Ab 2. Dezember (Dauer 4 Wochen).',
             'button_directions' => 'Richtungen',
-            'button_learn_more' => 'Mehr erfahren',
+            'button_learn_more' => 'A1-Angebot entdecken',
         ],
         'card_a1' => [
             'title' => 'Neue <span class="hh-yellow">A1-Kurse</span> bald verfügbar!',
@@ -403,6 +413,9 @@ return [
 
         'item1_title'  => 'GLS-Zertifikat überprüfen',
         'item1_desc'   => 'Authentifizieren Sie sofort ein von GLS Sprachenzentrum ausgestelltes Zertifikat mit seiner eindeutigen Nummer.',
+
+        'list_cert_title' => 'Zertifikat online prüfen',
+        'list_att_title'  => 'Bescheinigung beantragen',
 
         'item2_title'  => 'Teilnahmebescheinigung anfordern',
         'item2_desc'   => 'Stellen Sie Ihren Antrag online — unser Team sendet ihn nach Prüfung per E-Mail.',

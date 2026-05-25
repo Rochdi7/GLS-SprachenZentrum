@@ -66,7 +66,8 @@
 
                     {{-- Logo + Tagline --}}
                     <div class="text-center mb-4 reveal delay-3">
-                        <img src="{{ asset('assets/images/logo/gls-round.png') }}" alt="GLS Logo"
+                        <img src="{{ asset('assets/images/logo/gls-round.png') }}"
+                            alt="{{ \Illuminate\Support\Facades\Lang::has('home.intro.logo_alt') ? __('home.intro.logo_alt') : 'GLS Sprachenzentrum Logo' }}"
                             class="intro-logo reveal delay-1">
 
                         <p class="text-primary fw-medium small mb-0 letter-spacing-1 reveal delay-2">
@@ -103,7 +104,7 @@
                         @foreach (__('home.pathways.items') as $index => $pathway)
                             <div class="col-md-4">
                                 <article class="h-100 p-4 bg-white rounded-4 shadow-sm reveal delay-{{ ($index % 3) + 1 }}">
-                                    <h3 class="h5 fw-bold mb-2">{{ $pathway['title'] }}</h3>
+                                    <p class="h5 fw-bold mb-2">{{ $pathway['title'] }}</p>
                                     <p class="text-muted mb-3">{{ $pathway['text'] }}</p>
                                     @php
                                         $pathwayRoutes = [
@@ -143,7 +144,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     </div>
 
                     <div class="site-overlay">
-                        <h3>{{ __('gls.sites.rabat') }}</h3>
+                        <p class="site-card-label mb-0">{{ __('home.site_heading.rabat') }}</p>
                     </div>
                 </a>
 
@@ -154,7 +155,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     </div>
 
                     <div class="site-overlay">
-                        <h3>{{ __('gls.sites.kenitra') }}</h3>
+                        <p class="site-card-label mb-0">{{ __('home.site_heading.kenitra') }}</p>
                     </div>
                 </a>
 
@@ -166,7 +167,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     </div>
 
                     <div class="site-overlay">
-                        <h3>{{ __('gls.sites.marrakech') }}</h3>
+                        <p class="site-card-label mb-0">{{ __('home.site_heading.marrakech') }}</p>
                     </div>
                 </a>
 
@@ -177,7 +178,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     </div>
 
                     <div class="site-overlay">
-                        <h3>{{ __('gls.sites.sale') }}</h3>
+                        <p class="site-card-label mb-0">{{ __('home.site_heading.sale') }}</p>
                     </div>
                 </a>
 
@@ -188,7 +189,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     </div>
 
                     <div class="site-overlay">
-                        <h3>{{ __('gls.sites.agadir') }}</h3>
+                        <p class="site-card-label mb-0">{{ __('home.site_heading.agadir') }}</p>
                     </div>
                 </a>
 
@@ -200,7 +201,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     </div>
 
                     <div class="site-overlay">
-                        <h3>{{ __('gls.sites.casablanca') }}</h3>
+                        <p class="site-card-label mb-0">{{ __('home.site_heading.casablanca') }}</p>
                     </div>
                 </a>
 
@@ -295,9 +296,9 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
                 <div class="hh-card hh-card-big reveal delay-2">
                     <div class="hh-block-31 reveal delay-3">
-                        <h3 class="hh-title hh-title-big reveal delay-1">
+                        <p class="hh-title hh-title-big reveal delay-1 mb-0">
                             {!! __('home.highlights.big_card.title') !!}
-                        </h3>
+                        </p>
 
                         <div class="hh-text-block reveal delay-2">
                             {{ __('home.highlights.big_card.subtitle') }}
@@ -325,9 +326,9 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
                 <div class="hh-row reveal delay-3">
                     <div class="hh-card hh-card-first reveal delay-1">
-                        <h3 class="hh-title reveal delay-2">
+                        <p class="hh-title reveal delay-2 mb-0">
                             {!! __('home.highlights.card_a1.title') !!}
-                        </h3>
+                        </p>
 
                         <p class="hh-text reveal delay-3">
                             <strong>{{ __('home.highlights.card_a1.spots_available') }}<br></strong>
@@ -346,7 +347,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     </div>
 
                     <div class="hh-card reveal delay-2">
-                        <h3 class="hh-title reveal delay-3">{{ __('home.highlights.card_intensive.title') }}</h3>
+                        <p class="hh-title reveal delay-3 mb-0">{{ __('home.highlights.card_intensive.title') }}</p>
 
                         <p class="hh-text reveal delay-1">
                             <strong>{{ __('home.highlights.card_intensive.join_anytime') }}<br></strong>
@@ -358,7 +359,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                         <a href="{{ LaravelLocalization::localizeUrl(route('front.gls-inscription')) }}"
                             class="button is-white reveal delay-2"
                             style="background:#ffffff !important; color: var(--dark--off-black) !important; border-color: var(--dark--off-black) !important;">
-                            {{ __('home.highlights.card_a1.button') }}
+                            {{ __('home.highlights.card_intensive.button') }}
                         </a>
                     </div>
                 </div>
@@ -387,7 +388,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                             <div class="course-card_level-circle">{{ __('home.courses.intensive.cards.a1.letter') }}</div>
                             <div class="course-card_level-circle">{{ __('home.courses.intensive.cards.a1.number') }}</div>
                         </div>
-                        <h3 class="course-card_title">{!! __('home.courses.intensive.cards.a1.title') !!}</h3>
+                        <p class="course-card_title mb-0">{!! __('home.courses.intensive.cards.a1.title') !!}</p>
                         <div class="course-card_text">{!! __('home.courses.intensive.cards.a1.text') !!}</div>
                         <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.a1')) }}"
                             class="button is-course-card w-button">
@@ -402,7 +403,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                             <div class="course-card_level-circle">{{ __('home.courses.intensive.cards.a2.letter') }}</div>
                             <div class="course-card_level-circle">{{ __('home.courses.intensive.cards.a2.number') }}</div>
                         </div>
-                        <h3 class="course-card_title">{!! __('home.courses.intensive.cards.a2.title') !!}</h3>
+                        <p class="course-card_title mb-0">{!! __('home.courses.intensive.cards.a2.title') !!}</p>
                         <div class="course-card_text">{!! __('home.courses.intensive.cards.a2.text') !!}</div>
                         <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.a2')) }}"
                             class="button is-course-card w-button">
@@ -417,7 +418,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                             <div class="course-card_level-circle">{{ __('home.courses.intensive.cards.b1.letter') }}</div>
                             <div class="course-card_level-circle">{{ __('home.courses.intensive.cards.b1.number') }}</div>
                         </div>
-                        <h3 class="course-card_title">{!! __('home.courses.intensive.cards.b1.title') !!}</h3>
+                        <p class="course-card_title mb-0">{!! __('home.courses.intensive.cards.b1.title') !!}</p>
                         <div class="course-card_text">{!! __('home.courses.intensive.cards.b1.text') !!}</div>
                         <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.b1')) }}"
                             class="button is-course-card w-button">
@@ -431,7 +432,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                             <div class="course-card_level-circle">{{ __('home.courses.intensive.cards.b2.letter') }}</div>
                             <div class="course-card_level-circle">{{ __('home.courses.intensive.cards.b2.number') }}</div>
                         </div>
-                        <h3 class="course-card_title">{!! __('home.courses.intensive.cards.b2.title') !!}</h3>
+                        <p class="course-card_title mb-0">{!! __('home.courses.intensive.cards.b2.title') !!}</p>
                         <div class="course-card_text">{!! __('home.courses.intensive.cards.b2.text') !!}</div>
                         <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.b2')) }}"
                             class="button is-course-card w-button">
@@ -451,7 +452,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
                     {{-- Online Courses --}}
                     <div class="course-card is-orange">
-                        <h3 class="course-card_title is-others">{!! __('home.courses.online.cards.online.title') !!}</h3>
+                        <p class="course-card_title is-others mb-0">{!! __('home.courses.online.cards.online.title') !!}</p>
                         <div class="course-card_text">{!! __('home.courses.online.cards.online.text') !!}</div>
                         <a href="{{ LaravelLocalization::localizeUrl(route(__('home.courses.online.cards.online.route'))) }}"
                             class="button is-course-card w-button">
@@ -461,7 +462,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
                     {{-- GLS Exam Preparation --}}
                     <div class="course-card is-green">
-                        <h3 class="course-card_title is-others">{!! __('home.courses.online.cards.gls.title') !!}</h3>
+                        <p class="course-card_title is-others mb-0">{!! __('home.courses.online.cards.gls.title') !!}</p>
                         <div class="course-card_text">{!! __('home.courses.online.cards.gls.text') !!}</div>
                         <a href="{{ LaravelLocalization::localizeUrl(route(__('home.courses.online.cards.gls.route'))) }}"
                             class="button is-course-card w-button">
@@ -471,23 +472,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
                     {{-- Goethe Exam Preparation --}}
                     <div class="course-card is-purple">
-                        <h3 class="course-card_title is-others">{!! __('home.courses.online.cards.goethe.title') !!}</h3>
+                        <p class="course-card_title is-others mb-0">{!! __('home.courses.online.cards.goethe.title') !!}</p>
                         <div class="course-card_text">{!! __('home.courses.online.cards.goethe.text') !!}</div>
-                        <a href="{{ LaravelLocalization::localizeUrl(route(__('home.courses.online.cards.goethe.route'))) }}"
-                            class="button is-course-card w-button">
-                            {{ __('home.courses.online.cards.goethe.button') }}
-                        </a>
-                    </div>
-
-                    <div class="course-card is-purple is-others">
-                        <h3 class="course-card_title is-others">
-                            {!! __('home.courses.online.cards.goethe.title') !!}
-                        </h3>
-
-                        <div class="course-card_text">
-                            {!! __('home.courses.online.cards.goethe.text') !!}
-                        </div>
-
                         <a href="{{ LaravelLocalization::localizeUrl(route(__('home.courses.online.cards.goethe.route'))) }}"
                             class="button is-course-card w-button">
                             {{ __('home.courses.online.cards.goethe.button') }}
@@ -534,7 +520,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
                                         <div
                                             class="learn-card-bottom d-flex align-items-center justify-content-between w-100">
-                                            <h3 class="fw-bold fs-4 mb-0">{!! $card['title'] !!}</h3>
+                                            <p class="fw-bold fs-4 mb-0">{!! $card['title'] !!}</p>
 
                                             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
                                                 fill="currentColor" viewBox="0 0 20 20">
@@ -560,7 +546,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                         <div class="gls-site-modal__header">
                             <div>
                                 <div class="gls-site-modal__kicker">{{ __('home.site_modal.kicker') }}</div>
-                                <h5 class="gls-site-modal__title">{{ __('home.site_modal.title') }}</h5>
+                                <p class="gls-site-modal__title mb-0">{{ __('home.site_modal.title') }}</p>
                             </div>
 
                             <button type="button" class="gls-site-modal__close" data-bs-dismiss="modal"
@@ -609,8 +595,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <header class="ssn-header reveal delay-2">
                     <div>
                         <div class="ssn-eyebrow">
-                            <img class="flag" src="{{ asset('assets/images/germany-flag-icon.svg') }}" alt="" role="presentation"
-                                aria-hidden="true">
+                            <span class="flag" role="presentation" aria-hidden="true"
+                                style="background-image: url('{{ asset('assets/images/germany-flag-icon.svg') }}');"></span>
                             {{ __('home.student_services.eyebrow') }}
                         </div>
                         <h2 class="ssn-title">
@@ -636,7 +622,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                                 <span class="pulse"></span>
                                 {{ __('home.student_services.feature_tag') }}
                             </span>
-                            <h3 class="ssn-feature-title">{{ __('home.student_services.feature_title') }}</h3>
+                            <p class="ssn-feature-title mb-0">{{ __('home.student_services.feature_title') }}</p>
                             <p class="ssn-feature-desc">{{ __('home.student_services.feature_desc') }}</p>
 
                             <div class="ssn-preview" aria-hidden="true">
@@ -672,7 +658,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                                 <i class="bi bi-patch-check-fill"></i>
                                 {{ __('home.student_services.cert_tag') }}
                             </span>
-                            <h3 class="ssn-feature-title">{{ __('home.student_services.item1_title') }}</h3>
+                            <p class="ssn-feature-title mb-0">{{ __('home.student_services.item1_title') }}</p>
                             <p class="ssn-feature-desc">{{ __('home.student_services.item1_desc') }}</p>
 
                             <div class="ssn-preview" aria-hidden="true">
@@ -706,7 +692,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                                 <i class="bi bi-envelope-paper-fill"></i>
                                 {{ __('home.student_services.att_tag') }}
                             </span>
-                            <h3 class="ssn-feature-title">{{ __('home.student_services.item2_title') }}</h3>
+                            <p class="ssn-feature-title mb-0">{{ __('home.student_services.item2_title') }}</p>
                             <p class="ssn-feature-desc">{{ __('home.student_services.item2_desc') }}</p>
 
                             <div class="ssn-preview" aria-hidden="true">
@@ -750,7 +736,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                             href="{{ LaravelLocalization::localizeUrl(route('front.translations.track')) }}">
                             <span class="ssn-num">01</span>
                             <div class="ssn-item-body">
-                                <h4 class="ssn-item-title">{{ __('home.student_services.tr_title_short') }}</h4>
+                                <p class="ssn-item-title mb-0">{{ __('home.student_services.tr_title_short') }}</p>
                                 <p class="ssn-item-desc">{{ __('home.student_services.tr_desc_short') }}</p>
                             </div>
                             <span class="ssn-arrow"><i class="bi bi-arrow-right"></i></span>
@@ -761,7 +747,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                             href="{{ LaravelLocalization::localizeUrl(route('front.certificate.check')) }}">
                             <span class="ssn-num">02</span>
                             <div class="ssn-item-body">
-                                <h4 class="ssn-item-title">{{ __('home.student_services.item1_title') }}</h4>
+                                <p class="ssn-item-title mb-0">{{ \Illuminate\Support\Facades\Lang::has('home.student_services.list_cert_title') ? __('home.student_services.list_cert_title') : __('home.student_services.item1_title') }}</p>
                                 <p class="ssn-item-desc">{{ __('home.student_services.item1_desc') }}</p>
                             </div>
                             <span class="ssn-arrow"><i class="bi bi-arrow-right"></i></span>
@@ -772,7 +758,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                             href="{{ LaravelLocalization::localizeUrl(route('front.attestation-request.create')) }}">
                             <span class="ssn-num">03</span>
                             <div class="ssn-item-body">
-                                <h4 class="ssn-item-title">{{ __('home.student_services.item2_title') }}</h4>
+                                <p class="ssn-item-title mb-0">{{ \Illuminate\Support\Facades\Lang::has('home.student_services.list_att_title') ? __('home.student_services.list_att_title') : __('home.student_services.item2_title') }}</p>
                                 <p class="ssn-item-desc">{{ __('home.student_services.item2_desc') }}</p>
                             </div>
                             <span class="ssn-arrow"><i class="bi bi-arrow-right"></i></span>

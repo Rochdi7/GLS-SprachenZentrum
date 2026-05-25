@@ -18,7 +18,7 @@
 
             {{-- Column 1 – About --}}
             <div class="col-6 col-md-3 mb-4">
-                <h6 class="footer-title">{{ __('footer.about') }}</h6>
+                <p class="footer-title">{{ __('footer.about') }}</p>
                 <ul class="list-unstyled footer-links">
                     <li>
                         <a href="{{ LaravelLocalization::localizeUrl(route('front.about')) }}">
@@ -53,7 +53,7 @@
 
             {{-- Column 2 – Our Sites (All cities) --}}
             <div class="col-6 col-md-3 mb-4">
-                <h6 class="footer-title">{{ __('footer.our_sites') }}</h6>
+                <p class="footer-title">{{ __('footer.our_sites') }}</p>
                 <ul class="list-unstyled footer-links">
                     {{-- IMPORTANT: /sites/{slug} --}}
                     <li>
@@ -98,7 +98,7 @@
 
             {{-- Column 3 – Courses + Levels A1-B2 --}}
             <div class="col-6 col-md-3 mb-4">
-                <h6 class="footer-title">{{ __('footer.german_courses') }}</h6>
+                <p class="footer-title">{{ __('footer.german_courses') }}</p>
                 <ul class="list-unstyled footer-links">
                     <li>
                         <a href="{{ LaravelLocalization::localizeUrl(route('front.intensive-courses')) }}">
@@ -139,7 +139,7 @@
 
             {{-- Column 4 – Exams + Resources --}}
             <div class="col-6 col-md-3 mb-4">
-                <h6 class="footer-title">{{ __('footer.resources') }}</h6>
+                <p class="footer-title">{{ __('footer.resources') }}</p>
                 <ul class="list-unstyled footer-links">
                     <li>
                         <a href="{{ LaravelLocalization::localizeUrl(route('front.exams.gls')) }}">
@@ -188,7 +188,7 @@
         <div class="footer-newsletter mt-3 pt-3 border-top border-dark {{ app()->getLocale() == 'ar' ? 'rtl' : '' }}">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
                 <div class="footer-newsletter-copy">
-                    <h6 class="footer-title mb-1">{{ __('footer.newsletter.title') }}</h6>
+                    <p class="footer-title mb-1">{{ __('footer.newsletter.title') }}</p>
                     <p class="mb-0 small text-muted-light">{{ __('footer.newsletter.text') }}</p>
                 </div>
                 <form id="newsletterForm" class="footer-newsletter-form d-flex gap-2"

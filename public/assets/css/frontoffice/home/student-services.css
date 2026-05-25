@@ -80,6 +80,9 @@
     object-fit: cover;
     display: inline-block;
     box-shadow: 0 0 0 1px rgba(0,0,0,.08);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .ssn-title {
