@@ -63,10 +63,10 @@
   .learn-card-bottom h3,
   .learn-card-bottom p,
   .learn-card-bottom .learn-card-title {
-    color: var(--off-black);
+    color: #000000 !important;
     line-height: 1.2;
     margin-bottom: 0;
-    font-weight: 700;
+    font-weight: 800 !important;
   }
   .learn-card-bottom svg {
     color: var(--off-black);
