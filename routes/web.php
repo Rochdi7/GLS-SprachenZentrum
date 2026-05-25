@@ -138,6 +138,23 @@ Route::get('/debug-crm-token', function() {
     }
 })->middleware('auth');
 
+Route::get('/debug-crm-raw-data', function() {
+    $crm = app(\App\Services\Crm\Crm::class);
+    try {
+        // Fetch first 5 classes to see their STR_STORE_ID
+        $resp = $crm->client()->get('/api/external/v1/groups/classes', ['page' => 0, 'size' => 5]);
+        return [
+            'success' => true,
+            'classes_sample' => $resp,
+        ];
+    } catch (\Throwable $e) {
+        return [
+            'success' => false,
+            'error' => $e->getMessage(),
+        ];
+    }
+})->middleware('auth');
+
 Route::get('/certificates/download/{token}', [CertificatePublicController::class, 'download'])
     ->name('certificates.public.download');
 
