@@ -121,13 +121,14 @@
 
 .site-overlay h3,
 .site-overlay .site-card-label {
-  color: #fff !important;
+  color: #ffffff !important;
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 900 !important;
   text-transform: uppercase;
   margin: 0;
   line-height: 1.2;
   letter-spacing: 0.02em;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.7);
 }
 
 /* Size Variants */

@@ -174,11 +174,15 @@
     margin-top: 0;
     margin-bottom: .5rem;
     line-height: 1.1;
+    color: #000000 !important;
+    font-weight: 800 !important;
 }
 
 .course-card_title.is-others {
     /* Ensures consistent title spacing for non-level cards */
     min-height: 4.5rem; 
+    color: #000000 !important;
+    font-weight: 800 !important;
 }
 
 .course-card_text {
