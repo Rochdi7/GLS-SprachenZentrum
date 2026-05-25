@@ -8,10 +8,10 @@ use App\Models\Site;
 use App\Models\Group;
 
 Route::get('/centers', function () {
-    return \Illuminate\Support\Facades\Cache::remember('api.centers', 43200, function () { // Persist longer (12h)
+    return \Illuminate\Support\Facades\Cache::remember('api.centers_v3', 43200, function () { // Force refresh with v3
         return \App\Models\Site::query()
+            ->whereNotNull('crm_store_id')
             ->where('crm_store_id', '>', 0)
-            ->where('is_active', 1)
             ->get(['id', 'name', 'city', 'crm_store_id']);
     });
 });
