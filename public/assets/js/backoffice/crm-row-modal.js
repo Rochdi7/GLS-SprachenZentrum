@@ -774,7 +774,19 @@ function crmRowModalInit() {
                     classTeacher: row?.EMPLOYEE_TEACHER_FULL_NAME || null,
                 }),
             })
-                .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
+                .then(async r => {
+                    const contentType = r.headers.get('content-type');
+                    const isJson = contentType && contentType.includes('application/json');
+                    
+                    if (!isJson) {
+                        if (r.status === 419) throw new Error('Votre session a expiré. Veuillez rafraîchir la page.');
+                        if (r.status === 404) throw new Error('Service introuvable. Vérifiez que la route est bien définie.');
+                        throw new Error(`Le serveur a renvoyé une erreur (${r.status}). Veuillez réessayer.`);
+                    }
+
+                    const data = await r.json();
+                    return { ok: r.ok, data };
+                })
                 .then(({ ok, data }) => {
                     stopStages();
                     if (!ok || !data.success) {
@@ -787,7 +799,7 @@ function crmRowModalInit() {
                 })
                 .catch(err => {
                     stopStages();
-                    matrixBody.innerHTML = `<div class="alert alert-danger">Erreur réseau : ${esc(err.message || String(err))}</div>`;
+                    matrixBody.innerHTML = `<div class="alert alert-danger">${esc(err.message || 'Une erreur réseau s\'est produite.')}</div>`;
                 });
             return;
         }

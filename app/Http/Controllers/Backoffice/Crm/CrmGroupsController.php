@@ -166,10 +166,8 @@ class CrmGroupsController extends BaseCrmController
 
             return response()->json($data);
         } catch (CrmException $e) {
-            // Translate the upstream rate-limit cool-down into a clearer
-            // French message so users know it's transient, not a real failure.
             $friendly = $e->status === 429
-                ? 'Trop de requêtes vers le CRM. Patientez ~1 minute puis réessayez — la matrice charge beaucoup de données pour les grandes classes.'
+                ? 'Trop de requêtes vers le CRM. Patientez ~1 minute.'
                 : $e->getMessage();
 
             return response()->json([
@@ -177,6 +175,16 @@ class CrmGroupsController extends BaseCrmController
                 'message' => $friendly,
                 'status'  => $e->status,
             ], $e->status === 429 ? 429 : 502);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Matrix Aggregation Error: " . $e->getMessage(), [
+                'classId' => $classId,
+                'trace'   => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => "Erreur lors de la génération de la statistique : " . $e->getMessage(),
+            ], 500);
         }
     }
 

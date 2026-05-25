@@ -99,9 +99,6 @@ Route::group([
  */
 Route::prefix('api')->group(function () {
     Route::get('/groups/dates/{site_id}/{level}', [GroupApiController::class, 'getDates']);
-    Route::get('/centers', function () {
-        return \App\Models\Site::select('id', 'name', 'city')->get();
-    });
 });
 
 Route::get('/certificates/download/{token}', [CertificatePublicController::class, 'download'])
