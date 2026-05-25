@@ -28,7 +28,7 @@ class CenterContext
     public function available(): Collection
     {
         return Site::query()
-            ->whereNotNull('crm_store_id')
+            ->where('crm_store_id', '>', 0)
             ->orderBy('name')
             ->get(['id', 'name', 'city', 'crm_store_id']);
     }

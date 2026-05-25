@@ -9,7 +9,7 @@ use App\Models\Group;
 
 Route::get('/centers', function () {
     return \Illuminate\Support\Facades\Cache::remember('api.centers', 3600, function () {
-        return Site::select('id', 'name', 'city')
+        return Site::select('id', 'name', 'city', 'crm_store_id')
                     ->where('is_active', 1)
                     ->get();
     });

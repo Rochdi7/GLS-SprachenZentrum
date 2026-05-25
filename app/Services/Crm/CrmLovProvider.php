@@ -297,7 +297,10 @@ class CrmLovProvider
         try {
             $resp = $fetch();
             return $resp['data'] ?? [];
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("CRM LOV Error: " . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
             return [];
         }
     }
