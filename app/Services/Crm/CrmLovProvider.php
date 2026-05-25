@@ -24,24 +24,45 @@ class CrmLovProvider
 {
     public const CACHE_TTL = 600; // 10 minutes
 
+    /** Local request-level cache to avoid redundant scans for one-off page loads. */
+    protected array $requestCache = [];
+
     public function __construct(protected Crm $crm)
     {
     }
 
     // ───────────────────────── /groups/* (paged, cap=25) ─────────────────────
 
+    /** 
+     * Shared source for all group-related LOVs to avoid N scans of the same data.
+     * Results are cached for the duration of the request.
+     */
+    protected function groupsSource(?int $strStoreId): array
+    {
+        $key = 'groups_source.' . ($strStoreId ?? 'all');
+        if (isset($this->requestCache[$key])) {
+            return $this->requestCache[$key];
+        }
+
+        // Parallel scan for classes to extract LOV data in one pass (approx 1-2s total)
+        return $this->requestCache[$key] = $this->crm->client()->pagedScan(
+            path: '/api/external/v1/groups/classes',
+            baseQuery: array_filter(['strStoreId' => $strStoreId, 'includeTotal' => false], fn($v) => $v !== null),
+            pageSize: 25,
+            maxPages: 30,
+            concurrency: 4,
+        );
+    }
+
     /** Class / group dropdown — scoped to the active store. */
     public function classes(?int $strStoreId): array
     {
         return $this->cached('classes', $strStoreId, function () use ($strStoreId) {
-            $rows = $this->walkPaged(
-                fn (int $page, int $size) => $this->crm->groups()->classes(
-                    page: $page, size: $size, includeTotal: false, strStoreId: $strStoreId,
-                ),
-            );
-            return $this->normalize($rows, ['CLASS_ID', 'ID'], ['NAME', 'REFERENCE']);
+            return $this->normalize($this->groupsSource($strStoreId), ['CLASS_ID', 'ID'], ['NAME', 'REFERENCE']);
         });
     }
+    
+    // ... update other methods to use groupsSource() ...
 
     /**
      * Teacher dropdown — scoped to the active store.
@@ -53,12 +74,7 @@ class CrmLovProvider
     public function teachers(?int $strStoreId): array
     {
         return $this->cached('teachers', $strStoreId, function () use ($strStoreId) {
-            $rows = $this->walkPaged(
-                fn (int $page, int $size) => $this->crm->groups()->classes(
-                    page: $page, size: $size, includeTotal: false, strStoreId: $strStoreId,
-                ),
-            );
-            return $this->normalize($rows, ['EMPLOYEE_TEACHER_ID'], ['EMPLOYEE_TEACHER_FULL_NAME']);
+            return $this->normalize($this->groupsSource($strStoreId), ['EMPLOYEE_TEACHER_ID'], ['EMPLOYEE_TEACHER_FULL_NAME']);
         });
     }
 
@@ -69,12 +85,7 @@ class CrmLovProvider
     public function classStatuses(?int $strStoreId): array
     {
         return $this->cached('class_statuses', $strStoreId, function () use ($strStoreId) {
-            $rows = $this->walkPaged(
-                fn (int $page, int $size) => $this->crm->groups()->classes(
-                    page: $page, size: $size, includeTotal: false, strStoreId: $strStoreId,
-                ),
-            );
-            return $this->normalize($rows, ['STATUS_ID'], ['STATUS_NAME']);
+            return $this->normalize($this->groupsSource($strStoreId), ['STATUS_ID'], ['STATUS_NAME']);
         });
     }
 
@@ -86,11 +97,7 @@ class CrmLovProvider
     public function schoolYears(?int $strStoreId): array
     {
         return $this->cached('school_years', $strStoreId, function () use ($strStoreId) {
-            $rows = $this->walkPaged(
-                fn (int $page, int $size) => $this->crm->groups()->classes(
-                    page: $page, size: $size, includeTotal: false, strStoreId: $strStoreId,
-                ),
-            );
+            $rows = $this->groupsSource($strStoreId);
             // The classes endpoint returns SCHOOL_YEAR_ID but no SCHOOL_YEAR_NAME.
             // Fall back to "Année #169" so it still reads sensibly in the dropdown.
             $out = [];
@@ -118,29 +125,14 @@ class CrmLovProvider
     public function schoolDepartments(?int $strStoreId): array
     {
         return $this->cached('school_departments', $strStoreId, function () use ($strStoreId) {
-            $rows = $this->walkPaged(
-                fn (int $page, int $size) => $this->crm->groups()->classes(
-                    page: $page, size: $size, includeTotal: false, strStoreId: $strStoreId,
-                ),
-            );
-            return $this->normalize($rows, ['SCHOOL_DEPARTMENT_ID'], ['SCHOOL_DEPARTMENT_NAME']);
+            return $this->normalize($this->groupsSource($strStoreId), ['SCHOOL_DEPARTMENT_ID'], ['SCHOOL_DEPARTMENT_NAME']);
         });
     }
 
-    /**
-     * School stage / cycle dropdown — scoped to the active store.
-     * Source: /groups/classes rows (SCHOOL_STAGE_ID/_NAME). Same defensive
-     * fallback as schoolDepartments().
-     */
     public function schoolStages(?int $strStoreId): array
     {
         return $this->cached('school_stages', $strStoreId, function () use ($strStoreId) {
-            $rows = $this->walkPaged(
-                fn (int $page, int $size) => $this->crm->groups()->classes(
-                    page: $page, size: $size, includeTotal: false, strStoreId: $strStoreId,
-                ),
-            );
-            return $this->normalize($rows, ['SCHOOL_STAGE_ID'], ['SCHOOL_STAGE_NAME']);
+            return $this->normalize($this->groupsSource($strStoreId), ['SCHOOL_STAGE_ID'], ['SCHOOL_STAGE_NAME']);
         });
     }
 
@@ -264,33 +256,23 @@ class CrmLovProvider
     /**
      * Page-walk a /groups/* endpoint until a partial page is returned.
      * Capped at 20 pages = 500 rows, which covers every GLS centre.
+     * Capped at 30 pages = 750 rows, which covers every GLS centre.
      */
     protected function walkPaged(\Closure $fetch): array
     {
         $rows = [];
         $size = 25;        // API hard cap
-        $maxPages = 20;    // 20 × 25 = 500 rows ceiling
+        $maxPages = 30;    // 30 × 25 = 750 rows ceiling
         
         try {
-            // 1. First page synchronously (typical case: 1 page is enough)
-            $first = $fetch(0, $size);
-            $data  = $first['data'] ?? [];
-            foreach ($data as $row) { $rows[] = $row; }
-
-            // 2. If the first page is full, fetch remaining in parallel
-            // Note: Since the closure hides the URL, we'd normally be stuck.
-            // But we can just continue the sequential walk if it's too complex to refactor
-            // every LOV call. However, let's at least make the sequential walk not use a loop
-            // if we can. Actually, pagedScan in HomeschoolClient is perfect for this.
-            
-            // For now, I'll fix the syntax errors and keep it sequential but cleaner.
-            $page = 1;
-            while (count($data) === $size && $page < $maxPages) {
+            $page = 0;
+            $data = [];
+            do {
                 $resp = $fetch($page, $size);
                 $data = $resp['data'] ?? [];
                 foreach ($data as $row) { $rows[] = $row; }
                 $page++;
-            }
+            } while (count($data) === $size && $page < $maxPages);
         } catch (\Throwable) {
             // Swallow
         }
