@@ -53,9 +53,7 @@ class GroupEvolutionService
     /** Window (days) inside which a stop-then-start counts as a transfer. */
     public const CHANGEMENT_WINDOW_DAYS = 30;
 
-    public function __construct(protected Crm $crm)
-    {
-    }
+    public function __construct(protected Crm $crm) {}
 
     /**
      * Build the full evolution report for a center + date range.
@@ -168,8 +166,8 @@ class GroupEvolutionService
             $classId = $alloc['CLASS_ID']   ?? null;
             $service = (string) ($alloc['SERVICE_TYPE_NAME'] ?? '');
             $rawDate = $alloc['EFFECTIVE_DATE_PAYMENT_ALLOCATION']
-                    ?? $alloc['EFFECTIVE_DATE_PAYMENT']
-                    ?? null;
+                ?? $alloc['EFFECTIVE_DATE_PAYMENT']
+                ?? null;
             if (!$sid || !$classId || !$rawDate) continue;
 
             try {
@@ -273,7 +271,7 @@ class GroupEvolutionService
         }
 
         // Sort groups by name so the chart is alphabetically stable across reloads.
-        usort($groups, fn ($a, $b) => strcmp($a['name'], $b['name']));
+        usort($groups, fn($a, $b) => strcmp($a['name'], $b['name']));
 
         $totals = [
             'debuts'      => array_sum(array_column($groups, 'debuts')),
@@ -293,9 +291,9 @@ class GroupEvolutionService
             'fetch_window'          => $fetchStart . ' → ' . $endDate,
             'requested_window'      => $startDate . ' → ' . $endDate,
             'allocations_fetched'   => count($allocations),
-            'allocations_with_class'=> 0,
+            'allocations_with_class' => 0,
             'distinct_class_ids'    => [],
-            'distinct_service_types'=> [],
+            'distinct_service_types' => [],
             'student_class_pairs'   => 0,
             // Computed bucket totals BEFORE the per-class rollup loop, so we
             // can tell whether the rollup itself is dropping data or whether
@@ -349,15 +347,13 @@ class GroupEvolutionService
         try {
             return $this->crm->client()->pagedScan(
                 path: '/api/external/v1/groups/classes',
-                baseQuery: array_filter(['strStoreId' => $strStoreId], fn ($v) => $v !== null),
-                pageSize: 25,
-                maxPages: 20,
+                baseQuery: array_filter(['strStoreId' => $strStoreId], fn($v) => $v !== null),
+                pageSize: 100,
+                maxPages: 10,
                 concurrency: 3,
+                interBatchDelayMs: 200,
             );
         } catch (CrmException $e) {
-            // Persist the error so the view can distinguish "rate limited"
-            // from "actually no classes". 429 / RATE_LIMITED is by far the
-            // most common cause of empty groups during a heavy session.
             $this->lastFetchError = $e->status === 429 ? 'rate_limited' : ('http_' . $e->status);
             return [];
         } catch (\Throwable) {
@@ -381,7 +377,6 @@ class GroupEvolutionService
      */
     protected function fetchAllocations(?int $strStoreId, string $startDate, string $endDate): array
     {
-        // 1) Primary path: single ranged query, page-walked via pagedScan.
         try {
             $rows = $this->crm->client()->pagedScan(
                 path: '/api/external/v1/payment-allocations',
@@ -389,18 +384,16 @@ class GroupEvolutionService
                     'strStoreId' => $strStoreId,
                     'startDate'  => $startDate,
                     'endDate'    => $endDate,
-                ], fn ($v) => $v !== null),
-                pageSize: 25,
-                maxPages: 80,    // 80 × 25 = 2000 allocations per range — plenty
+                ], fn($v) => $v !== null),
+                pageSize: 100,
+                maxPages: 20,
                 concurrency: 3,
+                interBatchDelayMs: 200,
             );
             if (!empty($rows)) return $rows;
         } catch (\Throwable) {
-            // fall through to fallback
         }
 
-        // 2) Fallback: per-month fan-out via parallelFetch. Slower but resilient
-        //    if the unsliced query was rejected by the API gateway.
         try {
             $start = Carbon::parse($startDate)->startOfMonth();
             $end   = Carbon::parse($endDate)->startOfMonth();
@@ -412,7 +405,7 @@ class GroupEvolutionService
         $variants = [];
         $cursor = $start->copy();
         while ($cursor->lte($end)) {
-            for ($p = 0; $p < 4; $p++) {
+            for ($p = 0; $p < 2; $p++) {
                 $variants[] = [
                     'page'      => $p,
                     'startDate' => $cursor->copy()->startOfMonth()->toDateString(),
@@ -425,10 +418,10 @@ class GroupEvolutionService
         try {
             return $this->crm->client()->parallelFetch(
                 path: '/api/external/v1/payment-allocations',
-                baseQuery: array_filter(['strStoreId' => $strStoreId], fn ($v) => $v !== null),
+                baseQuery: array_filter(['strStoreId' => $strStoreId], fn($v) => $v !== null),
                 variantQueries: $variants,
-                pageSize: 25,
-                concurrency: 3,
+                pageSize: 50,
+                concurrency: 4,
             );
         } catch (\Throwable) {
             return [];
@@ -452,8 +445,8 @@ class GroupEvolutionService
             if (!$sid || !$classId) continue;
 
             $date = $alloc['EFFECTIVE_DATE_PAYMENT_ALLOCATION']
-                 ?? $alloc['EFFECTIVE_DATE_PAYMENT']
-                 ?? null;
+                ?? $alloc['EFFECTIVE_DATE_PAYMENT']
+                ?? null;
             if (!$date) continue;
 
             try {
@@ -531,17 +524,17 @@ class GroupEvolutionService
         }
 
         try {
-            // Pull unpaid collection rows whose due date falls in the range.
             $collection = $this->crm->client()->pagedScan(
                 path: '/api/external/v1/payment-collection',
                 baseQuery: array_filter([
                     'strStoreId'       => $strStoreId,
                     'dueDateStartDate' => $startDate,
                     'dueDateEndDate'   => $endDate,
-                ], fn ($v) => $v !== null),
-                pageSize: 25,
-                maxPages: 80,
+                ], fn($v) => $v !== null),
+                pageSize: 100,
+                maxPages: 20,
                 concurrency: 3,
+                interBatchDelayMs: 200,
             );
         } catch (\Throwable) {
             $collection = [];
