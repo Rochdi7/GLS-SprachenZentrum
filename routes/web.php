@@ -120,6 +120,24 @@ Route::get('/debug-crm-api-centers', function() {
     }
 })->middleware('auth');
 
+Route::get('/debug-crm-token', function() {
+    $crm = app(\App\Services\Crm\Crm::class);
+    try {
+        $resp = $crm->client()->get('/api/external/v1/lov/banks', ['limit' => 1]);
+        return [
+            'success' => true,
+            'token_first_chars' => substr(config('services.crm.token'), 0, 8) . '...',
+            'can_fetch_banks' => true,
+            'response' => $resp,
+        ];
+    } catch (\Throwable $e) {
+        return [
+            'success' => false,
+            'error' => $e->getMessage(),
+        ];
+    }
+})->middleware('auth');
+
 Route::get('/certificates/download/{token}', [CertificatePublicController::class, 'download'])
     ->name('certificates.public.download');
 
