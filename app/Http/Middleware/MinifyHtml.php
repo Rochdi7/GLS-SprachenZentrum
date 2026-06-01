@@ -37,6 +37,11 @@ class MinifyHtml
             return false;
         }
 
+        // Skip sitemap.xml
+        if ($request->path() === 'sitemap.xml') {
+            return false;
+        }
+
         // Skip AJAX/JSON requests
         if ($request->ajax() || $request->wantsJson()) {
             return false;
