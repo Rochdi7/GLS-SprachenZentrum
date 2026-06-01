@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
-    <url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en" />
@@ -9,8 +9,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr" />
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en" />
@@ -19,8 +19,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr" />
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en" />
@@ -29,8 +29,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr" />
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en" />
@@ -39,8 +39,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr" />
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/about</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/about" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/about" />
@@ -49,8 +49,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/about" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/about</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/about" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/about" />
@@ -59,8 +59,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/about" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/about</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/about" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/about" />
@@ -69,8 +69,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/about" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/about</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/about" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/about" />
@@ -79,8 +79,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/about" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/faq</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/faq" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/faq" />
@@ -89,8 +89,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/faq" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/faq</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/faq" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/faq" />
@@ -99,8 +99,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/faq" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/faq</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/faq" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/faq" />
@@ -109,8 +109,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/faq" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/faq</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/faq" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/faq" />
@@ -119,8 +119,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/faq" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/contact</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/contact" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/contact" />
@@ -129,8 +129,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/contact" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/contact</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/contact" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/contact" />
@@ -139,8 +139,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/contact" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/contact</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/contact" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/contact" />
@@ -149,8 +149,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/contact" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/contact</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/contact" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/contact" />
@@ -159,8 +159,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/contact" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/intensive-courses</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/intensive-courses" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/intensive-courses" />
@@ -169,8 +169,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/intensive-courses" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/intensive-courses</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/intensive-courses" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/intensive-courses" />
@@ -179,8 +179,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/intensive-courses" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/intensive-courses</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/intensive-courses" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/intensive-courses" />
@@ -189,8 +189,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/intensive-courses" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/intensive-courses</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/intensive-courses" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/intensive-courses" />
@@ -199,8 +199,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/intensive-courses" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/online-courses</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/online-courses" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/online-courses" />
@@ -209,8 +209,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/online-courses" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/online-courses</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/online-courses" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/online-courses" />
@@ -219,8 +219,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/online-courses" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/online-courses</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/online-courses" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/online-courses" />
@@ -229,8 +229,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/online-courses" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/online-courses</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/online-courses" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/online-courses" />
@@ -239,8 +239,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/online-courses" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/pricing</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/pricing" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/pricing" />
@@ -249,8 +249,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/pricing" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/pricing</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/pricing" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/pricing" />
@@ -259,8 +259,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/pricing" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/pricing</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/pricing" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/pricing" />
@@ -269,8 +269,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/pricing" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/pricing</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/pricing" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/pricing" />
@@ -279,8 +279,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/pricing" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/exams/gls</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/exams/gls" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/exams/gls" />
@@ -289,8 +289,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/exams/gls" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/exams/gls</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/exams/gls" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/exams/gls" />
@@ -299,8 +299,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/exams/gls" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/exams/gls</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/exams/gls" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/exams/gls" />
@@ -309,8 +309,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/exams/gls" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/exams/gls</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/exams/gls" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/exams/gls" />
@@ -319,8 +319,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/exams/gls" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/exams/osd</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/exams/osd" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/exams/osd" />
@@ -329,8 +329,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/exams/osd" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/exams/osd</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/exams/osd" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/exams/osd" />
@@ -339,8 +339,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/exams/osd" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/exams/osd</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/exams/osd" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/exams/osd" />
@@ -349,8 +349,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/exams/osd" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/exams/osd</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/exams/osd" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/exams/osd" />
@@ -359,8 +359,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/exams/osd" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/exams/goethe</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/exams/goethe" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/exams/goethe" />
@@ -369,8 +369,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/exams/goethe" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/exams/goethe</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/exams/goethe" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/exams/goethe" />
@@ -379,8 +379,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/exams/goethe" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/exams/goethe</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/exams/goethe" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/exams/goethe" />
@@ -389,8 +389,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/exams/goethe" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/exams/goethe</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/exams/goethe" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/exams/goethe" />
@@ -399,8 +399,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/exams/goethe" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/blog</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/blog" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/blog" />
@@ -409,8 +409,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/blog" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/blog</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/blog" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/blog" />
@@ -419,8 +419,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/blog" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/blog</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/blog" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/blog" />
@@ -429,8 +429,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/blog" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/blog</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/blog" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/blog" />
@@ -439,8 +439,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/blog" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/student-stories</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/student-stories" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/student-stories" />
@@ -449,8 +449,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/student-stories" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/student-stories</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/student-stories" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/student-stories" />
@@ -459,8 +459,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/student-stories" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/student-stories</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/student-stories" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/student-stories" />
@@ -469,8 +469,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/student-stories" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/student-stories</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/student-stories" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/student-stories" />
@@ -479,8 +479,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/student-stories" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/certificate-check</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/certificate-check" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/certificate-check" />
@@ -489,8 +489,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/certificate-check" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/certificate-check</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/certificate-check" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/certificate-check" />
@@ -499,8 +499,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/certificate-check" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/certificate-check</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/certificate-check" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/certificate-check" />
@@ -509,8 +509,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/certificate-check" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/certificate-check</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/certificate-check" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/certificate-check" />
@@ -519,8 +519,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/certificate-check" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/niveaux/a1</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/a1" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/a1" />
@@ -529,8 +529,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/a1" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/niveaux/a1</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/a1" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/a1" />
@@ -539,8 +539,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/a1" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/niveaux/a1</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/a1" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/a1" />
@@ -549,8 +549,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/a1" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/niveaux/a1</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/a1" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/a1" />
@@ -559,8 +559,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/a1" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/niveaux/a2</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/a2" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/a2" />
@@ -569,8 +569,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/a2" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/niveaux/a2</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/a2" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/a2" />
@@ -579,8 +579,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/a2" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/niveaux/a2</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/a2" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/a2" />
@@ -589,8 +589,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/a2" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/niveaux/a2</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/a2" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/a2" />
@@ -599,8 +599,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/a2" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/niveaux/b1</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/b1" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/b1" />
@@ -609,8 +609,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/b1" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/niveaux/b1</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/b1" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/b1" />
@@ -619,8 +619,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/b1" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/niveaux/b1</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/b1" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/b1" />
@@ -629,8 +629,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/b1" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/niveaux/b1</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/b1" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/b1" />
@@ -639,8 +639,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/b1" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/niveaux/b2</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/b2" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/b2" />
@@ -649,8 +649,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/b2" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/niveaux/b2</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/b2" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/b2" />
@@ -659,8 +659,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/b2" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/niveaux/b2</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/b2" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/b2" />
@@ -669,8 +669,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/b2" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/niveaux/b2</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/niveaux/b2" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/niveaux/b2" />
@@ -679,8 +679,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/niveaux/b2" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs" />
@@ -689,8 +689,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/studienkollegs" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs" />
@@ -699,8 +699,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/studienkollegs" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs" />
@@ -709,8 +709,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/studienkollegs" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs" />
@@ -719,8 +719,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/studienkollegs" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/discover-your-level</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/discover-your-level" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/discover-your-level" />
@@ -729,8 +729,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/discover-your-level" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/discover-your-level</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/discover-your-level" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/discover-your-level" />
@@ -739,8 +739,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/discover-your-level" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/discover-your-level</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/discover-your-level" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/discover-your-level" />
@@ -749,8 +749,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/discover-your-level" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/discover-your-level</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/discover-your-level" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/discover-your-level" />
@@ -759,8 +759,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/discover-your-level" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/terms</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/terms" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/terms" />
@@ -769,8 +769,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/terms" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/terms</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/terms" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/terms" />
@@ -779,8 +779,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/terms" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/terms</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/terms" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/terms" />
@@ -789,8 +789,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/terms" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/terms</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/terms" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/terms" />
@@ -799,8 +799,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/terms" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/privacy</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/privacy" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/privacy" />
@@ -809,8 +809,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/privacy" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/privacy</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/privacy" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/privacy" />
@@ -819,8 +819,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/privacy" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/privacy</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/privacy" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/privacy" />
@@ -829,8 +829,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/privacy" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/privacy</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/privacy" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/privacy" />
@@ -839,8 +839,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/privacy" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/partners/fc-marokko</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/partners/fc-marokko" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/partners/fc-marokko" />
@@ -849,8 +849,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/partners/fc-marokko" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/partners/fc-marokko</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/partners/fc-marokko" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/partners/fc-marokko" />
@@ -859,8 +859,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/partners/fc-marokko" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/partners/fc-marokko</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/partners/fc-marokko" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/partners/fc-marokko" />
@@ -869,8 +869,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/partners/fc-marokko" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/partners/fc-marokko</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/partners/fc-marokko" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/partners/fc-marokko" />
@@ -879,8 +879,8 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://gls-sprachzentrum.ma/fr/partners/fc-marokko" />
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-fh-kiel</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-fh-kiel" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-fh-kiel" />
@@ -890,8 +890,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-fh-kiel</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-fh-kiel" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-fh-kiel" />
@@ -901,8 +901,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-an-der-fh-kiel</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-fh-kiel" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-fh-kiel" />
@@ -912,8 +912,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-an-der-fh-kiel</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-fh-kiel" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-fh-kiel" />
@@ -923,8 +923,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-kassel</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-kassel" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-kassel" />
@@ -934,8 +934,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-kassel</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-kassel" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-kassel" />
@@ -945,8 +945,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-an-der-universitat-kassel</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-kassel" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-kassel" />
@@ -956,8 +956,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-an-der-universitat-kassel</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-kassel" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-kassel" />
@@ -967,8 +967,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-mittelhessen-universitat-marburg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-mittelhessen-universitat-marburg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-mittelhessen-universitat-marburg" />
@@ -978,8 +978,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-mittelhessen-universitat-marburg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-mittelhessen-universitat-marburg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-mittelhessen-universitat-marburg" />
@@ -989,8 +989,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-mittelhessen-universitat-marburg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-mittelhessen-universitat-marburg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-mittelhessen-universitat-marburg" />
@@ -1000,8 +1000,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-mittelhessen-universitat-marburg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-mittelhessen-universitat-marburg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-mittelhessen-universitat-marburg" />
@@ -1011,8 +1011,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-hochschule-wismar</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-hochschule-wismar" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-hochschule-wismar" />
@@ -1022,8 +1022,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-hochschule-wismar</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-hochschule-wismar" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-hochschule-wismar" />
@@ -1033,8 +1033,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-an-der-hochschule-wismar</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-hochschule-wismar" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-hochschule-wismar" />
@@ -1044,8 +1044,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-an-der-hochschule-wismar</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-hochschule-wismar" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-hochschule-wismar" />
@@ -1055,8 +1055,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-hannover</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-hannover" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-hannover" />
@@ -1066,8 +1066,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-hannover</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-hannover" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-hannover" />
@@ -1077,8 +1077,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-an-der-universitat-hannover</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-hannover" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-hannover" />
@@ -1088,8 +1088,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-an-der-universitat-hannover</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-hannover" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-hannover" />
@@ -1099,8 +1099,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-der-johannes-gutenberg-universitat-mainz</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-der-johannes-gutenberg-universitat-mainz" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-der-johannes-gutenberg-universitat-mainz" />
@@ -1110,8 +1110,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-der-johannes-gutenberg-universitat-mainz</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-der-johannes-gutenberg-universitat-mainz" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-der-johannes-gutenberg-universitat-mainz" />
@@ -1121,8 +1121,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-der-johannes-gutenberg-universitat-mainz</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-der-johannes-gutenberg-universitat-mainz" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-der-johannes-gutenberg-universitat-mainz" />
@@ -1132,8 +1132,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-der-johannes-gutenberg-universitat-mainz</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-der-johannes-gutenberg-universitat-mainz" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-der-johannes-gutenberg-universitat-mainz" />
@@ -1143,8 +1143,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/internationales-studienkolleg-der-hochschule-kaiserslautern</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/internationales-studienkolleg-der-hochschule-kaiserslautern" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/internationales-studienkolleg-der-hochschule-kaiserslautern" />
@@ -1154,8 +1154,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/internationales-studienkolleg-der-hochschule-kaiserslautern</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/internationales-studienkolleg-der-hochschule-kaiserslautern" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/internationales-studienkolleg-der-hochschule-kaiserslautern" />
@@ -1165,8 +1165,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/internationales-studienkolleg-der-hochschule-kaiserslautern</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/internationales-studienkolleg-der-hochschule-kaiserslautern" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/internationales-studienkolleg-der-hochschule-kaiserslautern" />
@@ -1176,8 +1176,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/internationales-studienkolleg-der-hochschule-kaiserslautern</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/internationales-studienkolleg-der-hochschule-kaiserslautern" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/internationales-studienkolleg-der-hochschule-kaiserslautern" />
@@ -1187,8 +1187,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/universitat-leipzig-studienkolleg-sachsen</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/universitat-leipzig-studienkolleg-sachsen" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/universitat-leipzig-studienkolleg-sachsen" />
@@ -1198,8 +1198,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/universitat-leipzig-studienkolleg-sachsen</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/universitat-leipzig-studienkolleg-sachsen" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/universitat-leipzig-studienkolleg-sachsen" />
@@ -1209,8 +1209,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/universitat-leipzig-studienkolleg-sachsen</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/universitat-leipzig-studienkolleg-sachsen" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/universitat-leipzig-studienkolleg-sachsen" />
@@ -1220,8 +1220,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/universitat-leipzig-studienkolleg-sachsen</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/universitat-leipzig-studienkolleg-sachsen" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/universitat-leipzig-studienkolleg-sachsen" />
@@ -1231,8 +1231,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/hochschule-zittaugorlitz-studienkolleg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/hochschule-zittaugorlitz-studienkolleg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/hochschule-zittaugorlitz-studienkolleg" />
@@ -1242,8 +1242,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/hochschule-zittaugorlitz-studienkolleg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/hochschule-zittaugorlitz-studienkolleg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/hochschule-zittaugorlitz-studienkolleg" />
@@ -1253,8 +1253,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/hochschule-zittaugorlitz-studienkolleg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/hochschule-zittaugorlitz-studienkolleg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/hochschule-zittaugorlitz-studienkolleg" />
@@ -1264,8 +1264,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/hochschule-zittaugorlitz-studienkolleg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/hochschule-zittaugorlitz-studienkolleg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/hochschule-zittaugorlitz-studienkolleg" />
@@ -1275,8 +1275,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-martin-luther-universitat-halle-wittenberg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-martin-luther-universitat-halle-wittenberg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-martin-luther-universitat-halle-wittenberg" />
@@ -1286,8 +1286,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-martin-luther-universitat-halle-wittenberg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-martin-luther-universitat-halle-wittenberg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-martin-luther-universitat-halle-wittenberg" />
@@ -1297,8 +1297,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-an-der-martin-luther-universitat-halle-wittenberg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-martin-luther-universitat-halle-wittenberg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-martin-luther-universitat-halle-wittenberg" />
@@ -1308,8 +1308,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-an-der-martin-luther-universitat-halle-wittenberg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-martin-luther-universitat-halle-wittenberg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-martin-luther-universitat-halle-wittenberg" />
@@ -1319,8 +1319,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-hamburg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-hamburg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-hamburg" />
@@ -1330,8 +1330,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-hamburg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-hamburg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-hamburg" />
@@ -1341,8 +1341,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-hamburg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-hamburg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-hamburg" />
@@ -1352,8 +1352,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-hamburg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-hamburg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-hamburg" />
@@ -1363,8 +1363,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-fu-berlin</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-fu-berlin" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-fu-berlin" />
@@ -1374,8 +1374,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-fu-berlin</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-fu-berlin" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-fu-berlin" />
@@ -1385,8 +1385,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-an-der-fu-berlin</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-fu-berlin" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-fu-berlin" />
@@ -1396,8 +1396,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-an-der-fu-berlin</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-fu-berlin" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-fu-berlin" />
@@ -1407,8 +1407,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-tu-darmstadt</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-tu-darmstadt" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-tu-darmstadt" />
@@ -1418,8 +1418,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-tu-darmstadt</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-tu-darmstadt" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-tu-darmstadt" />
@@ -1429,8 +1429,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-an-der-tu-darmstadt</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-tu-darmstadt" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-tu-darmstadt" />
@@ -1440,8 +1440,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-an-der-tu-darmstadt</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-tu-darmstadt" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-tu-darmstadt" />
@@ -1451,8 +1451,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-des-kit-karlsruher-institut-fur-technologie</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-des-kit-karlsruher-institut-fur-technologie" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-des-kit-karlsruher-institut-fur-technologie" />
@@ -1462,8 +1462,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-des-kit-karlsruher-institut-fur-technologie</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-des-kit-karlsruher-institut-fur-technologie" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-des-kit-karlsruher-institut-fur-technologie" />
@@ -1473,8 +1473,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-des-kit-karlsruher-institut-fur-technologie</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-des-kit-karlsruher-institut-fur-technologie" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-des-kit-karlsruher-institut-fur-technologie" />
@@ -1484,8 +1484,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-des-kit-karlsruher-institut-fur-technologie</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-des-kit-karlsruher-institut-fur-technologie" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-des-kit-karlsruher-institut-fur-technologie" />
@@ -1495,8 +1495,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-des-okumenischen-studienwerks-ev</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-des-okumenischen-studienwerks-ev" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-des-okumenischen-studienwerks-ev" />
@@ -1506,8 +1506,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-des-okumenischen-studienwerks-ev</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-des-okumenischen-studienwerks-ev" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-des-okumenischen-studienwerks-ev" />
@@ -1517,8 +1517,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-des-okumenischen-studienwerks-ev</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-des-okumenischen-studienwerks-ev" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-des-okumenischen-studienwerks-ev" />
@@ -1528,8 +1528,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-des-okumenischen-studienwerks-ev</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-des-okumenischen-studienwerks-ev" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-des-okumenischen-studienwerks-ev" />
@@ -1539,8 +1539,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-coburg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-coburg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-coburg" />
@@ -1550,8 +1550,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-coburg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-coburg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-coburg" />
@@ -1561,8 +1561,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-coburg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-coburg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-coburg" />
@@ -1572,8 +1572,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-coburg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-coburg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-coburg" />
@@ -1583,8 +1583,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/landesstudienkolleg-sachsen-anhalt-hochschule-anhalt</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/landesstudienkolleg-sachsen-anhalt-hochschule-anhalt" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/landesstudienkolleg-sachsen-anhalt-hochschule-anhalt" />
@@ -1594,8 +1594,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/landesstudienkolleg-sachsen-anhalt-hochschule-anhalt</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/landesstudienkolleg-sachsen-anhalt-hochschule-anhalt" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/landesstudienkolleg-sachsen-anhalt-hochschule-anhalt" />
@@ -1605,8 +1605,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/landesstudienkolleg-sachsen-anhalt-hochschule-anhalt</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/landesstudienkolleg-sachsen-anhalt-hochschule-anhalt" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/landesstudienkolleg-sachsen-anhalt-hochschule-anhalt" />
@@ -1616,8 +1616,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/landesstudienkolleg-sachsen-anhalt-hochschule-anhalt</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/landesstudienkolleg-sachsen-anhalt-hochschule-anhalt" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/landesstudienkolleg-sachsen-anhalt-hochschule-anhalt" />
@@ -1627,8 +1627,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-htwg-konstanz</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-htwg-konstanz" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-htwg-konstanz" />
@@ -1638,8 +1638,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-htwg-konstanz</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-htwg-konstanz" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-htwg-konstanz" />
@@ -1649,8 +1649,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-an-der-htwg-konstanz</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-htwg-konstanz" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-htwg-konstanz" />
@@ -1660,8 +1660,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-an-der-htwg-konstanz</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-htwg-konstanz" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-htwg-konstanz" />
@@ -1671,8 +1671,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-goethe-universitat-frankfurt</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-goethe-universitat-frankfurt" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-goethe-universitat-frankfurt" />
@@ -1682,8 +1682,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-goethe-universitat-frankfurt</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-goethe-universitat-frankfurt" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-goethe-universitat-frankfurt" />
@@ -1693,8 +1693,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-an-der-goethe-universitat-frankfurt</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-goethe-universitat-frankfurt" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-goethe-universitat-frankfurt" />
@@ -1704,8 +1704,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-an-der-goethe-universitat-frankfurt</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-goethe-universitat-frankfurt" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-goethe-universitat-frankfurt" />
@@ -1715,8 +1715,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-heidelberg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-heidelberg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-heidelberg" />
@@ -1726,8 +1726,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-heidelberg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-heidelberg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-heidelberg" />
@@ -1737,8 +1737,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-an-der-universitat-heidelberg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-heidelberg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-heidelberg" />
@@ -1748,8 +1748,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-an-der-universitat-heidelberg</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-universitat-heidelberg" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-universitat-heidelberg" />
@@ -1759,8 +1759,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-tu-berlin</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-tu-berlin" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-tu-berlin" />
@@ -1770,8 +1770,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-tu-berlin</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-tu-berlin" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-tu-berlin" />
@@ -1781,8 +1781,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-an-der-tu-berlin</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-tu-berlin" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-tu-berlin" />
@@ -1792,8 +1792,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-an-der-tu-berlin</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-an-der-tu-berlin" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-an-der-tu-berlin" />
@@ -1803,8 +1803,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-nordhausen-jena-weimar-erfurt-ilmenau</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-nordhausen-jena-weimar-erfurt-ilmenau" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-nordhausen-jena-weimar-erfurt-ilmenau" />
@@ -1814,8 +1814,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-nordhausen-jena-weimar-erfurt-ilmenau</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-nordhausen-jena-weimar-erfurt-ilmenau" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-nordhausen-jena-weimar-erfurt-ilmenau" />
@@ -1825,8 +1825,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/de/studienkollegs/studienkolleg-nordhausen-jena-weimar-erfurt-ilmenau</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-nordhausen-jena-weimar-erfurt-ilmenau" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-nordhausen-jena-weimar-erfurt-ilmenau" />
@@ -1836,8 +1836,8 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
-    <url>
+  </url>
+  <url>
     <loc>https://gls-sprachzentrum.ma/ar/studienkollegs/studienkolleg-nordhausen-jena-weimar-erfurt-ilmenau</loc>
     <xhtml:link rel="alternate" hreflang="fr" href="https://gls-sprachzentrum.ma/fr/studienkollegs/studienkolleg-nordhausen-jena-weimar-erfurt-ilmenau" />
     <xhtml:link rel="alternate" hreflang="en" href="https://gls-sprachzentrum.ma/en/studienkollegs/studienkolleg-nordhausen-jena-weimar-erfurt-ilmenau" />
@@ -1847,5 +1847,5 @@
     <lastmod>2026-05-11T15:49:25+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-            </url>
+  </url>
 </urlset>

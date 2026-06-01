@@ -31,6 +31,24 @@ class RouteServiceProvider extends ServiceProvider
 
         // Define routes for API and web
         $this->routes(function () {
+            // Sitemap: no web/session middleware — must be application/xml, not text/html
+            Route::get('/sitemap.xml', function () {
+                $path = public_path('sitemap.xml');
+
+                if (! is_readable($path)) {
+                    abort(404, 'Sitemap not found.');
+                }
+
+                return response(
+                    file_get_contents($path),
+                    200,
+                    [
+                        'Content-Type' => 'application/xml; charset=UTF-8',
+                        'Cache-Control' => 'public, max-age=3600',
+                    ]
+                );
+            })->name('sitemap');
+
             // API routes
             Route::middleware('api')
                 ->prefix('api')

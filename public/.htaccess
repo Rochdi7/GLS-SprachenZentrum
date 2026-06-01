@@ -3,6 +3,10 @@
     Header always unset X-Powered-By
 </IfModule>
 
+<IfModule mod_mime.c>
+    AddType application/xml .xml
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
@@ -29,8 +33,8 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Always route sitemap.xml through Laravel for correct headers
-    RewriteRule ^sitemap\.xml$ index.php [L]
+    # Serve sitemap.xml as a static file (application/xml, not HTML)
+    RewriteRule ^sitemap\.xml$ - [L]
 
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
