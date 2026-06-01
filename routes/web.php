@@ -101,7 +101,7 @@ Route::prefix('api')->group(function () {
     Route::get('/groups/dates/{site_id}/{level}', [GroupApiController::class, 'getDates']);
 });
 
-Route::get('/debug-crm-api-centers', function() {
+Route::get('/debug-crm-api-centers', function () {
     $crm = app(\App\Services\Crm\Crm::class);
     // Use raw client to hit the lov endpoint directly
     try {
@@ -120,7 +120,7 @@ Route::get('/debug-crm-api-centers', function() {
     }
 })->middleware('auth');
 
-Route::get('/debug-crm-token', function() {
+Route::get('/debug-crm-token', function () {
     $crm = app(\App\Services\Crm\Crm::class);
     try {
         $resp = $crm->client()->get('/api/external/v1/lov/banks', ['limit' => 1]);
@@ -138,14 +138,14 @@ Route::get('/debug-crm-token', function() {
     }
 })->middleware('auth');
 
-Route::get('/debug-crm-raw-data', function() {
+Route::get('/debug-crm-raw-data', function () {
     $crm = app(\App\Services\Crm\Crm::class);
     try {
         // Scan many classes to find all unique Store IDs
         $resp = $crm->client()->get('/api/external/v1/groups/classes', ['page' => 0, 'size' => 500]);
         $data = $resp['data'] ?? [];
         $stores = [];
-        
+
         foreach ($data as $class) {
             $sid = $class['STR_STORE_ID'] ?? 'MISSING';
             if (!isset($stores[$sid])) {
@@ -156,7 +156,7 @@ Route::get('/debug-crm-raw-data', function() {
                 ];
             }
         }
-        
+
         return [
             'success' => true,
             'discovered_stores' => array_values($stores),
@@ -166,6 +166,21 @@ Route::get('/debug-crm-raw-data', function() {
         return ['success' => false, 'error' => $e->getMessage()];
     }
 })->middleware('auth');
+
+/**
+ * =============================
+ * Sitemap route (handles Content-Type header)
+ * =============================
+ */
+Route::get('/sitemap.xml', function () {
+    $path = public_path('sitemap.xml');
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->file($path, [
+        'Content-Type' => 'application/xml; charset=utf-8'
+    ]);
+})->name('sitemap');
 
 Route::get('/certificates/download/{token}', [CertificatePublicController::class, 'download'])
     ->name('certificates.public.download');

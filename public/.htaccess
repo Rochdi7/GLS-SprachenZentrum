@@ -1,11 +1,6 @@
 <IfModule mod_headers.c>
     Header unset X-Powered-By
     Header always unset X-Powered-By
-    
-    # Set correct Content-Type for sitemap.xml
-    <FilesMatch "^sitemap\.xml$">
-        Header set Content-Type "application/xml; charset=utf-8"
-    </FilesMatch>
 </IfModule>
 
 <IfModule mod_rewrite.c>
@@ -33,6 +28,9 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
+
+    # Always route sitemap.xml through Laravel for correct headers
+    RewriteRule ^sitemap\.xml$ index.php [L]
 
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
