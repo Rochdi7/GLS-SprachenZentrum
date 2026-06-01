@@ -87,7 +87,7 @@ class CrmInsightsController extends BaseCrmController
                 ->sortByDesc('DATE_CREATION')
                 ->values()
                 ->all();
-            $report['total_amount'] = array_sum(array_map(fn ($a) => (float) ($a['AMOUNT'] ?? 0), $report['advances']));
+            $report['total_amount'] = array_sum(array_map(fn($a) => (float) ($a['AMOUNT'] ?? 0), $report['advances']));
         }
 
         return $this->view('backoffice.crm.insights.advances', [
@@ -128,7 +128,7 @@ class CrmInsightsController extends BaseCrmController
      *
      * For the active center + date range, shows new students (inscription
      * paid in range), departures (paid then missed next month), transfers
-     * (same student paying a different group within 30 days), and the
+     * (same student paying a different class within 30 days), and the
      * current active count per group.
      */
     public function groupEvolution(Request $r, GroupEvolutionService $svc): View
@@ -139,14 +139,20 @@ class CrmInsightsController extends BaseCrmController
         $startDate = $r->query('startDate') ?: now()->subDays(15)->toDateString();
         $endDate   = $r->query('endDate')   ?: now()->toDateString();
 
-        $report = $svc->build($storeId, $startDate, $endDate, $bustCache);
+        \Illuminate\Support\Facades\Log::info('CrmInsightsController: groupEvolution', [
+            'storeId' => $storeId,
+            'currentSite' => $this->centers->currentSite(),
+            'scopedCrmToken' => substr((string) $this->scopedCrm()->client()->getToken(), -8),
+        ]);
+
+        $report = $svc->build($this->scopedCrm(), $storeId, $startDate, $endDate, $bustCache);
 
         // Snapshot the unfiltered list before mutating — feeds the multi-select.
         $allGroupsForFilter = $report['groups'];
 
         $selectedClassIds = collect(explode(',', (string) $r->query('classIds', '')))
-            ->map(fn ($v) => (int) trim($v))
-            ->filter(fn ($v) => $v > 0)
+            ->map(fn($v) => (int) trim($v))
+            ->filter(fn($v) => $v > 0)
             ->values()
             ->all();
 
@@ -154,7 +160,7 @@ class CrmInsightsController extends BaseCrmController
             $allow = array_flip($selectedClassIds);
             $filteredGroups = array_values(array_filter(
                 $report['groups'],
-                fn ($g) => isset($allow[$g['class_id']]),
+                fn($g) => isset($allow[$g['class_id']]),
             ));
             // Recompute totals from the visible slice so KPI cards stay coherent.
             $report['totals'] = [
