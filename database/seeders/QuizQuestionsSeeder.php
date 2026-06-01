@@ -1097,9 +1097,9 @@ class QuizQuestionsSeeder extends Seeder
             QuizQuestion::query()->forceDelete();
             Quiz::query()->forceDelete();
 
-            foreach ($quizzes as $code => $quizData) {
+            foreach ($quizzes as $level => $quizData) {
                 $quiz = Quiz::create([
-                    'code' => $code,
+                    'level' => $level,
                     'title' => $quizData['title'],
                     'description' => $quizData['description'],
                     'time_limit_seconds' => $quizData['time_limit_seconds'],
