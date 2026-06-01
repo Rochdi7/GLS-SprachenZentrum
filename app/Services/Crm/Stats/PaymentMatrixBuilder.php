@@ -33,39 +33,63 @@ class PaymentMatrixBuilder
         ?int $schoolYearId = null,
         array $classMeta = [],
     ): array {
+        set_time_limit(600); // Increase max execution time to 10 minutes
+
         // 1) Normalize the student list.
         $students = $this->normalizeStudents($rawStudents);
         if (empty($students)) {
             return $this->emptyResponse($classId, $classMeta);
         }
 
-        // 2) Fetch payment allocations for each student in parallel.
-        //    The API doesn't support classId, so we use studentId instead.
+        // 2) Single paged scan of /payment-allocations for the whole class.
+        //    Per-student fan-out was tripping the upstream rate limit; classId
+        //    narrows server-side so we pull every payment row at once.
         $baseQuery = array_filter([
             'strStoreId'   => $strStoreId,
             'schoolYearId' => $schoolYearId,
         ], fn($v) => $v !== null);
 
-        // Create variants for each student
-        $variantQueries = array_map(fn($student) => ['studentId' => $student['student_id']], $students);
-
         $allocRows = [];
         try {
-            // Fetch all payment allocations in parallel with reduced concurrency to avoid rate limiting
-            $allocRows = $crm->client()->parallelFetch(
+            // First try with classId filter
+            $allocRows = $crm->client()->pagedScan(
                 path: '/api/external/v1/payment-allocations',
-                baseQuery: $baseQuery,
-                variantQueries: $variantQueries,
+                baseQuery: $baseQuery + ['classId' => $classId],
                 pageSize: 25,
+                maxPages: 40,
                 concurrency: 2,
-                interBatchDelayMs: 500,
+                interBatchDelayMs: 400,
             );
         } catch (\Throwable $e) {
-            // Log the error and continue with empty allocations
-            \Illuminate\Support\Facades\Log::warning("Failed to fetch payment allocations: " . $e->getMessage(), [
+            \Illuminate\Support\Facades\Log::warning("Failed to fetch payment-allocations with classId: {$e->getMessage()}, falling back to full scan and filter", [
                 'classId' => $classId,
                 'trace' => $e->getTraceAsString(),
             ]);
+
+            try {
+                // Fall back to full scan without classId, then filter by studentId locally
+                $allocRows = $crm->client()->pagedScan(
+                    path: '/api/external/v1/payment-allocations',
+                    baseQuery: $baseQuery,
+                    pageSize: 25,
+                    maxPages: 40,
+                    concurrency: 2,
+                    interBatchDelayMs: 400,
+                );
+
+                // Now filter allocRows to only include our class's students
+                $studentIds = array_flip(array_map(fn($s) => $s['student_id'], $students));
+                $allocRows = array_filter($allocRows, function ($row) use ($studentIds) {
+                    $id = $row['STUDENT_ID'] ?? null;
+                    return isset($studentIds[$id]);
+                });
+            } catch (\Throwable $e2) {
+                \Illuminate\Support\Facades\Log::warning("Failed to fetch payment-allocations even without classId: {$e2->getMessage()}", [
+                    'classId' => $classId,
+                    'trace' => $e2->getTraceAsString(),
+                ]);
+                $allocRows = [];
+            }
         }
 
         // 3) Build the matrix.
