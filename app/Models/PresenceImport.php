@@ -24,6 +24,7 @@ class PresenceImport extends Model
         'file_path',
         'notes',
         'imported_by',
+        'is_crm_api',
     ];
 
     protected $casts = [
@@ -32,6 +33,7 @@ class PresenceImport extends Model
         'date_end' => 'date',
         'payment_per_student' => 'decimal:2',
         'weekly_rate_percent' => 'decimal:2',
+        'is_crm_api' => 'boolean',
     ];
 
     public const DEFAULT_WEEKLY_THRESHOLD = 3;

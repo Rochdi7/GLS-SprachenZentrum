@@ -44,6 +44,7 @@ use App\Http\Controllers\Backoffice\PlanningPdfController;
 use App\Http\Controllers\Backoffice\Payroll\GroupImportController;
 use App\Http\Controllers\Backoffice\Payroll\GroupAnalysisController;
 use App\Http\Controllers\Backoffice\Payroll\PresenceImportController;
+use App\Http\Controllers\Backoffice\Payroll\CrmPayrollController;
 
 // Encaissement / Rentabilité
 use App\Http\Controllers\Backoffice\Encaissement\EncaissementController;
@@ -435,6 +436,28 @@ Route::prefix('backoffice')
 
                         // Export import as Excel (for sending to manager)
                         Route::get('/import/{import}/export', [PresenceImportController::class, 'export'])->middleware('permission:presence.view')->name('import.export');
+                    });
+
+                /*
+                |--------------------------------------------------------------
+                | CRM API PAYROLL — Auto calculation from CRM presence data
+                |--------------------------------------------------------------
+                */
+                Route::prefix('crm')
+                    ->name('crm.')
+                    ->group(function () {
+                        // Dashboard — groups with CRM API imports
+                        Route::get('/', [CrmPayrollController::class, 'dashboard'])->middleware('permission:presence.view')->name('dashboard');
+
+                        // New CRM API import form
+                        Route::get('/import/create', [CrmPayrollController::class, 'create'])->middleware('permission:presence.create')->name('import.create');
+                        Route::post('/import', [CrmPayrollController::class, 'store'])->middleware('permission:presence.create')->name('import.store');
+
+                        // Import history for a group (CRM API only)
+                        Route::get('/group/{group}/imports', [CrmPayrollController::class, 'index'])->middleware('permission:presence.view')->name('group.imports');
+
+                        // Import detail
+                        Route::get('/group/{group}/import/{import}', [CrmPayrollController::class, 'show'])->middleware('permission:presence.view')->name('import.show');
                     });
             });
 

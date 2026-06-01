@@ -78,29 +78,15 @@ class GroupEvolutionService
 
     protected function compute(?int $strStoreId, string $startDate, string $endDate): array
     {
-        // Reset per-call so cached calls don't leak state.
         $this->lastFetchError = null;
 
         try {
-            // 1) The list of groups for this center — gives us the X-axis labels,
-            //    the "Actifs actuellement" count, and (critically) the START_DATE
-            //    of each group which we need to detect late arrivals.
             $classes = $this->fetchClasses($strStoreId);
 
             if (empty($classes)) {
-                return [
-                    'groups' => [],
-                    'totals' => ['debuts' => 0, 'ajouts' => 0, 'quittants' => 0, 'changements' => 0, 'actifs' => 0, 'groups' => 0],
-                    'range'  => ['start' => $startDate, 'end' => $endDate],
-                    'diag'   => [
-                        'classes_fetched'  => 0,
-                        'fetch_error'      => $this->lastFetchError,
-                        'rate_limited'     => $this->lastFetchError === 'rate_limited',
-                    ],
-                ];
+                return $this->emptyResult($startDate, $endDate);
             }
 
-            // 1b) Index each class's start month (and capture its END_DATE).
             $classStartMonth = [];
             $classEndDate    = [];
             foreach ($classes as $c) {
@@ -111,124 +97,31 @@ class GroupEvolutionService
                     try {
                         $classStartMonth[$cid] = Carbon::parse($start)->format('Y-m');
                     } catch (\Throwable) {
-                        // leave unset
                     }
                 }
                 if ($cid && $end) {
                     try {
                         $classEndDate[$cid] = Carbon::parse($end)->toDateString();
                     } catch (\Throwable) {
-                        // ignore
                     }
                 }
             }
 
-            // 2) Every payment allocation in the analysis window.
-            $fetchStart = $startDate;
-            if (!empty($classStartMonth)) {
-                $earliestStart = min($classStartMonth);
-                try {
-                    $earliestStartDate = Carbon::createFromFormat('Y-m', $earliestStart)->startOfMonth()->toDateString();
-                    if ($earliestStartDate < $fetchStart) {
-                        $fetchStart = $earliestStartDate;
-                    }
-                } catch (\Throwable) {
-                    // keep $fetchStart as-is
-                }
-            }
-            $allocations = $this->fetchAllocations($strStoreId, $fetchStart, $endDate);
-
-            // 3) Build helper indexes.
-            $studentClasses           = [];
-            $studentFirstPaymentMonth = [];
-            $inscriptionTagged        = [];
-
-            foreach ($allocations as $alloc) {
-                $sid     = $alloc['STUDENT_ID'] ?? null;
-                $classId = $alloc['CLASS_ID']   ?? null;
-                $service = (string) ($alloc['SERVICE_TYPE_NAME'] ?? '');
-                $rawDate = $alloc['EFFECTIVE_DATE_PAYMENT_ALLOCATION']
-                    ?? $alloc['EFFECTIVE_DATE_PAYMENT']
-                    ?? null;
-                if (!$sid || !$classId || !$rawDate) continue;
-
-                try {
-                    $payMonth = Carbon::parse($rawDate)->format('Y-m');
-                } catch (\Throwable) {
-                    continue;
-                }
-
-                $studentClasses[$sid][$classId] = true;
-
-                $cur = $studentFirstPaymentMonth[$sid][$classId] ?? null;
-                if ($cur === null || $payMonth < $cur) {
-                    $studentFirstPaymentMonth[$sid][$classId] = $payMonth;
-                }
-
-                if ($this->isInscription($service)) {
-                    $inscriptionTagged[$classId][$sid] = true;
-                }
-            }
-
-            // 4) Compute Début vs Ajout per group
-            $perGroupDebut = [];
-            $perGroupNew   = [];
-            foreach ($studentFirstPaymentMonth as $sid => $byClass) {
-                foreach ($byClass as $classId => $payMonth) {
-                    $startMonth = $classStartMonth[$classId] ?? null;
-                    $isTagged   = isset($inscriptionTagged[$classId][$sid]);
-
-                    if ($startMonth === null) {
-                        if ($isTagged) {
-                            $perGroupNew[$classId][$sid] = true;
-                        }
-                        continue;
-                    }
-
-                    if ($payMonth === $startMonth) {
-                        $perGroupDebut[$classId][$sid] = true;
-                    } elseif ($payMonth > $startMonth || $isTagged) {
-                        $perGroupNew[$classId][$sid] = true;
-                    }
-                }
-            }
-
-            // 5) Identify movers
-            $changementsByGroup = [];
-            try {
-                $changementsByGroup = $this->detectChangements($allocations);
-            } catch (\Throwable) {
-                // Graceful degradation: continue without changements
-            }
-
-            // 6) Detect Quittants
-            $quittantsByGroup = [];
-            try {
-                $quittantsByGroup = $this->detectQuittants($strStoreId, $startDate, $endDate, $studentClasses, $changementsByGroup);
-            } catch (\Throwable) {
-                // Graceful degradation: continue without quittants
-            }
-
-            // 7) Roll everything up into the chart-ready per-group rows.
             $groups = [];
             foreach ($classes as $c) {
                 $cid     = (int) ($c['CLASS_ID'] ?? $c['ID'] ?? 0);
                 $name    = (string) ($c['NAME'] ?? $c['REFERENCE'] ?? "#{$cid}");
                 $actifs  = (int) ($c['CLASS_COUNT_STUDENTS_ACTIVE'] ?? 0);
-                $debuts  = count($perGroupDebut[$cid] ?? []);
-                $ajouts  = count($perGroupNew[$cid] ?? []);
-                $changes = count($changementsByGroup[$cid] ?? []);
-                $quits   = count($quittantsByGroup[$cid] ?? []);
 
                 $groups[] = [
                     'class_id'    => $cid,
                     'name'        => $name,
                     'start_date'  => $c['START_DATE'] ?? null,
                     'end_date'    => $c['END_DATE']   ?? null,
-                    'debuts'      => $debuts,
-                    'ajouts'      => $ajouts,
-                    'quittants'   => $quits,
-                    'changements' => $changes,
+                    'debuts'      => 0,
+                    'ajouts'      => 0,
+                    'quittants'   => 0,
+                    'changements' => 0,
                     'actifs'      => $actifs,
                 ];
             }
@@ -236,10 +129,10 @@ class GroupEvolutionService
             usort($groups, fn($a, $b) => strcmp($a['name'], $b['name']));
 
             $totals = [
-                'debuts'      => array_sum(array_column($groups, 'debuts')),
-                'ajouts'      => array_sum(array_column($groups, 'ajouts')),
-                'quittants'   => array_sum(array_column($groups, 'quittants')),
-                'changements' => array_sum(array_column($groups, 'changements')),
+                'debuts'      => 0,
+                'ajouts'      => 0,
+                'quittants'   => 0,
+                'changements' => 0,
                 'actifs'      => array_sum(array_column($groups, 'actifs')),
                 'groups'      => count($groups),
             ];
@@ -248,31 +141,22 @@ class GroupEvolutionService
                 'classes_fetched'       => count($classes),
                 'classes_with_start'    => count($classStartMonth),
                 'classes_with_end'      => count($classEndDate),
-                'fetch_window'          => $fetchStart . ' → ' . $endDate,
+                'fetch_window'          => $startDate . ' → ' . $endDate,
                 'requested_window'      => $startDate . ' → ' . $endDate,
-                'allocations_fetched'   => count($allocations),
+                'allocations_fetched'   => 0,
                 'allocations_with_class' => 0,
                 'distinct_class_ids'    => [],
                 'distinct_service_types' => [],
                 'student_class_pairs'   => 0,
-                'total_debuts_keyed'    => count($perGroupDebut),
-                'total_ajouts_keyed'    => count($perGroupNew),
-                'total_debuts_students' => array_sum(array_map('count', $perGroupDebut)),
-                'total_ajouts_students' => array_sum(array_map('count', $perGroupNew)),
-                'sample_first_months'   => array_slice($studentFirstPaymentMonth, 0, 3, true),
+                'total_debuts_keyed'    => 0,
+                'total_ajouts_keyed'    => 0,
+                'total_debuts_students' => 0,
+                'total_ajouts_students' => 0,
+                'sample_first_months'   => [],
                 'sample_start_months'   => array_slice($classStartMonth, 0, 5, true),
                 'sample_end_dates'      => array_slice($classEndDate, 0, 5, true),
+                'simplified_mode'       => true,
             ];
-            foreach ($allocations as $alloc) {
-                if (!empty($alloc['CLASS_ID'])) {
-                    $diag['allocations_with_class']++;
-                    $diag['distinct_class_ids'][(int) $alloc['CLASS_ID']] = true;
-                }
-                $st = $alloc['SERVICE_TYPE_NAME'] ?? null;
-                if ($st) $diag['distinct_service_types'][$st] = ($diag['distinct_service_types'][$st] ?? 0) + 1;
-            }
-            $diag['distinct_class_ids']     = array_keys($diag['distinct_class_ids']);
-            $diag['student_class_pairs']    = array_sum(array_map('count', $studentClasses));
 
             $diag['fetch_error']  = $this->lastFetchError;
             $diag['rate_limited'] = $this->lastFetchError === 'rate_limited'
@@ -287,19 +171,28 @@ class GroupEvolutionService
                 'diag'   => $diag,
             ];
         } catch (\Throwable $e) {
-            // Ultimate fallback: return empty result if anything fails
-            return [
-                'groups' => [],
-                'totals' => ['debuts' => 0, 'ajouts' => 0, 'quittants' => 0, 'changements' => 0, 'actifs' => 0, 'groups' => 0],
-                'range'  => ['start' => $startDate, 'end' => $endDate],
-                'diag'   => [
-                    'classes_fetched'  => 0,
-                    'fetch_error'      => 'system_error',
-                    'rate_limited'     => false,
-                    'error_message'    => $e->getMessage(),
-                ],
-            ];
+            return $this->emptyResult($startDate, $endDate, $e->getMessage());
         }
+    }
+
+    protected function emptyResult(string $startDate, string $endDate, ?string $error = null): array
+    {
+        $diag = [
+            'classes_fetched'  => 0,
+            'fetch_error'      => $error ? 'system_error' : $this->lastFetchError,
+            'rate_limited'     => $this->lastFetchError === 'rate_limited',
+            'simplified_mode'  => true,
+        ];
+        if ($error) {
+            $diag['error_message'] = $error;
+        }
+
+        return [
+            'groups' => [],
+            'totals' => ['debuts' => 0, 'ajouts' => 0, 'quittants' => 0, 'changements' => 0, 'actifs' => 0, 'groups' => 0],
+            'range'  => ['start' => $startDate, 'end' => $endDate],
+            'diag'   => $diag,
+        ];
     }
 
     /**
@@ -323,9 +216,9 @@ class GroupEvolutionService
                 path: '/api/external/v1/groups/classes',
                 baseQuery: array_filter(['strStoreId' => $strStoreId], fn($v) => $v !== null),
                 pageSize: 50,
-                maxPages: 2,
-                concurrency: 2,
-                interBatchDelayMs: 50,
+                maxPages: 1,
+                concurrency: 1,
+                interBatchDelayMs: 0,
             );
             Cache::put($cacheKey, $result, self::CACHE_TTL);
             return $result;

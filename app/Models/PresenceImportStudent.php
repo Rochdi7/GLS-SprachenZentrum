@@ -41,6 +41,7 @@ class PresenceImportStudent extends Model
         'status',
         'row_color',
         'raw_data',
+        'crm_student_id',
     ];
 
     protected $casts = [
