@@ -12,13 +12,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // ✅ Sitemap auto: chaque week-end (samedi + dimanche) à 03:00
-        $schedule->command('gls:generate-sitemap')
-            ->weekends()
-            ->at('03:00')
-            ->withoutOverlapping()
-            ->appendOutputTo(storage_path('logs/sitemap-schedule.log'));
-
         // ✅ Suivi niveau: génération quotidienne (idempotent)
         $schedule->command('gls:generate-level-followups')
             ->dailyAt('00:15')

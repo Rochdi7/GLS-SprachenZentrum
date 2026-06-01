@@ -22,7 +22,6 @@
         "spatie/laravel-medialibrary": "^11.17",
         "spatie/laravel-permission": "^6.25",
         "spatie/laravel-responsecache": "^7.7",
-        "spatie/laravel-sitemap": "^7.3",
         "spatie/schema-org": "^3.23"
     },
     "require-dev": {
