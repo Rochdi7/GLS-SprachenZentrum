@@ -22,6 +22,21 @@ class CrmGroupsController extends BaseCrmController
     {
         $strStoreId = $this->currentStrStoreId();
 
+        // Get class statuses to find "En formation"
+        $lovClassStatuses = $this->lovs->classStatuses($strStoreId);
+        
+        // Find status ID for "En formation"
+        $defaultStatusId = null;
+        foreach ($lovClassStatuses as $status) {
+            if (trim($status['name']) === 'En formation') {
+                $defaultStatusId = $status['id'];
+                break;
+            }
+        }
+
+        // Use default status if statusId is not set in request
+        $statusId = $r->filled('statusId') ? (int)$r->query('statusId') : $defaultStatusId;
+
         // "Fast First 5" strategy: if on page 0 and no size is specified, 
         // default to 5 for an instant first-paint, then preload.
         $size = (int) $r->query('size', 5);
@@ -37,9 +52,9 @@ class CrmGroupsController extends BaseCrmController
                 schoolStageId: $r->filled('schoolStageId') ? (int) $r->query('schoolStageId') : null,
                 schoolLevelId: $r->filled('schoolLevelId') ? (int) $r->query('schoolLevelId') : null,
                 employeeTeacherId: $r->filled('employeeTeacherId') ? (int) $r->query('employeeTeacherId') : null,
-                statusId: $r->filled('statusId') ? (int) $r->query('statusId') : null,
+                statusId: $statusId,
                 history: $r->query('history') ?: null,
-            ), function () use ($sid, $r) {
+            ), function () use ($sid, $r, $statusId) {
                 // Background preload: fetch the STANDARD size (20) and next 3 pages
                 $preloadQuery = array_filter([
                     'strStoreId'         => $sid,
@@ -48,7 +63,7 @@ class CrmGroupsController extends BaseCrmController
                     'schoolStageId'      => $r->query('schoolStageId'),
                     'schoolLevelId'      => $r->query('schoolLevelId'),
                     'employeeTeacherId'  => $r->query('employeeTeacherId'),
-                    'statusId'           => $r->query('statusId'),
+                    'statusId'           => $statusId,
                     'history'            => $r->query('history'),
                     'size'               => 20, // Always preload at standard size
                 ], fn($v) => $v !== null);
@@ -58,10 +73,11 @@ class CrmGroupsController extends BaseCrmController
             extra: [
                 'lovSchoolLevels'      => $this->lovs->schoolLevels($strStoreId),
                 'lovTeachers'          => $this->lovs->teachers($strStoreId),
-                'lovClassStatuses'     => $this->lovs->classStatuses($strStoreId),
+                'lovClassStatuses'     => $lovClassStatuses,
                 'lovSchoolYears'       => $this->lovs->schoolYears($strStoreId),
                 'lovSchoolDepartments' => $this->lovs->schoolDepartments($strStoreId),
                 'lovSchoolStages'      => $this->lovs->schoolStages($strStoreId),
+                'defaultStatusId'      => $defaultStatusId, // Pass to view
             ],
         );
     }

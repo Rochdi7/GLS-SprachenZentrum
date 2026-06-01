@@ -39,22 +39,34 @@ class PaymentMatrixBuilder
             return $this->emptyResponse($classId, $classMeta);
         }
 
-        // 2) Single paged scan of /payment-allocations for the whole class.
-        //    Per-student fan-out was tripping the upstream rate limit; classId
-        //    narrows server-side so we pull every payment row at once.
+        // 2) Fetch payment allocations for each student in parallel.
+        //    The API doesn't support classId, so we use studentId instead.
         $baseQuery = array_filter([
             'strStoreId'   => $strStoreId,
             'schoolYearId' => $schoolYearId,
-        ], fn ($v) => $v !== null);
+        ], fn($v) => $v !== null);
 
-        $allocRows = $crm->client()->pagedScan(
-            path: '/api/external/v1/payment-allocations',
-            baseQuery: $baseQuery + ['classId' => $classId],
-            pageSize: 100,
-            maxPages: 10,
-            concurrency: 3,
-            interBatchDelayMs: 200,
-        );
+        // Create variants for each student
+        $variantQueries = array_map(fn($student) => ['studentId' => $student['student_id']], $students);
+
+        $allocRows = [];
+        try {
+            // Fetch all payment allocations in parallel with reduced concurrency to avoid rate limiting
+            $allocRows = $crm->client()->parallelFetch(
+                path: '/api/external/v1/payment-allocations',
+                baseQuery: $baseQuery,
+                variantQueries: $variantQueries,
+                pageSize: 25,
+                concurrency: 2,
+                interBatchDelayMs: 500,
+            );
+        } catch (\Throwable $e) {
+            // Log the error and continue with empty allocations
+            \Illuminate\Support\Facades\Log::warning("Failed to fetch payment allocations: " . $e->getMessage(), [
+                'classId' => $classId,
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
 
         // 3) Build the matrix.
         [$matrix, $services, $serviceDate, $canonicalPrice] = $this->seedFromServiceList($rawServiceList, $students);
@@ -142,8 +154,8 @@ class PaymentMatrixBuilder
 
         $activeIds = array_flip(
             array_map(
-                fn ($s) => $s['student_id'],
-                array_filter($students, fn ($s) => $s['bucket'] === 'active'),
+                fn($s) => $s['student_id'],
+                array_filter($students, fn($s) => $s['bucket'] === 'active'),
             ),
         );
 
@@ -218,7 +230,7 @@ class PaymentMatrixBuilder
      */
     protected function mergeAllocations(array &$matrix, array $allocSum, array $students, array $canonicalPrice): void
     {
-        $allowedIds = array_flip(array_map(fn ($s) => $s['student_id'], $students));
+        $allowedIds = array_flip(array_map(fn($s) => $s['student_id'], $students));
 
         foreach ($allocSum as $sid => $byLabel) {
             if (!isset($allowedIds[$sid])) continue;
@@ -256,7 +268,7 @@ class PaymentMatrixBuilder
      */
     protected function orderServices(array $labels, array $serviceDate, array $servicesIndex): array
     {
-        $isInscription = fn (string $label): bool => stripos($label, 'inscription') !== false;
+        $isInscription = fn(string $label): bool => stripos($label, 'inscription') !== false;
 
         usort($labels, function (string $a, string $b) use ($serviceDate, $isInscription, $servicesIndex) {
             $da = $serviceDate[$a] ?? '9999-12-31';

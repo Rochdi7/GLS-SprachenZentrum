@@ -27,9 +27,7 @@ class CrmLovProvider
     /** Local request-level cache to avoid redundant scans for one-off page loads. */
     protected array $requestCache = [];
 
-    public function __construct(protected Crm $crm, protected CenterContext $centers)
-    {
-    }
+    public function __construct(protected Crm $crm, protected CenterContext $centers) {}
 
     // ───────────────────────── /groups/* (paged, cap=25) ─────────────────────
 
@@ -44,18 +42,33 @@ class CrmLovProvider
             return $this->requestCache[$key];
         }
 
-        // Ensure we use the correct token for this store
-        $token = $this->centers->currentToken($strStoreId);
-        $scopedCrm = $this->crm->withToken($token);
+        try {
+            // Ensure we use the correct token for this store
+            $token = $this->centers->currentToken($strStoreId);
+            $scopedCrm = $this->crm->withToken($token);
 
-        // Parallel scan for classes to extract LOV data in one pass (approx 2-3s total)
-        return $this->requestCache[$key] = $scopedCrm->client()->pagedScan(
-            path: '/api/external/v1/groups/classes',
-            baseQuery: array_filter(['strStoreId' => $strStoreId], fn($v) => $v !== null),
-            pageSize: 25,
-            maxPages: 30,
-            concurrency: 2, // Conservative for production rate limits
-        );
+            // Parallel scan for classes to extract LOV data in one pass (approx 2-3s total)
+            $rows = $scopedCrm->client()->pagedScan(
+                path: '/api/external/v1/groups/classes',
+                baseQuery: array_filter(['strStoreId' => $strStoreId], fn($v) => $v !== null),
+                pageSize: 25,
+                maxPages: 30,
+                concurrency: 2, // Conservative for production rate limits
+            );
+
+            // Log the first row to check what keys we have
+            if (!empty($rows)) {
+                \Illuminate\Support\Facades\Log::info("Groups API response first row keys: " . json_encode(array_keys($rows[0])));
+            }
+
+            return $this->requestCache[$key] = $rows;
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to fetch groups source: " . $e->getMessage(), [
+                'strStoreId' => $strStoreId,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return $this->requestCache[$key] = [];
+        }
     }
 
     /** Class / group dropdown — scoped to the active store. */
@@ -115,7 +128,7 @@ class CrmLovProvider
                     'name' => $row['SCHOOL_YEAR_NAME'] ?? ('Année #' . $id),
                 ];
             }
-            usort($out, fn ($a, $b) => strcmp($a['name'], $b['name']));
+            usort($out, fn($a, $b) => strcmp($a['name'], $b['name']));
             return $out;
         });
     }
@@ -129,14 +142,14 @@ class CrmLovProvider
     public function schoolDepartments(?int $strStoreId): array
     {
         return $this->cached('school_departments', $strStoreId, function () use ($strStoreId) {
-            return $this->normalize($this->groupsSource($strStoreId), ['SCHOOL_DEPARTMENT_ID'], ['SCHOOL_DEPARTMENT_NAME']);
+            return $this->normalize($this->groupsSource($strStoreId), ['SCHOOL_DEPARTMENT_ID', 'DEPARTMENT_ID'], ['SCHOOL_DEPARTMENT_NAME', 'DEPARTMENT_NAME']);
         });
     }
 
     public function schoolStages(?int $strStoreId): array
     {
         return $this->cached('school_stages', $strStoreId, function () use ($strStoreId) {
-            return $this->normalize($this->groupsSource($strStoreId), ['SCHOOL_STAGE_ID'], ['SCHOOL_STAGE_NAME']);
+            return $this->normalize($this->groupsSource($strStoreId), ['SCHOOL_STAGE_ID', 'FORMATION_ID', 'CLASSIFICATION_ID'], ['SCHOOL_STAGE_NAME', 'FORMATION_NAME', 'CLASSIFICATION_NAME']);
         });
     }
 
@@ -147,8 +160,11 @@ class CrmLovProvider
             $token = $this->centers->currentToken($strStoreId);
             $scopedCrm = $this->crm->withToken($token);
             $rows = $this->walkPaged(
-                fn (int $page, int $size) => $scopedCrm->groups()->levelSessions(
-                    page: $page, size: $size, includeTotal: false, strStoreId: $strStoreId,
+                fn(int $page, int $size) => $scopedCrm->groups()->levelSessions(
+                    page: $page,
+                    size: $size,
+                    includeTotal: false,
+                    strStoreId: $strStoreId,
                 ),
             );
             return $this->normalize($rows, ['ID', 'LEVEL_SESSION_ID'], ['NAME', 'REFERENCE']);
@@ -161,7 +177,7 @@ class CrmLovProvider
     public function banks(): array
     {
         return $this->cached('banks', null, function () {
-            $rows = $this->safe(fn () => $this->crm->lov()->banks(limit: 100));
+            $rows = $this->safe(fn() => $this->crm->lov()->banks(limit: 100));
             return $this->normalize($rows, ['ID'], ['NAME', 'DESIGNATION']);
         });
     }
@@ -170,7 +186,7 @@ class CrmLovProvider
     public function categories(): array
     {
         return $this->cached('categories', null, function () {
-            $rows = $this->safe(fn () => $this->crm->lov()->categories(limit: 100));
+            $rows = $this->safe(fn() => $this->crm->lov()->categories(limit: 100));
             return $this->normalize($rows, ['ID'], ['NAME', 'DESIGNATION']);
         });
     }
@@ -179,7 +195,7 @@ class CrmLovProvider
     public function paymentTypes(): array
     {
         return $this->cached('payment_types', null, function () {
-            $rows = $this->safe(fn () => $this->crm->lov()->paymentTypes(limit: 100));
+            $rows = $this->safe(fn() => $this->crm->lov()->paymentTypes(limit: 100));
             return $this->normalize($rows, ['ID'], ['NAME']);
         });
     }
@@ -188,7 +204,7 @@ class CrmLovProvider
     public function paymentStatuses(): array
     {
         return $this->cached('payment_statuses', null, function () {
-            $rows = $this->safe(fn () => $this->crm->lov()->paymentStatuses(limit: 100));
+            $rows = $this->safe(fn() => $this->crm->lov()->paymentStatuses(limit: 100));
             return $this->normalize($rows, ['ID'], ['NAME']);
         });
     }
@@ -197,7 +213,7 @@ class CrmLovProvider
     public function paymentMethods(): array
     {
         return $this->cached('payment_methods', null, function () {
-            $rows = $this->safe(fn () => $this->crm->lov()->paymentMethods(limit: 100));
+            $rows = $this->safe(fn() => $this->crm->lov()->paymentMethods(limit: 100));
             return $this->normalize($rows, ['ID'], ['NAME']);
         });
     }
@@ -206,7 +222,7 @@ class CrmLovProvider
     public function paymentCheckStatuses(): array
     {
         return $this->cached('payment_check_statuses', null, function () {
-            $rows = $this->safe(fn () => $this->crm->lov()->paymentCheckStatuses(limit: 100));
+            $rows = $this->safe(fn() => $this->crm->lov()->paymentCheckStatuses(limit: 100));
             return $this->normalize($rows, ['ID'], ['NAME']);
         });
     }
@@ -215,7 +231,7 @@ class CrmLovProvider
     public function registrationStatuses(): array
     {
         return $this->cached('registration_statuses', null, function () {
-            $rows = $this->safe(fn () => $this->crm->lov()->registrationStatuses(limit: 100));
+            $rows = $this->safe(fn() => $this->crm->lov()->registrationStatuses(limit: 100));
             return $this->normalize($rows, ['ID'], ['NAME']);
         });
     }
@@ -226,7 +242,7 @@ class CrmLovProvider
         return $this->cached('school_levels', $strStoreId, function () use ($strStoreId) {
             $token = $this->centers->currentToken($strStoreId);
             $scopedCrm = $this->crm->withToken($token);
-            $rows = $this->safe(fn () => $scopedCrm->lov()->schoolLevels(limit: 100, strStoreId: $strStoreId));
+            $rows = $this->safe(fn() => $scopedCrm->lov()->schoolLevels(limit: 100, strStoreId: $strStoreId));
             return $this->normalize($rows, ['ID'], ['NAME']);
         });
     }
@@ -237,7 +253,7 @@ class CrmLovProvider
         return $this->cached('level_session_packages', $strStoreId, function () use ($strStoreId) {
             $token = $this->centers->currentToken($strStoreId);
             $scopedCrm = $this->crm->withToken($token);
-            $rows = $this->safe(fn () => $scopedCrm->lov()->levelSessionPackages(limit: 200, strStoreId: $strStoreId));
+            $rows = $this->safe(fn() => $scopedCrm->lov()->levelSessionPackages(limit: 200, strStoreId: $strStoreId));
             return $this->normalize($rows, ['ID'], ['NAME', 'REFERENCE']);
         });
     }
@@ -255,8 +271,11 @@ class CrmLovProvider
             $token = $this->centers->currentToken($strStoreId);
             $scopedCrm = $this->crm->withToken($token);
             $rows = $this->walkPaged(
-                fn (int $page, int $size) => $scopedCrm->lov()->subscriptionServices(
-                    page: $page, size: $size, includeTotal: false, strStoreId: $strStoreId,
+                fn(int $page, int $size) => $scopedCrm->lov()->subscriptionServices(
+                    page: $page,
+                    size: $size,
+                    includeTotal: false,
+                    strStoreId: $strStoreId,
                 ),
             );
             return $this->normalize($rows, ['ID'], ['NAME', 'DESIGNATION', 'REFERENCE']);
@@ -275,14 +294,16 @@ class CrmLovProvider
         $rows = [];
         $size = 25;        // API hard cap
         $maxPages = 30;    // 30 × 25 = 750 rows ceiling
-        
+
         try {
             $page = 0;
             $data = [];
             do {
                 $resp = $fetch($page, $size);
                 $data = $resp['data'] ?? [];
-                foreach ($data as $row) { $rows[] = $row; }
+                foreach ($data as $row) {
+                    $rows[] = $row;
+                }
                 $page++;
             } while (count($data) === $size && $page < $maxPages);
         } catch (\Throwable) {
@@ -316,10 +337,16 @@ class CrmLovProvider
             $id   = null;
             $name = null;
             foreach ($idKeys as $k) {
-                if (isset($row[$k]) && $row[$k] !== '') { $id = (int) $row[$k]; break; }
+                if (isset($row[$k]) && $row[$k] !== '') {
+                    $id = (int) $row[$k];
+                    break;
+                }
             }
             foreach ($nameKeys as $k) {
-                if (isset($row[$k]) && $row[$k] !== '') { $name = (string) $row[$k]; break; }
+                if (isset($row[$k]) && $row[$k] !== '') {
+                    $name = (string) $row[$k];
+                    break;
+                }
             }
             if ($id === null) continue;
             $out[] = ['id' => $id, 'name' => $name ?: ('#' . $id)];
@@ -331,7 +358,7 @@ class CrmLovProvider
             $seen[$o['id']] = true;
             return true;
         });
-        usort($out, fn ($a, $b) => strcmp($a['name'], $b['name']));
+        usort($out, fn($a, $b) => strcmp($a['name'], $b['name']));
         return array_values($out);
     }
 

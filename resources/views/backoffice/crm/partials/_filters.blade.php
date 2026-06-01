@@ -28,7 +28,7 @@
 --}}
 
 @php
-    $hasAnyFilter = collect(array_keys($fields))->contains(fn ($k) => request()->filled($k));
+    $hasAnyFilter = collect(array_keys($fields))->contains(fn ($k) => request()->filled($k) || (isset($$k) && $$k !== null));
 @endphp
 
 <form method="GET" class="card mb-3 crm-filter-bar">
@@ -38,14 +38,15 @@
                 <i class="ti ti-filter me-1"></i> Filtres
             </h6>
             @if($hasAnyFilter)
-                <span class="badge bg-light-primary text-primary ms-2">{{ collect($fields)->keys()->filter(fn ($k) => request()->filled($k))->count() }} actif(s)</span>
+                <span class="badge bg-light-primary text-primary ms-2">{{ collect($fields)->keys()->filter(fn ($k) => request()->filled($k) || (isset($$k) && $$k !== null))->count() }} actif(s)</span>
             @endif
         </div>
         <div class="row g-2">
             @foreach($fields as $name => $cfg)
                 @php
                     $type    = $cfg['type'] ?? 'text';
-                    $current = request()->query($name);
+                    $default = $cfg['default'] ?? ($$name ?? null);
+                    $current = request()->filled($name) ? request()->query($name) : $default;
                 @endphp
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                     <label class="form-label small mb-1 text-muted">{{ $cfg['label'] }}</label>

@@ -142,6 +142,7 @@
 
         gtag('config', 'AW-17817493313');
     </script>
+    <script src="https://analytics.ahrefs.com/analytics.js" data-key="vKoc9I4c7spqw+TRXsjGtw" async></script>
 
     {{-- Disable Inspect/DevTools (Production Only) - temporarily commented out --}}
     
