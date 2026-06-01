@@ -167,6 +167,21 @@ Route::get('/debug-crm-raw-data', function() {
     }
 })->middleware('auth');
 
+/**
+ * =============================
+ * Sitemap route
+ * =============================
+ */
+Route::get('/sitemap.xml', function () {
+    $path = public_path('sitemap.xml');
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->file($path, [
+        'Content-Type' => 'application/xml'
+    ]);
+})->name('sitemap');
+
 Route::get('/certificates/download/{token}', [CertificatePublicController::class, 'download'])
     ->name('certificates.public.download');
 

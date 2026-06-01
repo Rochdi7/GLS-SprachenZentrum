@@ -29,8 +29,15 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
+    # Exclude sitemap.xml from static file serving to allow Laravel to handle it with proper Content-Type
+    RewriteCond %{REQUEST_URI} !^/sitemap\.xml$
+    
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+    
+    # For sitemap.xml, always send it through Laravel
+    RewriteCond %{REQUEST_URI} ^/sitemap\.xml$
     RewriteRule ^ index.php [L]
 </IfModule>
