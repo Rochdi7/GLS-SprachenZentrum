@@ -2,3 +2,176 @@ composer require spatie/schema-org
 
 php artisan queue:work --queue=google-sheets
 php artisan queue:work database --queue=google-sheets --tries=3
+
+================================================================================
+GLS ARTISAN COMMANDS REFERENCE
+================================================================================
+
+--------------------------------------------------------------------------------
+CRM — Sync & Data
+--------------------------------------------------------------------------------
+
+crm:sync-registrations
+  Safely fetch CRM registrations per store and store them locally.
+  Must run BEFORE churn scoring. Uses pagination (25/page), delays between
+  pages, exponential backoff on 429, and a lock to prevent parallel runs.
+
+  php artisan crm:sync-registrations --all
+  php artisan crm:sync-registrations --store=1 --store=2
+  php artisan crm:sync-registrations --all --delay=800   # ms between pages
+
+  Options:
+    --all           Sync all stores with a crm_store_id
+    --store=ID      Sync one or more specific stores (repeatable)
+    --delay=500     Delay in ms between page requests (default 500)
+
+  Scheduled: daily 02:30 Africa/Casablanca → logs/crm-sync-registrations.log
+
+---
+
+crm:churn-scores
+  Compute student churn risk scores from LOCAL database (no API calls).
+  Reads from crm_registrations + crm_payment_snapshots.
+  Run AFTER crm:sync-registrations.
+
+  php artisan crm:churn-scores --all
+  php artisan crm:churn-scores --store=1 --store=3
+
+  Options:
+    --all           Process all stores
+    --store=ID      Process specific store(s)
+
+  Scheduled: daily 03:00 Africa/Casablanca → logs/crm-churn-scores.log
+
+---
+
+crm:snapshot-payments
+  Capture daily snapshot of all CRM payments (fraud detection / audit).
+
+  php artisan crm:snapshot-payments
+
+  Scheduled: daily 01:30 → logs/crm-snapshot-payments.log
+
+---
+
+crm:sync-centers
+  Populate crm_store_id in the sites table by matching names.
+  Run once after adding a new GLS center.
+
+  php artisan crm:sync-centers
+
+---
+
+crm:ping
+  Test connectivity to the Homeschool External API (quick health check).
+
+  php artisan crm:ping
+  php artisan crm:ping --endpoint=payment-methods
+
+  Options:
+    --endpoint=banks    LOV endpoint to probe (banks, categories, payment-methods…)
+
+---
+
+crm:probe-allocations
+  Probe /payment-allocations endpoint, show raw counts and sample rows.
+  Useful for debugging payment data before building reports.
+
+  php artisan crm:probe-allocations
+
+---
+
+crm:daily-report
+  Generate the daily CEO CRM report for yesterday and dispatch email job.
+
+  php artisan crm:daily-report
+  php artisan crm:daily-report --date=2026-06-01
+  php artisan crm:daily-report --send           # also send email
+
+  Scheduled: daily 08:00 Africa/Casablanca → logs/crm-daily-report.log
+
+--------------------------------------------------------------------------------
+Homeschool — Mirror & Attendance
+--------------------------------------------------------------------------------
+
+homeschool:mirror-core
+  Full sync of CRM metadata to local mirror: Classes, Teachers, Students,
+  Registrations, Attendance. Heavy — run manually or on schedule.
+
+  php artisan homeschool:mirror-core
+  php artisan homeschool:mirror-core --full          # ignore incremental logic
+  php artisan homeschool:mirror-core --months=3      # attendance months back
+
+---
+
+homeschool:sync-attendance
+  Sync attendance records from Homeschool API and compute professor payments.
+
+  php artisan homeschool:sync-attendance
+  php artisan homeschool:sync-attendance --group=42
+  php artisan homeschool:sync-attendance --date-start=2026-05-01 --date-end=2026-05-31
+
+  Scheduled: monthly on 1st at 02:00 → logs/homeschool-sync.log
+
+--------------------------------------------------------------------------------
+GLS — Internal
+--------------------------------------------------------------------------------
+
+gls:generate-level-followups
+  Generate / refresh group level followup records based on date_debut/date_fin.
+  Idempotent — safe to re-run.
+
+  php artisan gls:generate-level-followups
+
+  Scheduled: daily 00:15 → logs/level-followups-schedule.log
+
+--------------------------------------------------------------------------------
+Google Sheets
+--------------------------------------------------------------------------------
+
+google:sheets:test
+  Test Google Sheets API connectivity (appends a row to a TEST tab).
+
+  php artisan google:sheets:test
+
+---
+
+google:sheets:resync
+  Re-dispatch sync jobs for inscriptions / applications / consultations
+  that were not yet pushed to Google Sheets.
+
+  php artisan google:sheets:resync
+  php artisan google:sheets:resync --dry-run
+
+  Queue worker needed:
+    php artisan queue:work --queue=google-sheets
+    php artisan queue:work database --queue=google-sheets --tries=3
+
+--------------------------------------------------------------------------------
+WhatsApp
+--------------------------------------------------------------------------------
+
+wa:run-campaign {id}
+  Drive WhatsApp Desktop for a stored campaign (spawned by controller).
+
+  php artisan wa:run-campaign 7
+
+--------------------------------------------------------------------------------
+SCHEDULED PIPELINE (Africa/Casablanca)
+--------------------------------------------------------------------------------
+
+  00:15  gls:generate-level-followups
+  01:30  crm:snapshot-payments
+  02:00  crm:sync-collections --all --delay=400
+  02:00  homeschool:sync-attendance   (1st of month only)
+  02:30  crm:sync-registrations --all --delay=600
+  03:00  crm:churn-scores --all
+  08:00  crm:daily-report
+
+  Run the full pipeline manually in order:
+    php artisan crm:sync-collections --all
+    php artisan crm:sync-registrations --all
+    php artisan crm:churn-scores --all
+    php artisan crm:daily-report
+
+================================================================================

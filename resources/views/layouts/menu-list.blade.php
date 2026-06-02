@@ -48,6 +48,9 @@
         request()->routeIs('backoffice.crm.stats') ||
         request()->routeIs('backoffice.crm.duplicates') ||
         request()->routeIs('backoffice.crm.insights.*');
+    $crmCollectionsOpen = request()->routeIs('backoffice.crm.collections.*');
+    $crmChurnOpen = request()->routeIs('backoffice.crm.churn.*');
+    $crmStatsDashOpen = request()->routeIs('backoffice.crm.statistiques');
 @endphp
 
 <li class="pc-item pc-caption">
@@ -588,6 +591,38 @@
                         </a>
                     </li>
                 </ul>
+            </li>
+
+            {{-- Collections / Recouvrement --}}
+            <li class="pc-item {{ $crmCollectionsOpen ? 'active' : '' }}">
+                <a href="{{ route('backoffice.crm.collections.index') }}"
+                    class="pc-link {{ $crmCollectionsOpen ? 'active' : '' }}">
+                    <span class="pc-mtext">Recouvrement</span>
+                </a>
+            </li>
+
+            {{-- Churn Predictor --}}
+            <li class="pc-item {{ $crmChurnOpen ? 'active' : '' }}">
+                <a href="{{ route('backoffice.crm.churn.index') }}"
+                    class="pc-link {{ $crmChurnOpen ? 'active' : '' }}">
+                    <span class="pc-mtext">Risque de churn</span>
+                </a>
+            </li>
+
+            {{-- Rapports CEO Quotidiens --}}
+            <li class="pc-item {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">
+                <a href="{{ route('backoffice.crm.reports.index') }}"
+                    class="pc-link {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">
+                    <span class="pc-mtext">Rapports CEO</span>
+                </a>
+            </li>
+
+            {{-- Statistiques Rentabilité --}}
+            <li class="pc-item {{ $crmStatsDashOpen ? 'active' : '' }}">
+                <a href="{{ route('backoffice.crm.statistiques') }}"
+                    class="pc-link {{ $crmStatsDashOpen ? 'active' : '' }}">
+                    <span class="pc-mtext">📊 Statistiques</span>
+                </a>
             </li>
 
             {{-- Statistiques submenu --}}

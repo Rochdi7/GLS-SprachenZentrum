@@ -67,4 +67,29 @@ Route::prefix('crm')
             Route::get('/insights/advances',                       'advances')->name('insights.advances');
             Route::get('/group-evolution',                         'groupEvolution')->name('group-evolution');
         });
+
+        // Collections dashboard (Module 2).
+        Route::prefix('collections')->name('collections.')->group(function () {
+            Route::get('/',        [\App\Http\Controllers\Backoffice\Crm\CollectionsController::class, 'index'])->name('index');
+            Route::post('/refresh', [\App\Http\Controllers\Backoffice\Crm\CollectionsController::class, 'refresh'])->name('refresh');
+        });
+
+        // Churn Predictor (Module 3).
+        Route::prefix('churn')->name('churn.')->group(function () {
+            Route::get('/',              [\App\Http\Controllers\Backoffice\Crm\ChurnController::class, 'index'])->name('index');
+            Route::post('/recompute',    [\App\Http\Controllers\Backoffice\Crm\ChurnController::class, 'recompute'])->name('recompute');
+            Route::get('/{studentId}',   [\App\Http\Controllers\Backoffice\Crm\ChurnController::class, 'show'])->name('show')
+                ->where('studentId', '[0-9]+');
+        });
+
+        // Statistiques par centre (encaissement + recouvrement + inscriptions).
+        Route::get('/statistiques', [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'index'])->name('statistiques');
+
+        // Daily CEO Reports (Module 1).
+        Route::prefix('reports')->name('reports.')->group(function () {
+            Route::get('/',          [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'index'])->name('index');
+            Route::post('/generate', [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'generate'])->name('generate');
+            Route::get('/{date}',    [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'show'])->name('show')
+                ->where('date', '\d{4}-\d{2}-\d{2}');
+        });
     });

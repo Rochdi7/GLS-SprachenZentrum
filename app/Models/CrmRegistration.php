@@ -10,6 +10,7 @@ class CrmRegistration extends Model
         'crm_id',
         'crm_student_id',
         'crm_class_id',
+        'crm_store_id',
         'status',
         'raw_data',
         'last_synced_at',

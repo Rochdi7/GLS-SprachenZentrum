@@ -20,18 +20,18 @@ use Illuminate\Console\Command;
 class CrmSnapshotPaymentsCommand extends Command
 {
     protected $signature = 'crm:snapshot-payments
-        {--store= : Only snapshot a single CRM store id (default: all configured centers)}
-        {--date=  : Snapshot date (default: today, format YYYY-MM-DD)}';
+        {--store=* : Store IDs to snapshot (repeatable, default: all configured centers)}
+        {--date=   : Snapshot date (default: today, format YYYY-MM-DD)}';
 
     protected $description = 'Capture daily snapshot of all CRM payments for fraud detection.';
 
     public function handle(Crm $crm): int
     {
         $date = $this->option('date') ? Carbon::parse($this->option('date'))->toDateString() : Carbon::today()->toDateString();
-        $storeFilter = $this->option('store') ? (int) $this->option('store') : null;
+        $storeIds = array_map('intval', array_filter((array) $this->option('store')));
 
         $sites = Site::whereNotNull('crm_store_id')
-            ->when($storeFilter, fn ($q) => $q->where('crm_store_id', $storeFilter))
+            ->when(!empty($storeIds), fn ($q) => $q->whereIn('crm_store_id', $storeIds))
             ->get();
 
         if ($sites->isEmpty()) {
@@ -44,7 +44,12 @@ class CrmSnapshotPaymentsCommand extends Command
         $totalCaptured = 0;
         $totalErrors   = 0;
 
-        foreach ($sites as $site) {
+        foreach ($sites as $i => $site) {
+            if ($i > 0) {
+                $this->line("  (pause 10s between centers...)");
+                sleep(10);
+            }
+
             $this->line("  → {$site->name} (#{$site->crm_store_id})");
 
             try {
@@ -71,7 +76,7 @@ class CrmSnapshotPaymentsCommand extends Command
         do {
             $response = $crm->payments()->list(
                 page: $page,
-                size: 100,
+                size: 25,
                 strStoreId: $site->crm_store_id,
             );
 

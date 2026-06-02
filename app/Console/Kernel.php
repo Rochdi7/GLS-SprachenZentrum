@@ -29,6 +29,34 @@ class Kernel extends ConsoleKernel
             ->monthlyOn(1, '02:00')
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/homeschool-sync.log'));
+
+        // ✅ CRM collections sync: nightly fetch of receivables/installments
+        $schedule->command('crm:sync-collections --all --delay=400')
+            ->dailyAt('02:00')
+            ->timezone('Africa/Casablanca')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/crm-sync-collections.log'));
+
+        // ✅ CRM registrations sync: nightly slow fetch, feeds churn scoring
+        $schedule->command('crm:sync-registrations --all --delay=600')
+            ->dailyAt('02:30')
+            ->timezone('Africa/Casablanca')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/crm-sync-registrations.log'));
+
+        // ✅ CRM churn scores: daily recompute for all stores
+        $schedule->command('crm:churn-scores --all')
+            ->dailyAt('03:00')
+            ->timezone('Africa/Casablanca')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/crm-churn-scores.log'));
+
+        // ✅ Daily CEO Report: generate every morning at 08:00 Casablanca time
+        $schedule->command('crm:daily-report')
+            ->dailyAt('08:00')
+            ->timezone('Africa/Casablanca')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/crm-daily-report.log'));
     }
 
     /**
