@@ -64,99 +64,48 @@ class GroupEvolutionService
      *   range: array{start:string, end:string},
      * }
      */
-    /**
-     * Build the full evolution report for a center + date range
-     */
-    public function build(Crm $crm, ?int $strStoreId, string $startDate, string $endDate, bool $bustCache = false, ?array $classIds = null, bool $includeAllGroups = true): array
+    public function build(Crm $crm, ?int $strStoreId, string $startDate, string $endDate, bool $bustCache = false): array
     {
-        // First get ALL groups with metadata for filter, to get all groups' start/end dates
-        $allGroups = [];
-        if ($includeAllGroups) {
-            $allClasses = $this->fetchClasses($crm, $strStoreId, $bustCache);
-            $allGroups = array_map(function ($c) {
-                return [
-                    'class_id' => (int) ($c['CLASS_ID'] ?? $c['ID'] ?? 0),
-                    'name' => (string) ($c['NAME'] ?? $c['REFERENCE'] ?? ''),
-                    'start_date' => $c['START_DATE'] ?? null,
-                    'end_date' => $c['END_DATE'] ?? null,
-                    'actifs' => (int) ($c['CLASS_COUNT_STUDENTS_ACTIVE'] ?? 0),
-                ];
-            }, $allClasses);
-        }
-
         $cacheKey = "crm.group_evolution.{$strStoreId}.{$startDate}.{$endDate}";
-        if ($classIds) {
-            sort($classIds);
-            $cacheKey .= '.' . implode('_', $classIds);
-        }
         if ($bustCache) {
             Cache::forget($cacheKey);
         }
 
-        $result = Cache::remember($cacheKey, self::CACHE_TTL, function () use ($crm, $strStoreId, $startDate, $endDate, $bustCache, $classIds) {
-            return $this->compute($crm, $strStoreId, $startDate, $endDate, $bustCache, $classIds);
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($crm, $strStoreId, $startDate, $endDate, $bustCache) {
+            return $this->compute($crm, $strStoreId, $startDate, $endDate, $bustCache);
         });
-
-        // Attach all groups to the result so filter dropdown
-        $result['allGroups'] = $allGroups;
-        return $result;
     }
 
-    protected function compute(Crm $crm, ?int $strStoreId, string $startDate, string $endDate, bool $bustCache = false, ?array $classIds = null): array
+    protected function compute(Crm $crm, ?int $strStoreId, string $startDate, string $endDate, bool $bustCache = false): array
     {
         $this->lastFetchError = null;
 
         try {
-            $allClasses = $this->fetchClasses($crm, $strStoreId, $bustCache);
+            $classes = $this->fetchClasses($crm, $strStoreId, $bustCache);
 
-            \Illuminate\Support\Facades\Log::info('GroupEvolution: compute() initial', [
-                'numAllClasses' => count($allClasses),
-                'classIds' => $classIds,
-            ]);
-
-            // Get classes to display
-            $displayClasses = $allClasses;
-            if ($classIds) {
-                $allow = array_flip($classIds);
-                $displayClasses = array_filter($displayClasses, fn($c) => isset($allow[(int) ($c['CLASS_ID'] ?? $c['ID'] ?? 0)]));
-                \Illuminate\Support\Facades\Log::info('GroupEvolution: filtered classes', [
-                    'numDisplayClasses' => count($displayClasses),
-                    'classIds' => $classIds,
-                    'allClassIds' => array_map(fn($c) => (int) ($c['CLASS_ID'] ?? $c['ID'] ?? 0), $allClasses),
-                ]);
-            }
-
-            if (empty($displayClasses)) {
+            if (empty($classes)) {
                 return $this->emptyResult($startDate, $endDate);
             }
 
             $classStartMonth = [];
             $classEndDate    = [];
-            $classActiveStudents = [];
             $classArchivedStudents = [];
-            $classCanceledStudents = [];
-            $classAllStudents = [];
-            $studentNames = []; // studentId => studentName
-
-            // Populate data from ALL classes (needed for changements detection)
-            foreach ($allClasses as $c) {
-                $cid     = (int) ($c['CLASS_ID'] ?? $c['ID'] ?? 0);
-                if (!$cid) continue;
-
-                $start   = $c['START_DATE'] ?? null;
-                $end     = $c['END_DATE'] ?? null;
-
-                // Process class start date, skip future dates
+            $classActiveStudents = [];
+            $earliestStartDate = '2020-01-01'; // Default to a very early date
+            foreach ($classes as $c) {
+                $cid   = (int) ($c['CLASS_ID'] ?? $c['ID'] ?? 0);
+                $start = $c['START_DATE'] ?? null;
+                $end   = $c['END_DATE']   ?? null;
                 if ($cid && $start) {
                     try {
-                        $parsedStart = Carbon::parse($start);
-                        if (!$parsedStart->isFuture()) {
-                            $classStartMonth[$cid] = $parsedStart->format('Y-m');
+                        $classStartMonth[$cid] = Carbon::parse($start)->format('Y-m');
+                        // Keep track of earliest start date
+                        if ($start < $earliestStartDate) {
+                            $earliestStartDate = $start;
                         }
                     } catch (\Throwable) {
                     }
                 }
-
                 if ($cid && $end) {
                     try {
                         $classEndDate[$cid] = Carbon::parse($end)->toDateString();
@@ -164,39 +113,37 @@ class GroupEvolutionService
                     }
                 }
 
-                // Parse student lists and collect names
-                $classActiveStudents[$cid] = $this->parseStudentList($c['LIST_STUDENT_ACTIVE'] ?? null, $studentNames);
-                $classArchivedStudents[$cid] = $this->parseStudentList($c['LIST_STUDENT_ARCHIVED'] ?? null, $studentNames);
-                $classCanceledStudents[$cid] = $this->parseStudentList($c['LIST_STUDENT_CANCELED'] ?? null, $studentNames);
+                // Parse archived students
+                if ($cid && isset($c['LIST_STUDENT_ARCHIVED'])) {
+                    $classArchivedStudents[$cid] = $this->parseStudentList($c['LIST_STUDENT_ARCHIVED']);
+                } else {
+                    $classArchivedStudents[$cid] = [];
+                }
 
-                // Combine all students for this class
-                $classAllStudents[$cid] = array_unique(array_merge(
-                    $classActiveStudents[$cid],
-                    $classArchivedStudents[$cid],
-                    $classCanceledStudents[$cid]
-                ));
-            }
-
-            // Collect all student IDs from the DISPLAY classes
-            $allStudentIds = [];
-            foreach ($displayClasses as $c) {
-                $cid = (int) ($c['CLASS_ID'] ?? $c['ID'] ?? 0);
-                if (isset($classAllStudents[$cid])) {
-                    $allStudentIds = array_merge($allStudentIds, $classAllStudents[$cid]);
+                // Parse active students
+                if ($cid && isset($c['LIST_STUDENT_ACTIVE'])) {
+                    $classActiveStudents[$cid] = $this->parseStudentList($c['LIST_STUDENT_ACTIVE']);
+                } else {
+                    $classActiveStudents[$cid] = [];
                 }
             }
-            $allStudentIds = array_unique($allStudentIds);
 
-            // Fetch allocations only for display classes and students (no date limit!)
-            $allocations = $this->fetchAllocations($crm, $strStoreId, $classIds, $allStudentIds);
+            // Fetch allocations from earliest group start date to ensure we capture Début payments
+            $allocStartDate = $earliestStartDate;
+            $allocations = $this->fetchAllocations($crm, $strStoreId, $allocStartDate, $endDate);
 
-            // Step 1: Build (student, class) map and first payment month
+            // Log samples for debugging
+            \Illuminate\Support\Facades\Log::info('GroupEvolutionService: compute debug', [
+                'classStartMonth_sample' => array_slice($classStartMonth, 0, 5, true),
+                'earliestStartDate' => $earliestStartDate,
+                'allocations_count' => count($allocations),
+                'first_alloc_sample' => empty($allocations) ? null : $allocations[0],
+            ]);
+
+            // Step 1: Build (student, class) map
             $studentClasses = []; // studentId => classId => bool
-            $studentFirstPaymentMonth = []; // studentId => classId => Y-m (only non-inscription)
-            $studentInscriptionMonth = []; // studentId => classId => Y-m (only inscription)
+            $studentPaymentMonths = []; // studentId => classId => array of Y-m
             $inscriptionServices = []; // studentId => classId => bool
-            $classInferredStartMonth = []; // classId => Y-m (from earliest payment, including inscription)
-            $studentAllocationsByMonth = []; // studentId => classId => ym => count
 
             foreach ($allocations as $alloc) {
                 $sid = (int) ($alloc['STUDENT_ID'] ?? 0);
@@ -205,144 +152,92 @@ class GroupEvolutionService
 
                 $studentClasses[$sid][$cid] = true;
 
-                // Track first payment month for this (student, class) - SKIP INSCRIPTION
+                // Track all payment months for this (student, class)
                 $date = $alloc['EFFECTIVE_DATE_PAYMENT_ALLOCATION']
                     ?? $alloc['EFFECTIVE_DATE_PAYMENT']
                     ?? null;
-                $serviceType = $alloc['SERVICE_TYPE_NAME'] ?? '';
-                $isInscription = $this->isInscription($serviceType);
-
-                // Track inscription services
-                if ($isInscription) {
-                    $inscriptionServices[$sid][$cid] = true;
-                }
-
                 if ($date) {
                     try {
                         $ym = Carbon::parse($date)->format('Y-m');
-                        $studentAllocationsByMonth[$sid][$cid][$ym][] = $alloc;
-
-                        // Update class inferred start month (even if it's inscription)
-                        if (!isset($classInferredStartMonth[$cid]) || $ym < $classInferredStartMonth[$cid]) {
-                            $classInferredStartMonth[$cid] = $ym;
+                        if (!isset($studentPaymentMonths[$sid][$cid])) {
+                            $studentPaymentMonths[$sid][$cid] = [];
                         }
-
-                        if ($isInscription) {
-                            // Track inscription month
-                            if (!isset($studentInscriptionMonth[$sid][$cid]) || $ym < $studentInscriptionMonth[$sid][$cid]) {
-                                $studentInscriptionMonth[$sid][$cid] = $ym;
-                            }
-                        } else {
-                            // Only update student first payment month if it's NOT inscription
-                            if (!isset($studentFirstPaymentMonth[$sid][$cid]) || $ym < $studentFirstPaymentMonth[$sid][$cid]) {
-                                $studentFirstPaymentMonth[$sid][$cid] = $ym;
-                            }
-                        }
-                    } catch (\Throwable $e) {
-                        \Illuminate\Support\Facades\Log::warning("Failed to parse allocation date", ['error' => $e->getMessage(), 'date' => $date]);
+                        $studentPaymentMonths[$sid][$cid][$ym] = true;
+                    } catch (\Throwable) {
                     }
+                }
+
+                // Track inscription services
+                $serviceType = $alloc['SERVICE_TYPE_NAME'] ?? '';
+                if ($this->isInscription($serviceType)) {
+                    $inscriptionServices[$sid][$cid] = true;
                 }
             }
 
-            // Log debug info for specific students
-            $targetStudents = ['MOHAMED ADAM EL MANSOUM', 'ZOUHAIR EL MITI', 'ADAM EL GOUT', 'MAROUA EL HAMDANI'];
-            \Illuminate\Support\Facades\Log::info("GroupEvolution: Target students and allocations", [
-                'classIds' => $classIds,
-                'targetStudents' => $targetStudents,
-                'studentNames' => $studentNames,
-                'studentAllocationsByMonth' => $studentAllocationsByMonth,
-                'studentFirstPaymentMonth' => $studentFirstPaymentMonth,
-                'studentInscriptionMonth' => $studentInscriptionMonth,
-                'classInferredStartMonth' => $classInferredStartMonth
-            ]);
+            // Step 2: Detect changements
+            $changementsByGroup = $this->detectChangements($allocations, $classArchivedStudents, $classActiveStudents, $studentClasses);
 
-            // Step 2: Detect changements (Archived in this class + Active in another)
-            $changementsByGroup = $this->detectChangements($classArchivedStudents, $classActiveStudents, $studentClasses);
+            // Step 3: Detect quittants
+            $quittantsByGroup = $this->detectQuittants($crm, $strStoreId, $startDate, $endDate, $studentClasses, $changementsByGroup);
 
-            // Step 3: Detect quittants (Canceled students from LIST_STUDENT_CANCELED)
-            $quittantsByGroup = $this->detectQuittantsFromStatus($classCanceledStudents, $studentClasses);
-
-            // Step 4: Assign to groups, collect student lists
+            // Step 4: Assign to groups
             $groups = [];
-            foreach ($displayClasses as $c) {
+            foreach ($classes as $c) {
                 $cid     = (int) ($c['CLASS_ID'] ?? $c['ID'] ?? 0);
                 $name    = (string) ($c['NAME'] ?? $c['REFERENCE'] ?? "#{$cid}");
                 $actifs  = (int) ($c['CLASS_COUNT_STUDENTS_ACTIVE'] ?? 0);
 
-                $debutStudents = [];
-                $ajoutStudents = [];
-                $quittantStudents = [];
-                $changementStudents = [];
-                $activeStudents = $classActiveStudents[$cid] ?? [];
+                $debuts = 0;
+                $ajouts = 0;
+                $quittants = 0;
+                $changements = 0;
 
-                // ALWAYS use inferred start month (earliest payment in the class) as class start month!
-                $classStartYm = $classInferredStartMonth[$cid] ?? $classStartMonth[$cid] ?? null;
+                foreach ($studentClasses as $sid => $byClass) {
+                    if (!isset($byClass[$cid])) continue;
 
-                // Iterate over ALL students in the class (not just those with allocations)
-                $allStudents = $classAllStudents[$cid] ?? [];
-                foreach ($allStudents as $sid) {
-                    $firstYm = $studentFirstPaymentMonth[$sid][$cid] ?? null;
-                    $inscriptionYm = $studentInscriptionMonth[$sid][$cid] ?? null;
-                    $hasInscription = isset($inscriptionServices[$sid][$cid]);
+                    $studentPaymentMonthsForClass = $studentPaymentMonths[$sid][$cid] ?? [];
+                    $classStartYm = $classStartMonth[$cid] ?? null;
+                    $isDebut = false;
+                    $isAjout = false;
 
-                    // Business Rule 1 & 2: Début vs Ajouts
-                    // Début ONLY if:
-                    // 1. Non-inscription first payment month === class start month, OR
-                    // 2. BOTH inscription AND non-inscription payment in class start month
-                    if ($firstYm && $classStartYm) {
-                        if ($firstYm === $classStartYm) {
-                            $debutStudents[] = $sid;
+                    if (isset($inscriptionServices[$sid][$cid])) {
+                        $isAjout = true;
+                    } elseif ($classStartYm && !empty($studentPaymentMonthsForClass)) {
+                        // Check if any payment is in group's start month
+                        if (isset($studentPaymentMonthsForClass[$classStartYm])) {
+                            $isDebut = true;
                         } else {
-                            $ajoutStudents[] = $sid;
+                            // All payments are after start month → Ajout
+                            $isAjout = true;
                         }
-                    } elseif ($hasInscription && $firstYm && $classStartYm) {
-                        if ($firstYm === $classStartYm) {
-                            $debutStudents[] = $sid;
-                        } else {
-                            $ajoutStudents[] = $sid;
-                        }
-                    } elseif ($hasInscription && !$firstYm) {
-                        // Only inscription payment: NOT Début unless they also have a non-inscription payment (which they don't)
-                        $ajoutStudents[] = $sid;
-                    } elseif ($firstYm && !$classStartYm) {
-                        // No class start date, assume first payment is Début
-                        $debutStudents[] = $sid;
+                    }
+
+                    if ($isDebut) {
+                        $debuts++;
+                    }
+                    if ($isAjout) {
+                        $ajouts++;
                     }
 
                     if (isset($quittantsByGroup[$cid][$sid])) {
-                        $quittantStudents[] = $sid;
+                        $quittants++;
                     }
 
                     if (isset($changementsByGroup[$cid][$sid])) {
-                        $changementStudents[] = $sid;
+                        $changements++;
                     }
                 }
-
-                // Helper to get student names from IDs
-                $getStudentListWithNames = function (array $studentIds) use ($studentNames) {
-                    return array_map(function ($sid) use ($studentNames) {
-                        return [
-                            'id' => $sid,
-                            'name' => $studentNames[$sid] ?? "Student #{$sid}"
-                        ];
-                    }, $studentIds);
-                };
 
                 $groups[] = [
                     'class_id'    => $cid,
                     'name'        => $name,
                     'start_date'  => $c['START_DATE'] ?? null,
-                    'end_date'    => $c['END_DATE'] ?? null,
-                    'debuts'      => count($debutStudents),
-                    'debut_students' => $getStudentListWithNames($debutStudents),
-                    'ajouts'      => count($ajoutStudents),
-                    'ajout_students' => $getStudentListWithNames($ajoutStudents),
-                    'quittants'   => count($quittantStudents),
-                    'quittant_students' => $getStudentListWithNames($quittantStudents),
-                    'changements' => count($changementStudents),
-                    'changement_students' => $getStudentListWithNames($changementStudents),
-                    'actifs'      => count($activeStudents),
-                    'active_students' => $getStudentListWithNames($activeStudents),
+                    'end_date'    => $c['END_DATE']   ?? null,
+                    'debuts'      => $debuts,
+                    'ajouts'      => $ajouts,
+                    'quittants'   => $quittants,
+                    'changements' => $changements,
+                    'actifs'      => $actifs,
                 ];
             }
 
@@ -358,11 +253,10 @@ class GroupEvolutionService
             ];
 
             $diag = [
-                'classes_fetched'       => count($displayClasses),
-                'all_classes_fetched'   => count($allClasses),
+                'classes_fetched'       => count($classes),
                 'classes_with_start'    => count($classStartMonth),
                 'classes_with_end'      => count($classEndDate),
-                'fetch_window'          => $earliestClassStartDate . ' → ' . $endDate,
+                'fetch_window'          => $startDate . ' → ' . $endDate,
                 'requested_window'      => $startDate . ' → ' . $endDate,
                 'allocations_fetched'   => count($allocations),
                 'allocations_with_class' => 0,
@@ -373,11 +267,11 @@ class GroupEvolutionService
                 'total_ajouts_keyed'    => array_sum(array_column($groups, 'ajouts')),
                 'total_debuts_students' => 0,
                 'total_ajouts_students' => 0,
-                'sample_first_months'   => array_slice($studentFirstPaymentMonth, 0, 3, true),
+                'sample_payment_months'   => array_slice($studentPaymentMonths, 0, 3, true),
                 'sample_start_months'   => array_slice($classStartMonth, 0, 5, true),
                 'sample_end_dates'      => array_slice($classEndDate, 0, 5, true),
-                'class_inferred_starts' => $classInferredStartMonth,
-                'class_all_students'    => $classAllStudents,
+                'sample_archived_students'   => array_slice($classArchivedStudents, 0, 3, true),
+                'sample_active_students'   => array_slice($classActiveStudents, 0, 3, true),
             ];
             foreach ($allocations as $alloc) {
                 if (!empty($alloc['CLASS_ID'])) {
@@ -499,89 +393,187 @@ class GroupEvolutionService
     }
 
     /**
-     * Pull payment allocations EXACTLY like PaymentMatrixBuilder does
+     * Pull all payment allocations within the date range.
      */
-    protected function fetchAllocations(Crm $crm, ?int $strStoreId, ?array $classIds = null, ?array $studentIds = null): array
+    protected function fetchAllocations(Crm $crm, ?int $strStoreId, string $startDate, string $endDate): array
     {
         try {
-            \Illuminate\Support\Facades\Log::info('GroupEvolutionService: Fetching allocations like PaymentMatrixBuilder', [
-                'storeId' => $strStoreId,
-                'classIds' => $classIds,
-                'studentIds' => $studentIds
-            ]);
+            \Illuminate\Support\Facades\Log::info('GroupEvolutionService: Fetching allocations', ['storeId' => $strStoreId, 'start' => $startDate, 'end' => $endDate]);
 
-            $baseQuery = array_filter([
-                'strStoreId' => $strStoreId,
-            ], fn($v) => $v !== null);
+            $result = [];
+            $page = 0;
+            $maxPages = 20;
 
-            $allocRows = [];
-
-            // If only one class ID, try to use classId filter server-side like PaymentMatrixBuilder does
-            if ($classIds && count($classIds) === 1) {
-                try {
-                    $allocRows = $crm->client()->pagedScan(
-                        path: '/api/external/v1/payment-allocations',
-                        baseQuery: $baseQuery + ['classId' => reset($classIds)],
-                        pageSize: 25,
-                        maxPages: 40,
-                        concurrency: 2,
-                        interBatchDelayMs: 400,
-                    );
-                    \Illuminate\Support\Facades\Log::info('GroupEvolutionService: All allocations fetched using single classId filter', ['count' => count($allocRows)]);
-                    return $allocRows;
-                } catch (\Throwable $e) {
-                    \Illuminate\Support\Facades\Log::warning("GroupEvolutionService: Failed to fetch with single classId filter, falling back", [
-                        'message' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString(),
-                    ]);
-                }
-            }
-
-            // Fallback: full scan
-            try {
-                $allocRows = $crm->client()->pagedScan(
+            while ($page < $maxPages) {
+                $response = $crm->client()->get(
                     path: '/api/external/v1/payment-allocations',
-                    baseQuery: $baseQuery,
-                    pageSize: 25,
-                    maxPages: 40,
-                    concurrency: 2,
-                    interBatchDelayMs: 400,
+                    query: array_filter([
+                        'page' => $page,
+                        'size' => 25,
+                        'strStoreId' => $strStoreId,
+                        'startDate' => $startDate,
+                        'endDate' => $endDate,
+                    ], fn($v) => $v !== null),
                 );
 
-                // Filter if needed
-                if ($classIds || $studentIds) {
-                    $allowClassIds = $classIds ? array_flip($classIds) : null;
-                    $allowStudentIds = $studentIds ? array_flip($studentIds) : null;
-
-                    $allocRows = array_filter($allocRows, function ($row) use ($allowClassIds, $allowStudentIds) {
-                        $classMatch = !$allowClassIds || isset($allowClassIds[(int) ($row['CLASS_ID'] ?? 0)]);
-                        $studentMatch = !$allowStudentIds || isset($allowStudentIds[(int) ($row['STUDENT_ID'] ?? 0)]);
-                        return $classMatch && $studentMatch;
-                    });
+                $pageRows = $response['data'] ?? [];
+                if (empty($pageRows)) {
+                    break;
                 }
-            } catch (\Throwable $e2) {
-                \Illuminate\Support\Facades\Log::warning("GroupEvolutionService: Failed to fetch even full scan", [
-                    'message' => $e2->getMessage(),
-                    'trace' => $e2->getTraceAsString(),
-                ]);
-                $allocRows = [];
+
+                foreach ($pageRows as $row) {
+                    $result[] = $row;
+                }
+
+                $hasNext = $response['pagination']['hasNext'] ?? $response['pagination']['hasMore'] ?? false;
+                if (!$hasNext) {
+                    break;
+                }
+
+                $page++;
             }
 
-            \Illuminate\Support\Facades\Log::info('GroupEvolutionService: Final allocations count', ['count' => count($allocRows)]);
-            return $allocRows;
+            \Illuminate\Support\Facades\Log::info('GroupEvolutionService: Allocations fetched', ['count' => count($result)]);
+            return $result;
         } catch (\Throwable $t) {
             \Illuminate\Support\Facades\Log::error('GroupEvolutionService: Fetch allocations error', ['message' => $t->getMessage(), 'trace' => $t->getTraceAsString()]);
             return [];
         }
     }
 
+
+
     /**
-     * Same-student-in-multiple-classes → transfer (using LIST_STUDENT_ARCHIVED and LIST_STUDENT_ACTIVE).
+     * Quittant detection.
      */
-    protected function detectChangements(array $classArchivedStudents, array $classActiveStudents, array $studentClasses): array
+    protected function detectQuittants(
+        Crm $crm,
+        ?int $strStoreId,
+        string $startDate,
+        string $endDate,
+        array $studentClasses,
+        array $changementsByGroup,
+    ): array {
+        $moverIds = [];
+        foreach ($changementsByGroup as $byStudent) {
+            foreach ($byStudent as $sid => $_) {
+                $moverIds[$sid] = true;
+            }
+        }
+
+        try {
+            $result = [];
+            $page = 0;
+            $maxPages = 20;
+
+            while ($page < $maxPages) {
+                $response = $crm->client()->get(
+                    path: '/api/external/v1/payment-collection',
+                    query: array_filter([
+                        'page' => $page,
+                        'size' => 25,
+                        'strStoreId' => $strStoreId,
+                        'dueDateStartDate' => $startDate,
+                        'dueDateEndDate' => $endDate,
+                    ], fn($v) => $v !== null),
+                );
+
+                $pageRows = $response['data'] ?? [];
+                if (empty($pageRows)) {
+                    break;
+                }
+
+                foreach ($pageRows as $row) {
+                    $result[] = $row;
+                }
+
+                $hasNext = $response['pagination']['hasNext'] ?? $response['pagination']['hasMore'] ?? false;
+                if (!$hasNext) {
+                    break;
+                }
+
+                $page++;
+            }
+
+            $collection = $result;
+        } catch (\Throwable $t) {
+            \Illuminate\Support\Facades\Log::error('GroupEvolutionService: Detect quittants error', ['message' => $t->getMessage()]);
+            $collection = [];
+        }
+
+        $quittants = [];
+        foreach ($collection as $row) {
+            $sid     = $row['STUDENT_ID'] ?? null;
+            $classId = $row['CLASS_ID']   ?? null;
+            if (!$sid || !$classId) continue;
+
+            $rest = (float) ($row['REST_AMOUNT'] ?? $row['OPEN_AMOUNT'] ?? $row['REMAINING_AMOUNT'] ?? 0);
+            if ($rest <= 0) continue;
+
+            if (isset($moverIds[$sid])) continue;
+
+            if (!isset($studentClasses[$sid][$classId])) continue;
+
+            $quittants[$classId][$sid] = true;
+        }
+
+        return $quittants;
+    }
+
+    /** Case-insensitive check for "inscription" in the service type label. */
+    protected function isInscription(string $serviceType): bool
+    {
+        $needle = mb_strtolower($serviceType, 'UTF-8');
+        return str_contains($needle, 'inscription')
+            || str_contains($needle, 'frais d\'inscription');
+    }
+
+    /**
+     * Parse student list JSON string into array of student IDs.
+     * Handles both JSON and comma-separated lists.
+     */
+    protected function parseStudentList(mixed $list): array
+    {
+        if (is_array($list)) {
+            return array_map(fn($s) => (int) ($s['STUDENT_ID'] ?? $s['ID'] ?? $s), $list);
+        }
+
+        if (is_string($list)) {
+            $trimmed = trim($list);
+            if (empty($trimmed)) return [];
+
+            // Try parsing as JSON first
+            try {
+                $decoded = json_decode($trimmed, true, 512, JSON_THROW_ON_ERROR);
+                if (is_array($decoded)) {
+                    return array_map(fn($s) => (int) ($s['STUDENT_ID'] ?? $s['ID'] ?? $s), $decoded);
+                }
+            } catch (\Throwable) {
+            }
+
+            // Try comma-separated
+            $parts = explode(',', $trimmed);
+            return array_map(fn($p) => (int) trim($p), $parts);
+        }
+
+        return [];
+    }
+
+    /**
+     * Same-student-in-multiple-classes → transfer, now using archived list!
+     */
+    protected function detectChangements(array $allocations, array $classArchivedStudents, array $classActiveStudents, array $studentClasses): array
     {
         $result = [];
 
+        // Log samples of archived/active students for debugging
+        \Illuminate\Support\Facades\Log::info('GroupEvolutionService: detectChangements debug', [
+            'classArchivedStudents_sample' => array_slice($classArchivedStudents, 0, 3, true),
+            'classActiveStudents_sample' => array_slice($classActiveStudents, 0, 3, true),
+            'studentClasses_count' => count($studentClasses),
+        ]);
+
+        // For every student
         foreach ($studentClasses as $sid => $studentClassIds) {
             // Find classes where student is archived
             $archivedInClasses = [];
@@ -610,81 +602,11 @@ class GroupEvolutionService
             }
         }
 
+        \Illuminate\Support\Facades\Log::info('GroupEvolutionService: detectChangements result', [
+            'changement_count' => count($result, COUNT_RECURSIVE),
+            'result_sample' => array_slice($result, 0, 3, true),
+        ]);
+
         return $result;
-    }
-
-    /**
-     * Detect quittants using LIST_STUDENT_CANCELED.
-     */
-    protected function detectQuittantsFromStatus(array $classCanceledStudents, array $studentClasses): array
-    {
-        $quittants = [];
-        foreach ($classCanceledStudents as $classId => $canceledIds) {
-            foreach ($canceledIds as $sid) {
-                $quittants[$classId][$sid] = true;
-            }
-        }
-        return $quittants;
-    }
-
-    /**
-     * Parse student list JSON string into array of student IDs and collect names.
-     * Handles both JSON and comma-separated lists.
-     * Returns array of student IDs, and also populates $studentNames map.
-     */
-    protected function parseStudentList(mixed $list, array &$studentNames = []): array
-    {
-        $ids = [];
-
-        if (empty($list)) {
-            return $ids;
-        }
-
-        $parseItem = function ($student) use (&$studentNames) {
-            $id = (int) ($student['STUDENT_ID'] ?? $student['ID'] ?? $student);
-            if ($id) {
-                // Build full name from first/last name, or fall back to other keys
-                $firstName = trim((string) ($student['STUDENT_FIRST_NAME'] ?? ''));
-                $lastName = trim((string) ($student['STUDENT_LAST_NAME'] ?? ''));
-                if ($firstName || $lastName) {
-                    $name = trim("{$firstName} {$lastName}");
-                } else {
-                    $name = (string) ($student['NAME'] ?? $student['FULL_NAME'] ?? $student['student'] ?? "Student #{$id}");
-                }
-                $studentNames[$id] = $name;
-            }
-            return $id;
-        };
-
-        if (is_array($list)) {
-            $ids = array_map($parseItem, $list);
-        } elseif (is_string($list)) {
-            $trimmed = trim($list);
-            if (!empty($trimmed)) {
-                // Try parsing as JSON first
-                try {
-                    $decoded = json_decode($trimmed, true, 512, JSON_THROW_ON_ERROR);
-                    if (is_array($decoded)) {
-                        $ids = array_map($parseItem, $decoded);
-                    }
-                } catch (\Throwable) {
-                    // Try comma-separated
-                    $parts = explode(',', $trimmed);
-                    $ids = array_map(function ($p) {
-                        return (int) trim($p);
-                    }, $parts);
-                }
-            }
-        }
-
-        return array_filter($ids, fn($id) => $id > 0);
-    }
-
-    /** Case-insensitive check for "inscription" in the service type label. */
-    protected function isInscription(string $serviceType): bool
-    {
-        $needle = mb_strtolower($serviceType, 'UTF-8');
-        return str_contains($needle, 'inscription')
-            || str_contains($needle, 'frais d\'inscription');
     }
 }

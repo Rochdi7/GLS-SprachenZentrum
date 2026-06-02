@@ -67,9 +67,4 @@ Route::prefix('crm')
             Route::get('/insights/advances',                       'advances')->name('insights.advances');
             Route::get('/group-evolution',                         'groupEvolution')->name('group-evolution');
         });
-
-        // Center Performance Dashboard
-        Route::controller(\App\Http\Controllers\Backoffice\Crm\CrmCenterPerformanceController::class)->group(function () {
-            Route::get('/center-performance', 'index')->name('center-performance');
-        });
     });
