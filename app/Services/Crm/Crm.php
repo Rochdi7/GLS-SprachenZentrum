@@ -2,6 +2,7 @@
 
 namespace App\Services\Crm;
 
+use App\Services\Crm\Resources\Attendance;
 use App\Services\Crm\Resources\EmployeeSalaries;
 use App\Services\Crm\Resources\Groups;
 use App\Services\Crm\Resources\Lov;
@@ -63,6 +64,11 @@ class Crm
     public function employeeSalaries(): EmployeeSalaries
     {
         return $this->resources[EmployeeSalaries::class] ??= new EmployeeSalaries($this->client);
+    }
+
+    public function attendance(): Attendance
+    {
+        return $this->resources[Attendance::class] ??= new Attendance($this->client);
     }
 
     public function client(): HomeschoolClient

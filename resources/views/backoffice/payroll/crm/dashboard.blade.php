@@ -36,7 +36,8 @@
                 <div class="card-body">
                     <h6 class="text-muted mb-1">Total paiements CRM</h6>
                     <h3 class="mb-0">
-                        {{ number_format($groups->sum(fn($g) => (float) ($g->latestPresenceImport?->paymentSummary?->total_payment ?? 0)), 2) }} DH
+                        {{ number_format($groups->sum(fn($g) => (float) ($g->latestPresenceImport?->paymentSummary?->total_payment ?? 0)), 2) }}
+                        DH
                     </h3>
                 </div>
             </div>
@@ -47,7 +48,11 @@
                     <h6 class="text-muted mb-1">Dernier import CRM</h6>
                     <h3 class="mb-0">
                         @php
-                            $lastImport = $groups->pluck('latestPresenceImport')->filter(fn($i) => $i?->is_crm_api)->sortByDesc('created_at')->first();
+                            $lastImport = $groups
+                                ->pluck('latestPresenceImport')
+                                ->filter(fn($i) => $i?->is_crm_api)
+                                ->sortByDesc('created_at')
+                                ->first();
                         @endphp
                         {{ $lastImport ? $lastImport->created_at->format('d/m/Y') : '—' }}
                     </h3>
@@ -57,7 +62,7 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-body text-end">
-                    <a href="{{ route('backoffice.payroll.crm.import.create') }}" class="btn btn-success">
+                    <a href="{{ route('backoffice.payroll.crm.legacy.import.create') }}" class="btn btn-success">
                         <i class="ph-duotone ph-cloud-arrow-down me-1"></i> Nouvel import CRM
                     </a>
                 </div>
@@ -80,10 +85,13 @@
             <div class="card table-card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5>Groupes — Paiement Professeurs (CRM)</h5>
-                    <div class="d-flex gap-2">
-                        <a href="{{ route('backoffice.payroll.presence.dashboard') }}" class="btn btn-sm btn-outline-secondary">
-                            <i class="ph-duotone ph-file-arrow-up me-1"></i> Imports Excel
-                        </a>
+                    <div class="d-flex gap-2 align-items-center">
+                        <select id="site-filter" class="form-select form-select-sm" style="width:200px">
+                            <option value="">— Tous les centres —</option>
+                            @foreach(\App\Models\Site::orderBy('name')->get() as $site)
+                                <option value="{{ $site->id }}">{{ $site->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="card-body pt-3">
@@ -108,15 +116,15 @@
                                         $summary = $latest?->paymentSummary;
                                         $rate = $latest?->getEffectivePaymentPerStudent();
                                     @endphp
-                                    <tr>
+                                    <tr data-site-id="{{ $group->site_id }}">
                                         <td>
                                             <strong>{{ $group->name }}</strong>
                                             <br><small class="text-muted">{{ $group->time_range }}</small>
                                         </td>
-                                        <td>{{ $group->teacher?->name ?? '—' }}</td>
+                                        <td>{{ $group->teacher?->name ?? $latest?->crm_teacher_name ?? '—' }}</td>
                                         <td><span class="badge bg-light-primary">{{ $group->level }}</span></td>
                                         <td>
-                                            @if($group->crm_class_id)
+                                            @if ($group->crm_class_id)
                                                 <span class="badge bg-light-success">{{ $group->crm_class_id }}</span>
                                             @else
                                                 <span class="badge bg-light-warning">Non configuré</span>
@@ -124,15 +132,16 @@
                                         </td>
                                         <td>{{ $rate ? number_format($rate, 2) . ' DH' : '—' }}</td>
                                         <td>
-                                            @if($summary)
+                                            @if ($summary)
                                                 <strong>{{ number_format($summary->total_payment, 2) }} DH</strong>
-                                                <br><small class="text-muted">{{ $summary->total_students }} étudiants actifs</small>
+                                                <br><small class="text-muted">{{ $summary->total_students }} étudiants
+                                                    actifs</small>
                                             @else
                                                 —
                                             @endif
                                         </td>
                                         <td>
-                                            @if($summary?->isApproved())
+                                            @if ($summary?->isApproved())
                                                 <span class="badge bg-success">Approuvé</span>
                                             @elseif($summary)
                                                 <span class="badge bg-warning">En attente</span>
@@ -142,19 +151,19 @@
                                         </td>
                                         <td class="text-end">
                                             <div class="d-inline-flex gap-2 align-items-center justify-content-end">
-                                                <a href="{{ route('backoffice.payroll.crm.group.imports', $group) }}"
-                                                   class="btn btn-sm btn-outline-primary" title="Historique CRM">
+                                                <a href="{{ route('backoffice.payroll.crm.legacy.group.imports', $group) }}"
+                                                    class="btn btn-sm btn-outline-primary" title="Historique CRM">
                                                     <i class="ph-duotone ph-clock-counter-clockwise"></i>
                                                 </a>
-                                                @if($latest && $latest->is_crm_api)
-                                                    <a href="{{ route('backoffice.payroll.crm.import.show', ['group' => $group->id, 'import' => $latest->id]) }}"
-                                                       class="btn btn-sm btn-outline-success" title="Dernier import CRM">
+                                                @if ($latest && $latest->is_crm_api)
+                                                    <a href="{{ route('backoffice.payroll.crm.legacy.import.show', ['group' => $group->id, 'import' => $latest->id]) }}"
+                                                        class="btn btn-sm btn-outline-success" title="Dernier import CRM">
                                                         <i class="ph-duotone ph-eye"></i>
                                                     </a>
                                                 @endif
-                                                @if($group->crm_class_id)
-                                                    <a href="{{ route('backoffice.payroll.crm.import.create', ['group_id' => $group->id]) }}"
-                                                       class="btn btn-sm btn-outline-info" title="Nouvel import CRM">
+                                                @if ($group->crm_class_id)
+                                                    <a href="{{ route('backoffice.payroll.crm.legacy.import.create', ['crm_class_id' => $group->crm_class_id]) }}"
+                                                        class="btn btn-sm btn-outline-info" title="Nouvel import CRM">
                                                         <i class="ph-duotone ph-plus"></i>
                                                     </a>
                                                 @endif
@@ -181,13 +190,22 @@
 
 @section('scripts')
     <script type="module">
-        import { DataTable } from "/build/js/plugins/module.js";
+        import {
+            DataTable
+        } from "/build/js/plugins/module.js";
         window.dt = new DataTable("#pc-dt-simple");
     </script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             const toastEl = document.getElementById('liveToast');
             if (toastEl) new bootstrap.Toast(toastEl).show();
+
+            document.getElementById('site-filter').addEventListener('change', function() {
+                const siteId = this.value;
+                document.querySelectorAll('#pc-dt-simple tbody tr[data-site-id]').forEach(row => {
+                    row.style.display = (!siteId || row.dataset.siteId === siteId) ? '' : 'none';
+                });
+            });
         });
     </script>
 @endsection

@@ -2,6 +2,8 @@
 
 namespace App\Services\Crm\Resources;
 
+use Illuminate\Support\Facades\Log;
+
 /**
  * Groups (level-sessions, classes) data.
  *
@@ -68,18 +70,59 @@ class Groups extends Resource
         ?int $statusId = null,
         ?string $history = null,
     ): array {
-        return $this->client->get('/api/external/v1/groups/classes', array_filter([
-            'page'               => $page,
-            'size'               => $size,
-            'includeTotal'       => $includeTotal,
-            'strStoreId'         => $strStoreId,
-            'schoolYearId'       => $schoolYearId,
-            'schoolDepartmentId' => $schoolDepartmentId,
-            'schoolStageId'      => $schoolStageId,
-            'schoolLevelId'      => $schoolLevelId,
-            'employeeTeacherId'  => $employeeTeacherId,
-            'statusId'           => $statusId,
+        $query = array_filter([
+            'page'               => (string) $page,
+            'size'               => (string) $size,
+            'strStoreId'         => $strStoreId !== null ? (string) $strStoreId : null,
+            'schoolYearId'       => $schoolYearId !== null ? (string) $schoolYearId : null,
+            'schoolDepartmentId' => $schoolDepartmentId !== null ? (string) $schoolDepartmentId : null,
+            'schoolStageId'      => $schoolStageId !== null ? (string) $schoolStageId : null,
+            'schoolLevelId'      => $schoolLevelId !== null ? (string) $schoolLevelId : null,
+            'employeeTeacherId'  => $employeeTeacherId !== null ? (string) $employeeTeacherId : null,
+            'statusId'           => $statusId !== null ? (string) $statusId : null,
             'history'            => $history,
+        ], fn ($v) => $v !== null);
+
+        Log::info('Groups::classes query: ' . json_encode($query));
+
+        return $this->client->get('/api/external/v1/groups/classes', $query);
+    }
+
+    /**
+     * GET /api/external/v1/bulk/groups/level-sessions
+     */
+    public function bulkLevelSessions(
+        int $page = 0,
+        int $size = 100,
+        ?int $strStoreId = null,
+        ?int $schoolYearId = null,
+        array $extra = [],
+    ): array {
+        return $this->client->get('/api/external/v1/bulk/groups/level-sessions', array_filter([
+            'page'         => $page,
+            'size'         => $size,
+            'strStoreId'   => $strStoreId,
+            'schoolYearId' => $schoolYearId,
+            ...$extra,
+        ], fn ($v) => $v !== null));
+    }
+
+    /**
+     * GET /api/external/v1/bulk/groups/classes
+     */
+    public function bulkClasses(
+        int $page = 0,
+        int $size = 100,
+        ?int $strStoreId = null,
+        ?int $schoolYearId = null,
+        array $extra = [],
+    ): array {
+        return $this->client->get('/api/external/v1/bulk/groups/classes', array_filter([
+            'page'         => $page,
+            'size'         => $size,
+            'strStoreId'   => $strStoreId,
+            'schoolYearId' => $schoolYearId,
+            ...$extra,
         ], fn ($v) => $v !== null));
     }
 }

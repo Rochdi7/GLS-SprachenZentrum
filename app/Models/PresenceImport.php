@@ -25,6 +25,8 @@ class PresenceImport extends Model
         'notes',
         'imported_by',
         'is_crm_api',
+        'month_label',
+        'crm_teacher_name',
     ];
 
     protected $casts = [

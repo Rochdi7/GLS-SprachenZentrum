@@ -2,143 +2,123 @@
 
 @section('title', 'Importer depuis CRM — Paiement Professeurs')
 @section('breadcrumb-item', 'Paiement Professeurs CRM')
-@section('breadcrumb-item-link', route('backoffice.payroll.crm.dashboard'))
+@section('breadcrumb-item-link', route('backoffice.payroll.crm.legacy.dashboard'))
 @section('breadcrumb-item-active', 'Nouvel import')
 
 @section('content')
+    @include('backoffice.crm.partials._center')
+
+    @if ($error)
+        <div class="alert alert-danger">
+            <i class="ph-duotone ph-warning-circle me-2"></i>{{ $error }}
+        </div>
+    @endif
+
+    {{-- Nav --}}
+    <div class="d-flex gap-2 mb-3">
+        <a href="{{ route('backoffice.payroll.crm.legacy.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="ph-duotone ph-arrow-left me-1"></i> Tableau de bord CRM
+        </a>
+    </div>
 
     <div class="row">
-        <div class="col-lg-8 mx-auto">
+        <div class="col-lg-7 mx-auto">
             <div class="card">
                 <div class="card-header">
-                    <h5>Importer des données depuis le CRM</h5>
-                    <p class="text-muted mb-0">
-                        Sélectionnez le groupe et la période. Les données de présence seront récupérées automatiquement depuis le CRM Homeschool.
-                    </p>
+                    <h5 class="mb-0">Nouvel import depuis le CRM</h5>
                 </div>
                 <div class="card-body">
 
                     @if ($errors->any())
                         <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
+                            <ul class="mb-0">@foreach ($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
                         </div>
                     @endif
-
                     @if (session('error'))
                         <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
 
-                    <form action="{{ route('backoffice.payroll.crm.import.store') }}"
-                          method="POST">
+                    <form action="{{ route('backoffice.payroll.crm.legacy.import.store') }}" method="POST">
                         @csrf
+                        <input type="hidden" name="crm_class_name" id="crm-class-name-hidden">
+                        <input type="hidden" name="crm_teacher_name" id="crm-teacher-name-hidden">
+                        <input type="hidden" name="crm_level" id="crm-level-hidden">
 
-                        <div class="row">
-                            {{-- Group Selection --}}
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Groupe <span class="text-danger">*</span></label>
-                                <select name="group_id" class="form-select" required id="group-select">
-                                    <option value="">Sélectionner un groupe</option>
-                                    @foreach($groups as $group)
-                                        @php
-                                            $teacherRate = $group->teacher?->payment_per_student;
-                                            $lastImport = $group->latestPresenceImport;
-                                            $lastRate = $lastImport?->payment_per_student;
-                                        @endphp
-                                        <option value="{{ $group->id }}"
-                                                data-teacher="{{ $group->teacher?->name ?? '—' }}"
-                                                data-level="{{ $group->level }}"
-                                                data-rate="{{ $teacherRate ?? '' }}"
-                                                data-last-rate="{{ $lastRate ?? '' }}"
-                                                data-has-import="{{ $lastImport ? '1' : '0' }}"
-                                                data-crm-class-id="{{ $group->crm_class_id ?? '' }}"
-                                                {{ old('group_id', $selectedGroupId) == $group->id ? 'selected' : '' }}
-                                                {{ !$group->crm_class_id ? 'disabled' : '' }}>
-                                            {{ $group->name }} — {{ $group->level }}
-                                            ({{ $group->teacher?->name ?? 'Sans enseignant' }})
-                                            @if(!$group->crm_class_id)
-                                                — [CRM Class ID non configuré]
-                                            @endif
+                        <div class="row g-3">
+
+                            {{-- Classe CRM --}}
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Classe CRM <span class="text-danger">*</span></label>
+                                <select name="crm_class_id" class="form-select" required id="crm-class-select">
+                                    <option value="">— Sélectionner une classe —</option>
+                                    @forelse ($crmClasses as $cls)
+                                        <option value="{{ $cls['crm_id'] }}"
+                                            data-name="{{ $cls['name'] }}"
+                                            data-teacher="{{ $cls['teacher'] }}"
+                                            data-level="{{ $cls['level'] }}"
+                                            data-status="{{ $cls['status'] }}"
+                                            data-last-rate="{{ $cls['last_rate'] ?? '' }}"
+                                            {{ old('crm_class_id', $selectedCrmId) == $cls['crm_id'] ? 'selected' : '' }}>
+                                            {{ $cls['name'] }} — {{ $cls['level'] }} ({{ $cls['teacher'] }})
                                         </option>
-                                    @endforeach
+                                    @empty
+                                        <option value="" disabled>Aucune classe disponible depuis le CRM</option>
+                                    @endforelse
                                 </select>
-                            </div>
-
-                            {{-- Period --}}
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Période <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="date" name="date_start"
-                                           class="form-control"
-                                           value="{{ old('date_start', now()->subDays(15)->toDateString()) }}"
-                                           required id="date-start-input"
-                                           placeholder="Début">
-                                    <span class="input-group-text">→</span>
-                                    <input type="date" name="date_end"
-                                           class="form-control"
-                                           value="{{ old('date_end', now()->toDateString()) }}"
-                                           required id="date-end-input"
-                                           placeholder="Fin">
+                                <div class="d-flex gap-3 mt-1" style="font-size:.82rem">
+                                    <span class="text-muted">Prof : <strong id="teacher-display">—</strong></span>
+                                    <span class="text-muted">Niveau : <strong id="level-display">—</strong></span>
+                                    <span class="text-muted">Statut : <strong id="status-display">—</strong></span>
                                 </div>
-                                <small class="text-muted">Période de présence à récupérer (max 62 jours)</small>
                             </div>
 
-                            {{-- Auto-populated info --}}
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Professeur</label>
-                                <input type="text" class="form-control" id="teacher-display" readonly disabled>
+                            {{-- Période --}}
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Date début <span class="text-danger">*</span></label>
+                                <input type="date" name="date_start" class="form-control"
+                                    value="{{ old('date_start', now()->startOfMonth()->toDateString()) }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Date fin <span class="text-danger">*</span></label>
+                                <input type="date" name="date_end" class="form-control"
+                                    value="{{ old('date_end', now()->endOfMonth()->toDateString()) }}" required>
+                                <small class="text-muted">Max 62 jours</small>
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Niveau</label>
-                                <input type="text" class="form-control" id="level-display" readonly disabled>
+                            {{-- Libellé du mois --}}
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Libellé de la période</label>
+                                <input type="text" name="month_label" class="form-control"
+                                    value="{{ old('month_label') }}"
+                                    placeholder="Ex: Mars 2026, Mi-mars → Mi-avril...">
+                                <small class="text-muted">Affiché sur le rapport. Utile si la période ne coïncide pas avec un mois calendaire.</small>
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">CRM Class ID</label>
-                                <input type="text" class="form-control" id="crm-class-id-display" readonly disabled>
-                            </div>
-
-                            {{-- Payment Per Student Override --}}
-                            <div class="col-md-6 mb-3">
+                            {{-- Taux --}}
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold">Taux par étudiant (DH)</label>
-                                <input type="number" name="payment_per_student"
-                                       class="form-control"
-                                       value="{{ old('payment_per_student') }}"
-                                       step="0.01" min="0"
-                                       id="rate-input"
-                                       placeholder="Laisser vide = taux enseignant">
-                                <small class="text-muted" id="rate-hint"></small>
+                                <div class="input-group">
+                                    <input type="number" name="payment_per_student" class="form-control"
+                                        value="{{ old('payment_per_student') }}" step="0.01" min="0" id="rate-input"
+                                        placeholder="500">
+                                    <span class="input-group-text">DH</span>
+                                </div>
+                                <small class="text-info" id="rate-hint"></small>
                             </div>
 
                             {{-- Notes --}}
-                            <div class="col-md-12 mb-3">
+                            <div class="col-12">
                                 <label class="form-label fw-bold">Notes (optionnel)</label>
-                                <textarea name="notes" class="form-control" rows="3"
-                                          placeholder="Notes sur cet import...">{{ old('notes') }}</textarea>
+                                <textarea name="notes" class="form-control" rows="2"
+                                    placeholder="Notes internes...">{{ old('notes') }}</textarea>
                             </div>
-                        </div>
 
-                        {{-- Info box --}}
-                        <div class="alert alert-success mb-3">
-                            <i class="ph-duotone ph-check-circle me-2"></i>
-                            <strong>Mode automatique :</strong> Les données de présence seront récupérées directement depuis le CRM Homeschool via l'API.
-                            Aucun fichier Excel à importer !
-                        </div>
+                        </div>{{-- /row --}}
 
-                        <div class="alert alert-info mb-3">
-                            <strong>Calcul du paiement :</strong> Même logique que les imports manuels :
-                            <ul class="mb-0 mt-1">
-                                <li>Si étudiant présent ≥ 3 jours/semaine → paiement pour cette semaine</li>
-                                <li>Taux par étudiant × 25% par semaine (configurable)</li>
-                            </ul>
-                        </div>
+                        <hr class="my-3">
 
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ route('backoffice.payroll.crm.dashboard') }}" class="btn btn-outline-secondary">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ route('backoffice.payroll.crm.legacy.dashboard') }}" class="btn btn-outline-secondary">
                                 Annuler
                             </a>
                             <button type="submit" class="btn btn-success">
@@ -155,34 +135,30 @@
 @endsection
 
 @section('scripts')
-    <script>
-        document.getElementById('group-select').addEventListener('change', function () {
-            const option = this.options[this.selectedIndex];
-            const rateInput = document.getElementById('rate-input');
+<script>
+    const select   = document.getElementById('crm-class-select');
+    const rateInput = document.getElementById('rate-input');
+    const rateHint  = document.getElementById('rate-hint');
 
-            document.getElementById('teacher-display').value = option.dataset.teacher || '—';
-            document.getElementById('level-display').value = option.dataset.level || '—';
-            document.getElementById('crm-class-id-display').value = option.dataset.crmClassId || '—';
+    select.addEventListener('change', function () {
+        const opt = this.options[this.selectedIndex];
+        document.getElementById('teacher-display').textContent  = opt.dataset.teacher || '—';
+        document.getElementById('level-display').textContent    = opt.dataset.level   || '—';
+        document.getElementById('status-display').textContent   = opt.dataset.status  || '—';
+        document.getElementById('crm-class-name-hidden').value  = opt.dataset.name    || opt.text;
+        document.getElementById('crm-teacher-name-hidden').value = opt.dataset.teacher || '';
+        document.getElementById('crm-level-hidden').value        = opt.dataset.level   || '';
 
-            const teacherRate = option.dataset.rate;
-            const lastRate = option.dataset.lastRate;
-            const hasImport = option.dataset.hasImport === '1';
-            const rateHint = document.getElementById('rate-hint');
+        const lastRate = opt.dataset.lastRate;
+        if (lastRate) {
+            rateInput.value = lastRate;
+            rateHint.innerHTML = 'Dernier import : <strong>' + lastRate + ' DH</strong>';
+        } else {
+            rateInput.value = '';
+            rateHint.innerHTML = '';
+        }
+    });
 
-            let hints = [];
-            if (hasImport && lastRate) {
-                rateInput.value = lastRate;
-                hints.push('Dernier import : <strong>' + lastRate + ' DH</strong>');
-            } else if (teacherRate) {
-                rateInput.value = teacherRate;
-            } else {
-                rateInput.value = '';
-                rateInput.placeholder = 'Ex: 500 ou 550';
-            }
-            if (teacherRate) hints.push('Taux enseignant : <strong>' + teacherRate + ' DH</strong>');
-            rateHint.innerHTML = hints.length ? hints.join(' | ') : '';
-        });
-
-        document.getElementById('group-select').dispatchEvent(new Event('change'));
-    </script>
+    select.dispatchEvent(new Event('change'));
+</script>
 @endsection

@@ -31,8 +31,9 @@ class PresenceImportController extends Controller
             ->whereHas('presenceImports')
             ->latest()
             ->get();
+        $sites = \App\Models\Site::with('groups')->orderBy('name')->get();
 
-        return view('backoffice.payroll.presence.dashboard', compact('groups'));
+        return view('backoffice.payroll.presence.dashboard', compact('groups', 'sites'));
     }
 
     /**

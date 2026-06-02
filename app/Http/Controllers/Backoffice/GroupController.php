@@ -24,7 +24,7 @@ class GroupController extends Controller
      */
     public function index()
     {
-        $query = Group::with(['site', 'teacher'])->latest();
+        $query = Group::with(['site', 'teacher'])->where('crm_only', false)->latest();
         $this->scopeToUserSites($query);
         $groups = $query->get();
 

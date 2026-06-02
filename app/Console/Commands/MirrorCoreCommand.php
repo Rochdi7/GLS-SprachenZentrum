@@ -1,0 +1,267 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\CrmAttendance;
+use App\Models\CrmClass;
+use App\Models\CrmRegistration;
+use App\Models\CrmStudent;
+use App\Models\Site;
+use App\Models\Teacher;
+use App\Services\Crm\Crm;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
+
+class MirrorCoreCommand extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'homeschool:mirror-core {--full : Sync all data instead of just recent changes} {--months=2 : How many months back to sync attendance}';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Synchronize core CRM metadata (Classes, Students, Registrations) to the local mirror database';
+
+    public function __construct(protected Crm $crm)
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
+    {
+        $this->info('Starting Core CRM Mirror Synchronization...');
+
+        $this->syncClasses();
+        $this->syncTeachers();
+        $this->syncStudents();
+        $this->syncRegistrations();
+        $this->syncAttendance();
+
+        $this->info('Core CRM Mirror Synchronization Completed.');
+    }
+
+    protected function syncClasses()
+    {
+        $this->info('Syncing Classes...');
+        $page = 0;
+        $size = 100;
+
+        do {
+            $this->comment("Fetching classes page {$page}...");
+            $response = $this->crm->groups()->bulkClasses($page, $size);
+            
+            if (!$response['success']) {
+                $this->error('Failed to fetch classes from API');
+                break;
+            }
+
+            foreach ($response['data'] as $item) {
+                CrmClass::updateOrCreate(
+                    ['crm_id' => $item['ID']],
+                    [
+                        'class_id'       => $item['CLASS_ID'] ?? null,
+                        'name'           => $item['NAME'] ?? $item['REFERENCE'],
+                        'crm_teacher_id' => $item['EMPLOYEE_TEACHER_ID'] ?? null,
+                        'level'          => $item['SCHOOL_LEVEL_NAME'] ?? null,
+                        'site_id'        => $item['STR_STORE_ID'] ?? null,
+                        'raw_data'       => $item,
+                        'last_synced_at' => now(),
+                    ]
+                );
+            }
+
+            $page++;
+            $hasNext = $response['pagination']['hasMore'] ?? false;
+        } while ($hasNext);
+    }
+
+    protected function syncTeachers()
+    {
+        $this->info('Syncing Teachers from CRM Classes...');
+
+        $siteMap = Site::whereNotNull('crm_store_id')->pluck('id', 'crm_store_id');
+
+        $synced = 0;
+        CrmClass::all()
+            ->filter(fn($c) => !empty($c->raw_data['EMPLOYEE_TEACHER_ID']))
+            ->map(fn($c) => [
+                'crm_teacher_id' => $c->raw_data['EMPLOYEE_TEACHER_ID'],
+                'name'           => trim($c->raw_data['EMPLOYEE_TEACHER_FULL_NAME'] ?? ''),
+                'site_id'        => $siteMap[$c->site_id] ?? null,
+            ])
+            ->filter(fn($t) => !empty($t['name']))
+            ->unique('crm_teacher_id')
+            ->each(function ($t) use (&$synced) {
+                Teacher::updateOrCreate(
+                    ['crm_teacher_id' => $t['crm_teacher_id']],
+                    [
+                        'name'    => $t['name'],
+                        'site_id' => $t['site_id'],
+                    ]
+                );
+                $synced++;
+            });
+
+        $this->info("Teachers synced: {$synced}");
+    }
+
+    protected function syncStudents()
+    {
+        $this->info('Syncing Students (Bulk)...');
+        $page = 0;
+        $size = 500; // Increased size for bulk
+
+        do {
+            $this->comment("Fetching students bulk page {$page}...");
+            $response = $this->crm->attendance()->students($page, $size);
+
+            if (!$response['success']) {
+                $this->error('Failed to fetch students from bulk API');
+                break;
+            }
+
+            foreach ($response['data'] as $item) {
+                CrmStudent::updateOrCreate(
+                    ['crm_id' => $item['ID']],
+                    [
+                        'first_name' => $item['FIRST_NAME'] ?? 'Unknown',
+                        'last_name' => $item['LAST_NAME'] ?? 'Unknown',
+                        'email' => $item['EMAIL'] ?? null,
+                        'phone' => $item['PHONE_NUMBER'] ?? null,
+                        'raw_data' => $item,
+                        'last_synced_at' => now(),
+                    ]
+                );
+            }
+
+            $page++;
+            $hasNext = $response['pagination']['hasMore'] ?? false;
+        } while ($hasNext);
+    }
+
+    protected function syncRegistrations()
+    {
+        $this->info('Syncing Registrations (Bulk)...');
+        $page = 0;
+        $size = 500;
+
+        do {
+            $this->comment("Fetching registrations bulk page {$page}...");
+            $response = $this->crm->attendance()->registrations($page, $size);
+
+            if (!$response['success']) {
+                $this->error('Failed to fetch registrations from bulk API');
+                break;
+            }
+
+            foreach ($response['data'] as $item) {
+                if (empty($item['CLASS_ID'])) {
+                    continue;
+                }
+
+                CrmRegistration::updateOrCreate(
+                    ['crm_id' => $item['ID']],
+                    [
+                        'crm_student_id' => $item['STUDENT_ID'],
+                        'crm_class_id' => $item['CLASS_ID'],
+                        'status' => $item['STATUS_NAME'] ?? 'Active',
+                        'raw_data' => $item,
+                        'last_synced_at' => now(),
+                    ]
+                );
+            }
+
+            $page++;
+            $hasNext = $response['pagination']['hasMore'] ?? false;
+        } while ($hasNext);
+    }
+
+    protected function syncAttendance(): void
+    {
+        $months = (int) ($this->option('months') ?? 2);
+        $dateFrom = now()->subMonths($months)->startOfMonth()->toDateString();
+        $dateTo   = now()->toDateString();
+
+        $this->info("Syncing Attendance ({$dateFrom} → {$dateTo})...");
+
+        $classes = CrmClass::whereNotNull('class_id')
+            ->where(fn($q) => $q->whereNull('raw_data->STATUS_NAME')
+                ->orWhereRaw("JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.STATUS_NAME')) = 'En formation'"))
+            ->get(['id', 'crm_id', 'class_id', 'name']);
+
+        $total = 0;
+
+        foreach ($classes as $i => $class) {
+            $this->comment("Attendance for: {$class->name} (class_id={$class->class_id})");
+            if ($i > 0 && $i % 5 === 0) {
+                $this->comment("  Rate-limit pause...");
+                sleep(3);
+            }
+
+            $page = 0;
+            $size = 25;
+
+            do {
+                $response = $this->crm->client()->get('/api/external/v1/session-presence', [
+                    'classId'  => $class->class_id,
+                    'dateFrom' => $dateFrom,
+                    'dateTo'   => $dateTo,
+                    'page'     => $page,
+                    'size'     => $size,
+                ]);
+
+                if (empty($response['success'])) {
+                    $this->warn("  Failed page {$page} for {$class->name}");
+                    break;
+                }
+
+                foreach ($response['data'] as $row) {
+                    $sessionDate = $row['SESSION_DATE'] ?? null;
+                    $studentId   = $row['STUDENT_ID'] ?? null;
+
+                    if (!$sessionDate || !$studentId) continue;
+
+                    try {
+                        $date = Carbon::parse($sessionDate)
+                            ->setTimezone('Africa/Casablanca')
+                            ->toDateString();
+                    } catch (\Throwable) {
+                        continue;
+                    }
+
+                    $isPresent = ($row['PRESENCE'] ?? 'N') === 'Y'
+                        || ($row['PRESENCE_STATUS'] ?? 0) == 1;
+
+                    CrmAttendance::updateOrCreate(
+                        [
+                            'crm_class_id'   => $class->crm_id,
+                            'crm_student_id' => $studentId,
+                            'date'           => $date,
+                        ],
+                        [
+                            'crm_id'         => $row['SESSION_ID'] ?? null,
+                            'is_present'     => $isPresent,
+                            'raw_data'       => $row,
+                            'last_synced_at' => now(),
+                        ]
+                    );
+                    $total++;
+                }
+
+                $page++;
+                $hasMore = $response['pagination']['hasMore'] ?? false;
+            } while ($hasMore);
+        }
+
+        $this->info("Attendance synced: {$total} records across {$classes->count()} classes.");
+    }
+}

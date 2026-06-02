@@ -12,6 +12,7 @@ class Teacher extends Model implements HasMedia
     use InteractsWithMedia;
 
     protected $fillable = [
+        'crm_teacher_id',
         'site_id',
         'name',
         'slug',

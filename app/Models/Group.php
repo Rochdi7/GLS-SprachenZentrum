@@ -11,6 +11,8 @@ class Group extends Model
     protected $fillable = [
         'site_id',
         'teacher_id',
+        'crm_class_id',
+        'crm_only',
 
         'name',
         'name_fr',

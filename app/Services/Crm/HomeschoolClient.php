@@ -81,6 +81,7 @@ class HomeschoolClient
      */
     public function get(string $path, array $query = [], bool $fresh = false): array
     {
+        Log::info("HomeschoolClient::get path: {$path}, query: " . json_encode($query));
         $ttl = (int) config('crm.cache_ttl', 60);
         if ($ttl <= 0) {
             return $this->send('GET', $path, query: $query);
@@ -343,6 +344,7 @@ class HomeschoolClient
      */
     protected function send(string $method, string $path, array $query = [], ?array $json = null): array
     {
+        Log::info("HomeschoolClient::send method: {$method}, path: {$path}, query: " . json_encode($query));
         $this->assertConfigured();
 
         $url = $this->baseUrl . '/' . ltrim($path, '/');
@@ -439,7 +441,8 @@ class HomeschoolClient
 
         $status = $response->status();
         $body   = $response->json();
-        $msg    = "CRM API {$method} {$url} failed with {$status}";
+        $bodyStr = json_encode($body);
+        $msg    = "CRM API {$method} {$url} failed with {$status}. Body: {$bodyStr}";
 
         if ($this->logEnabled) {
             Log::channel($this->logChannel)->warning($msg, [

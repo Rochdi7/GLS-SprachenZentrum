@@ -45,6 +45,7 @@ use App\Http\Controllers\Backoffice\Payroll\GroupImportController;
 use App\Http\Controllers\Backoffice\Payroll\GroupAnalysisController;
 use App\Http\Controllers\Backoffice\Payroll\PresenceImportController;
 use App\Http\Controllers\Backoffice\Payroll\CrmPayrollController;
+use App\Http\Controllers\Backoffice\Payroll\HomeschoolPayrollController;
 
 // Encaissement / Rentabilité
 use App\Http\Controllers\Backoffice\Encaissement\EncaissementController;
@@ -447,17 +448,25 @@ Route::prefix('backoffice')
                     ->name('crm.')
                     ->group(function () {
                         // Dashboard — groups with CRM API imports
-                        Route::get('/', [CrmPayrollController::class, 'dashboard'])->middleware('permission:presence.view')->name('dashboard');
+                        Route::get('/', [HomeschoolPayrollController::class, 'index'])->middleware('permission:presence.view')->name('dashboard');
 
-                        // New CRM API import form
-                        Route::get('/import/create', [CrmPayrollController::class, 'create'])->middleware('permission:presence.create')->name('import.create');
-                        Route::post('/import', [CrmPayrollController::class, 'store'])->middleware('permission:presence.create')->name('import.store');
+                        // Get classes for center
+                        Route::post('/classes-for-center', [HomeschoolPayrollController::class, 'getClassesForCenter'])->middleware('permission:presence.create')->name('classes-for-center');
 
-                        // Import history for a group (CRM API only)
-                        Route::get('/group/{group}/imports', [CrmPayrollController::class, 'index'])->middleware('permission:presence.view')->name('group.imports');
+                        // Sync attendance
+                        Route::post('/sync', [HomeschoolPayrollController::class, 'sync'])->middleware('permission:presence.create')->name('sync');
 
-                        // Import detail
-                        Route::get('/group/{group}/import/{import}', [CrmPayrollController::class, 'show'])->middleware('permission:presence.view')->name('import.show');
+                        // Preview attendance
+                        Route::post('/preview', [HomeschoolPayrollController::class, 'preview'])->middleware('permission:presence.create')->name('preview');
+
+                        // Legacy CRM API imports
+                        Route::get('/legacy', [CrmPayrollController::class, 'dashboard'])->middleware('permission:presence.view')->name('legacy.dashboard');
+                        Route::get('/legacy/import/create', [CrmPayrollController::class, 'create'])->middleware('permission:presence.create')->name('legacy.import.create');
+                        Route::post('/legacy/import', [CrmPayrollController::class, 'store'])->middleware('permission:presence.create')->name('legacy.import.store');
+                        Route::get('/legacy/group/{group}/imports', [CrmPayrollController::class, 'index'])->middleware('permission:presence.view')->name('legacy.group.imports');
+                        Route::get('/legacy/group/{group}/import/{import}', [CrmPayrollController::class, 'show'])->middleware('permission:presence.view')->name('legacy.import.show');
+                        Route::get('/legacy/group/{group}/import/{import}/pdf', [CrmPayrollController::class, 'pdf'])->middleware('permission:presence.view')->name('legacy.import.pdf');
+                        Route::post('/legacy/group/{group}/import/{import}/recalculate', [CrmPayrollController::class, 'recalculate'])->middleware('permission:presence.edit')->name('legacy.import.recalculate');
                     });
             });
 

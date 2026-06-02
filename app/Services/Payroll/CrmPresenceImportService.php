@@ -2,6 +2,8 @@
 
 namespace App\Services\Payroll;
 
+use App\Models\CrmAttendance;
+use App\Models\CrmStudent;
 use App\Models\Group;
 use App\Models\PresenceImport;
 use App\Models\PresenceImportStudent;
@@ -33,8 +35,10 @@ class CrmPresenceImportService
         ?float $paymentPerStudent = null,
         ?string $notes = null,
         ?int $importedBy = null,
+        ?string $monthLabel = null,
+        ?string $crmTeacherName = null,
     ): PresenceImport {
-        return DB::transaction(function () use ($group, $crm, $dateStart, $dateEnd, $paymentPerStudent, $notes, $importedBy) {
+        return DB::transaction(function () use ($group, $crm, $dateStart, $dateEnd, $paymentPerStudent, $notes, $importedBy, $monthLabel, $crmTeacherName) {
 
             $nextVersion = ($group->presenceImports()->max('version') ?? 0) + 1;
 
@@ -59,11 +63,13 @@ class CrmPresenceImportService
                 'date_end' => $parsed['date_end'],
                 'total_days' => $parsed['total_days'],
                 'payment_per_student' => $paymentPerStudent,
-                'file_name' => 'CRM_API_IMPORT',
-                'file_path' => 'crm_api_import',
-                'notes' => $notes,
-                'imported_by' => $importedBy,
-                'is_crm_api' => true,
+                'file_name'        => 'CRM_API_IMPORT',
+                'file_path'        => 'crm_api_import',
+                'notes'            => $notes,
+                'imported_by'      => $importedBy,
+                'is_crm_api'       => true,
+                'month_label'      => $monthLabel,
+                'crm_teacher_name' => $crmTeacherName,
             ]);
 
             foreach ($parsed['students'] as $studentData) {
@@ -95,7 +101,7 @@ class CrmPresenceImportService
     }
 
     /**
-     * Fetch presence data from CRM API and structure it like Excel parser output.
+     * Fetch presence from local mirror, fall back to live API if mirror is empty.
      */
     protected function fetchPresenceFromCrm(
         Crm $crm,
@@ -109,24 +115,89 @@ class CrmPresenceImportService
             throw new \RuntimeException('Groupe non lié à une classe CRM. Veuillez configurer crm_class_id.');
         }
 
-        $allRows = $this->fetchPresenceByDay(
-            crm: $crm,
-            classId: $classId,
-            startDate: $dateStart->toDateString(),
-            endDate: $dateEnd->toDateString(),
+        $mirrorAttendance = CrmAttendance::where('crm_class_id', $classId)
+            ->whereBetween('date', [$dateStart->toDateString(), $dateEnd->toDateString()])
+            ->get();
+
+        if ($mirrorAttendance->isNotEmpty()) {
+            return $this->parseFromMirror($mirrorAttendance, $dateStart, $dateEnd);
+        }
+
+        // Mirror empty — fetch live from API
+        return $this->parseFromLiveApi($crm, $classId, $dateStart, $dateEnd);
+    }
+
+    protected function parseFromMirror(\Illuminate\Support\Collection $records, Carbon $dateStart, Carbon $dateEnd): array
+    {
+        $fullNames = CrmStudent::whereIn('crm_id', $records->pluck('crm_student_id')->unique())
+            ->get(['crm_id', 'first_name', 'last_name'])
+            ->mapWithKeys(fn($s) => [$s->crm_id => trim($s->first_name . ' ' . $s->last_name)]);
+
+        $students = [];
+        $dates = [];
+
+        foreach ($records as $record) {
+            $studentId = $record->crm_student_id;
+            $studentName = $fullNames[$studentId] ?? "Étudiant #{$studentId}";
+            $dateKey = $record->date instanceof \Carbon\Carbon
+                ? $record->date->toDateString()
+                : (string) $record->date;
+
+            $dates[$dateKey] = true;
+
+            if (!isset($students[$studentId])) {
+                $students[$studentId] = [
+                    'row_number'     => count($students) + 1,
+                    'student_name'   => $studentName,
+                    'crm_student_id' => $studentId,
+                    'total_present'  => 0,
+                    'total_absent'   => 0,
+                    'auto_status'    => 'active',
+                    'presence'       => [],
+                    'raw_data'       => $record->raw_data ?? [],
+                ];
+            }
+
+            $status = $record->is_present ? 'present' : 'absent';
+            $students[$studentId]['presence'][] = ['date' => $dateKey, 'status' => $status, 'raw_value' => null];
+            $status === 'present' ? $students[$studentId]['total_present']++ : $students[$studentId]['total_absent']++;
+        }
+
+        return $this->fillMissingDates($students, $dates, $dateStart, $dateEnd);
+    }
+
+    protected function parseFromLiveApi(Crm $crm, int $classId, Carbon $dateStart, Carbon $dateEnd): array
+    {
+        // $classId is LEVEL_SESSION_ID — API needs CLASS_ID
+        $crmClass = \App\Models\CrmClass::where('crm_id', $classId)->first();
+        $apiClassId = $crmClass?->class_id ?? $classId;
+
+        $variants = [];
+        $cursor = $dateStart->copy();
+        while ($cursor->lte($dateEnd)) {
+            $variants[] = ['date' => $cursor->toDateString()];
+            $cursor->addDay();
+        }
+
+        $allRows = $crm->client()->parallelFetch(
+            path: '/api/external/v1/session-presence',
+            baseQuery: ['classId' => $apiClassId],
+            variantQueries: $variants,
+            pageSize: 25,
+            concurrency: 3,
         );
 
         $students = [];
         $dates = [];
 
         foreach ($allRows as $row) {
-            $studentId = $row['STUDENT_ID'] ?? $row['ID'] ?? null;
-            $studentName = $row['STUDENT_NAME'] ?? $row['FULL_NAME'] ?? $row['NAME'] ?? "Étudiant #{$studentId}";
+            $studentId   = $row['STUDENT_ID'] ?? null;
+            $firstName   = trim($row['FIRST_NAME'] ?? $row['STUDENT_NAME'] ?? '');
+            $lastName    = trim($row['LAST_NAME'] ?? '');
+            $studentName = $firstName || $lastName ? trim("{$firstName} {$lastName}") : "Étudiant #{$studentId}";
             $sessionDate = $row['SESSION_DATE'] ?? null;
 
-            if (!$studentId || !$sessionDate) {
-                continue;
-            }
+            if (!$studentId || !$sessionDate) continue;
 
             try {
                 $dateKey = Carbon::parse($sessionDate)->setTimezone('Africa/Casablanca')->toDateString();
@@ -135,63 +206,52 @@ class CrmPresenceImportService
             }
 
             $dates[$dateKey] = true;
-
             $status = $this->parsePresenceStatus($row);
 
             if (!isset($students[$studentId])) {
                 $students[$studentId] = [
-                    'row_number' => count($students) + 1,
-                    'student_name' => $studentName,
+                    'row_number'     => count($students) + 1,
+                    'student_name'   => $studentName,
                     'crm_student_id' => $studentId,
-                    'total_present' => 0,
-                    'total_absent' => 0,
-                    'auto_status' => 'active',
-                    'presence' => [],
-                    'raw_data' => $row,
+                    'total_present'  => 0,
+                    'total_absent'   => 0,
+                    'auto_status'    => 'active',
+                    'presence'       => [],
+                    'raw_data'       => $row,
                 ];
             }
 
-            $students[$studentId]['presence'][] = [
-                'date' => $dateKey,
-                'status' => $status,
-                'raw_value' => json_encode($row),
-            ];
-
-            if ($status === 'present') {
-                $students[$studentId]['total_present']++;
-            } else {
-                $students[$studentId]['total_absent']++;
-            }
+            $students[$studentId]['presence'][] = ['date' => $dateKey, 'status' => $status, 'raw_value' => json_encode($row)];
+            $status === 'present' ? $students[$studentId]['total_present']++ : $students[$studentId]['total_absent']++;
         }
 
+        return $this->fillMissingDates($students, $dates, $dateStart, $dateEnd);
+    }
+
+    protected function fillMissingDates(array $students, array $dates, Carbon $dateStart, Carbon $dateEnd): array
+    {
         ksort($dates);
         $dateList = array_keys($dates);
 
         foreach ($students as &$student) {
-            $presenceByDate = collect($student['presence'])->keyBy('date');
-            $completePresence = [];
-
+            $byDate = collect($student['presence'])->keyBy('date');
+            $complete = [];
             foreach ($dateList as $date) {
-                if ($presenceByDate->has($date)) {
-                    $completePresence[] = $presenceByDate->get($date);
+                if ($byDate->has($date)) {
+                    $complete[] = $byDate->get($date);
                 } else {
-                    $completePresence[] = [
-                        'date' => $date,
-                        'status' => 'absent',
-                        'raw_value' => null,
-                    ];
+                    $complete[] = ['date' => $date, 'status' => 'absent', 'raw_value' => null];
                     $student['total_absent']++;
                 }
             }
-
-            $student['presence'] = $completePresence;
+            $student['presence'] = $complete;
         }
 
         return [
-            'students' => array_values($students),
-            'date_start' => $dateStart->toDateString(),
-            'date_end' => $dateEnd->toDateString(),
-            'total_days' => count($dateList),
+            'students'     => array_values($students),
+            'date_start'   => $dateStart->toDateString(),
+            'date_end'     => $dateEnd->toDateString(),
+            'total_days'   => count($dateList),
             'date_columns' => $dateList,
         ];
     }

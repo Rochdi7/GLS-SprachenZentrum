@@ -23,6 +23,12 @@ class Kernel extends ConsoleKernel
             ->dailyAt('01:30')
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/crm-snapshot-payments.log'));
+
+        // ✅ Homeschool attendance sync: monthly on the 1st at 2 AM
+        $schedule->command('homeschool:sync-attendance')
+            ->monthlyOn(1, '02:00')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/homeschool-sync.log'));
     }
 
     /**

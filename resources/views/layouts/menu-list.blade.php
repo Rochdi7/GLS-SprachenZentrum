@@ -278,14 +278,7 @@
                     <span class="pc-mtext">Tableau de bord</span>
                 </a>
             </li>
-            @can('presence.create')
-                <li class="pc-item {{ request()->routeIs('backoffice.payroll.presence.import.create') ? 'active' : '' }}">
-                    <a href="{{ route('backoffice.payroll.presence.import.create') }}"
-                        class="pc-link {{ request()->routeIs('backoffice.payroll.presence.import.create') ? 'active' : '' }}">
-                        <span class="pc-mtext">Importer Présence</span>
-                    </a>
-                </li>
-            @endcan
+            {{-- Excel import hidden from menu (logic preserved) --}}
         </ul>
     </li>
 @endcan
@@ -564,6 +557,34 @@
                         <a href="{{ route('backoffice.crm.lov', ['kind' => 'banks']) }}"
                             class="pc-link {{ request()->routeIs('backoffice.crm.lov') ? 'active' : '' }}">
                             <span class="pc-mtext">Listes de valeurs (LOV)</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            {{-- Paiement Professeurs CRM --}}
+            <li class="pc-item pc-hasmenu {{ request()->routeIs('backoffice.payroll.crm.*') ? 'pc-trigger' : '' }}">
+                <a href="#!" class="pc-link">
+                    <span class="pc-mtext">Paiement Profs</span>
+                    <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
+                </a>
+                <ul class="pc-submenu">
+                    <li class="pc-item {{ request()->routeIs('backoffice.payroll.crm.legacy.dashboard') ? 'active' : '' }}">
+                        <a href="{{ route('backoffice.payroll.crm.legacy.dashboard') }}"
+                            class="pc-link {{ request()->routeIs('backoffice.payroll.crm.legacy.dashboard') ? 'active' : '' }}">
+                            <span class="pc-mtext">Tableau de bord</span>
+                        </a>
+                    </li>
+                    <li class="pc-item {{ request()->routeIs('backoffice.payroll.crm.legacy.import.create') ? 'active' : '' }}">
+                        <a href="{{ route('backoffice.payroll.crm.legacy.import.create') }}"
+                            class="pc-link {{ request()->routeIs('backoffice.payroll.crm.legacy.import.create') ? 'active' : '' }}">
+                            <span class="pc-mtext">Importer depuis CRM</span>
+                        </a>
+                    </li>
+                    <li class="pc-item {{ request()->routeIs('backoffice.crm.groups.classes') ? 'active' : '' }}">
+                        <a href="{{ route('backoffice.crm.groups.classes') }}"
+                            class="pc-link {{ request()->routeIs('backoffice.crm.groups.classes') ? 'active' : '' }}">
+                            <span class="pc-mtext">Classes CRM</span>
                         </a>
                     </li>
                 </ul>
