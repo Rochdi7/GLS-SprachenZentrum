@@ -121,11 +121,14 @@ class HomeschoolClient
         int $concurrency = 2,
         int $interBatchDelayMs = 300,
     ): array {
+        $startTime = microtime(true);
+        $firstPageStart = microtime(true);
         $firstPage = $this->send('GET', $path, query: [
             'page' => 0,
             'size' => $pageSize,
             'includeTotal' => 'true',
         ] + $baseQuery);
+        $firstPageTime = round(microtime(true) - $firstPageStart, 3);
 
         $rows = is_array($firstPage['data'] ?? null) ? array_values($firstPage['data']) : [];
         $totalPages = $firstPage['pagination']['totalPages']
@@ -172,7 +175,11 @@ class HomeschoolClient
                 $pageBatch = array_slice($attemptPages, $start, $concurrency);
 
                 $responses = Http::pool(function (Pool $pool) use (
-                    $pageBatch, $baseQuery, $pageSize, $token, $url
+                    $pageBatch,
+                    $baseQuery,
+                    $pageSize,
+                    $token,
+                    $url
                 ) {
                     $requests = [];
                     foreach ($pageBatch as $page) {
@@ -215,6 +222,16 @@ class HomeschoolClient
         if (!empty($pendingPages)) {
             $this->throwRateLimited($path, 'pagedScan', count($pendingPages));
         }
+
+        $totalTime = round(microtime(true) - $startTime, 3);
+        \Illuminate\Support\Facades\Log::info('HomeschoolClient::pagedScan complete', [
+            'path' => $path,
+            'baseQuery' => $baseQuery,
+            'firstPageTime' => $firstPageTime,
+            'totalPages' => $totalPages ?? 'unknown',
+            'rowsFetched' => count($rows),
+            'totalTime' => $totalTime
+        ]);
 
         return $rows;
     }
@@ -271,7 +288,12 @@ class HomeschoolClient
                 $idxBatch = array_slice($attemptIdxs, $start, $concurrency);
 
                 $responses = Http::pool(function (Pool $pool) use (
-                    $idxBatch, $variantQueries, $baseQuery, $pageSize, $token, $url
+                    $idxBatch,
+                    $variantQueries,
+                    $baseQuery,
+                    $pageSize,
+                    $token,
+                    $url
                 ) {
                     $requests = [];
                     foreach ($idxBatch as $i) {
@@ -417,7 +439,7 @@ class HomeschoolClient
             ->retry(
                 $this->retryTimes,
                 $this->retrySleepMs,
-                fn ($exception) => $exception instanceof \Illuminate\Http\Client\ConnectionException,
+                fn($exception) => $exception instanceof \Illuminate\Http\Client\ConnectionException,
                 throw: false,
             );
 

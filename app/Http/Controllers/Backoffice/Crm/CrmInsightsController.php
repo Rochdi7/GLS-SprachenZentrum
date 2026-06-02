@@ -137,7 +137,7 @@ class CrmInsightsController extends BaseCrmController
         $bustCache = $r->boolean('refresh');
 
         $startDate = $r->query('startDate') ?: now()->subDays(15)->toDateString();
-        $endDate   = $r->query('endDate')   ?: now()->toDateString();
+        $endDate   = $r->query('endDate') ?: now()->toDateString();
 
         \Illuminate\Support\Facades\Log::info('CrmInsightsController: groupEvolution', [
             'storeId' => $storeId,
@@ -145,34 +145,23 @@ class CrmInsightsController extends BaseCrmController
             'scopedCrmToken' => substr((string) $this->scopedCrm()->client()->getToken(), -8),
         ]);
 
-        $report = $svc->build($this->scopedCrm(), $storeId, $startDate, $endDate, $bustCache);
-
-        // Snapshot the unfiltered list before mutating — feeds the multi-select.
-        $allGroupsForFilter = $report['groups'];
-
         $selectedClassIds = collect(explode(',', (string) $r->query('classIds', '')))
             ->map(fn($v) => (int) trim($v))
             ->filter(fn($v) => $v > 0)
             ->values()
             ->all();
 
-        if (!empty($selectedClassIds)) {
-            $allow = array_flip($selectedClassIds);
-            $filteredGroups = array_values(array_filter(
-                $report['groups'],
-                fn($g) => isset($allow[$g['class_id']]),
-            ));
-            // Recompute totals from the visible slice so KPI cards stay coherent.
-            $report['totals'] = [
-                'debuts'      => array_sum(array_column($filteredGroups, 'debuts')),
-                'ajouts'      => array_sum(array_column($filteredGroups, 'ajouts')),
-                'quittants'   => array_sum(array_column($filteredGroups, 'quittants')),
-                'changements' => array_sum(array_column($filteredGroups, 'changements')),
-                'actifs'      => array_sum(array_column($filteredGroups, 'actifs')),
-                'groups'      => count($filteredGroups),
-            ];
-            $report['groups'] = $filteredGroups;
-        }
+        // Single call to get report + all groups (with start/end dates)
+        $report = $svc->build(
+            $this->scopedCrm(), 
+            $storeId, 
+            $startDate, 
+            $endDate, 
+            $bustCache, 
+            !empty($selectedClassIds) ? $selectedClassIds : null
+        );
+        
+        $allGroupsForFilter = $report['allGroups'] ?? [];
 
         return $this->view('backoffice.crm.group-evolution', [
             'report'           => $report,

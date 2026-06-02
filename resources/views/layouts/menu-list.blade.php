@@ -47,7 +47,8 @@
         request()->routeIs('backoffice.crm.index') ||
         request()->routeIs('backoffice.crm.stats') ||
         request()->routeIs('backoffice.crm.duplicates') ||
-        request()->routeIs('backoffice.crm.insights.*');
+        request()->routeIs('backoffice.crm.insights.*') ||
+        request()->routeIs('backoffice.crm.center-performance');
 @endphp
 
 <li class="pc-item pc-caption">
@@ -576,6 +577,12 @@
                     <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
                 </a>
                 <ul class="pc-submenu">
+                    <li class="pc-item {{ request()->routeIs('backoffice.crm.center-performance') ? 'active' : '' }}">
+                        <a href="{{ route('backoffice.crm.center-performance') }}"
+                            class="pc-link {{ request()->routeIs('backoffice.crm.center-performance') ? 'active' : '' }}">
+                            <span class="pc-mtext">Performance des centres</span>
+                        </a>
+                    </li>
                     <li class="pc-item {{ request()->routeIs('backoffice.crm.group-evolution') ? 'active' : '' }}">
                         <a href="{{ route('backoffice.crm.group-evolution') }}"
                             class="pc-link {{ request()->routeIs('backoffice.crm.group-evolution') ? 'active' : '' }}">
