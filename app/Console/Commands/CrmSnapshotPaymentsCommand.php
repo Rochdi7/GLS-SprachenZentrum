@@ -119,6 +119,10 @@ class CrmSnapshotPaymentsCommand extends Command
                 'user_update_full_name'   => $row['USER_UPDATE_FULL_NAME']    ?? null,
                 'date_creation'           => $row['DATE_CREATION']            ?? null,
                 'date_update'             => $row['DATE_UPDATE']              ?? null,
+                // Normalized column — avoids JSON_EXTRACT in DailyReportService WHERE clauses
+                'date_creation_date'      => isset($row['DATE_CREATION']) && $row['DATE_CREATION']
+                    ? \Carbon\Carbon::parse($row['DATE_CREATION'])->toDateString()
+                    : null,
                 'payload'                 => $row,
                 'payload_hash'            => $hash,
             ]

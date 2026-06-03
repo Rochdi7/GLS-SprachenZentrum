@@ -107,6 +107,15 @@ class SyncCrmRegistrationsCommand extends Command
             foreach ($rows as $item) {
                 if (empty($item['ID'])) continue;
 
+                // Parse normalized date_creation from raw DATE_CREATION field
+                $rawDc = $item['DATE_CREATION'] ?? null;
+                $dateCreation = null;
+                if ($rawDc && $rawDc !== 'null') {
+                    try {
+                        $dateCreation = \Carbon\Carbon::parse($rawDc)->toDateString();
+                    } catch (\Throwable) {}
+                }
+
                 CrmRegistration::updateOrCreate(
                     ['crm_id' => $item['ID']],
                     [
@@ -114,6 +123,9 @@ class SyncCrmRegistrationsCommand extends Command
                         'crm_class_id'   => $item['LEVEL_SESSION_ID'] ?? $item['CLASS_ID'] ?? null,
                         'crm_store_id'   => $storeId,
                         'status'         => $item['REGISTRATION_STATUS_NAME'] ?? $item['STATUS_NAME'] ?? null,
+                        // Normalized columns — avoids JSON_EXTRACT in WHERE/GROUP BY
+                        'date_creation'  => $dateCreation,
+                        'status_label'   => $item['REGISTRATION_STATUS_NAME'] ?? null,
                         'raw_data'       => $item,
                         'last_synced_at' => now(),
                     ]

@@ -96,10 +96,11 @@ class DailyReportService
 
     private function newRegistrations(string $date): int
     {
-        // Use DATE_CREATION (local server time, no UTC offset).
-        // REGISTRATION_DATE is stored as UTC ISO and shifts evening registrations to the previous day.
+        // Uses normalized date_creation column (indexed) — avoids JSON_EXTRACT full table scan.
+        // Populated by crm:backfill-columns (one-time) + crm:sync-registrations (ongoing).
         return CrmRegistration::query()
-            ->whereRaw("DATE(JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.DATE_CREATION'))) = ?", [$date])
+            ->whereDate('date_creation', $date)
+            ->whereNotNull('date_creation')
             ->count();
     }
 

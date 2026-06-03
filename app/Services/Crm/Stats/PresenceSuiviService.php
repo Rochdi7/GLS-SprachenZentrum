@@ -4,6 +4,7 @@ namespace App\Services\Crm\Stats;
 
 use App\Models\CrmAttendance;
 use App\Models\CrmClass;
+use App\Models\CrmPresenceSummary;
 use App\Models\Site;
 use App\Services\Crm\Crm;
 use Carbon\Carbon;
@@ -71,13 +72,14 @@ class PresenceSuiviService
 
                 if (!isset($sessionsByDay[$date][$cid])) {
                     $sessionsByDay[$date][$cid] = [
-                        'session_ref'   => $raw['SESSION_REFERENCE'] ?? null,
+                        'session_ref'   => $row->session_reference ?? $raw['SESSION_REFERENCE'] ?? null,
                         'session_id'    => $raw['SESSION_ID']        ?? null,
                         'class_name'    => $raw['CLASS_NAME']        ?? ($classes[$cid]->name ?? ''),
                         'teacher'       => $raw['EMPLOYEE_TEACHER_FULL_NAME'] ?? '—',
                         'start_time'    => $raw['SESSION_START_TIME'] ?? null,
                         'end_time'      => $raw['SESSION_END_TIME']   ?? null,
-                        'date_creation' => $raw['DATE_CREATION']      ?? null,
+                        // Use normalized column — avoids JSON_EXTRACT per row
+                        'date_creation' => $row->date_creation ?? $raw['DATE_CREATION'] ?? null,
                         'created_by'    => $raw['USER_CREATION_FULL_NAME'] ?? null,
                         'present'       => 0,
                         'absent'        => 0,
@@ -279,86 +281,34 @@ class PresenceSuiviService
     }
 
     /**
-     * All-time totals: total saisie sessions and total draft (expected but missing) sessions.
-     * Returns ['saisie' => int, 'draft' => int].
+     * All-time totals: saisie + draft session counts.
+     *
+     * Reads from crm_presence_summary (precomputed by crm:build-presence-summary).
+     * Was previously a CarbonPeriod loop: 700+ days × 30 classes = 21,000+ iterations.
+     * Now: one SUM query on an indexed aggregate table.
      */
     public function allTimeTotals(?int $storeId): array
     {
         $cacheKey = "crm.presence_suivi.totals.{$storeId}";
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($storeId) {
-            $today = Carbon::today('Africa/Casablanca');
+            $row = CrmPresenceSummary::query()
+                ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
+                ->selectRaw('SUM(saisie_sessions) as saisie, SUM(draft_sessions) as draft')
+                ->first();
 
-            $classes = CrmClass::query()
-                ->when($storeId, fn ($q) => $q->where('site_id', $storeId))
-                ->whereNotNull('class_id')
-                ->get()->keyBy('crm_id');
-
-            if ($classes->isEmpty()) return ['saisie' => 0, 'draft' => 0];
-
-            $crmIds = $classes->keys()->toArray();
-
-            // Saisie: distinct (class, date) pairs that have DATE_CREATION set
-            $saisieRows = CrmAttendance::whereIn('crm_class_id', $crmIds)
-                ->where('date', '<=', $today->toDateString())
-                ->selectRaw('crm_class_id, date,
-                    MAX(JSON_UNQUOTE(JSON_EXTRACT(raw_data, \'$.DATE_CREATION\'))) as date_creation')
-                ->groupBy('crm_class_id', 'date')
-                ->get();
-
-            $saisie = 0;
-            $draftFromRows = 0;
-            $seenSessions = []; // [cid_date] to avoid double-counting in DOW inference
-
-            foreach ($saisieRows as $r) {
-                $key = $r->crm_class_id . '_' . substr((string)$r->date, 0, 10);
-                $seenSessions[$key] = true;
-                $hasDc = !empty($r->date_creation) && $r->date_creation !== 'null';
-                if ($hasDc) $saisie++;
-                else        $draftFromRows++;
-            }
-
-            // Draft from DOW inference: expected past sessions with no rows at all
-            $lookbackFrom = Carbon::today()->subDays(90)->toDateString();
-            $pastDows = CrmAttendance::whereIn('crm_class_id', $crmIds)
-                ->where('date', '>=', $lookbackFrom)
-                ->selectRaw('crm_class_id, DAYOFWEEK(date) - 1 as dow, COUNT(DISTINCT date) as cnt')
-                ->groupBy('crm_class_id', 'dow')
-                ->get();
-
-            $classExpectedDows = [];
-            foreach ($pastDows as $r) {
-                if ((int)$r->cnt >= 2) $classExpectedDows[$r->crm_class_id][] = (int)$r->dow;
-            }
-
-            // Walk all dates from earliest attendance to today
-            $earliest = CrmAttendance::whereIn('crm_class_id', $crmIds)->min('date');
-            if (!$earliest) return ['saisie' => $saisie, 'draft' => $draftFromRows];
-
-            $draftInferred = 0;
-            $period = CarbonPeriod::create(Carbon::parse($earliest)->startOfMonth(), $today);
-            foreach ($period as $day) {
-                $dayStr = $day->toDateString();
-                $dow    = $day->dayOfWeek;
-                foreach ($crmIds as $cid) {
-                    $key = $cid . '_' . $dayStr;
-                    if (isset($seenSessions[$key])) continue;
-                    $expectedDows = $classExpectedDows[$cid] ?? [];
-                    if (!in_array($dow, $expectedDows)) continue;
-                    $classStart = $classes[$cid]->raw_data['START_DATE'] ?? null;
-                    $classEnd   = $classes[$cid]->raw_data['END_DATE']   ?? null;
-                    if ($classStart && $day->lt(Carbon::parse($classStart)->startOfDay())) continue;
-                    if ($classEnd   && $day->gt(Carbon::parse($classEnd)->endOfDay()))   continue;
-                    $draftInferred++;
-                }
-            }
-
-            return ['saisie' => $saisie, 'draft' => $draftFromRows + $draftInferred];
+            return [
+                'saisie' => (int) ($row?->saisie ?? 0),
+                'draft'  => (int) ($row?->draft  ?? 0),
+            ];
         });
     }
 
     /**
      * Drill-down: all sessions per group for a given status ('saisie' or 'draft'), all time.
+     *
+     * Uses the normalized date_creation column instead of JSON_EXTRACT in the WHERE clause.
+     * This allows MySQL to use the idx_att_date_creation index instead of full table scan.
      */
     public function groupDetails(?int $storeId, string $status): array
     {
@@ -376,106 +326,61 @@ class PresenceSuiviService
 
             $crmIds = $classes->keys()->toArray();
 
-            $rows = CrmAttendance::whereIn('crm_class_id', $crmIds)
-                ->where('date', '<=', $today->toDateString())
-                ->selectRaw('crm_class_id, date,
-                    MAX(JSON_UNQUOTE(JSON_EXTRACT(raw_data, \'$.DATE_CREATION\'))) as date_creation,
-                    MAX(JSON_UNQUOTE(JSON_EXTRACT(raw_data, \'$.SESSION_REFERENCE\'))) as session_ref,
-                    MAX(JSON_UNQUOTE(JSON_EXTRACT(raw_data, \'$.SESSION_START_TIME\'))) as start_time,
-                    MAX(JSON_UNQUOTE(JSON_EXTRACT(raw_data, \'$.SESSION_END_TIME\'))) as end_time,
-                    MAX(JSON_UNQUOTE(JSON_EXTRACT(raw_data, \'$.USER_CREATION_FULL_NAME\'))) as created_by,
-                    SUM(is_present) as present_count,
-                    COUNT(*) as total')
-                ->groupBy('crm_class_id', 'date')
-                ->orderBy('date', 'desc')
-                ->get();
+            // Use normalized date_creation column — no JSON_EXTRACT in WHERE
+            // NULL = draft, NOT NULL = saisie
+            $query = DB::table('crm_attendance as a')
+                ->select([
+                    'a.crm_class_id',
+                    'a.date',
+                    'a.date_creation',           // normalized column (indexed)
+                    'a.session_reference',        // normalized column
+                    DB::raw('MAX(JSON_UNQUOTE(JSON_EXTRACT(a.raw_data, "$.SESSION_START_TIME"))) as start_time'),
+                    DB::raw('MAX(JSON_UNQUOTE(JSON_EXTRACT(a.raw_data, "$.SESSION_END_TIME"))) as end_time'),
+                    DB::raw('MAX(JSON_UNQUOTE(JSON_EXTRACT(a.raw_data, "$.USER_CREATION_FULL_NAME"))) as created_by'),
+                    DB::raw('SUM(a.is_present) as present_count'),
+                    DB::raw('COUNT(*) as total'),
+                ])
+                ->whereIn('a.crm_class_id', $crmIds)
+                ->where('a.date', '<=', $today->toDateString())
+                ->groupBy('a.crm_class_id', 'a.date', 'a.date_creation', 'a.session_reference')
+                ->orderBy('a.date', 'desc');
 
-            $seenSessions = [];
+            // Filter by status using the indexed column — no JSON_EXTRACT in WHERE
+            if ($status === 'saisie') {
+                $query->whereNotNull('a.date_creation');
+            } else {
+                $query->whereNull('a.date_creation');
+            }
+
+            $rows    = $query->get();
             $byGroup = [];
 
             foreach ($rows as $r) {
-                $hasDc   = !empty($r->date_creation) && $r->date_creation !== 'null';
-                $rowStatus = $hasDc ? 'saisie' : 'draft';
-                $dateStr = substr((string)$r->date, 0, 10);
-                $seenSessions[$r->crm_class_id . '_' . $dateStr] = true;
-
-                if ($rowStatus !== $status) continue;
-
-                $cid  = $r->crm_class_id;
-                $name = $classes[$cid]->name ?? "Groupe #{$cid}";
+                $cid     = $r->crm_class_id;
+                $dateStr = substr((string) $r->date, 0, 10);
+                $name    = $classes[$cid]->name ?? "Groupe #{$cid}";
                 $teacher = $classes[$cid]->raw_data['EMPLOYEE_TEACHER_FULL_NAME'] ?? '—';
 
                 if (!isset($byGroup[$cid])) {
                     $byGroup[$cid] = ['name' => $name, 'teacher' => $teacher, 'sessions' => []];
                 }
+
                 $byGroup[$cid]['sessions'][] = [
-                    'date'        => $dateStr,
-                    'session_ref' => $r->session_ref,
-                    'start_time'  => $r->start_time ? substr($r->start_time, 0, 5) : null,
-                    'end_time'    => $r->end_time   ? substr($r->end_time,   0, 5) : null,
-                    'present'     => (int)$r->present_count,
-                    'absent'      => (int)$r->total - (int)$r->present_count,
-                    'total'       => (int)$r->total,
-                    'created_by'  => $r->created_by,
-                    'date_creation' => $hasDc
-                        ? Carbon::parse($r->date_creation)->format('d/m/Y H:i') : null,
+                    'date'          => $dateStr,
+                    'session_ref'   => $r->session_reference,
+                    'start_time'    => $r->start_time ? substr($r->start_time, 0, 5) : null,
+                    'end_time'      => $r->end_time   ? substr($r->end_time,   0, 5) : null,
+                    'present'       => (int) $r->present_count,
+                    'absent'        => (int) $r->total - (int) $r->present_count,
+                    'total'         => (int) $r->total,
+                    'created_by'    => $r->created_by,
+                    'date_creation' => $r->date_creation
+                        ? Carbon::parse($r->date_creation)->format('d/m/Y H:i')
+                        : null,
                 ];
             }
 
-            // For draft status, also add DOW-inferred missing sessions
-            if ($status === 'draft') {
-                $lookbackFrom = Carbon::today()->subDays(90)->toDateString();
-                $pastDows = CrmAttendance::whereIn('crm_class_id', $crmIds)
-                    ->where('date', '>=', $lookbackFrom)
-                    ->selectRaw('crm_class_id, DAYOFWEEK(date) - 1 as dow, COUNT(DISTINCT date) as cnt')
-                    ->groupBy('crm_class_id', 'dow')->get();
-
-                $classExpectedDows = [];
-                foreach ($pastDows as $r) {
-                    if ((int)$r->cnt >= 2) $classExpectedDows[$r->crm_class_id][] = (int)$r->dow;
-                }
-
-                $earliest = CrmAttendance::whereIn('crm_class_id', $crmIds)->min('date');
-                if ($earliest) {
-                    $period = CarbonPeriod::create(Carbon::parse($earliest)->startOfMonth(), $today);
-                    foreach ($period as $day) {
-                        $dayStr = $day->toDateString();
-                        $dow    = $day->dayOfWeek;
-                        foreach ($crmIds as $cid) {
-                            if (isset($seenSessions[$cid . '_' . $dayStr])) continue;
-                            $expectedDows = $classExpectedDows[$cid] ?? [];
-                            if (!in_array($dow, $expectedDows)) continue;
-                            $classStart = $classes[$cid]->raw_data['START_DATE'] ?? null;
-                            $classEnd   = $classes[$cid]->raw_data['END_DATE']   ?? null;
-                            if ($classStart && $day->lt(Carbon::parse($classStart)->startOfDay())) continue;
-                            if ($classEnd   && $day->gt(Carbon::parse($classEnd)->endOfDay()))   continue;
-                            $name    = $classes[$cid]->name ?? "Groupe #{$cid}";
-                            $teacher = $classes[$cid]->raw_data['EMPLOYEE_TEACHER_FULL_NAME'] ?? '—';
-                            if (!isset($byGroup[$cid])) {
-                                $byGroup[$cid] = ['name' => $name, 'teacher' => $teacher, 'sessions' => []];
-                            }
-                            $byGroup[$cid]['sessions'][] = [
-                                'date'        => $dayStr,
-                                'session_ref' => null,
-                                'start_time'  => null,
-                                'end_time'    => null,
-                                'present'     => 0,
-                                'absent'      => 0,
-                                'total'       => 0,
-                                'created_by'  => null,
-                                'date_creation' => null,
-                            ];
-                        }
-                    }
-                }
-                // Sort sessions desc per group
-                foreach ($byGroup as &$g) {
-                    usort($g['sessions'], fn($a, $b) => strcmp($b['date'], $a['date']));
-                }
-            }
-
-            // Sort groups by session count desc
-            uasort($byGroup, fn($a, $b) => count($b['sessions']) <=> count($a['sessions']));
+            uasort($byGroup, fn ($a, $b) => count($b['sessions']) <=> count($a['sessions']));
             return array_values($byGroup);
         });
     }
@@ -498,7 +403,7 @@ class PresenceSuiviService
                 ->join('crm_classes', 'crm_attendance.crm_class_id', '=', 'crm_classes.crm_id')
                 ->whereBetween('crm_attendance.date', [$start, $end])
                 ->selectRaw('crm_classes.site_id, crm_attendance.crm_class_id, crm_attendance.date,
-                             MAX(JSON_UNQUOTE(JSON_EXTRACT(crm_attendance.raw_data, \'$.DATE_CREATION\'))) as date_creation,
+                             MAX(crm_attendance.date_creation) as date_creation,
                              SUM(crm_attendance.is_present) as present_count,
                              COUNT(*) as total')
                 ->groupBy('crm_classes.site_id', 'crm_attendance.crm_class_id', 'crm_attendance.date')

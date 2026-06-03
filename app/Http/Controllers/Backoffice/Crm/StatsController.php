@@ -12,7 +12,6 @@ use App\Services\Crm\CrmLovProvider;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
@@ -52,15 +51,13 @@ class StatsController extends BaseCrmController
 
     public function refresh(Request $request): RedirectResponse
     {
-        // Bust stats cache
-        Cache::flush(); // safe — all CRM caches
-
-        // Re-run snapshot in foreground (fast enough for a button click — ~30s total)
-        Artisan::call('crm:snapshot-payments');
+        // Bust stats cache only — never run sync commands inside HTTP requests
+        // (they take 30–120s and cause PHP execution timeouts on shared hosting)
+        Cache::flush();
 
         return redirect()
             ->route('backoffice.crm.statistiques', $request->query())
-            ->with('success', 'Snapshot actualisé. Les données reflètent maintenant les paiements récents.');
+            ->with('success', 'Cache vidé. Les données seront actualisées lors du prochain sync automatique (toutes les 2h). Pour forcer: php artisan crm:sync-all');
     }
 
     // -------------------------------------------------------------------------
@@ -129,15 +126,16 @@ class StatsController extends BaseCrmController
 
     private function registrationsByCenter(int $months, ?int $storeId): array
     {
-        // DATE_CREATION is a plain datetime in local time (no UTC offset) — safe to use DATE()
-        // REGISTRATION_DATE is UTC ISO and causes off-by-one for evening registrations
+        // Uses normalized date_creation column (indexed) instead of JSON_EXTRACT in WHERE.
+        // Populated by crm:backfill-columns (one-time) + crm:sync-registrations (ongoing).
         $from = Carbon::today('Africa/Casablanca')->subMonths($months)->startOfMonth()->toDateString();
 
         $rows = CrmRegistration::query()
             ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
-            ->whereRaw("DATE(JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.DATE_CREATION'))) >= ?", [$from])
+            ->where('date_creation', '>=', $from)
+            ->whereNotNull('date_creation')
             ->selectRaw("crm_store_id,
-                DATE_FORMAT(JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.DATE_CREATION')),'%Y-%m') as month,
+                DATE_FORMAT(date_creation, '%Y-%m') as month,
                 COUNT(*) as cnt")
             ->groupBy('crm_store_id', 'month')
             ->orderBy('month')
@@ -182,11 +180,12 @@ class StatsController extends BaseCrmController
             ->whereBetween('effective_date', [$from, $to])
             ->sum('amount');
 
-        // Use DATE_CREATION (local datetime, no UTC offset) — REGISTRATION_DATE is UTC
-        // and causes evening registrations to appear on the wrong day
+        // Uses normalized date_creation column (indexed) instead of JSON_EXTRACT.
+        // Populated by crm:backfill-columns + crm:sync-registrations (ongoing).
         $countReg = fn ($from, $to) => CrmRegistration::query()
             ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
-            ->whereRaw("DATE(JSON_UNQUOTE(JSON_EXTRACT(raw_data,'$.DATE_CREATION'))) BETWEEN ? AND ?", [$from, $to])
+            ->whereBetween('date_creation', [$from, $to])
+            ->whereNotNull('date_creation')
             ->count();
 
         return [

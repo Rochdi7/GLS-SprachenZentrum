@@ -29,7 +29,7 @@ class SyncCrmAttendanceCommand extends Command
 
     private const LOCK_KEY  = 'crm.sync-attendance.lock';
     private const LOCK_TTL  = 3600;
-    private const PAGE_SIZE = 25;
+    private const PAGE_SIZE = 500; // bulk endpoint supports up to 500 (was 25 on standard endpoint — 20× improvement)
     private const BACKOFF   = [5, 15, 30];
 
     public function __construct(protected Crm $crm)
@@ -152,16 +152,23 @@ class SyncCrmAttendanceCommand extends Command
                 $isPresent = ($row['PRESENCE'] ?? 'N') === 'Y'
                     || ($row['PRESENCE_STATUS'] ?? 0) == 1;
 
+                // Normalize date_creation — NULL means draft, non-NULL means saisie
+                $rawDc = $row['DATE_CREATION'] ?? null;
+                $dateCreation = ($rawDc && $rawDc !== 'null') ? $rawDc : null;
+
                 $upserts[] = [
-                    'crm_class_id'   => $crmClassId,
-                    'crm_student_id' => $studentId,
-                    'date'           => $date,
-                    'crm_id'         => $row['SESSION_ID'] ?? null,
-                    'is_present'     => $isPresent ? 1 : 0,
-                    'raw_data'       => json_encode($row),
-                    'last_synced_at' => $now,
-                    'created_at'     => $now,
-                    'updated_at'     => $now,
+                    'crm_class_id'      => $crmClassId,
+                    'crm_student_id'    => $studentId,
+                    'date'              => $date,
+                    'crm_id'            => $row['SESSION_ID'] ?? null,
+                    'is_present'        => $isPresent ? 1 : 0,
+                    'raw_data'          => json_encode($row),
+                    // Normalized columns (avoids JSON_EXTRACT in WHERE clauses)
+                    'date_creation'     => $dateCreation,
+                    'session_reference' => $row['SESSION_REFERENCE'] ?? null,
+                    'last_synced_at'    => $now,
+                    'created_at'        => $now,
+                    'updated_at'        => $now,
                 ];
             }
 
@@ -170,7 +177,7 @@ class SyncCrmAttendanceCommand extends Command
                     CrmAttendance::upsert(
                         $chunk,
                         ['crm_class_id', 'crm_student_id', 'date'],
-                        ['crm_id', 'is_present', 'raw_data', 'last_synced_at', 'updated_at']
+                        ['crm_id', 'is_present', 'raw_data', 'date_creation', 'session_reference', 'last_synced_at', 'updated_at']
                     );
                 }
                 $synced += count($upserts);
@@ -192,13 +199,18 @@ class SyncCrmAttendanceCommand extends Command
     {
         foreach (self::BACKOFF as $attempt => $waitSec) {
             try {
-                return $crm->attendance()->sessionPresence(
-                    page: $page,
-                    size: self::PAGE_SIZE,
-                    includeTotal: false,
-                    dateFrom: $dateFrom,
-                    dateTo: $dateTo,
-                    strStoreId: $storeId,
+                // Use bulk endpoint (500/page) instead of standard endpoint (25/page)
+                // Reduces request count from ~320 to ~16 for 8,000 attendance rows
+                return $crm->client()->get(
+                    '/api/external/v1/bulk/session-presence',
+                    [
+                        'strStoreId'   => $storeId,
+                        'startDate'    => $dateFrom,
+                        'endDate'      => $dateTo,
+                        'page'         => $page,
+                        'size'         => self::PAGE_SIZE,
+                        'includeTotal' => 'false',
+                    ]
                 );
             } catch (\Throwable $e) {
                 $is429 = str_contains($e->getMessage(), '429')
@@ -211,13 +223,17 @@ class SyncCrmAttendanceCommand extends Command
             }
         }
 
-        return $crm->attendance()->sessionPresence(
-            page: $page,
-            size: self::PAGE_SIZE,
-            includeTotal: false,
-            dateFrom: $dateFrom,
-            dateTo: $dateTo,
-            strStoreId: $storeId,
+        // Final attempt after all backoffs exhausted
+        return $crm->client()->get(
+            '/api/external/v1/bulk/session-presence',
+            [
+                'strStoreId'   => $storeId,
+                'startDate'    => $dateFrom,
+                'endDate'      => $dateTo,
+                'page'         => $page,
+                'size'         => self::PAGE_SIZE,
+                'includeTotal' => 'false',
+            ]
         );
     }
 }
