@@ -309,7 +309,7 @@
 
             {{-- Image --}}
             <div class="get-started-image reveal delay-2">
-                <img src="{{ asset('assets/images/about/ctagls.jpg') }}" alt="Étudiants souriant au GLS Sprachenzentrum"
+                <img src="{{ asset('assets/images/about/ctagls.avif') }}" alt="Étudiants souriant au GLS Sprachenzentrum"
                     class="full-image rounded-4" loading="lazy">
             </div>
 

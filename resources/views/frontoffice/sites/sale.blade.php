@@ -21,7 +21,7 @@
             </h1>
 
             <div class="hero-image reveal delay-3">
-                <img src="{{ asset('assets/images/sites/sale/centre-sale.webp') }}" alt="GLS Sprachenzentrum Salé"
+                <img src="{{ asset('assets/images/sites/sale/centre-sale.avif') }}" alt="GLS Sprachenzentrum Salé"
                     class="full-image reveal delay-1" loading="lazy">
             </div>
         </div>
@@ -69,9 +69,9 @@
     <section class="gls-photo-strip section reveal delay-1">
         <div class="gls-container gls-photo-grid reveal delay-2">
 
-            <img src="{{ asset('assets/images/sites/sale/centre-sale1.webp') }}" class="reveal delay-1" alt="">
-            <img src="{{ asset('assets/images/sites/sale/centre-sale2.webp') }}" class="reveal delay-2" alt="">
-            <img src="{{ asset('assets/images/sites/sale/centre-sale3.webp') }}" class="reveal delay-3" alt="">
+            <img src="{{ asset('assets/images/sites/sale/centre-sale1.avif') }}" class="reveal delay-1" alt="">
+            <img src="{{ asset('assets/images/sites/sale/centre-sale2.avif') }}" class="reveal delay-2" alt="">
+            <img src="{{ asset('assets/images/sites/sale/centre-sale3.avif') }}" class="reveal delay-3" alt="">
 
         </div>
     </section>

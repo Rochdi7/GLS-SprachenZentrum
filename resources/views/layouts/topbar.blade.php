@@ -23,7 +23,7 @@
 
                         <img src="{{ $media
                             ? route('media.custom', ['id' => $media->id, 'filename' => $media->file_name])
-                            : asset('assets/images/user/avatar-2.jpg') }}"
+                            : asset('assets/images/user/avatar-2.avif') }}"
                             alt="image-utilisateur" class="user-avtar rounded-circle"
                             style="aspect-ratio:1/1;object-fit:cover;">
 

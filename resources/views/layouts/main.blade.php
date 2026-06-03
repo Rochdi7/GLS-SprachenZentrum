@@ -40,8 +40,8 @@
             width: 100% !important;
         }
 
-        img[src*="assets/images/logo/gls.png"],
-        img[src$="gls.png"] {
+        img[src*="assets/images/logo/gls.avif"],
+        img[src$="gls.avif"] {
             width: 140px !important;
             height: 50px !important;
             object-fit: contain !important;

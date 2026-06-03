@@ -16,7 +16,7 @@ return [
     | Default Open Graph image
     |--------------------------------------------------------------------------
     */
-    'og_image' => env('SEO_OG_IMAGE', '/assets/images/IMG_4399.webp'),
+    'og_image' => env('SEO_OG_IMAGE', '/assets/images/IMG_4399.avif'),
 
     /*
     |--------------------------------------------------------------------------

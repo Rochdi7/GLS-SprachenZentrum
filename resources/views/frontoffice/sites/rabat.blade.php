@@ -21,7 +21,7 @@
             </h1>
 
             <div class="hero-image reveal delay-3">
-                <img src="{{ asset('assets/images/sites/rabat/centre-rabat.webp') }}" alt="GLS Rabat"
+                <img src="{{ asset('assets/images/sites/rabat/centre-rabat.avif') }}" alt="GLS Rabat"
                     class="full-image reveal delay-1" loading="lazy">
             </div>
 
@@ -70,11 +70,11 @@
     <section class="gls-photo-strip section reveal delay-1">
         <div class="gls-container gls-photo-grid reveal delay-2">
 
-            <img src="{{ asset('assets/images/sites/rabat/centre-rabat1.webp') }}" class="reveal delay-1"
+            <img src="{{ asset('assets/images/sites/rabat/centre-rabat1.avif') }}" class="reveal delay-1"
                 alt="GLS Rabat Students">
-            <img src="{{ asset('assets/images/sites/rabat/centre-rabat2.webp') }}" class="reveal delay-2"
+            <img src="{{ asset('assets/images/sites/rabat/centre-rabat2.avif') }}" class="reveal delay-2"
                 alt="GLS Rabat Classroom">
-            <img src="{{ asset('assets/images/sites/rabat/centre-rabat3.webp') }}" class="reveal delay-3"
+            <img src="{{ asset('assets/images/sites/rabat/centre-rabat3.avif') }}" class="reveal delay-3"
                 alt="GLS Rabat Activities">
 
         </div>

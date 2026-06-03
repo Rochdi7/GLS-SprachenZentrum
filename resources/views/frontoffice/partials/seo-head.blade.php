@@ -4,7 +4,7 @@
     $seoTitle = trim($__env->yieldContent('title')) ?: ($defaults['title'] ?? 'GLS Sprachenzentrum');
     $seoDescription = trim($__env->yieldContent('meta_description')) ?: ($defaults['description'] ?? '');
     $canonicalUrl = LaravelLocalization::getLocalizedURL($locale, null, [], true);
-    $ogImage = asset(ltrim(config('seo.og_image', '/assets/images/IMG_4399.webp'), '/'));
+    $ogImage = asset(ltrim(config('seo.og_image', '/assets/images/IMG_4399.avif'), '/'));
     $ogLocaleMap = ['fr' => 'fr_FR', 'en' => 'en_US', 'de' => 'de_DE', 'ar' => 'ar_MA'];
     $ogLocale = $ogLocaleMap[$locale] ?? 'fr_FR';
 @endphp

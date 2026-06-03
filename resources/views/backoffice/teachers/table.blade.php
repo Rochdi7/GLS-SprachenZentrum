@@ -25,7 +25,7 @@
                             $media = $teacher->getFirstMedia('teacher_image');
                         @endphp
 
-                        <img src="{{ $media ? $media->getUrl() : asset('assets/images/user/avatar.webp') }}"
+                        <img src="{{ $media ? $media->getUrl() : asset('assets/images/user/avatar.avif') }}"
                             alt="teacher-photo" class="rounded-circle"
                             style="width: 45px; height: 45px; object-fit: cover;">
 

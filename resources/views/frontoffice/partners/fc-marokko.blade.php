@@ -11,7 +11,7 @@
     {{-- ================== HERO ================== --}}
     <section class="fcm-hero">
         <div class="fcm-hero__bg"
-            style="background-image:url('https://fc-marokko.de/storage/2025/02/475873194_1137954098118088_822180009608469424_n.jpg');">
+            style="background-image:url('https://fc-marokko.de/storage/2025/02/475873194_1137954098118088_822180009608469424_n.avif');">
         </div>
         <div class="fcm-hero__overlay"></div>
 
@@ -180,8 +180,8 @@
 
             <div class="fcm-hero__lockup reveal delay-2">
                 <div class="fcm-lockup__logo">
-                    <img src="{{ asset('assets/images/logo/gls-round.png') }}"
-                         onerror="this.src='{{ asset('assets/images/gls-noir.png') }}'"
+                    <img src="{{ asset('assets/images/logo/gls-round.avif') }}"
+                         onerror="this.src='{{ asset('assets/images/logo/gls-noir.avif') }}'"
                          alt="GLS Sprachenzentrum">
                 </div>
                 <div class="fcm-lockup__x">x</div>
@@ -325,7 +325,7 @@
                 <div class="col-12 col-lg-6 reveal delay-2">
                     <div class="fcm-story__visual reveal fcm-anim fcm-anim--tilt delay-2">
                         <div class="fcm-story__card fcm-story__card--main">
-                            <img src="https://fc-marokko.de/storage/2025/02/475873194_1137954098118088_822180009608469424_n.jpg"
+                            <img src="https://fc-marokko.de/storage/2025/02/475873194_1137954098118088_822180009608469424_n.avif"
                                  alt="FC Marokko" loading="lazy">
                             <div class="fcm-story__card-tag">
                                 <i class="bi bi-trophy-fill"></i>
@@ -462,11 +462,11 @@
 
             @php
                 $fcmGallery = [
-                    asset('assets/images/fc-marokko/fc marokko gallery.webp'),
-                    asset('assets/images/fc-marokko/475873194_1137954098118088_822180009608469424_n.jpg'),
-                    asset('assets/images/fc-marokko/539389842_17990714768828776_5722745523080845426_n.jpg'),
-                    asset('assets/images/fc-marokko/630_0900_4148810_sp_240804cr_FB_FC_Frohlinde_blau_Marokk.jpg'),
-                    asset('assets/images/fc-marokko/3WlontCvCGqZL5pQqbzsFz_t3.jpg'),
+                    asset('assets/images/fc-marokko/fc marokko gallery.avif'),
+                    asset('assets/images/fc-marokko/475873194_1137954098118088_822180009608469424_n.avif'),
+                    asset('assets/images/fc-marokko/539389842_17990714768828776_5722745523080845426_n.avif'),
+                    asset('assets/images/fc-marokko/630_0900_4148810_sp_240804cr_FB_FC_Frohlinde_blau_Marokk.avif'),
+                    asset('assets/images/fc-marokko/3WlontCvCGqZL5pQqbzsFz_t3.avif'),
                 ];
             @endphp
 

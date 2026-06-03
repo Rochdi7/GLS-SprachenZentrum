@@ -49,7 +49,7 @@
         layout_caption_change('false');
         if (document.querySelector('.pc-sidebar .m-header .logo-lg')) {
             document.querySelector('.pc-sidebar .m-header .logo-lg').setAttribute('src',
-                '/build/images/assets/images/logo/gls.png');
+                '/build/images/assets/images/logo/gls.avif');
             document.querySelector('.pc-sidebar .m-header').classList.add('bg-brand-color-2');
         }
 

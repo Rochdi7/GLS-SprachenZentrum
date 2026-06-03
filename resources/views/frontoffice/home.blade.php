@@ -23,7 +23,7 @@
 @endpush
 
 @push('head')
-    <link rel="preload" as="image" href="{{ asset('assets/images/IMG_4399.webp') }}" fetchpriority="high">
+    <link rel="preload" as="image" href="{{ asset('assets/images/IMG_4399.avif') }}" fetchpriority="high">
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://basemaps.cartocdn.com" crossorigin>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -37,7 +37,7 @@
 =========================== --}}
         <section class="hero reveal delay-1" aria-label="Intro">
             <div class="hero__bg reveal delay-2"
-                style="background-image: url('{{ asset('assets/images/IMG_4399.webp') }}');">
+                style="background-image: url('{{ asset('assets/images/IMG_4399.avif') }}');">
             </div>
 
             {{-- Badges --}}
@@ -66,7 +66,7 @@
 
                     {{-- Logo + Tagline --}}
                     <div class="text-center mb-4 reveal delay-3">
-                        <img src="{{ asset('assets/images/logo/gls-round.png') }}"
+                        <img src="{{ asset('assets/images/logo/gls-round.avif') }}"
                             alt="{{ \Illuminate\Support\Facades\Lang::has('home.intro.logo_alt') ? __('home.intro.logo_alt') : 'GLS Sprachenzentrum Logo' }}"
                             class="intro-logo reveal delay-1">
 
@@ -141,7 +141,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <a href="{{ route('front.sites.show', 'gls-rabat') }}" class="site-card small"
                     aria-label="{{ __('home.site_heading.rabat') }}">
                     <div class="site-video-wrapper">
-                        <img src="{{ asset('assets/images/sites/rabat.jpg') }}" alt="{{ __('home.site_image_alt.rabat', [], false) ?: 'GLS Rabat' }}" class="site-image" loading="lazy" decoding="async">
+                        <img src="{{ asset('assets/images/sites/rabat.avif') }}" alt="{{ __('home.site_image_alt.rabat', [], false) ?: 'GLS Rabat' }}" class="site-image" loading="lazy" decoding="async">
                     </div>
 
                     <div class="site-overlay">
@@ -178,7 +178,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <a href="{{ route('front.sites.show', 'gls-sale') }}" class="site-card wide"
                     aria-label="{{ __('home.site_heading.sale') }}">
                     <div class="site-video-wrapper">
-                        <img src="{{ asset('assets/images/sites/sale.webp') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.sale') ? __('home.site_image_alt.sale') : 'GLS Salé' }}" class="site-image" loading="lazy" decoding="async">
+                        <img src="{{ asset('assets/images/sites/sale.avif') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.sale') ? __('home.site_image_alt.sale') : 'GLS Salé' }}" class="site-image" loading="lazy" decoding="async">
                     </div>
 
                     <div class="site-overlay">
@@ -202,7 +202,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <a href="{{ route('front.sites.show', 'gls-casablanca') }}" class="site-card small"
                     aria-label="{{ __('home.site_heading.casablanca') }}">
                     <div class="site-video-wrapper">
-                        <img src="{{ asset('assets/images/sites/casablanca.jpg') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.casablanca') ? __('home.site_image_alt.casablanca') : 'GLS Casablanca' }}"
+                        <img src="{{ asset('assets/images/sites/casablanca.avif') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.casablanca') ? __('home.site_image_alt.casablanca') : 'GLS Casablanca' }}"
                             class="site-image" loading="lazy" decoding="async">
                     </div>
 
@@ -309,7 +309,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     </div>
 
                     <div class="hh-block-30 reveal delay-1">
-                        <img src="{{ asset('assets/images/IMG_4399.webp') }}" loading="lazy"
+                        <img src="{{ asset('assets/images/IMG_4399.avif') }}" loading="lazy"
                             alt="{{ __('home.highlights.big_card.title') }}">
                     </div>
                 </div>
@@ -912,26 +912,26 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     <div class="partners-track reveal delay-3">
 
                         {{-- ——— Set A ——— --}}
-                        <img src="{{ asset('assets/images/home/goethe.png') }}" alt="Goethe-Institut" loading="lazy">
-                        <img src="{{ asset('assets/images/home/marokkofc.png') }}" alt="Marokko FC" loading="lazy">
-                        <img src="{{ asset('assets/images/home/osd.png') }}" alt="ÖSD Exam" loading="lazy">
+                        <img src="{{ asset('assets/images/home/goethe.avif') }}" alt="Goethe-Institut" loading="lazy">
+                        <img src="{{ asset('assets/images/home/marokkofc.avif') }}" alt="Marokko FC" loading="lazy">
+                        <img src="{{ asset('assets/images/home/osd.avif') }}" alt="ÖSD Exam" loading="lazy">
                         <img src="{{ asset('assets/images/home/gizlogo-unternehmen-de-rgb-300.webp') }}"
                             alt="GIZ German Cooperation" loading="lazy">
-                        <img src="{{ asset('assets/images/home/ECL_LOGO.png') }}" alt="ECL Language Certification"
+                        <img src="{{ asset('assets/images/home/ECL_LOGO.avif') }}" alt="ECL Language Certification"
                             loading="lazy">
                         <img src="{{ asset('assets/images/home/TLScontact_main.webp') }}" alt="TLScontact"
                             loading="lazy">
 
                         {{-- ——— Set B ——— --}}
-                        <img src="{{ asset('assets/images/home/goethe.png') }}" alt="Goethe-Institut"
+                        <img src="{{ asset('assets/images/home/goethe.avif') }}" alt="Goethe-Institut"
                             aria-hidden="true" loading="lazy">
-                        <img src="{{ asset('assets/images/home/marokkofc.png') }}" alt="Marokko FC" aria-hidden="true"
+                        <img src="{{ asset('assets/images/home/marokkofc.avif') }}" alt="Marokko FC" aria-hidden="true"
                             loading="lazy">
-                        <img src="{{ asset('assets/images/home/osd.png') }}" alt="ÖSD Exam" aria-hidden="true"
+                        <img src="{{ asset('assets/images/home/osd.avif') }}" alt="ÖSD Exam" aria-hidden="true"
                             loading="lazy">
                         <img src="{{ asset('assets/images/home/gizlogo-unternehmen-de-rgb-300.webp') }}"
                             alt="GIZ German Cooperation" aria-hidden="true" loading="lazy">
-                        <img src="{{ asset('assets/images/home/ECL_LOGO.png') }}" alt="ECL Language Certification"
+                        <img src="{{ asset('assets/images/home/ECL_LOGO.avif') }}" alt="ECL Language Certification"
                             aria-hidden="true" loading="lazy">
                         <img src="{{ asset('assets/images/home/TLScontact_main.webp') }}" alt="TLScontact"
                             aria-hidden="true" loading="lazy">
@@ -941,12 +941,12 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
                 <noscript>
                     <div class="partners-logos-noscript">
-                        <img src="{{ asset('assets/images/home/goethe.png') }}" alt="Goethe-Institut">
-                        <img src="{{ asset('assets/images/home/marokkofc.png') }}" alt="Marokko FC">
-                        <img src="{{ asset('assets/images/home/osd.png') }}" alt="ÖSD Exam">
+                        <img src="{{ asset('assets/images/home/goethe.avif') }}" alt="Goethe-Institut">
+                        <img src="{{ asset('assets/images/home/marokkofc.avif') }}" alt="Marokko FC">
+                        <img src="{{ asset('assets/images/home/osd.avif') }}" alt="ÖSD Exam">
                         <img src="{{ asset('assets/images/home/gizlogo-unternehmen-de-rgb-300.webp') }}"
                             alt="GIZ German Cooperation">
-                        <img src="{{ asset('assets/images/home/ECL_LOGO.png') }}" alt="ECL Language Certification">
+                        <img src="{{ asset('assets/images/home/ECL_LOGO.avif') }}" alt="ECL Language Certification">
                         <img src="{{ asset('assets/images/home/TLScontact_main.webp') }}" alt="TLScontact">
                     </div>
                 </noscript>

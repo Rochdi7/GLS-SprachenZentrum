@@ -15,7 +15,7 @@
             </h1>
 
             <div class="hero-image reveal delay-2">
-                <img src="{{ asset('assets/images/about/Centre-GLS-de-langue-Allemande.jpg') }}"
+                <img src="{{ asset('assets/images/about/Centre-GLS-de-langue-Allemande.avif') }}"
                     alt="{{ __('about.hero.image_alt') }}" class="full-image" loading="lazy">
             </div>
         </div>
@@ -50,14 +50,14 @@
             </div>
 
             <div class="image-block reveal delay-3">
-                <img src="{{ asset('assets/images/about/grid-1.png') }}" alt="{{ __('about.grid.row1.image_alt') }}"
+                <img src="{{ asset('assets/images/about/grid-1.avif') }}" alt="{{ __('about.grid.row1.image_alt') }}"
                     class="full-image" loading="lazy">
             </div>
         </div>
 
         <div class="container is-2-col-grid reveal delay-1">
             <div class="image-block is-1-1 reveal delay-2">
-                <img src="{{ asset('assets/images/about/grid1.webp') }}" alt="{{ __('about.grid.row2.image_alt') }}"
+                <img src="{{ asset('assets/images/about/grid1.avif') }}" alt="{{ __('about.grid.row2.image_alt') }}"
                     class="full-image is-ratio" loading="lazy">
             </div>
 
@@ -89,7 +89,7 @@
         <div class="container is-2-col-grid reveal delay-1">
 
             <div class="get-started-image reveal delay-2">
-                <img src="{{ asset('assets/images/about/ctagls.jpg') }}" alt="{{ __('about.cta.image_alt') }}"
+                <img src="{{ asset('assets/images/about/ctagls.avif') }}" alt="{{ __('about.cta.image_alt') }}"
                     class="full-image rounded-4" loading="lazy">
             </div>
 

@@ -19,7 +19,7 @@
             </h1>
 
             <div class="hero-image reveal delay-3">
-                <img src="{{ asset('assets/images/IMG_4462.JPEG') }}" alt="GLS Sprachenzentrum Casablanca"
+                <img src="{{ asset('assets/images/IMG_4462.avif') }}" alt="GLS Sprachenzentrum Casablanca"
                     class="full-image reveal delay-1" loading="lazy">
             </div>
 
@@ -68,11 +68,11 @@
     <section class="gls-photo-strip section reveal delay-1">
         <div class="gls-container gls-photo-grid reveal delay-2">
 
-            <img src="{{ asset('assets/images/sites/sale/centre-sale1.webp') }}" alt="GLS Kénitra Students"
+            <img src="{{ asset('assets/images/sites/sale/centre-sale1.avif') }}" alt="GLS Kénitra Students"
                 class="reveal delay-1">
-            <img src="{{ asset('assets/images/sites/sale/centre-sale2.webp') }}" alt="GLS Kénitra Classroom"
+            <img src="{{ asset('assets/images/sites/sale/centre-sale2.avif') }}" alt="GLS Kénitra Classroom"
                 class="reveal delay-2">
-            <img src="{{ asset('assets/images/sites/sale/centre-sale3.webp') }}" alt="GLS Kénitra Activities"
+            <img src="{{ asset('assets/images/sites/sale/centre-sale3.avif') }}" alt="GLS Kénitra Activities"
                 class="reveal delay-3">
 
         </div>

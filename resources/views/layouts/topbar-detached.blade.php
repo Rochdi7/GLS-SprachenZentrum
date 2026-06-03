@@ -3,7 +3,7 @@
     <div class="m-header">
         <a href="{{ route('dashboard') }}" class="b-brand text-primary">
             <!-- ========   Change your logo from here   ============ -->
-            <img src="{{ URL::asset('build/images/assets/images/logo/gls.png') }}" alt="logo image" class="logo-lg" />
+            <img src="{{ URL::asset('build/images/assets/images/logo/gls.avif') }}" alt="logo image" class="logo-lg" />
             <span class="badge bg-brand-color-2 rounded-pill ms-1 theme-version">v2.0.0</span>
         </a>
     </div>

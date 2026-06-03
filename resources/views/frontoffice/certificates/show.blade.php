@@ -426,7 +426,7 @@
         <!-- HEADER -->
         <div class="header">
             <div class="logo-section">
-                <img src="{{ asset('assets/images/gls-noir.png') }}" alt="GLS Sprachenzentrum Logo" class="logo-image">
+                <img src="{{ asset('assets/images/logo/gls-noir.avif') }}" alt="GLS Sprachenzentrum Logo" class="logo-image">
             </div>
 
             <div class="organization">

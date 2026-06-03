@@ -23,7 +23,7 @@
             </h1>
 
             <div class="hero-image reveal delay-3">
-                <img src="{{ asset('assets/images/oursites/hero.jpeg') }}" loading="lazy" alt="GLS Centers in Morocco"
+                <img src="{{ asset('assets/images/oursites/hero.avif') }}" loading="lazy" alt="GLS Centers in Morocco"
                     class="full-image reveal delay-1">
             </div>
 
@@ -40,7 +40,7 @@
                 {{-- LEFT STATIC MAP --}}
                 <div class="col-lg-5 d-flex align-items-center justify-content-center reveal delay-1">
                     <div class="map-container position-relative w-100 h-100 reveal delay-2">
-                        <img src="{{ asset('assets/images/contact/reception.jpg') }}" alt="GLS Morocco Centers Map"
+                        <img src="{{ asset('assets/images/contact/reception.avif') }}" alt="GLS Morocco Centers Map"
                             class="img-fluid rounded-4 shadow location-image w-100 h-100 object-fit-cover reveal delay-3"
                             loading="lazy">
                     </div>

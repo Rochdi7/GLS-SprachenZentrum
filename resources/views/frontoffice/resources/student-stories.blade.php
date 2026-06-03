@@ -57,12 +57,12 @@
 
                 @php
                     $students = [
-                        ['image' => 'student1.webp', 'name' => 'Amine EL amrani', 'path' => 'Ausbildung in Nursing – Stuttgart'],
-                        ['image' => 'student2.webp', 'name' => 'Omar Bennis', 'path' => 'Contract Work in IT – Berlin'],
-                        ['image' => 'student3.webp', 'name' => 'Fatima Zahra', 'path' => 'Studienkolleg Prep – Düsseldorf'],
-                        ['image' => 'student4.webp', 'name' => 'malak Lahlou', 'path' => 'Ausbildung in Hospitality – Hamburg'],
-                        ['image' => 'student5.webp', 'name' => 'hatim Abkari', 'path' => 'Student Visa – Universität Köln'],
-                        ['image' => 'student6.webp', 'name' => 'ikram Idrissi', 'path' => 'Contract Job – Mechanical Sector, Munich'],
+                        ['image' => 'student1.avif', 'name' => 'Amine EL amrani', 'path' => 'Ausbildung in Nursing – Stuttgart'],
+                        ['image' => 'student2.avif', 'name' => 'Omar Bennis', 'path' => 'Contract Work in IT – Berlin'],
+                        ['image' => 'student3.avif', 'name' => 'Fatima Zahra', 'path' => 'Studienkolleg Prep – Düsseldorf'],
+                        ['image' => 'student4.avif', 'name' => 'malak Lahlou', 'path' => 'Ausbildung in Hospitality – Hamburg'],
+                        ['image' => 'student5.avif', 'name' => 'hatim Abkari', 'path' => 'Student Visa – Universität Köln'],
+                        ['image' => 'student6.avif', 'name' => 'ikram Idrissi', 'path' => 'Contract Job – Mechanical Sector, Munich'],
                     ];
                 @endphp
 

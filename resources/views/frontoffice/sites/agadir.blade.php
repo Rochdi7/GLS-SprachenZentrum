@@ -60,11 +60,11 @@
     <section class="gls-photo-strip section reveal delay-1">
         <div class="gls-container gls-photo-grid reveal delay-2">
 
-            <img src="{{ asset('assets/images/sites/agadir/centre-agadir1.webp') }}" alt="GLS Agadir"
+            <img src="{{ asset('assets/images/sites/agadir/centre-agadir1.avif') }}" alt="GLS Agadir"
                 class="reveal delay-1">
-            <img src="{{ asset('assets/images/sites/agadir/centre-agadir2.webp') }}" alt="GLS Agadir"
+            <img src="{{ asset('assets/images/sites/agadir/centre-agadir2.avif') }}" alt="GLS Agadir"
                 class="reveal delay-2">
-            <img src="{{ asset('assets/images/sites/agadir/centre-agadir3.webp') }}" alt="GLS Agadir"
+            <img src="{{ asset('assets/images/sites/agadir/centre-agadir3.avif') }}" alt="GLS Agadir"
                 class="reveal delay-3">
 
         </div>

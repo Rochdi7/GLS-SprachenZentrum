@@ -488,7 +488,7 @@
                 <div class="lp-sites-grid">
                     <a href="{{ route('front.sites.show', 'gls-rabat') }}" class="lp-site-card small" data-reveal
                         style="--reveal-delay:.05s">
-                        <img src="{{ asset('assets/images/sites/rabat.jpg') }}" alt="GLS Rabat" class="lp-site-image">
+                        <img src="{{ asset('assets/images/sites/rabat.avif') }}" alt="GLS Rabat" class="lp-site-image">
                         <div class="lp-site-overlay">
                             <h3>{{ __('gls.sites.rabat') }}</h3>
                         </div>
@@ -514,7 +514,7 @@
 
                     <a href="{{ route('front.sites.show', 'gls-sale') }}" class="lp-site-card wide" data-reveal
                         style="--reveal-delay:.05s">
-                        <img src="{{ asset('assets/images/sites/sale.webp') }}" alt="GLS Salé" class="lp-site-image">
+                        <img src="{{ asset('assets/images/sites/sale.avif') }}" alt="GLS Salé" class="lp-site-image">
                         <div class="lp-site-overlay">
                             <h3>{{ __('gls.sites.sale') }}</h3>
                         </div>
@@ -531,7 +531,7 @@
 
                     <a href="{{ route('front.sites.show', 'gls-casablanca') }}" class="lp-site-card small" data-reveal
                         style="--reveal-delay:.18s">
-                        <img src="{{ asset('assets/images/sites/casablanca.jpg') }}" alt="GLS Casablanca"
+                        <img src="{{ asset('assets/images/sites/casablanca.avif') }}" alt="GLS Casablanca"
                             class="lp-site-image">
                         <div class="lp-site-overlay">
                             <h3>{{ __('gls.sites.casablanca') }}</h3>

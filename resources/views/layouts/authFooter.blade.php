@@ -1,5 +1,5 @@
 <div class="auth-sidefooter">
-    <img src="{{ URL::asset('assets/images/logo/gls.png') }}" class="img-brand img-fluid" alt="images" />
+    <img src="{{ URL::asset('assets/images/logo/gls.avif') }}" class="img-brand img-fluid" alt="images" />
     <hr class="mb-3 mt-4" />
     <div class="row">
         <div class="col my-1">
@@ -16,8 +16,8 @@
     </div>
 </div>
 <style>
-    img[src*="assets/images/logo/gls.png"],
-    img[src$="gls.png"] {
+    img[src*="assets/images/logo/gls.avif"],
+    img[src$="gls.avif"] {
         width: 160px !important;
         height: 60px !important;
         object-fit: contain !important;

@@ -49,7 +49,7 @@
 
                                         <img src="{{ $media
                                             ? route('media.custom', ['id' => $media->id, 'filename' => $media->file_name])
-                                            : asset('assets/images/poster.png') }}"
+                                            : asset('assets/images/poster.avif') }}"
                                             alt="{{ $featured->title }}" class="blog-card-image reveal delay-2">
 
                                     </a>

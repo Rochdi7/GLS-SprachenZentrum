@@ -40,7 +40,7 @@
 
             <!-- LEFT IMAGE -->
             <div id="w-node-online-left" class="div-block-38 reveal delay-2">
-                <img src="{{ asset('assets/images/online-courses/hero.png') }}" loading="lazy"
+                <img src="{{ asset('assets/images/online-courses/hero.avif') }}" loading="lazy"
                     class="full-image rounded reveal delay-3" alt="">
             </div>
 
@@ -197,7 +197,7 @@
             </div>
 
             <div class="gls-online-info-image reveal delay-3">
-                <img src="{{ asset('assets/images/online-courses/online.png') }}" class="gls-full-image reveal delay-1"
+                <img src="{{ asset('assets/images/online-courses/online.avif') }}" class="gls-full-image reveal delay-1"
                     alt="">
             </div>
         </div>

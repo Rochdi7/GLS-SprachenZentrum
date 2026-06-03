@@ -4,7 +4,7 @@
         <div class="m-header">
             <a href="{{ route('dashboard') }}" class="b-brand">
                 <!-- ========   Change your logo from here   ============ -->
-                <img src="{{ URL::asset('assets/images/logo/gls.png') }}" alt="" class="logo logo-lg">
+                <img src="{{ URL::asset('assets/images/logo/gls.avif') }}" alt="" class="logo logo-lg">
                 <img src="{{ URL::asset('assets/images/favicon/favicon.svg') }}" alt="" class="logo logo-sm">
             </a>
         </div>

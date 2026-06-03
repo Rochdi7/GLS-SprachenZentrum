@@ -332,7 +332,7 @@
                     $media = Auth::user()->getFirstMedia('profile_photo');
                 @endphp
 
-                <img src="{{ $media ? $media->getUrl() : asset('assets/images/user/avatar-2.jpg') }}" alt="user-image"
+                <img src="{{ $media ? $media->getUrl() : asset('assets/images/user/avatar-2.avif') }}" alt="user-image"
                     class="user-avtar rounded-circle">
 
             </a>

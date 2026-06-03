@@ -27,7 +27,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <img src="{{ URL::asset('assets/images/logo/gls.png') }}" alt="image"
+                    <img src="{{ URL::asset('assets/images/logo/gls.avif') }}" alt="image"
                         class="footer-logo img-fluid mb-3" />
                     <p class="mb-4">
                         GLS Sprachen Zentrum accompagne depuis des années les étudiants marocains

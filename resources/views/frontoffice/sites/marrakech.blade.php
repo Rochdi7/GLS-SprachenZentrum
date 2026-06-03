@@ -21,7 +21,7 @@
             </h1>
 
             <div class="hero-image reveal delay-3">
-                <img src="{{ asset('assets/images/sites/marrakech/centre-marrakech.webp') }}"
+                <img src="{{ asset('assets/images/sites/marrakech/centre-marrakech.avif') }}"
                     alt="GLS Sprachenzentrum Marrakech" class="full-image reveal delay-1" loading="lazy">
             </div>
 
@@ -70,11 +70,11 @@
     <section class="gls-photo-strip section reveal delay-1">
         <div class="gls-container gls-photo-grid reveal delay-2">
 
-            <img src="{{ asset('assets/images/sites/marrakech/centre-marrakech1.webp') }}" class="reveal delay-1"
+            <img src="{{ asset('assets/images/sites/marrakech/centre-marrakech1.avif') }}" class="reveal delay-1"
                 alt="">
-            <img src="{{ asset('assets/images/sites/marrakech/centre-marrakech2.webp') }}" class="reveal delay-2"
+            <img src="{{ asset('assets/images/sites/marrakech/centre-marrakech2.avif') }}" class="reveal delay-2"
                 alt="">
-            <img src="{{ asset('assets/images/sites/marrakech/centre-marrakech3.webp') }}" class="reveal delay-3"
+            <img src="{{ asset('assets/images/sites/marrakech/centre-marrakech3.avif') }}" class="reveal delay-3"
                 alt="">
 
         </div>

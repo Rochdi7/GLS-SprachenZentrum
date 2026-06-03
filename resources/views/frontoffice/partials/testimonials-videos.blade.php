@@ -17,31 +17,31 @@
                 [
                     'role' => 'Étudiant GLS',
                     'group' => 'Niveau B1 – Intermédiaire',
-                    'poster' => asset('assets/images/logo/gls-round.png'),
+                    'poster' => asset('assets/images/logo/gls-round.avif'),
                     'vimeo' => 'https://player.vimeo.com/video/1172183086',
                 ],
                 [
                     'role' => 'Étudiant GLS',
                     'group' => 'Niveau B1 – Intermédiaire',
-                    'poster' => asset('assets/images/logo/gls-round.png'),
+                    'poster' => asset('assets/images/logo/gls-round.avif'),
                     'vimeo' => 'https://player.vimeo.com/video/1172183039',
                 ],
                 [
                     'role' => 'Étudiant GLS',
                     'group' => 'Niveau B1 – Intermédiaire',
-                    'poster' => asset('assets/images/logo/gls-round.png'),
+                    'poster' => asset('assets/images/logo/gls-round.avif'),
                     'vimeo' => 'https://player.vimeo.com/video/1172182987',
                 ],
                 [
                     'role' => 'Étudiant GLS',
                     'group' => 'Niveau B1 – Intermédiaire',
-                    'poster' => asset('assets/images/logo/gls-round.png'),
+                    'poster' => asset('assets/images/logo/gls-round.avif'),
                     'vimeo' => 'https://player.vimeo.com/video/1172182943',
                 ],
                 [
                     'role' => 'Étudiant GLS',
                     'group' => 'Niveau B1 – Intermédiaire',
-                    'poster' => asset('assets/images/logo/gls-round.png'),
+                    'poster' => asset('assets/images/logo/gls-round.avif'),
                     'vimeo' => 'https://player.vimeo.com/video/1172182895',
                 ],
             ];
@@ -97,7 +97,7 @@
                         </div>
                     </div>
                     <img class="gls-tv-device-mockup"
-                        src="{{ asset('assets/images/apple-iphone-air-2025-medium.png') }}" alt=""
+                        src="{{ asset('assets/images/apple-iphone-air-2025-medium.avif') }}" alt=""
                         loading="lazy" draggable="false">
                 </div>
             </div>

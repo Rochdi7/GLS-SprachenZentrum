@@ -22,7 +22,7 @@
             </h1>
 
             <div class="hero-image reveal delay-3">
-                <img src="{{ asset('assets/images/intensive-courses/hero-intensive.webp') }}"
+                <img src="{{ asset('assets/images/intensive-courses/hero-intensive.avif') }}"
                     alt="{{ __('intensive.hero.img_alt') }}" class="full-image reveal delay-1" loading="lazy">
             </div>
 
@@ -174,7 +174,7 @@
         <div class="container is-2-col-grid reveal delay-2">
 
             <div class="get-started-image reveal delay-3">
-                <img src="{{ asset('assets/images/about/ctagls.jpg') }}" alt="GLS Students"
+                <img src="{{ asset('assets/images/about/ctagls.avif') }}" alt="GLS Students"
                     class="full-image rounded-4 reveal delay-1" loading="lazy">
             </div>
 

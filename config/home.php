@@ -8,7 +8,7 @@ return [
         'items' => [
             [
                 'name'  => 'Rabat',
-                'image' => 'assets/images/sites/rabat.jpg',
+                'image' => 'assets/images/sites/rabat.avif',
                 'video' => 'https://www.youtube.com/embed/f-DKSeGa5zI?controls=0&start=5',
                 'type'  => 'youtube',
                 'size'  => 'small',
@@ -29,7 +29,7 @@ return [
             ],
             [
                 'name'  => 'Salé',
-                'image' => 'assets/images/sites/sale.webp',
+                'image' => 'assets/images/sites/sale.avif',
                 'video' => 'https://www.youtube.com/embed/GJx04L_KQLk?controls=0&start=1',
                 'type'  => 'youtube',
                 'size'  => 'wide',
@@ -43,7 +43,7 @@ return [
             ],
             [
                 'name'  => 'Casablanca',
-                'image' => 'assets/images/sites/casablanca.jpg',
+                'image' => 'assets/images/sites/casablanca.avif',
                 'video' => 'https://www.youtube.com/embed/eNry-9YjhYI?controls=0&start=9',
                 'type'  => 'youtube',
                 'size'  => 'small',

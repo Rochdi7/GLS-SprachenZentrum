@@ -12,7 +12,7 @@
 
             <!-- LEFT IMAGE -->
             <div class="gls-hero-image">
-                <img src="{{ asset('assets/images/about/grid1.webp') }}" alt="{{ __('niveaux/a1.hero_alt') }}">
+                <img src="{{ asset('assets/images/about/grid1.avif') }}" alt="{{ __('niveaux/a1.hero_alt') }}">
             </div>
 
             <!-- RIGHT CONTENT -->
@@ -87,7 +87,7 @@
 
             <!-- RIGHT IMAGE -->
             <div class="image-block">
-                <img src="{{ asset('assets/images/niveaux/affiche.webp') }}" alt="{{ __('niveaux/a1.class_alt') }}"
+                <img src="{{ asset('assets/images/niveaux/affiche.avif') }}" alt="{{ __('niveaux/a1.class_alt') }}"
                     class="full-image">
             </div>
 

@@ -18,7 +18,7 @@
             </h1>
 
             <div class="hero-image reveal delay-3">
-                <img src="{{ asset('assets/images/about/Centre-GLS-de-langue-Allemande.jpg') }}"
+                <img src="{{ asset('assets/images/about/Centre-GLS-de-langue-Allemande.avif') }}"
                     alt="{{ __('osd.hero.alt') }}" class="full-image reveal delay-1" loading="lazy">
             </div>
         </div>

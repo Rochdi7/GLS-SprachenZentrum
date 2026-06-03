@@ -3,7 +3,7 @@
     <div class="navbar-wrapper">
         <div class="m-header">
             <a href="{{ route('dashboard') }}" class="b-brand text-primary">
-                <img src="{{ URL::asset('assets/images/logo/gls.png') }}" alt="image du logo" class="logo-lg">
+                <img src="{{ URL::asset('assets/images/logo/gls.avif') }}" alt="image du logo" class="logo-lg">
                 <span class="badge bg-brand-color-2 rounded-pill ms-1 theme-version">v2.0.0</span>
             </a>
         </div>
@@ -34,7 +34,7 @@
 
                     <img src="{{ $media
                         ? route('media.custom', ['id' => $media->id, 'filename' => $media->file_name])
-                        : asset('assets/images/user/avatar-2.jpg') }}"
+                        : asset('assets/images/user/avatar-2.avif') }}"
                         alt="image utilisateur" class="user-avtar wid-45 rounded-circle"
                         style="aspect-ratio:1/1;object-fit:cover;" />
 

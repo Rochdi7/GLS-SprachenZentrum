@@ -38,7 +38,7 @@ return [
             [
                 'key' => 'casablanca',
                 'name' => 'الدار البيضاء',
-                'image' => asset('assets/images/sites/casablanca.jpg'),
+                'image' => asset('assets/images/sites/casablanca.avif'),
                 'address' => '14 Bd de Paris, 1ér étage N8, Casablanca 20000',
                 'phone' => '+212 80-8549717',
                 'email' => 'info@gls-sprachzentrum.ma',
@@ -56,7 +56,7 @@ return [
             [
                 'key' => 'rabat',
                 'name' => 'الرباط',
-                'image' => asset('assets/images/sites/rabat.jpg'),
+                'image' => asset('assets/images/sites/rabat.avif'),
                 'address' => 'Avenue Fal Ould Oumeir, Immeuble 77, 1er étage numéro 1, Agdal, Rabat',
                 'phone' => '+212 80-85 735 09',
                 'email' => 'info@gls-sprachzentrum.ma',
@@ -74,7 +74,7 @@ return [
             [
                 'key' => 'sale',
                 'name' => 'سلا',
-                'image' => asset('assets/images/sites/sale.webp'),
+                'image' => asset('assets/images/sites/sale.avif'),
                 'address' => 'Avenue Mohamed V, Rue Halima N12 Diyar, Salé',
                 'phone' => '+212 80-85 40 625',
                 'email' => 'info@gls-sprachzentrum.ma',

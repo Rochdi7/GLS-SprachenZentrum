@@ -3,7 +3,7 @@
             <nav class="px-4 lg:px-7 py-4 max-w-[1440px] mx-auto">
                 <div class="flex flex-wrap justify-between items-center">
                     <a href="index" class="flex items-center">
-                        <img src="{{ URL::asset('assets/images/logo/gls.png') }}" class="mx-auto h-7 logo" alt="logo">
+                        <img src="{{ URL::asset('assets/images/logo/gls.avif') }}" class="mx-auto h-7 logo" alt="logo">
                     </a>
                     <div class="flex items-center lg:order-2">
                         <a href="signup"
