@@ -88,7 +88,11 @@ class MirrorCoreCommand extends Command
     {
         $this->info('Syncing Teachers from CRM Classes...');
 
+        // Map crm_store_id → local site.id
         $siteMap = Site::whereNotNull('crm_store_id')->pluck('id', 'crm_store_id');
+
+        // Fallback: use any site_id so the NOT NULL constraint is satisfied
+        $fallbackSiteId = Site::value('id');
 
         $synced = 0;
         CrmClass::all()
@@ -96,16 +100,28 @@ class MirrorCoreCommand extends Command
             ->map(fn($c) => [
                 'crm_teacher_id' => $c->raw_data['EMPLOYEE_TEACHER_ID'],
                 'name'           => trim($c->raw_data['EMPLOYEE_TEACHER_FULL_NAME'] ?? ''),
-                'site_id'        => $siteMap[$c->site_id] ?? null,
+                // $c->site_id is crm_store_id on crm_classes; map to local site PK
+                'site_id'        => $siteMap[$c->site_id] ?? $fallbackSiteId,
             ])
-            ->filter(fn($t) => !empty($t['name']))
+            ->filter(fn($t) => !empty($t['name']) && !empty($t['site_id']))
             ->unique('crm_teacher_id')
             ->each(function ($t) use (&$synced) {
+                $slug = \Str::slug($t['name']);
+
+                // Ensure slug uniqueness by appending crm_teacher_id if collision
+                $existing = Teacher::where('slug', $slug)
+                    ->where('crm_teacher_id', '!=', $t['crm_teacher_id'])
+                    ->exists();
+                if ($existing) {
+                    $slug .= '-' . $t['crm_teacher_id'];
+                }
+
                 Teacher::updateOrCreate(
                     ['crm_teacher_id' => $t['crm_teacher_id']],
                     [
                         'name'    => $t['name'],
                         'site_id' => $t['site_id'],
+                        'slug'    => $slug,
                     ]
                 );
                 $synced++;
