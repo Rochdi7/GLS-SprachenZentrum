@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CrmSyncLog extends Model
 {
+    protected $table = 'crm_sync_log';
+
     protected $fillable = [
         'step',
         'status',
