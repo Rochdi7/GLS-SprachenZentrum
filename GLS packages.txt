@@ -8,34 +8,104 @@ GLS ARTISAN COMMANDS REFERENCE
 ================================================================================
 
 --------------------------------------------------------------------------------
-CRM — Sync & Data
+CRM — Sync local database (run in this order)
 --------------------------------------------------------------------------------
 
-crm:sync-registrations
-  Safely fetch CRM registrations per store and store them locally.
-  Must run BEFORE churn scoring. Uses pagination (25/page), delays between
-  pages, exponential backoff on 429, and a lock to prevent parallel runs.
+homeschool:mirror-core
+  Sync CRM metadata to local mirror: Classes, Teachers, Students, Registrations.
+  Run FIRST — other sync commands depend on crm_classes being populated.
 
-  php artisan crm:sync-registrations --all
-  php artisan crm:sync-registrations --store=1 --store=2
-  php artisan crm:sync-registrations --all --delay=800   # ms between pages
+  php artisan homeschool:mirror-core
+  php artisan homeschool:mirror-core --months=3      # attendance months back (legacy)
+  php artisan homeschool:mirror-core --full          # ignore incremental logic
+
+  Feeds: crm_classes, crm_students, crm_registrations (legacy), crm_teachers
+  Scheduled: daily 01:00 Africa/Casablanca → logs/homeschool-mirror-core.log
+
+---
+
+crm:sync-attendance
+  Sync session-presence (attendance) from CRM bulk API into crm_attendance.
+  Uses /bulk/session-presence (supports dateFrom/dateTo — correct endpoint).
+  Must run AFTER homeschool:mirror-core (needs crm_classes populated).
+  Feeds the Suivi Présences fraud-detection calendar.
+
+  php artisan crm:sync-attendance --all
+  php artisan crm:sync-attendance --all --months=2
+  php artisan crm:sync-attendance --store=50970 --months=1
+  php artisan crm:sync-attendance --store=50970 --store=50995
 
   Options:
     --all           Sync all stores with a crm_store_id
     --store=ID      Sync one or more specific stores (repeatable)
+    --months=2      How many months back to sync (default 2, max 12)
     --delay=500     Delay in ms between page requests (default 500)
+
+  Scheduled: daily 01:15 Africa/Casablanca → logs/crm-sync-attendance.log
+
+---
+
+crm:sync-registrations
+  Fetch CRM registrations per store and store in crm_registrations.
+  Used by churn scoring and the daily CEO report (new inscriptions count).
+  Exponential backoff on 429, lock prevents parallel runs.
+
+  php artisan crm:sync-registrations --all
+  php artisan crm:sync-registrations --store=50970 --store=50995
+  php artisan crm:sync-registrations --all --delay=800
+
+  Options:
+    --all           Sync all stores
+    --store=ID      Sync specific store(s) (repeatable)
+    --delay=500     Delay in ms between pages (default 500)
 
   Scheduled: daily 02:30 Africa/Casablanca → logs/crm-sync-registrations.log
 
 ---
 
+crm:sync-collections
+  Fetch CRM payment-collection (receivables/installments) into crm_collection_rows.
+  Feeds the Recouvrement dashboard. Without this the page times out (163 pages live).
+
+  php artisan crm:sync-collections --all
+  php artisan crm:sync-collections --store=50970
+  php artisan crm:sync-collections --all --delay=600
+
+  Options:
+    --all           Sync all stores
+    --store=ID      Sync specific store(s)
+    --delay=400     Delay in ms between pages (default 400)
+
+  Scheduled: daily 02:00 Africa/Casablanca → logs/crm-sync-collections.log
+
+---
+
+crm:snapshot-payments
+  Capture a daily snapshot of ALL payments from CRM into crm_payment_snapshots.
+  Used by: CEO daily report (revenue), Statistiques charts, Collections perf table.
+  Excludes internal transfers (payment_type_id=4) at query time.
+
+  php artisan crm:snapshot-payments
+  php artisan crm:snapshot-payments --store=50970
+  php artisan crm:snapshot-payments --store=50970 --store=50996
+  php artisan crm:snapshot-payments --date=2026-06-01   # snapshot for specific date
+
+  Options:
+    --store=ID      Sync specific store(s) — repeatable (omit for all)
+    --date=         Date to snapshot (default: today)
+
+  NOTE: 30s pause between centers to avoid 429 rate limits.
+  Scheduled: daily 01:30 Africa/Casablanca → logs/crm-snapshot-payments.log
+
+---
+
 crm:churn-scores
-  Compute student churn risk scores from LOCAL database (no API calls).
-  Reads from crm_registrations + crm_payment_snapshots.
+  Compute student churn risk scores from LOCAL DB (no API calls).
+  Reads crm_registrations + crm_payment_snapshots.
   Run AFTER crm:sync-registrations.
 
   php artisan crm:churn-scores --all
-  php artisan crm:churn-scores --store=1 --store=3
+  php artisan crm:churn-scores --store=50970 --store=50995
 
   Options:
     --all           Process all stores
@@ -45,25 +115,22 @@ crm:churn-scores
 
 ---
 
-crm:snapshot-payments
-  Capture daily snapshot of all CRM payments (fraud detection / audit).
+crm:daily-report
+  Generate the daily CEO CRM report (revenue, inscriptions, top centre).
+  Reads from local DB only — no live API calls.
+  Run AFTER crm:snapshot-payments.
 
-  php artisan crm:snapshot-payments
+  php artisan crm:daily-report
+  php artisan crm:daily-report --date=2026-06-01
 
-  Scheduled: daily 01:30 → logs/crm-snapshot-payments.log
+  Scheduled: daily 08:00 Africa/Casablanca → logs/crm-daily-report.log
 
----
-
-crm:sync-centers
-  Populate crm_store_id in the sites table by matching names.
-  Run once after adding a new GLS center.
-
-  php artisan crm:sync-centers
-
----
+--------------------------------------------------------------------------------
+CRM — Diagnostics
+--------------------------------------------------------------------------------
 
 crm:ping
-  Test connectivity to the Homeschool External API (quick health check).
+  Test connectivity to the Homeschool External API.
 
   php artisan crm:ping
   php artisan crm:ping --endpoint=payment-methods
@@ -74,38 +141,26 @@ crm:ping
 ---
 
 crm:probe-allocations
-  Probe /payment-allocations endpoint, show raw counts and sample rows.
-  Useful for debugging payment data before building reports.
+  Probe /payment-allocations endpoint — show raw counts and sample rows.
+  Useful for debugging payment data.
 
   php artisan crm:probe-allocations
 
 ---
 
-crm:daily-report
-  Generate the daily CEO CRM report for yesterday and dispatch email job.
+crm:sync-centers
+  Populate crm_store_id on the sites table by matching center names.
+  Run once after adding a new GLS center.
 
-  php artisan crm:daily-report
-  php artisan crm:daily-report --date=2026-06-01
-  php artisan crm:daily-report --send           # also send email
-
-  Scheduled: daily 08:00 Africa/Casablanca → logs/crm-daily-report.log
+  php artisan crm:sync-centers
 
 --------------------------------------------------------------------------------
-Homeschool — Mirror & Attendance
+Homeschool — Professor payroll attendance
 --------------------------------------------------------------------------------
-
-homeschool:mirror-core
-  Full sync of CRM metadata to local mirror: Classes, Teachers, Students,
-  Registrations, Attendance. Heavy — run manually or on schedule.
-
-  php artisan homeschool:mirror-core
-  php artisan homeschool:mirror-core --full          # ignore incremental logic
-  php artisan homeschool:mirror-core --months=3      # attendance months back
-
----
 
 homeschool:sync-attendance
-  Sync attendance records from Homeschool API and compute professor payments.
+  Sync attendance from Homeschool API and compute professor payments.
+  Different from crm:sync-attendance — this is for prof payroll, not presence suivi.
 
   php artisan homeschool:sync-attendance
   php artisan homeschool:sync-attendance --group=42
@@ -118,8 +173,8 @@ GLS — Internal
 --------------------------------------------------------------------------------
 
 gls:generate-level-followups
-  Generate / refresh group level followup records based on date_debut/date_fin.
-  Idempotent — safe to re-run.
+  Generate/refresh group level followup records based on date_debut/date_fin.
+  Idempotent — safe to re-run at any time.
 
   php artisan gls:generate-level-followups
 
@@ -137,13 +192,13 @@ google:sheets:test
 ---
 
 google:sheets:resync
-  Re-dispatch sync jobs for inscriptions / applications / consultations
-  that were not yet pushed to Google Sheets.
+  Re-dispatch sync jobs for inscriptions/applications/consultations
+  not yet pushed to Google Sheets.
 
   php artisan google:sheets:resync
   php artisan google:sheets:resync --dry-run
 
-  Queue worker needed:
+  Requires queue worker:
     php artisan queue:work --queue=google-sheets
     php artisan queue:work database --queue=google-sheets --tries=3
 
@@ -152,26 +207,49 @@ WhatsApp
 --------------------------------------------------------------------------------
 
 wa:run-campaign {id}
-  Drive WhatsApp Desktop for a stored campaign (spawned by controller).
+  Drive WhatsApp Desktop for a stored campaign (spawned by the controller).
 
   php artisan wa:run-campaign 7
 
---------------------------------------------------------------------------------
-SCHEDULED PIPELINE (Africa/Casablanca)
---------------------------------------------------------------------------------
+================================================================================
+SCHEDULED PIPELINE — Africa/Casablanca timezone
+================================================================================
 
-  00:15  gls:generate-level-followups
-  01:30  crm:snapshot-payments
-  02:00  crm:sync-collections --all --delay=400
-  02:00  homeschool:sync-attendance   (1st of month only)
-  02:30  crm:sync-registrations --all --delay=600
-  03:00  crm:churn-scores --all
-  08:00  crm:daily-report
+  TIME   COMMAND                                         LOG FILE
+  ─────────────────────────────────────────────────────────────────────────────
+  00:15  gls:generate-level-followups                   level-followups-schedule.log
+  01:00  homeschool:mirror-core --months=2              homeschool-mirror-core.log
+  01:15  crm:sync-attendance --all --months=2           crm-sync-attendance.log
+  01:30  crm:snapshot-payments                          crm-snapshot-payments.log
+  02:00  crm:sync-collections --all --delay=400         crm-sync-collections.log
+  02:00  homeschool:sync-attendance  (1st of month)     homeschool-sync.log
+  02:30  crm:sync-registrations --all --delay=600       crm-sync-registrations.log
+  03:00  crm:churn-scores --all                         crm-churn-scores.log
+  08:00  crm:daily-report                               crm-daily-report.log
 
-  Run the full pipeline manually in order:
-    php artisan crm:sync-collections --all
-    php artisan crm:sync-registrations --all
-    php artisan crm:churn-scores --all
-    php artisan crm:daily-report
+================================================================================
+MANUAL FULL SYNC (run in this order)
+================================================================================
+
+  php artisan homeschool:mirror-core          # 1. sync classes/students into DB
+  php artisan crm:sync-attendance --all       # 2. sync presence → Suivi Présences
+  php artisan crm:snapshot-payments           # 3. snapshot payments → revenue KPIs
+  php artisan crm:sync-collections --all      # 4. sync receivables → Recouvrement
+  php artisan crm:sync-registrations --all    # 5. sync registrations → Churn + report
+  php artisan crm:churn-scores --all          # 6. score churn from local DB
+  php artisan crm:daily-report                # 7. generate CEO report
+
+================================================================================
+LOCAL DB TABLES — what each command populates
+================================================================================
+
+  crm_classes              ← homeschool:mirror-core
+  crm_students             ← homeschool:mirror-core
+  crm_attendance           ← crm:sync-attendance          (Suivi Présences)
+  crm_payment_snapshots    ← crm:snapshot-payments         (Revenue / Stats)
+  crm_collection_rows      ← crm:sync-collections          (Recouvrement)
+  crm_registrations        ← crm:sync-registrations        (Churn / CEO Report)
+  crm_churn_scores         ← crm:churn-scores              (Risque churn page)
+  crm_daily_reports        ← crm:daily-report              (CEO Report page)
 
 ================================================================================

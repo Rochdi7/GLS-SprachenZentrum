@@ -18,6 +18,20 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/level-followups-schedule.log'));
 
+        // ✅ Homeschool mirror: sync classes, students, registrations
+        $schedule->command('homeschool:mirror-core --months=2')
+            ->dailyAt('01:00')
+            ->timezone('Africa/Casablanca')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/homeschool-mirror-core.log'));
+
+        // ✅ CRM attendance sync: feeds Suivi Présences calendar (fraud detection)
+        $schedule->command('crm:sync-attendance --all --months=2')
+            ->dailyAt('01:15')
+            ->timezone('Africa/Casablanca')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/crm-sync-attendance.log'));
+
         // ✅ CRM payment snapshot: capture quotidienne pour audit + détection fraude
         $schedule->command('crm:snapshot-payments')
             ->dailyAt('01:30')
@@ -43,13 +57,6 @@ class Kernel extends ConsoleKernel
             ->timezone('Africa/Casablanca')
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/crm-sync-registrations.log'));
-
-        // ✅ CRM churn scores: daily recompute for all stores
-        $schedule->command('crm:churn-scores --all')
-            ->dailyAt('03:00')
-            ->timezone('Africa/Casablanca')
-            ->withoutOverlapping()
-            ->appendOutputTo(storage_path('logs/crm-churn-scores.log'));
 
         // ✅ Daily CEO Report: generate every morning at 08:00 Casablanca time
         $schedule->command('crm:daily-report')

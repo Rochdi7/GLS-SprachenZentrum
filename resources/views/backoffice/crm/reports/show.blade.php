@@ -19,16 +19,19 @@
     @endif
 
     @php
-        $payload       = $report->payload ?? [];
-        $attentionItems = $payload['attention_items'] ?? [];
+        $payload         = $report->payload ?? [];
+        $attentionItems  = $payload['attention_items'] ?? [];
+        $topCenter       = $payload['top_center_today'] ?? null;
+        $centersRanking  = $payload['centers_ranking'] ?? [];
     @endphp
 
     {{-- Header --}}
     <div class="row mb-4 align-items-center">
         <div class="col">
-            <h4 class="mb-0">
-                <i class="ph-duotone ph-chart-bar me-2 text-primary"></i>
+            <h4 class="mb-0 d-flex align-items-center gap-2 flex-wrap">
+                <i class="ph-duotone ph-chart-bar text-primary"></i>
                 Rapport CEO Quotidien &mdash; {{ $report->report_date->format('d/m/Y') }}
+                @include('backoffice.crm.partials._snapshot_badge', ['snapshotDate' => $snapshotDate ?? null])
             </h4>
             <small class="text-muted">
                 Généré le {{ $report->generated_at?->format('d/m/Y à H:i') ?? '—' }}
@@ -48,7 +51,7 @@
     <div class="row g-3 mb-4">
 
         {{-- Revenue --}}
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-2">
@@ -58,7 +61,7 @@
                             </div>
                         </div>
                         <div>
-                            <h6 class="text-muted mb-0">Revenue hier</h6>
+                            <h6 class="text-muted mb-0">Encaissement hier</h6>
                         </div>
                     </div>
                     <h2 class="text-success mb-0">
@@ -70,7 +73,7 @@
         </div>
 
         {{-- New registrations --}}
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-2">
@@ -90,45 +93,28 @@
             </div>
         </div>
 
-        {{-- Students at risk --}}
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="flex-shrink-0 me-3">
-                            <div class="bg-danger bg-opacity-10 rounded p-2">
-                                <i class="ph-duotone ph-warning text-danger" style="font-size:1.75rem"></i>
-                            </div>
-                        </div>
-                        <div>
-                            <h6 class="text-muted mb-0">Étudiants à risque</h6>
-                        </div>
-                    </div>
-                    <h2 class="{{ ($report->students_at_risk ?? 0) > 0 ? 'text-danger' : 'text-success' }} mb-0">
-                        {{ $report->students_at_risk ?? '—' }}
-                    </h2>
-                </div>
-            </div>
-        </div>
-
-        {{-- Outstanding receivables --}}
-        <div class="col-md-3">
+        {{-- Top centre encaissement --}}
+        <div class="col-md-4">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-2">
                         <div class="flex-shrink-0 me-3">
                             <div class="bg-warning bg-opacity-10 rounded p-2">
-                                <i class="ph-duotone ph-clock text-warning" style="font-size:1.75rem"></i>
+                                <i class="ph-duotone ph-trophy text-warning" style="font-size:1.75rem"></i>
                             </div>
                         </div>
                         <div>
-                            <h6 class="text-muted mb-0">Créances impayées</h6>
+                            <h6 class="text-muted mb-0">Top centre hier</h6>
                         </div>
                     </div>
-                    <h2 class="text-warning mb-0">
-                        {{ number_format((float) ($report->outstanding_receivables ?? 0), 0, ',', ' ') }}
-                        <small class="fs-6">MAD</small>
-                    </h2>
+                    @if ($topCenter)
+                        <h2 class="text-warning mb-0" style="font-size:1.4rem">{{ $topCenter['name'] }}</h2>
+                        <div class="text-muted small mt-1">
+                            {{ number_format($topCenter['amount'], 0, ',', ' ') }} MAD encaissés
+                        </div>
+                    @else
+                        <h2 class="text-muted mb-0">—</h2>
+                    @endif
                 </div>
             </div>
         </div>
@@ -187,6 +173,56 @@
 
     </div>
 
+    {{-- Centers ranking --}}
+    @if (count($centersRanking) > 0)
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3">
+                            <i class="ph-duotone ph-ranking me-2 text-warning"></i>Classement des centres — encaissements hier
+                        </h6>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:3rem">#</th>
+                                        <th>Centre</th>
+                                        <th class="text-end">Encaissé (MAD)</th>
+                                        <th style="width:40%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php $maxAmount = $centersRanking[0]['amount'] ?? 1; @endphp
+                                    @foreach ($centersRanking as $i => $center)
+                                        @php
+                                            $rank = $i + 1;
+                                            $pct  = $maxAmount > 0 ? round($center['amount'] / $maxAmount * 100) : 0;
+                                            $medal = match($rank) { 1 => '🥇', 2 => '🥈', 3 => '🥉', default => $rank };
+                                            $barClass = $center['amount'] > 0 ? 'bg-success' : 'bg-secondary';
+                                        @endphp
+                                        <tr class="{{ $center['amount'] == 0 ? 'text-muted' : '' }}">
+                                            <td class="fw-bold fs-5">{{ $medal }}</td>
+                                            <td>{{ $center['name'] }}</td>
+                                            <td class="text-end fw-semibold">
+                                                {{ $center['amount'] > 0 ? number_format($center['amount'], 0, ',', ' ') : '—' }}
+                                            </td>
+                                            <td>
+                                                <div class="progress" style="height:8px">
+                                                    <div class="progress-bar {{ $barClass }}" style="width:{{ $pct }}%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- Attention items --}}
     @if (count($attentionItems) > 0)
         <div class="row mb-4">
@@ -228,7 +264,10 @@
     </div>
 
     {{-- Hidden WhatsApp text --}}
-    <div id="whatsapp-text" style="display:none">{{ "📊 Rapport GLS — " . $report->report_date->format('d/m/Y') . "\n💰 Revenue: " . number_format((float)($report->revenue_yesterday ?? 0), 0, ',', ' ') . " MAD\n📝 Nouvelles inscriptions: " . ($report->new_registrations ?? 0) . "\n⚠️ Étudiants à risque: " . ($report->students_at_risk ?? 0) . "\n💳 Créances: " . number_format((float)($report->outstanding_receivables ?? 0), 0, ',', ' ') . " MAD\n🏆 Meilleur centre: " . ($report->best_center ?? '—') }}</div>
+    @php
+        $waTopCenter = $topCenter ? ($topCenter['name'] . ' — ' . number_format($topCenter['amount'], 0, ',', ' ') . ' MAD') : '—';
+    @endphp
+    <div id="whatsapp-text" style="display:none">{{ "📊 Rapport GLS — " . $report->report_date->format('d/m/Y') . "\n💰 Encaissement: " . number_format((float)($report->revenue_yesterday ?? 0), 0, ',', ' ') . " MAD\n📝 Nouvelles inscriptions: " . ($report->new_registrations ?? 0) . "\n🏆 Top centre: " . $waTopCenter }}</div>
 
 @endsection
 

@@ -49,8 +49,8 @@
         request()->routeIs('backoffice.crm.duplicates') ||
         request()->routeIs('backoffice.crm.insights.*');
     $crmCollectionsOpen = request()->routeIs('backoffice.crm.collections.*');
-    $crmChurnOpen = request()->routeIs('backoffice.crm.churn.*');
-    $crmStatsDashOpen = request()->routeIs('backoffice.crm.statistiques');
+    $crmStatsDashOpen    = request()->routeIs('backoffice.crm.statistiques');
+    $crmPresenceSuiviOpen = request()->routeIs('backoffice.crm.presence-suivi');
 @endphp
 
 <li class="pc-item pc-caption">
@@ -601,14 +601,6 @@
                 </a>
             </li>
 
-            {{-- Churn Predictor --}}
-            <li class="pc-item {{ $crmChurnOpen ? 'active' : '' }}">
-                <a href="{{ route('backoffice.crm.churn.index') }}"
-                    class="pc-link {{ $crmChurnOpen ? 'active' : '' }}">
-                    <span class="pc-mtext">Risque de churn</span>
-                </a>
-            </li>
-
             {{-- Rapports CEO Quotidiens --}}
             <li class="pc-item {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">
                 <a href="{{ route('backoffice.crm.reports.index') }}"
@@ -622,6 +614,14 @@
                 <a href="{{ route('backoffice.crm.statistiques') }}"
                     class="pc-link {{ $crmStatsDashOpen ? 'active' : '' }}">
                     <span class="pc-mtext">📊 Statistiques</span>
+                </a>
+            </li>
+
+            {{-- Suivi Présences --}}
+            <li class="pc-item {{ $crmPresenceSuiviOpen ? 'active' : '' }}">
+                <a href="{{ route('backoffice.crm.presence-suivi') }}"
+                    class="pc-link {{ $crmPresenceSuiviOpen ? 'active' : '' }}">
+                    <span class="pc-mtext">🗓 Suivi Présences</span>
                 </a>
             </li>
 

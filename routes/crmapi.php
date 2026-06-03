@@ -74,16 +74,13 @@ Route::prefix('crm')
             Route::post('/refresh', [\App\Http\Controllers\Backoffice\Crm\CollectionsController::class, 'refresh'])->name('refresh');
         });
 
-        // Churn Predictor (Module 3).
-        Route::prefix('churn')->name('churn.')->group(function () {
-            Route::get('/',              [\App\Http\Controllers\Backoffice\Crm\ChurnController::class, 'index'])->name('index');
-            Route::post('/recompute',    [\App\Http\Controllers\Backoffice\Crm\ChurnController::class, 'recompute'])->name('recompute');
-            Route::get('/{studentId}',   [\App\Http\Controllers\Backoffice\Crm\ChurnController::class, 'show'])->name('show')
-                ->where('studentId', '[0-9]+');
-        });
+        // Suivi présences — calendrier anti-fraude.
+        Route::get('/presence-suivi',         [\App\Http\Controllers\Backoffice\Crm\PresenceSuiviController::class, 'index'])->name('presence-suivi');
+        Route::get('/presence-suivi/details', [\App\Http\Controllers\Backoffice\Crm\PresenceSuiviController::class, 'details'])->name('presence-suivi.details');
 
         // Statistiques par centre (encaissement + recouvrement + inscriptions).
-        Route::get('/statistiques', [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'index'])->name('statistiques');
+        Route::get('/statistiques',         [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'index'])->name('statistiques');
+        Route::post('/statistiques/refresh', [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'refresh'])->name('statistiques.refresh');
 
         // Daily CEO Reports (Module 1).
         Route::prefix('reports')->name('reports.')->group(function () {

@@ -43,9 +43,10 @@
     {{-- ------------------------------------------------------------------ --}}
     <div class="row mb-3 align-items-center">
         <div class="col">
-            <h4 class="mb-0">
-                <i class="ph-duotone ph-currency-circle-dollar me-2 text-primary"></i>
+            <h4 class="mb-0 d-flex align-items-center gap-2 flex-wrap">
+                <i class="ph-duotone ph-currency-circle-dollar text-primary"></i>
                 Tableau de bord Recouvrement
+                @include('backoffice.crm.partials._snapshot_badge', ['snapshotDate' => $snapshotDate ?? null])
             </h4>
         </div>
         <div class="col-auto d-flex gap-2 align-items-center">

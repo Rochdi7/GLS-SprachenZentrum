@@ -46,8 +46,8 @@ class CrmSnapshotPaymentsCommand extends Command
 
         foreach ($sites as $i => $site) {
             if ($i > 0) {
-                $this->line("  (pause 10s between centers...)");
-                sleep(10);
+                $this->line("  (pause 30s between centers...)");
+                sleep(30);
             }
 
             $this->line("  → {$site->name} (#{$site->crm_store_id})");

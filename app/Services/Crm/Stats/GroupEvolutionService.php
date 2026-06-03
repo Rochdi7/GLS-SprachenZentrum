@@ -2,6 +2,8 @@
 
 namespace App\Services\Crm\Stats;
 
+use App\Models\CrmClass;
+use App\Models\CrmCollectionRow;
 use App\Services\Crm\Crm;
 use App\Services\Crm\CrmException;
 use Carbon\Carbon;
@@ -131,14 +133,6 @@ class GroupEvolutionService
             // Fetch allocations from earliest group start date to ensure we capture Début payments
             $allocStartDate = $earliestStartDate;
             $allocations = $this->fetchAllocations($crm, $strStoreId, $allocStartDate, $endDate);
-
-            // Log samples for debugging
-            \Illuminate\Support\Facades\Log::info('GroupEvolutionService: compute debug', [
-                'classStartMonth_sample' => array_slice($classStartMonth, 0, 5, true),
-                'earliestStartDate' => $earliestStartDate,
-                'allocations_count' => count($allocations),
-                'first_alloc_sample' => empty($allocations) ? null : $allocations[0],
-            ]);
 
             // Step 1: Build (student, class) map
             $studentClasses = []; // studentId => classId => bool
@@ -326,125 +320,85 @@ class GroupEvolutionService
      */
     protected ?string $lastFetchError = null;
 
-    /** Pull all classes for a center (page-walked via the existing client helper). */
+    /** Read classes from local crm_classes mirror — zero API calls. */
     protected function fetchClasses(Crm $crm, ?int $strStoreId, bool $bustCache = false): array
     {
         $cacheKey = "crm.group_evolution.classes.{$strStoreId}";
-
         if ($bustCache) {
             Cache::forget($cacheKey);
         }
 
-        $cached = Cache::get($cacheKey);
-        if ($cached !== null) {
-            \Illuminate\Support\Facades\Log::info('GroupEvolutionService: Using cached classes', ['count' => count($cached)]);
-            return $cached;
-        }
-
-        try {
-            \Illuminate\Support\Facades\Log::info('GroupEvolutionService: Fetching classes from CRM', ['strStoreId' => $strStoreId]);
-
-            $result = [];
-            $page = 0;
-            $maxPages = 20;
-
-            while ($page < $maxPages) {
-                $response = $crm->groups()->classes(
-                    page: $page,
-                    size: 25,
-                    strStoreId: $strStoreId,
-                );
-
-                $pageRows = $response['data'] ?? [];
-                \Illuminate\Support\Facades\Log::info('GroupEvolutionService: Page response', [
-                    'page' => $page,
-                    'count' => count($pageRows),
-                ]);
-
-                if (empty($pageRows)) {
-                    break;
-                }
-
-                foreach ($pageRows as $row) {
-                    $result[] = $row;
-                }
-
-                $hasNext = $response['pagination']['hasNext'] ?? $response['pagination']['hasMore'] ?? false;
-                if (!$hasNext) {
-                    break;
-                }
-
-                $page++;
-            }
-
-            \Illuminate\Support\Facades\Log::info('GroupEvolutionService: CRM API returned classes', ['count' => count($result)]);
-
-            Cache::put($cacheKey, $result, self::CACHE_TTL);
-            return $result;
-        } catch (CrmException $e) {
-            \Illuminate\Support\Facades\Log::error('GroupEvolutionService: CrmException fetching classes', ['status' => $e->status, 'message' => $e->getMessage()]);
-            $this->lastFetchError = $e->status === 429 ? 'rate_limited' : ('http_' . $e->status);
-            return [];
-        } catch (\Throwable $t) {
-            \Illuminate\Support\Facades\Log::error('GroupEvolutionService: Throwable fetching classes', ['message' => $t->getMessage(), 'trace' => $t->getTraceAsString()]);
-            $this->lastFetchError = 'unknown';
-            return [];
-        }
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($strStoreId) {
+            return CrmClass::query()
+                ->when($strStoreId, fn ($q) => $q->where('site_id', $strStoreId))
+                ->whereNotNull('class_id')
+                ->get()
+                ->map(fn ($c) => array_merge($c->raw_data ?? [], [
+                    'CLASS_ID'                     => $c->class_id,
+                    'ID'                           => $c->crm_id,
+                    'NAME'                         => $c->name,
+                    'CLASS_COUNT_STUDENTS_ACTIVE'  => $c->raw_data['CLASS_COUNT_STUDENTS_ACTIVE'] ?? 0,
+                    'START_DATE'                   => $c->raw_data['START_DATE'] ?? null,
+                    'END_DATE'                     => $c->raw_data['END_DATE']   ?? null,
+                    'LIST_STUDENT_ARCHIVED'        => $c->raw_data['LIST_STUDENT_ARCHIVED'] ?? [],
+                    'LIST_STUDENT_ACTIVE'          => $c->raw_data['LIST_STUDENT_ACTIVE']   ?? [],
+                ]))
+                ->toArray();
+        });
     }
 
     /**
-     * Pull all payment allocations within the date range.
+     * Pull payment allocations — cached per (store, start, end).
+     * Date range capped to 6 months max to prevent fetching from 2020.
      */
     protected function fetchAllocations(Crm $crm, ?int $strStoreId, string $startDate, string $endDate): array
     {
-        try {
-            \Illuminate\Support\Facades\Log::info('GroupEvolutionService: Fetching allocations', ['storeId' => $strStoreId, 'start' => $startDate, 'end' => $endDate]);
+        // Never fetch more than 6 months of allocations — classes fetched since 2020 caused huge scans
+        $cappedStart = Carbon::parse($startDate)->max(Carbon::parse($endDate)->subMonths(6))->toDateString();
 
-            $result = [];
-            $page = 0;
-            $maxPages = 20;
+        $cacheKey = "crm.group_evolution.allocs.{$strStoreId}.{$cappedStart}.{$endDate}";
 
-            while ($page < $maxPages) {
-                $response = $crm->client()->get(
-                    path: '/api/external/v1/payment-allocations',
-                    query: array_filter([
-                        'page' => $page,
-                        'size' => 25,
-                        'strStoreId' => $strStoreId,
-                        'startDate' => $startDate,
-                        'endDate' => $endDate,
-                    ], fn($v) => $v !== null),
-                );
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($crm, $strStoreId, $cappedStart, $endDate) {
+            try {
+                $baseQuery = array_filter([
+                    'size'       => 25,
+                    'strStoreId' => $strStoreId,
+                    'startDate'  => $cappedStart,
+                    'endDate'    => $endDate,
+                ], fn ($v) => $v !== null);
 
-                $pageRows = $response['data'] ?? [];
-                if (empty($pageRows)) {
-                    break;
+                $result  = [];
+                $page    = 0;
+                $maxPages = 40; // hard cap: 40×25 = 1000 rows
+
+                while ($page < $maxPages) {
+                    $response = $crm->client()->get(
+                        path: '/api/external/v1/payment-allocations',
+                        query: array_merge($baseQuery, ['page' => $page, 'includeTotal' => 'false']),
+                    );
+
+                    $pageRows = $response['data'] ?? [];
+                    if (empty($pageRows)) break;
+
+                    array_push($result, ...$pageRows);
+
+                    $hasNext = $response['pagination']['hasNext'] ?? $response['pagination']['hasMore'] ?? false;
+                    if (!$hasNext) break;
+
+                    $page++;
                 }
 
-                foreach ($pageRows as $row) {
-                    $result[] = $row;
-                }
-
-                $hasNext = $response['pagination']['hasNext'] ?? $response['pagination']['hasMore'] ?? false;
-                if (!$hasNext) {
-                    break;
-                }
-
-                $page++;
+                return $result;
+            } catch (\Throwable $t) {
+                return [];
             }
-
-            \Illuminate\Support\Facades\Log::info('GroupEvolutionService: Allocations fetched', ['count' => count($result)]);
-            return $result;
-        } catch (\Throwable $t) {
-            \Illuminate\Support\Facades\Log::error('GroupEvolutionService: Fetch allocations error', ['message' => $t->getMessage(), 'trace' => $t->getTraceAsString()]);
-            return [];
-        }
+        });
     }
 
 
 
     /**
-     * Quittant detection.
+     * Quittant detection — reads from local crm_collection_rows (zero API calls).
      */
     protected function detectQuittants(
         Crm $crm,
@@ -461,57 +415,19 @@ class GroupEvolutionService
             }
         }
 
-        try {
-            $result = [];
-            $page = 0;
-            $maxPages = 20;
-
-            while ($page < $maxPages) {
-                $response = $crm->client()->get(
-                    path: '/api/external/v1/payment-collection',
-                    query: array_filter([
-                        'page' => $page,
-                        'size' => 25,
-                        'strStoreId' => $strStoreId,
-                        'dueDateStartDate' => $startDate,
-                        'dueDateEndDate' => $endDate,
-                    ], fn($v) => $v !== null),
-                );
-
-                $pageRows = $response['data'] ?? [];
-                if (empty($pageRows)) {
-                    break;
-                }
-
-                foreach ($pageRows as $row) {
-                    $result[] = $row;
-                }
-
-                $hasNext = $response['pagination']['hasNext'] ?? $response['pagination']['hasMore'] ?? false;
-                if (!$hasNext) {
-                    break;
-                }
-
-                $page++;
-            }
-
-            $collection = $result;
-        } catch (\Throwable $t) {
-            \Illuminate\Support\Facades\Log::error('GroupEvolutionService: Detect quittants error', ['message' => $t->getMessage()]);
-            $collection = [];
-        }
+        $rows = CrmCollectionRow::query()
+            ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId))
+            ->where('registration_status_name', 'Active')
+            ->whereBetween('due_date', [$startDate, $endDate])
+            ->where('rest_amount', '>', 0)
+            ->get(['student_id', 'class_id']);
 
         $quittants = [];
-        foreach ($collection as $row) {
-            $sid     = $row['STUDENT_ID'] ?? null;
-            $classId = $row['CLASS_ID']   ?? null;
+        foreach ($rows as $row) {
+            $sid     = $row->student_id;
+            $classId = $row->class_id;
             if (!$sid || !$classId) continue;
-
-            $rest = (float) ($row['REST_AMOUNT'] ?? $row['OPEN_AMOUNT'] ?? $row['REMAINING_AMOUNT'] ?? 0);
-            if ($rest <= 0) continue;
-
             if (isset($moverIds[$sid])) continue;
-
             if (!isset($studentClasses[$sid][$classId])) continue;
 
             $quittants[$classId][$sid] = true;
@@ -566,13 +482,6 @@ class GroupEvolutionService
     {
         $result = [];
 
-        // Log samples of archived/active students for debugging
-        \Illuminate\Support\Facades\Log::info('GroupEvolutionService: detectChangements debug', [
-            'classArchivedStudents_sample' => array_slice($classArchivedStudents, 0, 3, true),
-            'classActiveStudents_sample' => array_slice($classActiveStudents, 0, 3, true),
-            'studentClasses_count' => count($studentClasses),
-        ]);
-
         // For every student
         foreach ($studentClasses as $sid => $studentClassIds) {
             // Find classes where student is archived
@@ -601,11 +510,6 @@ class GroupEvolutionService
                 }
             }
         }
-
-        \Illuminate\Support\Facades\Log::info('GroupEvolutionService: detectChangements result', [
-            'changement_count' => count($result, COUNT_RECURSIVE),
-            'result_sample' => array_slice($result, 0, 3, true),
-        ]);
 
         return $result;
     }

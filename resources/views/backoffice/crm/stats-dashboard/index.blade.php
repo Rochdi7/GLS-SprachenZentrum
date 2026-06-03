@@ -11,8 +11,8 @@
         .stat-kpi .kpi-label { font-size: .78rem; color: #6c757d; margin-bottom: .2rem; }
         .stat-kpi h4 { font-size: 1.4rem; font-weight: 700; margin: 0; }
         .vs-badge { font-size: .72rem; font-weight: 600; }
-        .chart-card { min-height: 340px; }
         .period-btn.active { background: var(--bs-primary); color:#fff; border-color: var(--bs-primary); }
+        .chart-wrap { min-height: 420px; }
     </style>
 @endsection
 
@@ -26,9 +26,10 @@
 {{-- ── Header ─────────────────────────────────────────────────────── --}}
 <div class="row mb-3 align-items-center">
     <div class="col">
-        <h4 class="mb-0">
-            <i class="ph-duotone ph-chart-line me-2 text-primary"></i>
+        <h4 class="mb-0 d-flex align-items-center gap-2 flex-wrap">
+            <i class="ph-duotone ph-chart-line text-primary"></i>
             Statistiques Rentabilité par Centre
+            @include('backoffice.crm.partials._snapshot_badge', ['snapshotDate' => $snapshotDate ?? null])
         </h4>
     </div>
     <div class="col-auto d-flex gap-2">
@@ -61,6 +62,7 @@
         </a>
     </div>
 </div>
+
 
 {{-- ── Period Comparison KPIs ─────────────────────────────────────── --}}
 @if (!empty($comparison))
@@ -133,7 +135,7 @@
                 @if (empty($encaissement['months']))
                     <p class="text-muted text-center py-5">Aucune donnée — lancez <code>crm:snapshot-payments</code>.</p>
                 @else
-                    <canvas id="chartEncaissement" height="100"></canvas>
+                    <div id="chartEncaissement" class="chart-wrap"></div>
                 @endif
             </div>
         </div>
@@ -149,7 +151,7 @@
                 @if (empty($recouvrement))
                     <p class="text-muted text-center py-5">Aucune donnée.</p>
                 @else
-                    <canvas id="chartRecouvrement" height="140"></canvas>
+                    <div id="chartRecouvrement" class="chart-wrap"></div>
                 @endif
             </div>
         </div>
@@ -167,7 +169,7 @@
                 @if (empty($registrations['months']))
                     <p class="text-muted text-center py-5">Aucune donnée — lancez <code>crm:sync-registrations</code>.</p>
                 @else
-                    <canvas id="chartInscriptions" height="120"></canvas>
+                    <div id="chartInscriptions" class="chart-wrap"></div>
                 @endif
             </div>
         </div>
@@ -278,114 +280,183 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
 <script>
-const COLORS = [
-    '#4e73df','#1cc88a','#36b9cc','#f6c23e','#e74a3b','#858796','#5a5c69','#2e59d9'
-];
+'use strict';
+document.addEventListener('DOMContentLoaded', function () {
+    setTimeout(function () {
 
-@if (!empty($encaissement['months']))
-// ── Encaissement line chart ──────────────────────────────────────────
-(function(){
-    const months = @json($encaissement['months']);
-    const pivot  = @json($encaissement['pivot']);
-    const names  = @json($encaissement['sites']);
-    const labels = months.map(m => {
-        const [y,mo] = m.split('-');
-        return new Date(y, mo-1).toLocaleDateString('fr-FR', {month:'short', year:'2-digit'});
-    });
+        // Brand palette — one distinct color per center (max 7)
+        const COLORS = ['#4680ff','#1cc88a','#ffc107','#dc3545','#0dcaf0','#6f42c1','#fd7e14'];
 
-    const datasets = Object.entries(pivot).map(([sid, mData], i) => ({
-        label: names[sid] || 'Store #'+sid,
-        data:  months.map(m => mData[m] || 0),
-        borderColor: COLORS[i % COLORS.length],
-        backgroundColor: COLORS[i % COLORS.length] + '22',
-        tension: 0.3,
-        fill: false,
-        pointRadius: 4,
-    }));
+        // Compact DH (Dirham Marocain) formatter — axis labels
+        function fmtDH(v) {
+            if (v >= 1000000) return (v / 1000000).toFixed(1).replace('.0','') + ' M DH';
+            if (v >= 1000)    return Math.round(v / 1000) + ' k DH';
+            return v > 0 ? v + ' DH' : '';
+        }
 
-    new Chart(document.getElementById('chartEncaissement'), {
-        type: 'line',
-        data: { labels, datasets },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom' },
+        // Full DH (Dirham Marocain) for tooltips
+        function fullDH(v) {
+            return new Intl.NumberFormat('fr-MA').format(v) + ' DH';
+        }
+
+        function monthLabel(m) {
+            const [y, mo] = m.split('-');
+            return new Date(y, mo - 1).toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' });
+        }
+
+        // Shared axis/grid defaults
+        const gridCfg  = { borderColor: '#f0f0f0', strokeDashArray: 4 };
+        const axisBase = { axisBorder: { show: false }, axisTicks: { show: false } };
+        const legendCfg = { position: 'bottom', fontSize: '13px', markers: { width: 10, height: 10, radius: 50 } };
+
+        @if (!empty($encaissement['months']))
+        // ── 1. Encaissement par centre — area/line chart ──────────────────
+        (function () {
+            const months = @json($encaissement['months']);
+            const pivot  = @json($encaissement['pivot']);
+            const names  = @json($encaissement['sites']);
+
+            const series = Object.entries(pivot).map(([sid, mData], i) => ({
+                name: names[sid] || 'Store #' + sid,
+                data: months.map(m => Math.round(mData[m] || 0)),
+            }));
+
+            new ApexCharts(document.querySelector('#chartEncaissement'), {
+                chart: {
+                    type: 'area',
+                    height: 380,
+                    toolbar: { show: false },
+                    zoom: { enabled: false },
+                    fontFamily: 'inherit',
+                },
+                series,
+                colors: COLORS,
+                stroke: { width: 2, curve: 'smooth' },
+                fill: { type: 'gradient', gradient: { opacityFrom: 0.25, opacityTo: 0.02 } },
+                markers: { size: 5, strokeWidth: 2, hover: { size: 7 } },
+                dataLabels: { enabled: false },
+                grid: gridCfg,
+                xaxis: {
+                    ...axisBase,
+                    categories: months.map(monthLabel),
+                    labels: { style: { fontSize: '13px', fontWeight: 500 } },
+                },
+                yaxis: {
+                    labels: {
+                        style: { fontSize: '12px' },
+                        formatter: fmtDH,
+                    },
+                },
+                legend: legendCfg,
                 tooltip: {
-                    callbacks: {
-                        label: ctx => ctx.dataset.label + ': ' +
-                            new Intl.NumberFormat('fr-MA').format(ctx.parsed.y) + ' DH'
-                    }
-                }
-            },
-            scales: {
-                y: { ticks: { callback: v => new Intl.NumberFormat('fr-MA', {notation:'compact'}).format(v) + ' DH' } }
-            }
-        }
-    });
-})();
-@endif
+                    shared: true,
+                    intersect: false,
+                    y: { formatter: fullDH },
+                },
+            }).render();
+        })();
+        @endif
 
-@if (!empty($recouvrement))
-// ── Recouvrement horizontal bar ──────────────────────────────────────
-(function(){
-    const data = @json($recouvrement);
-    const labels   = data.map(r => r.store_name);
-    const overdue  = data.map(r => r.overdue);
-    const upcoming = data.map(r => r.upcoming);
+        @if (!empty($recouvrement))
+        // ── 2. Créances — vertical stacked bar (fixes label overlap) ─────
+        (function () {
+            const data     = @json($recouvrement);
+            // Short center names to avoid overlap
+            const cats     = data.map(r => r.store_name.replace('GLS ', ''));
+            const overdue  = data.map(r => Math.round(r.overdue));
+            const upcoming = data.map(r => Math.round(r.upcoming));
 
-    new Chart(document.getElementById('chartRecouvrement'), {
-        type: 'bar',
-        data: {
-            labels,
-            datasets: [
-                { label: 'En retard', data: overdue,  backgroundColor: '#e74a3b' },
-                { label: 'À venir',   data: upcoming, backgroundColor: '#f6c23e' },
-            ]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            plugins: { legend: { position: 'bottom' },
-                tooltip: { callbacks: { label: ctx => ctx.dataset.label+': '+new Intl.NumberFormat('fr-MA').format(ctx.parsed.x)+' DH' } }
-            },
-            scales: {
-                x: { stacked: true, ticks: { callback: v => new Intl.NumberFormat('fr-MA',{notation:'compact'}).format(v) } },
-                y: { stacked: true }
-            }
-        }
-    });
-})();
-@endif
+            new ApexCharts(document.querySelector('#chartRecouvrement'), {
+                chart: {
+                    type: 'bar',
+                    height: 380,
+                    stacked: true,
+                    toolbar: { show: false },
+                    fontFamily: 'inherit',
+                },
+                series: [
+                    { name: 'En retard', data: overdue },
+                    { name: 'À venir',  data: upcoming },
+                ],
+                colors: ['#dc3545', '#ffc107'],
+                plotOptions: {
+                    bar: {
+                        horizontal: false,   // VERTICAL — no label overlap
+                        columnWidth: '50%',
+                        borderRadius: 4,
+                        borderRadiusApplication: 'end',
+                    },
+                },
+                dataLabels: { enabled: false },
+                grid: gridCfg,
+                xaxis: {
+                    ...axisBase,
+                    categories: cats,
+                    labels: { style: { fontSize: '12px', fontWeight: 600 } },
+                },
+                yaxis: {
+                    labels: { formatter: fmtDH, style: { fontSize: '12px' } },
+                },
+                legend: legendCfg,
+                tooltip: {
+                    shared: true,
+                    intersect: false,
+                    y: { formatter: fullDH },
+                },
+            }).render();
+        })();
+        @endif
 
-@if (!empty($registrations['months']))
-// ── Inscriptions grouped bar ─────────────────────────────────────────
-(function(){
-    const months = @json($registrations['months']);
-    const pivot  = @json($registrations['pivot']);
-    const names  = @json($registrations['sites']);
-    const labels = months.map(m => {
-        const [y,mo] = m.split('-');
-        return new Date(y, mo-1).toLocaleDateString('fr-FR', {month:'short', year:'2-digit'});
-    });
+        @if (!empty($registrations['months']))
+        // ── 3. Inscriptions — grouped bar ────────────────────────────────
+        (function () {
+            const months = @json($registrations['months']);
+            const pivot  = @json($registrations['pivot']);
+            const names  = @json($registrations['sites']);
 
-    const datasets = Object.entries(pivot).map(([sid, mData], i) => ({
-        label: names[sid] || 'Store #'+sid,
-        data:  months.map(m => mData[m] || 0),
-        backgroundColor: COLORS[i % COLORS.length],
-    }));
+            const series = Object.entries(pivot).map(([sid, mData]) => ({
+                name: names[sid] || 'Store #' + sid,
+                data: months.map(m => mData[m] || 0),
+            }));
 
-    new Chart(document.getElementById('chartInscriptions'), {
-        type: 'bar',
-        data: { labels, datasets },
-        options: {
-            responsive: true,
-            plugins: { legend: { position: 'bottom' } },
-            scales: { x: { stacked: false }, y: { beginAtZero: true, ticks: { precision: 0 } } }
-        }
-    });
-})();
-@endif
+            new ApexCharts(document.querySelector('#chartInscriptions'), {
+                chart: {
+                    type: 'bar',
+                    height: 380,
+                    toolbar: { show: false },
+                    fontFamily: 'inherit',
+                },
+                series,
+                colors: COLORS,
+                plotOptions: {
+                    bar: { columnWidth: '65%', borderRadius: 3 },
+                },
+                dataLabels: { enabled: false },
+                grid: gridCfg,
+                xaxis: {
+                    ...axisBase,
+                    categories: months.map(monthLabel),
+                    labels: { style: { fontSize: '13px', fontWeight: 500 } },
+                },
+                yaxis: {
+                    labels: {
+                        style: { fontSize: '12px' },
+                        formatter: v => Math.round(v),
+                    },
+                },
+                legend: legendCfg,
+                tooltip: {
+                    shared: true,
+                    intersect: false,
+                    y: { formatter: v => v + ' inscriptions' },
+                },
+            }).render();
+        })();
+        @endif
+
+    }, 300);
+});
 </script>
 @endsection

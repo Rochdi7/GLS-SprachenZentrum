@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice\Crm;
 
+use App\Models\CrmPaymentSnapshot;
 use App\Services\Crm\CenterContext;
 use App\Services\Crm\Crm;
 use App\Services\Crm\CrmLovProvider;
@@ -56,6 +57,8 @@ class CollectionsController extends BaseCrmController
             $error = $e->getMessage();
         }
 
+        $snapshotDate = CrmPaymentSnapshot::max('snapshot_date');
+
         return $this->view('backoffice.crm.collections.index', compact(
             'kpis',
             'topDebtors',
@@ -64,6 +67,7 @@ class CollectionsController extends BaseCrmController
             'perfByCenter',
             'strStoreId',
             'error',
+            'snapshotDate',
         ));
     }
 

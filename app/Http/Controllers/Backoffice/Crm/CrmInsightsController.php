@@ -139,12 +139,6 @@ class CrmInsightsController extends BaseCrmController
         $startDate = $r->query('startDate') ?: now()->subDays(15)->toDateString();
         $endDate   = $r->query('endDate')   ?: now()->toDateString();
 
-        \Illuminate\Support\Facades\Log::info('CrmInsightsController: groupEvolution', [
-            'storeId' => $storeId,
-            'currentSite' => $this->centers->currentSite(),
-            'scopedCrmToken' => substr((string) $this->scopedCrm()->client()->getToken(), -8),
-        ]);
-
         $report = $svc->build($this->scopedCrm(), $storeId, $startDate, $endDate, $bustCache);
 
         // Snapshot the unfiltered list before mutating — feeds the multi-select.

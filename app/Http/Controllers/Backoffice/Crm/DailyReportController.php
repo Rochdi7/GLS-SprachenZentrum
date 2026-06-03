@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backoffice\Crm;
 
 use App\Models\CrmDailyReport;
+use App\Models\CrmPaymentSnapshot;
 use App\Services\Crm\CenterContext;
 use App\Services\Crm\Crm;
 use App\Services\Crm\CrmLovProvider;
@@ -37,9 +38,10 @@ class DailyReportController extends BaseCrmController
      */
     public function show(string $date): View
     {
-        $report = CrmDailyReport::where('report_date', $date)->firstOrFail();
+        $report       = CrmDailyReport::where('report_date', $date)->firstOrFail();
+        $snapshotDate = CrmPaymentSnapshot::max('snapshot_date');
 
-        return $this->view('backoffice.crm.reports.show', compact('report'));
+        return $this->view('backoffice.crm.reports.show', compact('report', 'snapshotDate'));
     }
 
     /**

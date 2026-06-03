@@ -2,11 +2,11 @@
 
 namespace App\Services\Crm\Stats;
 
+use App\Models\CrmCollectionRow;
 use App\Models\CrmDailyReport;
 use App\Models\CrmPaymentSnapshot;
 use App\Models\CrmRegistration;
 use App\Models\Site;
-use App\Services\Crm\Crm;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -17,15 +17,12 @@ use Illuminate\Support\Facades\Log;
  *   - crm_payment_snapshots  (revenue, best center — fast, no API hit)
  *   - CRM API registrations  (new registrations count)
  *   - CRM API payment-collection (outstanding receivables proxy)
- *   - InsightsService::retention() (students at risk)
  *   - CrmStatsService::perCenterKpis() (attention items)
  */
 class DailyReportService
 {
     public function __construct(
-        protected Crm $crm,
         protected CrmStatsService $stats,
-        protected InsightsService $insights,
     ) {
     }
 
@@ -41,22 +38,21 @@ class DailyReportService
             ? Carbon::parse($date)->toDateString()
             : Carbon::yesterday()->toDateString();
 
-        $revenueYesterday       = $this->revenueYesterday($yesterday);
-        $newRegistrations       = $this->newRegistrations($yesterday);
-        $outstandingReceivables = $this->outstandingReceivables();
-        $studentsAtRisk         = $this->studentsAtRisk();
-        $bestCenter             = $this->bestCenter($yesterday);
-        $attentionItems         = $this->attentionItems($yesterday);
+        $revenueYesterday = $this->revenueYesterday($yesterday);
+        $newRegistrations = $this->newRegistrations($yesterday);
+        $bestCenter       = $this->bestCenter($yesterday);
+        $topCenterToday   = $this->topCenterToday($yesterday);
+        $attentionItems   = $this->attentionItems($yesterday);
 
         return [
-            'report_date'             => $yesterday,
-            'revenue_yesterday'       => $revenueYesterday,
-            'new_registrations'       => $newRegistrations,
-            'outstanding_receivables' => $outstandingReceivables,
-            'students_at_risk'        => $studentsAtRisk,
-            'best_center'             => $bestCenter,
-            'attention_items'         => $attentionItems,
-            'generated_at'            => now()->toDateTimeString(),
+            'report_date'        => $yesterday,
+            'revenue_yesterday'  => $revenueYesterday,
+            'new_registrations'  => $newRegistrations,
+            'best_center'        => $bestCenter,
+            'top_center_today'   => $topCenterToday,
+            'centers_ranking'    => $this->centersRanking($yesterday),
+            'attention_items'    => $attentionItems,
+            'generated_at'       => now()->toDateTimeString(),
         ];
     }
 
@@ -68,13 +64,11 @@ class DailyReportService
         return CrmDailyReport::updateOrCreate(
             ['report_date' => $data['report_date']],
             [
-                'payload'                 => $data,
-                'revenue_yesterday'       => $data['revenue_yesterday'],
-                'new_registrations'       => $data['new_registrations'],
-                'outstanding_receivables' => $data['outstanding_receivables'],
-                'students_at_risk'        => $data['students_at_risk'],
-                'best_center'             => $data['best_center'],
-                'generated_at'            => $data['generated_at'],
+                'payload'           => $data,
+                'revenue_yesterday' => $data['revenue_yesterday'],
+                'new_registrations' => $data['new_registrations'],
+                'best_center'       => $data['best_center'],
+                'generated_at'      => $data['generated_at'],
             ]
         );
     }
@@ -85,8 +79,9 @@ class DailyReportService
 
     private function revenueYesterday(string $date): float
     {
-        // Use effective_date (when money was collected) from the most recent snapshot.
-        // snapshot_date only tells us when the job ran, not when the payment happened.
+        // date_creation = when the cashier entered the payment in the CRM (local datetime).
+        // effective_date = the billing/service date set on the invoice, often the class start date —
+        // not reliable for "what was collected today".
         $latestSnapshot = CrmPaymentSnapshot::max('snapshot_date');
         if (!$latestSnapshot) {
             return 0.0;
@@ -94,60 +89,81 @@ class DailyReportService
 
         return (float) CrmPaymentSnapshot::query()
             ->where('snapshot_date', $latestSnapshot)
-            ->whereDate('effective_date', $date)
+            ->where('payment_type_id', 1)
+            ->whereDate('date_creation', $date)
             ->sum('amount');
     }
 
     private function newRegistrations(string $date): int
     {
-        // Count from local mirror using REGISTRATION_DATE stored in raw_data.
+        // Use DATE_CREATION (local server time, no UTC offset).
+        // REGISTRATION_DATE is stored as UTC ISO and shifts evening registrations to the previous day.
         return CrmRegistration::query()
-            ->whereRaw("DATE(JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.REGISTRATION_DATE'))) = ?", [$date])
+            ->whereRaw("DATE(JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.DATE_CREATION'))) = ?", [$date])
             ->count();
     }
 
-    private function outstandingReceivables(): float
+    /**
+     * Top center by cash collected on $date, with amount.
+     * Returns ['name' => string, 'amount' => float] or null.
+     */
+    private function topCenterToday(string $date): ?array
     {
-        try {
-            $resp = $this->crm->payments()->collection(
-                page: 0,
-                size: 25,
-                includeTotal: false,
-            );
-            $rows = $resp['data'] ?? [];
-            $sum  = 0.0;
-            foreach ($rows as $row) {
-                foreach (['REST_AMOUNT', 'OPEN_AMOUNT', 'REMAINING_AMOUNT', 'AMOUNT_DUE', 'AMOUNT'] as $key) {
-                    if (isset($row[$key]) && is_numeric($row[$key])) {
-                        $sum += (float) $row[$key];
-                        break;
-                    }
-                }
-            }
-            return $sum;
-        } catch (\Throwable $e) {
-            Log::warning('DailyReportService: payment-collection API failed', ['error' => $e->getMessage()]);
-            return 0.0;
-        }
+        $latestSnapshot = CrmPaymentSnapshot::max('snapshot_date');
+        if (!$latestSnapshot) return null;
+
+        $row = CrmPaymentSnapshot::query()
+            ->where('snapshot_date', $latestSnapshot)
+            ->where('payment_type_id', 1)
+            ->whereDate('date_creation', $date)
+            ->selectRaw('crm_store_id, SUM(amount) as total')
+            ->groupBy('crm_store_id')
+            ->orderByDesc('total')
+            ->first();
+
+        if (!$row || $row->total <= 0) return null;
+
+        $site = Site::where('crm_store_id', $row->crm_store_id)->first();
+        return [
+            'name'   => $site?->name ?? "Store #{$row->crm_store_id}",
+            'amount' => (float) $row->total,
+        ];
     }
 
-    private function studentsAtRisk(): int
+    /**
+     * All centers ranked by cash collected on $date, descending.
+     * Returns [['name' => string, 'amount' => float], ...]
+     */
+    private function centersRanking(string $date): array
     {
-        try {
-            $retention = $this->insights->retention();
-            if (!empty($retention['error'])) {
-                return 0;
+        $latestSnapshot = CrmPaymentSnapshot::max('snapshot_date');
+        if (!$latestSnapshot) return [];
+
+        $rows = CrmPaymentSnapshot::query()
+            ->where('snapshot_date', $latestSnapshot)
+            ->where('payment_type_id', 1)
+            ->whereDate('date_creation', $date)
+            ->selectRaw('crm_store_id, SUM(amount) as total')
+            ->groupBy('crm_store_id')
+            ->orderByDesc('total')
+            ->get();
+
+        $sites = Site::whereNotNull('crm_store_id')->get()->keyBy('crm_store_id');
+
+        $ranking = $rows->map(fn($row) => [
+            'name'   => $sites->get($row->crm_store_id)?->name ?? "Store #{$row->crm_store_id}",
+            'amount' => (float) $row->total,
+        ])->values()->toArray();
+
+        // Add centers with zero payments at the bottom
+        $rankedIds = $rows->pluck('crm_store_id')->toArray();
+        foreach ($sites as $storeId => $site) {
+            if (!in_array($storeId, $rankedIds)) {
+                $ranking[] = ['name' => $site->name, 'amount' => 0.0];
             }
-            $total = 0;
-            foreach ($retention['cohorts'] ?? [] as $cohort) {
-                $total += (int) ($cohort['cancelled'] ?? 0);
-                $total += (int) ($cohort['suspended'] ?? 0);
-            }
-            return $total;
-        } catch (\Throwable $e) {
-            Log::warning('DailyReportService: retention call failed', ['error' => $e->getMessage()]);
-            return 0;
         }
+
+        return $ranking;
     }
 
     private function bestCenter(string $date): ?string
@@ -159,7 +175,8 @@ class DailyReportService
 
         $row = CrmPaymentSnapshot::query()
             ->where('snapshot_date', $latestSnapshot)
-            ->whereDate('effective_date', $date)
+            ->where('payment_type_id', 1)
+            ->whereDate('date_creation', $date)
             ->selectRaw('crm_store_id, SUM(amount) as total')
             ->groupBy('crm_store_id')
             ->orderByDesc('total')
@@ -188,7 +205,8 @@ class DailyReportService
         $storesWithPayments = $latestSnapshot
             ? CrmPaymentSnapshot::query()
                 ->where('snapshot_date', $latestSnapshot)
-                ->whereDate('effective_date', $date)
+                ->where('payment_type_id', 1)
+                ->whereDate('date_creation', $date)
                 ->pluck('crm_store_id')
                 ->unique()
                 ->toArray()

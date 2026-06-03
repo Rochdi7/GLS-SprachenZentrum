@@ -10,7 +10,9 @@ use App\Services\Crm\CenterContext;
 use App\Services\Crm\Crm;
 use App\Services\Crm\CrmLovProvider;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
@@ -42,23 +44,38 @@ class StatsController extends BaseCrmController
         });
 
         return $this->view('backoffice.crm.stats-dashboard.index', array_merge($data, [
-            'months'    => $months,
-            'storeId'   => $storeId,
+            'months'       => $months,
+            'storeId'      => $storeId,
+            'snapshotDate' => $data['encaissement']['snapshot'] ?? CrmPaymentSnapshot::max('snapshot_date'),
         ]));
+    }
+
+    public function refresh(Request $request): RedirectResponse
+    {
+        // Bust stats cache
+        Cache::flush(); // safe — all CRM caches
+
+        // Re-run snapshot in foreground (fast enough for a button click — ~30s total)
+        Artisan::call('crm:snapshot-payments');
+
+        return redirect()
+            ->route('backoffice.crm.statistiques', $request->query())
+            ->with('success', 'Snapshot actualisé. Les données reflètent maintenant les paiements récents.');
     }
 
     // -------------------------------------------------------------------------
 
     private function encaissementByCenter(int $months, ?int $storeId): array
     {
-        $from   = Carbon::today()->subMonths($months)->startOfMonth();
+        $from   = Carbon::today()->subMonths($months)->startOfMonth()->toDateString();
         $latest = CrmPaymentSnapshot::max('snapshot_date');
 
         if (!$latest) return [];
 
         $rows = CrmPaymentSnapshot::query()
             ->where('snapshot_date', $latest)
-            ->where('effective_date', '>=', $from)
+            ->whereRaw('effective_date >= ?', [$from])
+            ->where('payment_type_id', 1)
             ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
             ->selectRaw("crm_store_id, DATE_FORMAT(effective_date,'%Y-%m') as month, SUM(amount) as total")
             ->groupBy('crm_store_id', 'month')
@@ -112,13 +129,15 @@ class StatsController extends BaseCrmController
 
     private function registrationsByCenter(int $months, ?int $storeId): array
     {
-        $from = Carbon::today()->subMonths($months)->startOfMonth()->toDateString();
+        // DATE_CREATION is a plain datetime in local time (no UTC offset) — safe to use DATE()
+        // REGISTRATION_DATE is UTC ISO and causes off-by-one for evening registrations
+        $from = Carbon::today('Africa/Casablanca')->subMonths($months)->startOfMonth()->toDateString();
 
         $rows = CrmRegistration::query()
             ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
-            ->whereRaw("DATE(JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.REGISTRATION_DATE'))) >= ?", [$from])
+            ->whereRaw("DATE(JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.DATE_CREATION'))) >= ?", [$from])
             ->selectRaw("crm_store_id,
-                DATE_FORMAT(JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.REGISTRATION_DATE')),'%Y-%m') as month,
+                DATE_FORMAT(JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.DATE_CREATION')),'%Y-%m') as month,
                 COUNT(*) as cnt")
             ->groupBy('crm_store_id', 'month')
             ->orderBy('month')
@@ -148,21 +167,26 @@ class StatsController extends BaseCrmController
         $latest = CrmPaymentSnapshot::max('snapshot_date');
         if (!$latest) return [];
 
-        $thisMonthStart = Carbon::today()->startOfMonth()->toDateString();
-        $thisMonthEnd   = Carbon::today()->toDateString();
-        $lastMonthStart = Carbon::today()->subMonth()->startOfMonth()->toDateString();
-        $lastMonthEnd   = Carbon::today()->subMonth()->endOfMonth()->toDateString();
-        $prevYearStart  = Carbon::today()->subYear()->startOfMonth()->toDateString();
-        $prevYearEnd    = Carbon::today()->subYear()->endOfMonth()->toDateString();
+        $tz = 'Africa/Casablanca';
+
+        $thisMonthStart = Carbon::today($tz)->startOfMonth()->toDateString();
+        $thisMonthEnd   = Carbon::today($tz)->toDateString();
+        $lastMonthStart = Carbon::today($tz)->subMonth()->startOfMonth()->toDateString();
+        $lastMonthEnd   = Carbon::today($tz)->subMonth()->endOfMonth()->toDateString();
+        $prevYearStart  = Carbon::today($tz)->subYear()->startOfMonth()->toDateString();
+        $prevYearEnd    = Carbon::today($tz)->subYear()->endOfMonth()->toDateString();
 
         $sum = fn ($from, $to) => (float) CrmPaymentSnapshot::where('snapshot_date', $latest)
+            ->where('payment_type_id', 1) // Réglement only — exclude inter-caisse transfers
             ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
             ->whereBetween('effective_date', [$from, $to])
             ->sum('amount');
 
+        // Use DATE_CREATION (local datetime, no UTC offset) — REGISTRATION_DATE is UTC
+        // and causes evening registrations to appear on the wrong day
         $countReg = fn ($from, $to) => CrmRegistration::query()
             ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
-            ->whereRaw("DATE(JSON_UNQUOTE(JSON_EXTRACT(raw_data,'$.REGISTRATION_DATE'))) BETWEEN ? AND ?", [$from, $to])
+            ->whereRaw("DATE(JSON_UNQUOTE(JSON_EXTRACT(raw_data,'$.DATE_CREATION'))) BETWEEN ? AND ?", [$from, $to])
             ->count();
 
         return [
