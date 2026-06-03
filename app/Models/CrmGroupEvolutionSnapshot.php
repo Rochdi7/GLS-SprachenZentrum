@@ -25,6 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CrmGroupEvolutionSnapshot extends Model
 {
+    protected $table = 'crm_group_evolution_snapshot';
+
     protected $fillable = [
         'crm_store_id',
         'class_id',

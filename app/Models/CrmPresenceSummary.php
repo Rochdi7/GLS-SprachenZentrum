@@ -20,6 +20,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CrmPresenceSummary extends Model
 {
+    protected $table = 'crm_presence_summary';
+
     protected $fillable = [
         'crm_class_id',
         'crm_store_id',
