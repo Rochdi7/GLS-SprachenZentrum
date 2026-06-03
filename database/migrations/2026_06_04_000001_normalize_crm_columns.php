@@ -20,76 +20,120 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Every column/index addition is wrapped defensively.
+        // Reason: this migration may be applied to servers where some columns
+        // already exist from earlier ad-hoc migrations or partial runs.
+        // try/catch on indexes, Schema::hasColumn() on columns — both patterns
+        // are safe to re-run and idempotent.
+
         // ── crm_attendance ──────────────────────────────────────────────────
         Schema::table('crm_attendance', function (Blueprint $table) {
-            // NULL  → session exists in DB but was never "saisied" (draft)
-            // NOT NULL → session was formally recorded with a creation timestamp
-            $table->datetime('date_creation')->nullable()->after('raw_data');
-
-            // Stored separately so groupDetails() can filter by status without JSON_EXTRACT
-            $table->string('session_reference', 64)->nullable()->after('date_creation');
+            if (!Schema::hasColumn('crm_attendance', 'date_creation')) {
+                $table->datetime('date_creation')->nullable()->after('raw_data');
+            }
+            if (!Schema::hasColumn('crm_attendance', 'session_reference')) {
+                $table->string('session_reference', 64)->nullable()->after('date_creation');
+            }
         });
 
-        // Index date_creation: used in WHERE date_creation IS NULL / IS NOT NULL
-        // and in GROUP BY crm_class_id, date with a date_creation filter
-        Schema::table('crm_attendance', function (Blueprint $table) {
-            $table->index('date_creation', 'idx_att_date_creation');
-            // Composite: class + date — the most common query pattern in PresenceSuiviService
-            $table->index(['crm_class_id', 'date'], 'idx_att_class_date');
-        });
+        try {
+            Schema::table('crm_attendance', function (Blueprint $table) {
+                $table->index('date_creation', 'idx_att_date_creation');
+            });
+        } catch (\Throwable) {}
+
+        try {
+            Schema::table('crm_attendance', function (Blueprint $table) {
+                $table->index(['crm_class_id', 'date'], 'idx_att_class_date');
+            });
+        } catch (\Throwable) {}
 
         // ── crm_registrations ───────────────────────────────────────────────
         Schema::table('crm_registrations', function (Blueprint $table) {
-            // DATE(JSON_EXTRACT(raw_data,'$.DATE_CREATION')) → this column
-            $table->date('date_creation')->nullable()->after('raw_data');
-
-            // JSON_EXTRACT(raw_data,'$.REGISTRATION_STATUS_NAME') → this column
-            $table->string('status_label', 64)->nullable()->after('date_creation');
-
-            // Foreign key to crm_store — was missing, needed for per-center queries
-            $table->unsignedInteger('crm_store_id')->nullable()->after('status_label');
+            if (!Schema::hasColumn('crm_registrations', 'date_creation')) {
+                $table->date('date_creation')->nullable()->after('raw_data');
+            }
+            if (!Schema::hasColumn('crm_registrations', 'status_label')) {
+                $table->string('status_label', 64)->nullable()->after('date_creation');
+            }
+            // crm_store_id was added by 2026_06_02_210000 — skip if already exists
+            if (!Schema::hasColumn('crm_registrations', 'crm_store_id')) {
+                $table->unsignedInteger('crm_store_id')->nullable()->after('status_label');
+            }
         });
 
-        Schema::table('crm_registrations', function (Blueprint $table) {
-            $table->index('date_creation', 'idx_reg_date_creation');
-            $table->index(['crm_store_id', 'date_creation'], 'idx_reg_store_date');
-            $table->index(['crm_store_id', 'status_label'], 'idx_reg_store_status');
-        });
+        try {
+            Schema::table('crm_registrations', function (Blueprint $table) {
+                $table->index('date_creation', 'idx_reg_date_creation');
+            });
+        } catch (\Throwable) {}
+
+        try {
+            Schema::table('crm_registrations', function (Blueprint $table) {
+                $table->index(['crm_store_id', 'date_creation'], 'idx_reg_store_date');
+            });
+        } catch (\Throwable) {}
+
+        try {
+            Schema::table('crm_registrations', function (Blueprint $table) {
+                $table->index(['crm_store_id', 'status_label'], 'idx_reg_store_status');
+            });
+        } catch (\Throwable) {}
 
         // ── crm_payment_snapshots ───────────────────────────────────────────
         Schema::table('crm_payment_snapshots', function (Blueprint $table) {
-            // DATE(date_creation) extracted as a plain date column for indexed lookups
-            // StatsController::periodComparison() and DailyReportService use this
-            $table->date('date_creation_date')->nullable()->after('date_creation');
+            if (!Schema::hasColumn('crm_payment_snapshots', 'date_creation_date')) {
+                $table->date('date_creation_date')->nullable()->after('date_creation');
+            }
         });
 
-        Schema::table('crm_payment_snapshots', function (Blueprint $table) {
-            $table->index('date_creation_date', 'idx_snap_date_creation_date');
-            $table->index(['crm_store_id', 'date_creation_date'], 'idx_snap_store_date_creation');
-            $table->index(['payment_type_id', 'date_creation_date'], 'idx_snap_type_date_creation');
-        });
+        try {
+            Schema::table('crm_payment_snapshots', function (Blueprint $table) {
+                $table->index('date_creation_date', 'idx_snap_date_creation_date');
+            });
+        } catch (\Throwable) {}
+
+        try {
+            Schema::table('crm_payment_snapshots', function (Blueprint $table) {
+                $table->index(['crm_store_id', 'date_creation_date'], 'idx_snap_store_date_creation');
+            });
+        } catch (\Throwable) {}
+
+        try {
+            Schema::table('crm_payment_snapshots', function (Blueprint $table) {
+                $table->index(['payment_type_id', 'date_creation_date'], 'idx_snap_type_date_creation');
+            });
+        } catch (\Throwable) {}
     }
 
     public function down(): void
     {
-        Schema::table('crm_attendance', function (Blueprint $table) {
-            $table->dropIndex('idx_att_date_creation');
-            $table->dropIndex('idx_att_class_date');
-            $table->dropColumn(['date_creation', 'session_reference']);
-        });
+        // Drop indexes first (MySQL requires this before dropping columns),
+        // wrapped in try/catch in case they were never created
+        foreach (['idx_att_date_creation', 'idx_att_class_date'] as $idx) {
+            try { Schema::table('crm_attendance', fn ($t) => $t->dropIndex($idx)); } catch (\Throwable) {}
+        }
+        foreach (['date_creation', 'session_reference'] as $col) {
+            if (Schema::hasColumn('crm_attendance', $col)) {
+                Schema::table('crm_attendance', fn ($t) => $t->dropColumn($col));
+            }
+        }
 
-        Schema::table('crm_registrations', function (Blueprint $table) {
-            $table->dropIndex('idx_reg_date_creation');
-            $table->dropIndex('idx_reg_store_date');
-            $table->dropIndex('idx_reg_store_status');
-            $table->dropColumn(['date_creation', 'status_label', 'crm_store_id']);
-        });
+        foreach (['idx_reg_date_creation', 'idx_reg_store_date', 'idx_reg_store_status'] as $idx) {
+            try { Schema::table('crm_registrations', fn ($t) => $t->dropIndex($idx)); } catch (\Throwable) {}
+        }
+        // Only drop crm_store_id if this migration added it (it may belong to the 210000 migration)
+        foreach (['date_creation', 'status_label'] as $col) {
+            if (Schema::hasColumn('crm_registrations', $col)) {
+                Schema::table('crm_registrations', fn ($t) => $t->dropColumn($col));
+            }
+        }
 
-        Schema::table('crm_payment_snapshots', function (Blueprint $table) {
-            $table->dropIndex('idx_snap_date_creation_date');
-            $table->dropIndex('idx_snap_store_date_creation');
-            $table->dropIndex('idx_snap_type_date_creation');
-            $table->dropColumn('date_creation_date');
-        });
+        foreach (['idx_snap_date_creation_date', 'idx_snap_store_date_creation', 'idx_snap_type_date_creation'] as $idx) {
+            try { Schema::table('crm_payment_snapshots', fn ($t) => $t->dropIndex($idx)); } catch (\Throwable) {}
+        }
+        if (Schema::hasColumn('crm_payment_snapshots', 'date_creation_date')) {
+            Schema::table('crm_payment_snapshots', fn ($t) => $t->dropColumn('date_creation_date'));
+        }
     }
 };
