@@ -11,6 +11,7 @@ use App\Models\Teacher;
 use App\Services\Crm\Crm;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class MirrorCoreCommand extends Command
 {
@@ -106,24 +107,46 @@ class MirrorCoreCommand extends Command
             ->filter(fn($t) => !empty($t['name']) && !empty($t['site_id']))
             ->unique('crm_teacher_id')
             ->each(function ($t) use (&$synced) {
-                $slug = \Str::slug($t['name']);
+                $baseSlug = Str::slug($t['name']);
 
-                // Ensure slug uniqueness by appending crm_teacher_id if collision
-                $existing = Teacher::where('slug', $slug)
-                    ->where('crm_teacher_id', '!=', $t['crm_teacher_id'])
-                    ->exists();
-                if ($existing) {
-                    $slug .= '-' . $t['crm_teacher_id'];
+                // Priority 1: find by crm_teacher_id (already linked)
+                $teacher = Teacher::where('crm_teacher_id', $t['crm_teacher_id'])->first();
+
+                // Priority 2: find by slug (manually created teacher, not yet linked)
+                if (!$teacher) {
+                    $teacher = Teacher::where('slug', $baseSlug)
+                        ->whereNull('crm_teacher_id')
+                        ->first();
                 }
 
-                Teacher::updateOrCreate(
-                    ['crm_teacher_id' => $t['crm_teacher_id']],
-                    [
-                        'name'    => $t['name'],
-                        'site_id' => $t['site_id'],
-                        'slug'    => $slug,
-                    ]
-                );
+                // Priority 3: find by name (slug may differ slightly)
+                if (!$teacher) {
+                    $teacher = Teacher::where('name', $t['name'])
+                        ->whereNull('crm_teacher_id')
+                        ->first();
+                }
+
+                if ($teacher) {
+                    // Update the existing teacher row — stamp crm_teacher_id on it
+                    $teacher->crm_teacher_id = $t['crm_teacher_id'];
+                    $teacher->site_id        = $t['site_id'];
+                    $teacher->save();
+                } else {
+                    // Brand new teacher from CRM — generate a unique slug
+                    $slug   = $baseSlug;
+                    $suffix = 1;
+                    while (Teacher::where('slug', $slug)->exists()) {
+                        $slug = $baseSlug . '-' . $suffix++;
+                    }
+
+                    Teacher::create([
+                        'crm_teacher_id' => $t['crm_teacher_id'],
+                        'name'           => $t['name'],
+                        'site_id'        => $t['site_id'],
+                        'slug'           => $slug,
+                    ]);
+                }
+
                 $synced++;
             });
 
