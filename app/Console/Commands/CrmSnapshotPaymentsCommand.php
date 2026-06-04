@@ -29,8 +29,9 @@ use Illuminate\Console\Command;
 class CrmSnapshotPaymentsCommand extends Command
 {
     protected $signature = 'crm:snapshot-payments
-        {--store=* : Store IDs to snapshot (repeatable, default: all configured centers)}
-        {--date=   : Snapshot date (default: today, format YYYY-MM-DD)}';
+        {--store=*  : Store IDs to snapshot (repeatable, default: all configured centers)}
+        {--date=    : Snapshot date (default: today, format YYYY-MM-DD)}
+        {--months=2 : How many months back to fetch (default: 2, covers full previous month)}';
 
     protected $description = 'Capture daily snapshot of all CRM payments (+ due dates) for fraud detection.';
 
@@ -44,6 +45,7 @@ class CrmSnapshotPaymentsCommand extends Command
             ? Carbon::parse($this->option('date'))->toDateString()
             : Carbon::today()->toDateString();
 
+        $months   = max(1, (int) $this->option('months'));
         $storeIds = array_map('intval', array_filter((array) $this->option('store')));
 
         $sites = Site::whereNotNull('crm_store_id')->where('crm_store_id', '>', 0)
@@ -55,7 +57,7 @@ class CrmSnapshotPaymentsCommand extends Command
             return self::FAILURE;
         }
 
-        $this->info("Snapshotting payments for {$date} across {$sites->count()} center(s) [bulk mode, size=" . self::BULK_SIZE . "]...");
+        $this->info("Snapshotting payments for {$date} across {$sites->count()} center(s) [bulk mode, size=" . self::BULK_SIZE . ", window={$months}mo]...");
 
         $totalCaptured = 0;
         $totalErrors   = 0;
@@ -69,7 +71,7 @@ class CrmSnapshotPaymentsCommand extends Command
             $this->line("  → {$site->name} (#{$site->crm_store_id})");
 
             try {
-                $captured = $this->snapshotCenter($crm, $site, $date);
+                $captured = $this->snapshotCenter($crm, $site, $date, $months);
                 $totalCaptured += $captured;
                 $this->line("    captured {$captured} payments");
             } catch (CrmException $e) {
@@ -84,9 +86,9 @@ class CrmSnapshotPaymentsCommand extends Command
         return $totalErrors > 0 ? self::FAILURE : self::SUCCESS;
     }
 
-    protected function snapshotCenter(Crm $crm, Site $site, string $date): int
+    protected function snapshotCenter(Crm $crm, Site $site, string $date, int $months = 2): int
     {
-        $startDate = Carbon::parse($date)->subDays(30)->toDateString();
+        $startDate = Carbon::parse($date)->subMonths($months)->startOfMonth()->toDateString();
 
         // Step 1 — bulk-fetch all payments for this center/window
         $payments = $this->fetchAllPagesBulk(

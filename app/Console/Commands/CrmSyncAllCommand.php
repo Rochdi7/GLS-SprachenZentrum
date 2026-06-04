@@ -84,8 +84,8 @@ class CrmSyncAllCommand extends Command
         ],
         'payments_snap'    => [
             'crm:snapshot-payments',
-            '',
-            'Daily payment snapshot for fraud detection',
+            '--months=2',
+            'Daily payment snapshot — 2 months window covers full previous month for stats',
         ],
         'allocations'      => [
             'crm:sync-payment-allocations',

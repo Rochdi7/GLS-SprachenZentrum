@@ -39,10 +39,7 @@
         </div>
         <div class="col-auto d-flex gap-2 align-items-center">
             @include('backoffice.crm.partials._sync_badge')
-            <button id="btn-whatsapp" class="btn btn-success">
-                <i class="ph-duotone ph-whatsapp-logo me-1"></i> Copier pour WhatsApp
-            </button>
-            <a href="{{ route('backoffice.crm.reports.index') }}" class="btn btn-outline-secondary">
+<a href="{{ route('backoffice.crm.reports.index') }}" class="btn btn-outline-secondary">
                 <i class="ph-duotone ph-arrow-left me-1"></i> Retour
             </a>
         </div>
@@ -264,11 +261,6 @@
         </div>
     </div>
 
-    {{-- Hidden WhatsApp text --}}
-    @php
-        $waTopCenter = $topCenter ? ($topCenter['name'] . ' — ' . number_format($topCenter['amount'], 0, ',', ' ') . ' MAD') : '—';
-    @endphp
-    <div id="whatsapp-text" style="display:none">{{ "📊 Rapport GLS — " . $report->report_date->format('d/m/Y') . "\n💰 Encaissement: " . number_format((float)($report->revenue_yesterday ?? 0), 0, ',', ' ') . " MAD\n📝 Nouvelles inscriptions: " . ($report->new_registrations ?? 0) . "\n🏆 Top centre: " . $waTopCenter }}</div>
 
 @endsection
 
@@ -278,26 +270,6 @@
             const toastEl = document.getElementById('liveToast');
             if (toastEl) new bootstrap.Toast(toastEl).show();
 
-            document.getElementById('btn-whatsapp').addEventListener('click', function () {
-                const text = document.getElementById('whatsapp-text').textContent.trim();
-                navigator.clipboard.writeText(text).then(() => {
-                    this.innerHTML = '<i class="ph-duotone ph-check me-1"></i> Copié !';
-                    this.classList.replace('btn-success', 'btn-outline-success');
-                    setTimeout(() => {
-                        this.innerHTML = '<i class="ph-duotone ph-whatsapp-logo me-1"></i> Copier pour WhatsApp';
-                        this.classList.replace('btn-outline-success', 'btn-success');
-                    }, 2500);
-                }).catch(() => {
-                    // Fallback for older browsers
-                    const el = document.createElement('textarea');
-                    el.value = text;
-                    document.body.appendChild(el);
-                    el.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(el);
-                    alert('Texte copié dans le presse-papiers.');
-                });
-            });
         });
     </script>
 @endsection
