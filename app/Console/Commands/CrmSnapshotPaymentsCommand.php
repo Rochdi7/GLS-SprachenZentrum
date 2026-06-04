@@ -144,18 +144,36 @@ class CrmSnapshotPaymentsCommand extends Command
                 });
         }
 
-        // Step 4 — upsert each payment enriched with échéance data
+        // Step 4 — load existing hashes for this store+date so we skip unchanged rows
+        $paymentIds = array_map(fn ($r) => $r['ID'] ?? 0, $payments);
+        $existingHashes = CrmPaymentSnapshot::where('snapshot_date', $date)
+            ->where('crm_store_id', $site->crm_store_id)
+            ->whereIn('crm_payment_id', $paymentIds)
+            ->pluck('payload_hash', 'crm_payment_id')
+            ->toArray();
+
+        // Step 5 — upsert only new or changed rows
         $captured = 0;
+        $skipped  = 0;
         foreach ($payments as $row) {
-            $pid      = (int) ($row['ID'] ?? 0);
+            $pid  = (int) ($row['ID'] ?? 0);
+            $hash = hash('sha256', json_encode($row, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR));
+
+            // Skip if payload unchanged AND echéance already resolved
+            if (isset($existingHashes[$pid]) && $existingHashes[$pid] === $hash) {
+                $skipped++;
+                continue;
+            }
+
             $rid      = $paymentToReg[$pid] ?? null;
             $echeance = $rid ? ($collectionByReg[$rid] ?? []) : [];
 
-            $this->upsertSnapshot($row, $date, $rid, $echeance);
+            $this->upsertSnapshot($row, $date, $rid, $echeance, $hash);
             $captured++;
         }
 
-        return $captured;
+        $this->line("    {$captured} written, {$skipped} unchanged (skipped)");
+        return $captured + $skipped;
     }
 
     /**
@@ -187,9 +205,8 @@ class CrmSnapshotPaymentsCommand extends Command
         return $all;
     }
 
-    protected function upsertSnapshot(array $row, string $date, ?int $registrationId, array $echeance): void
+    protected function upsertSnapshot(array $row, string $date, ?int $registrationId, array $echeance, string $hash): void
     {
-        $hash = hash('sha256', json_encode($row, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR));
 
         CrmPaymentSnapshot::updateOrCreate(
             [
