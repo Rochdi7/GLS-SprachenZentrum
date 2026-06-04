@@ -208,13 +208,24 @@ class MirrorCoreCommand extends Command
                     continue;
                 }
 
+                $rawDc = $item['DATE_CREATION'] ?? null;
+                $dateCreation = null;
+                if ($rawDc && $rawDc !== 'null') {
+                    try {
+                        $dateCreation = \Carbon\Carbon::parse($rawDc)->toDateString();
+                    } catch (\Throwable) {}
+                }
+
                 CrmRegistration::updateOrCreate(
                     ['crm_id' => $item['ID']],
                     [
                         'crm_student_id' => $item['STUDENT_ID'],
-                        'crm_class_id' => $item['CLASS_ID'],
-                        'status' => $item['STATUS_NAME'] ?? 'Active',
-                        'raw_data' => $item,
+                        'crm_class_id'   => $item['CLASS_ID'],
+                        'crm_store_id'   => $item['STR_STORE_ID'] ?? null,
+                        'status'         => $item['STATUS_NAME'] ?? 'Active',
+                        'date_creation'  => $dateCreation,
+                        'status_label'   => $item['REGISTRATION_STATUS_NAME'] ?? $item['STATUS_NAME'] ?? null,
+                        'raw_data'       => $item,
                         'last_synced_at' => now(),
                     ]
                 );

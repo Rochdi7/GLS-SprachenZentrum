@@ -12,12 +12,15 @@ class CrmRegistration extends Model
         'crm_class_id',
         'crm_store_id',
         'status',
+        'date_creation',
+        'status_label',
         'raw_data',
         'last_synced_at',
     ];
 
     protected $casts = [
-        'raw_data' => 'array',
+        'date_creation'  => 'date',
+        'raw_data'       => 'array',
         'last_synced_at' => 'datetime',
     ];
 
