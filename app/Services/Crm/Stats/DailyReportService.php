@@ -77,18 +77,32 @@ class DailyReportService
     // Private helpers
     // -----------------------------------------------------------------------
 
+    /**
+     * Prefer the snapshot taken on $date itself; fall back to the nearest
+     * snapshot taken after $date (next available run). This prevents a
+     * partial today-snapshot from masking complete data for yesterday.
+     */
+    private function resolveSnapshotDate(string $date): ?string
+    {
+        return CrmPaymentSnapshot::where('snapshot_date', $date)->exists()
+            ? $date
+            : CrmPaymentSnapshot::where('snapshot_date', '>', $date)
+                ->min('snapshot_date')
+                ?? CrmPaymentSnapshot::max('snapshot_date');
+    }
+
     private function revenueYesterday(string $date): float
     {
         // date_creation = when the cashier entered the payment in the CRM (local datetime).
         // effective_date = the billing/service date set on the invoice, often the class start date —
         // not reliable for "what was collected today".
-        $latestSnapshot = CrmPaymentSnapshot::max('snapshot_date');
-        if (!$latestSnapshot) {
+        $snapshotDate = $this->resolveSnapshotDate($date);
+        if (!$snapshotDate) {
             return 0.0;
         }
 
         return (float) CrmPaymentSnapshot::query()
-            ->where('snapshot_date', $latestSnapshot)
+            ->where('snapshot_date', $snapshotDate)
             ->where('payment_type_id', 1)
             ->whereDate('date_creation', $date)
             ->sum('amount');
@@ -110,11 +124,11 @@ class DailyReportService
      */
     private function topCenterToday(string $date): ?array
     {
-        $latestSnapshot = CrmPaymentSnapshot::max('snapshot_date');
-        if (!$latestSnapshot) return null;
+        $snapshotDate = $this->resolveSnapshotDate($date);
+        if (!$snapshotDate) return null;
 
         $row = CrmPaymentSnapshot::query()
-            ->where('snapshot_date', $latestSnapshot)
+            ->where('snapshot_date', $snapshotDate)
             ->where('payment_type_id', 1)
             ->whereDate('date_creation', $date)
             ->selectRaw('crm_store_id, SUM(amount) as total')
@@ -137,11 +151,11 @@ class DailyReportService
      */
     private function centersRanking(string $date): array
     {
-        $latestSnapshot = CrmPaymentSnapshot::max('snapshot_date');
-        if (!$latestSnapshot) return [];
+        $snapshotDate = $this->resolveSnapshotDate($date);
+        if (!$snapshotDate) return [];
 
         $rows = CrmPaymentSnapshot::query()
-            ->where('snapshot_date', $latestSnapshot)
+            ->where('snapshot_date', $snapshotDate)
             ->where('payment_type_id', 1)
             ->whereDate('date_creation', $date)
             ->selectRaw('crm_store_id, SUM(amount) as total')
@@ -169,13 +183,13 @@ class DailyReportService
 
     private function bestCenter(string $date): ?string
     {
-        $latestSnapshot = CrmPaymentSnapshot::max('snapshot_date');
-        if (!$latestSnapshot) {
+        $snapshotDate = $this->resolveSnapshotDate($date);
+        if (!$snapshotDate) {
             return null;
         }
 
         $row = CrmPaymentSnapshot::query()
-            ->where('snapshot_date', $latestSnapshot)
+            ->where('snapshot_date', $snapshotDate)
             ->where('payment_type_id', 1)
             ->whereDate('date_creation', $date)
             ->selectRaw('crm_store_id, SUM(amount) as total')
@@ -202,10 +216,10 @@ class DailyReportService
 
         // Centers with zero payments yesterday (by effective_date in latest snapshot)
         $sites = Site::whereNotNull('crm_store_id')->orderBy('name')->get();
-        $latestSnapshot = CrmPaymentSnapshot::max('snapshot_date');
-        $storesWithPayments = $latestSnapshot
+        $snapshotDate = $this->resolveSnapshotDate($date);
+        $storesWithPayments = $snapshotDate
             ? CrmPaymentSnapshot::query()
-                ->where('snapshot_date', $latestSnapshot)
+                ->where('snapshot_date', $snapshotDate)
                 ->where('payment_type_id', 1)
                 ->whereDate('date_creation', $date)
                 ->pluck('crm_store_id')
