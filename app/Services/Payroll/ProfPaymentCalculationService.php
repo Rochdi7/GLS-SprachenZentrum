@@ -137,16 +137,23 @@ class ProfPaymentCalculationService
 
     /**
      * Map the ISO week numbers spanned by date_start..date_end onto buckets 1..4.
+     * Only ISO weeks that contain at least one Mon-Fri working day within the range
+     * are counted — a partial first/last week that starts on a weekend is skipped
+     * so it doesn't consume a bucket slot and leave SEM 1 empty.
      * Extra ISO weeks (when month spans 5+) are merged into bucket 4.
      */
     private function buildWeekMap($dateStart, $dateEnd): array
     {
         $start = Carbon::parse($dateStart);
         $end = Carbon::parse($dateEnd);
+
+        // Collect only ISO weeks that have ≥1 Mon-Fri day within range
         $weeks = collect();
         $cursor = $start->copy();
         while ($cursor->lte($end)) {
-            $weeks->push($cursor->isoWeek());
+            if ($cursor->isWeekday()) {
+                $weeks->push($cursor->isoWeek());
+            }
             $cursor->addDay();
         }
         $weekNumbers = $weeks->unique()->values()->all();
