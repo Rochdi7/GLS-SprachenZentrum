@@ -14,6 +14,7 @@ use Laravel\Sanctum\HasApiTokens;
 // Spatie Media Library
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 // Spatie Permission
 use Spatie\Permission\Traits\HasRoles;
@@ -102,6 +103,31 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     public function primes(): HasMany
     {
         return $this->hasMany(Prime::class);
+    }
+
+    // ── Media ────────────────────────────────────────────────────
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('profile_photo')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(80)
+            ->height(80)
+            ->nonQueued();
+    }
+
+    public function avatarUrl(): string
+    {
+        $media = $this->getFirstMedia('profile_photo');
+        return $media
+            ? $media->getUrl('thumb')
+            : asset('assets/images/user/avatar-2.avif');
     }
 
     // ── Helpers ──────────────────────────────────────────────────

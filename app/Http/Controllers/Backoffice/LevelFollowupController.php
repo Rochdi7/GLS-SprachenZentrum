@@ -42,14 +42,14 @@ class LevelFollowupController extends Controller
         $this->scopeToUserSites($query);
 
         if ($request->filled('center')) {
-            $query->whereHas('group.site', function ($siteQuery) use ($request) {
-                $siteQuery->where('id', $request->center);
+            $query->whereHas('group', function ($q) use ($request) {
+                $q->where('site_id', $request->center);
             });
         }
 
         if ($request->filled('teacher')) {
-            $query->whereHas('group.teacher', function ($teacherQuery) use ($request) {
-                $teacherQuery->where('id', $request->teacher);
+            $query->whereHas('group', function ($q) use ($request) {
+                $q->where('teacher_id', $request->teacher);
             });
         }
 

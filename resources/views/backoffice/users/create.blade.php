@@ -29,6 +29,7 @@
         <form
             action="{{ route('backoffice.users.store') }}"
             method="POST"
+            enctype="multipart/form-data"
             class="needs-validation"
             novalidate
         >

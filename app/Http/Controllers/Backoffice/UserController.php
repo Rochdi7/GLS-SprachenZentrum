@@ -60,6 +60,10 @@ class UserController extends Controller
         $user->assignRole($validated['role']);
         $user->sites()->sync($siteIds);
 
+        if ($request->hasFile('avatar')) {
+            $user->addMediaFromRequest('avatar')->toMediaCollection('profile_photo');
+        }
+
         return redirect()
             ->route('backoffice.users.index')
             ->with('success', 'Utilisateur créé avec succès.');
@@ -105,6 +109,12 @@ class UserController extends Controller
         $user->syncRoles([$validated['role']]);
         $user->sites()->sync($siteIds);
 
+        if ($request->boolean('remove_avatar')) {
+            $user->clearMediaCollection('profile_photo');
+        } elseif ($request->hasFile('avatar')) {
+            $user->addMediaFromRequest('avatar')->toMediaCollection('profile_photo');
+        }
+
         return redirect()
             ->route('backoffice.users.index')
             ->with('success', 'Utilisateur mis à jour avec succès.');
@@ -140,8 +150,10 @@ class UserController extends Controller
             'site_ids.*'  => 'integer|exists:sites,id',
             'staff_role'  => ['nullable', Rule::in(User::STAFF_ROLES)],
             'hired_at'    => 'nullable|date',
-            'is_active'   => 'nullable|boolean',
-            'staff_notes' => 'nullable|string|max:2000',
+            'is_active'     => 'nullable|boolean',
+            'staff_notes'   => 'nullable|string|max:2000',
+            'avatar'        => 'nullable|image|max:2048',
+            'remove_avatar' => 'nullable|boolean',
         ]);
     }
 

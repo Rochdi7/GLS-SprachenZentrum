@@ -8,6 +8,45 @@
         <hr class="mt-1 mb-3">
     </div>
 
+    {{-- AVATAR --}}
+    <div class="col-12 mb-4">
+        <label class="form-label fw-bold">Photo de profil</label>
+        <div class="d-flex align-items-center gap-3">
+            <img id="avatar-preview"
+                 src="{{ isset($user) ? $user->avatarUrl() : asset('assets/images/user/avatar-2.avif') }}"
+                 alt="Avatar"
+                 class="rounded-circle border"
+                 style="width:72px;height:72px;object-fit:cover;">
+            <div>
+                <input type="file" name="avatar" id="avatar-input"
+                       class="form-control form-control-sm"
+                       accept="image/jpeg,image/png,image/webp,image/gif"
+                       style="max-width:280px;">
+                <small class="text-muted d-block mt-1">JPG, PNG, WEBP — max 2 Mo</small>
+                @if(isset($user) && $user->getFirstMedia('profile_photo'))
+                    <div class="form-check mt-1">
+                        <input type="checkbox" name="remove_avatar" value="1"
+                               class="form-check-input" id="remove_avatar">
+                        <label class="form-check-label text-danger small" for="remove_avatar">
+                            Supprimer la photo actuelle
+                        </label>
+                    </div>
+                @endif
+            </div>
+        </div>
+        <script>
+            document.getElementById('avatar-input').addEventListener('change', function () {
+                var file = this.files[0];
+                if (!file) return;
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('avatar-preview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        </script>
+    </div>
+
     {{-- NAME --}}
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Nom complet <span class="text-danger">*</span></label>
