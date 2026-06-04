@@ -109,13 +109,24 @@ class CrmPresenceImportService
         Carbon $dateStart,
         Carbon $dateEnd,
     ): array {
-        $classId = $group->crm_class_id;
+        $crmClassId = $group->crm_class_id; // this is crm_classes.crm_id
 
-        if (!$classId) {
+        if (!$crmClassId) {
             throw new \RuntimeException('Groupe non lié à une classe CRM. Veuillez configurer crm_class_id.');
         }
 
-        $mirrorAttendance = CrmAttendance::where('crm_class_id', $classId)
+        // crm_attendance.crm_class_id = crm_classes.id (local PK), not crm_classes.crm_id
+        // We must look up the local id from the crm_classes table first
+        $localClassId = \App\Models\CrmClass::where('crm_id', $crmClassId)->value('id');
+
+        if (!$localClassId) {
+            throw new \RuntimeException(
+                "Classe CRM #{$crmClassId} non trouvée dans le miroir local. "
+                . "Attendez le prochain sync automatique (toutes les 2h)."
+            );
+        }
+
+        $mirrorAttendance = CrmAttendance::where('crm_class_id', $localClassId)
             ->whereBetween('date', [$dateStart->toDateString(), $dateEnd->toDateString()])
             ->get();
 
