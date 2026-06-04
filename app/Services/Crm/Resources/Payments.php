@@ -51,6 +51,80 @@ class Payments extends Resource
     }
 
     /**
+     * GET /api/external/v1/bulk/payments — Bulk list payments (size up to 500)
+     *
+     * Required scope: payments:read. Same filters as list().
+     */
+    public function bulkList(
+        int $page = 0,
+        int $size = 500,
+        bool $includeTotal = false,
+        ?int $strStoreId = null,
+        ?int $schoolYearId = null,
+        ?string $reference = null,
+        ?int $studentId = null,
+        ?int $paymentTypeId = null,
+        ?int $paymentStatusId = null,
+        ?int $paymentMethodId = null,
+        ?string $startDate = null,
+        ?string $endDate = null,
+        ?int $cashBoxId = null,
+    ): array {
+        return $this->client->get('/api/external/v1/bulk/payments', array_filter([
+            'page'            => $page,
+            'size'            => $size,
+            'includeTotal'    => $includeTotal,
+            'strStoreId'      => $strStoreId,
+            'schoolYearId'    => $schoolYearId,
+            'reference'       => $reference,
+            'studentId'       => $studentId,
+            'paymentTypeId'   => $paymentTypeId,
+            'paymentStatusId' => $paymentStatusId,
+            'paymentMethodId' => $paymentMethodId,
+            'startDate'       => $startDate,
+            'endDate'         => $endDate,
+            'cashBoxId'       => $cashBoxId,
+        ], fn ($v) => $v !== null));
+    }
+
+    /**
+     * GET /api/external/v1/bulk/payment-allocations — Bulk list payment allocations (size up to 500)
+     *
+     * Required scope: payments:read. Same filters as allocations().
+     */
+    public function bulkAllocations(
+        int $page = 0,
+        int $size = 500,
+        bool $includeTotal = false,
+        ?int $strStoreId = null,
+        ?int $schoolYearId = null,
+        ?int $classId = null,
+        ?int $levelSessionId = null,
+        ?int $registrationId = null,
+        ?int $studentId = null,
+        ?string $effectiveDatePaymentAllocation = null,
+        ?int $cashBoxId = null,
+        ?string $startDate = null,
+        ?string $endDate = null,
+    ): array {
+        return $this->client->get('/api/external/v1/bulk/payment-allocations', array_filter([
+            'page'                           => $page,
+            'size'                           => $size,
+            'includeTotal'                   => $includeTotal,
+            'strStoreId'                     => $strStoreId,
+            'schoolYearId'                   => $schoolYearId,
+            'classId'                        => $classId,
+            'levelSessionId'                 => $levelSessionId,
+            'registrationId'                 => $registrationId,
+            'studentId'                      => $studentId,
+            'effectiveDatePaymentAllocation' => $effectiveDatePaymentAllocation,
+            'cashBoxId'                      => $cashBoxId,
+            'startDate'                      => $startDate,
+            'endDate'                        => $endDate,
+        ], fn ($v) => $v !== null));
+    }
+
+    /**
      * GET /api/external/v1/payment-checks — List payment checks
      *
      * Required scope: payment-checks:read.
