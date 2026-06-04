@@ -19,15 +19,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // ── CRM SYNC: every 2 hours (local data warehouse refresh) ──────────
-        // Fires at: 00:00, 02:00, 04:00, 06:00, 08:00, 10:00, 12:00,
-        //           14:00, 16:00, 18:00, 20:00, 22:00 (Casablanca time)
-        //
-        // withoutOverlapping(120): mutex held for up to 2 hours — prevents
-        // double-run if a sync takes longer than 2h on a slow shared server.
-        //
-        // runInBackground(): scheduler process returns immediately; the sync
-        // runs in a detached process (safe on shared hosting).
+        // ── Step 1 — :00 — CRM full sync ─────────────────────────────────────
         $schedule->command('crm:sync-all')
             ->cron('0 */2 * * *')
             ->timezone('Africa/Casablanca')
@@ -35,23 +27,24 @@ class Kernel extends ConsoleKernel
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/crm-sync-all.log'));
 
-        // ── CEO Daily Report ─────────────────────────────────────────────────
-        // Runs after the 06:00 sync finishes (~06:15), gives fresh data at 07:00
+        // ── Step 2 — :20 — Daily report (after sync finishes) ────────────────
         $schedule->command('crm:daily-report')
-            ->dailyAt('07:00')
+            ->cron('20 */2 * * *')
             ->timezone('Africa/Casablanca')
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/crm-daily-report.log'));
 
-        // ── Non-CRM jobs ─────────────────────────────────────────────────────
+        // ── Step 3 — :30 — Level followups ───────────────────────────────────
         $schedule->command('gls:generate-level-followups')
-            ->dailyAt('00:15')
+            ->cron('30 */2 * * *')
+            ->timezone('Africa/Casablanca')
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/level-followups-schedule.log'));
 
-        // Homeschool attendance sync: monthly on the 1st (non-CRM domain)
+        // ── Step 4 — :40 — Homeschool attendance ─────────────────────────────
         $schedule->command('homeschool:sync-attendance')
-            ->monthlyOn(1, '02:00')
+            ->cron('40 */2 * * *')
+            ->timezone('Africa/Casablanca')
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/homeschool-sync.log'));
     }
