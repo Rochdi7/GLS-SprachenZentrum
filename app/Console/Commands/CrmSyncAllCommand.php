@@ -74,7 +74,7 @@ class CrmSyncAllCommand extends Command
         ],
         'attendance'       => [
             'crm:sync-attendance',
-            '--all --months=2 --delay=600',
+            '--all --months=3 --delay=600',
             'Sync session presence — bulk endpoint 500/page (was 25/page)',
         ],
         'collections'      => [
