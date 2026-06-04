@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backoffice\Crm;
 
 use App\Http\Controllers\Controller;
+use App\Models\CrmSyncLog;
 use App\Services\Crm\CenterContext;
 use App\Services\Crm\Crm;
 use App\Services\Crm\CrmException;
@@ -82,7 +83,19 @@ abstract class BaseCrmController extends Controller
             'crmCenters'      => $this->centers->available(),
             'crmCurrentStore' => $this->centers->currentStoreId(),
             'crmCurrentSite'  => $this->centers->currentSite(),
+            'crmLastSync'     => $this->lastSyncAt(),
         ], $data));
+    }
+
+    private function lastSyncAt(): ?\Carbon\Carbon
+    {
+        $max = CrmSyncLog::where('status', 'done')
+            ->whereNotNull('completed_at')
+            ->max('completed_at');
+
+        return $max
+            ? \Carbon\Carbon::parse($max)->setTimezone('Africa/Casablanca')
+            : null;
     }
 
     /**

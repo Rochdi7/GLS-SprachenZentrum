@@ -10,6 +10,10 @@
 
 @section('content')
 
+    <div class="d-flex justify-content-end mb-2">
+        @include('backoffice.crm.partials._sync_badge')
+    </div>
+
     @if (session('success') || session('error'))
         <div class="position-fixed top-0 end-0 p-3" style="z-index: 99999">
             <div id="liveToast" class="toast hide" role="alert">

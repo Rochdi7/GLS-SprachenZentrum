@@ -60,6 +60,7 @@
            class="btn btn-sm btn-outline-secondary">
             <i class="ph-duotone ph-arrows-clockwise"></i>
         </a>
+        @include('backoffice.crm.partials._sync_badge')
     </div>
 </div>
 

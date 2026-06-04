@@ -37,7 +37,8 @@
                 Généré le {{ $report->generated_at?->format('d/m/Y à H:i') ?? '—' }}
             </small>
         </div>
-        <div class="col-auto d-flex gap-2">
+        <div class="col-auto d-flex gap-2 align-items-center">
+            @include('backoffice.crm.partials._sync_badge')
             <button id="btn-whatsapp" class="btn btn-success">
                 <i class="ph-duotone ph-whatsapp-logo me-1"></i> Copier pour WhatsApp
             </button>

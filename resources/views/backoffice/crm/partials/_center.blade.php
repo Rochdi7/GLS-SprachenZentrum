@@ -1,15 +1,26 @@
 {{--
     Center selector — included at the top of every CRM page.
 
-    Expects (provided by CrmController::view()):
+    Expects (provided by BaseCrmController::view()):
       $crmCenters       : Collection<Site>
       $crmCurrentStore  : int|null  (selected strStoreId)
       $crmCurrentSite   : Site|null (resolved row, for the label)
+      $crmLastSync      : Carbon|null (latest completed_at from crm_sync_log)
 
     The page loader overlay is included globally in layouts.main (see
     layouts/backoffice-loader.blade.php) so all backoffice pages — not just
     CRM — get the same chargement UX.
 --}}
+
+@once
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+        new bootstrap.Tooltip(el);
+    });
+});
+</script>
+@endonce
 
 <div class="card mb-3">
     <div class="card-body py-3">
@@ -48,6 +59,9 @@
                         <i class="ti ti-world me-1"></i> Tous les centres
                     </span>
                 @endif
+            </div>
+            <div class="col-12 col-sm-auto ms-sm-auto">
+                @include('backoffice.crm.partials._sync_badge')
             </div>
         </form>
     </div>

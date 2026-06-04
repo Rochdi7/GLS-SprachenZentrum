@@ -15,6 +15,9 @@
                 Historique du paiement #{{ $report['payment_id'] }}
             </h5>
         </div>
+        <div class="ms-auto">
+            @include('backoffice.crm.partials._sync_badge')
+        </div>
     </div>
 
     @if($report['not_found'])
