@@ -23,8 +23,8 @@ class LevelFollowupController extends Controller
 
         $siteIds = $user->accessibleSiteIds();
 
-        return $query->whereHas('group.site', function ($q) use ($siteIds) {
-            $q->whereIn('id', $siteIds);
+        return $query->whereHas('group', function ($q) use ($siteIds) {
+            $q->whereIn('site_id', $siteIds);
         });
     }
 
@@ -65,9 +65,7 @@ class LevelFollowupController extends Controller
 
         $teachersQuery = Teacher::query()->orderBy('name');
         if (!$isSuperAdmin) {
-            $teachersQuery->whereHas('groups', function ($q) use ($accessibleSiteIds) {
-                $q->whereIn('site_id', $accessibleSiteIds);
-            });
+            $teachersQuery->whereHas('groups', fn ($q) => $q->whereIn('site_id', $accessibleSiteIds));
         }
         $teachers = $teachersQuery->get();
 

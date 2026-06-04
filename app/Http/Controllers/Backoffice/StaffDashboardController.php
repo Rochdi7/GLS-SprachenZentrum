@@ -55,10 +55,19 @@ class StaffDashboardController extends Controller
         }
 
         // ── KPIs ────────────────────────────────────────────────────
-        // Certificates: not tied to a centre directly. Show recent activity
-        // (this month / total) so the staff knows the volume issued.
-        $certificatesTotal      = Certificate::count();
-        $certificatesThisMonth  = Certificate::whereBetween('created_at', [$monthStart, $monthEnd])->count();
+        $certQuery = Certificate::query();
+        $certThisMonthQuery = Certificate::whereBetween('created_at', [$monthStart, $monthEnd]);
+        if ($effectiveIds !== null) {
+            if (empty($effectiveIds)) {
+                $certQuery->whereRaw('1 = 0');
+                $certThisMonthQuery->whereRaw('1 = 0');
+            } else {
+                $certQuery->whereIn('site_id', $effectiveIds);
+                $certThisMonthQuery->whereIn('site_id', $effectiveIds);
+            }
+        }
+        $certificatesTotal     = $certQuery->count();
+        $certificatesThisMonth = $certThisMonthQuery->count();
 
         // Attestations: tied via group → site_id
         $attestationsQuery = Attestation::query();
