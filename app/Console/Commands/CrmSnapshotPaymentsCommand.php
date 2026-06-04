@@ -29,15 +29,15 @@ use Illuminate\Console\Command;
 class CrmSnapshotPaymentsCommand extends Command
 {
     protected $signature = 'crm:snapshot-payments
-        {--store=*  : Store IDs to snapshot (repeatable, default: all configured centers)}
-        {--date=    : Snapshot date (default: today, format YYYY-MM-DD)}
-        {--months=2 : How many months back to fetch (default: 2, covers full previous month)}';
+        {--store=*   : Store IDs to snapshot (repeatable, default: all configured centers)}
+        {--date=     : Snapshot date (default: today, format YYYY-MM-DD)}
+        {--months=2  : How many months back to fetch (default: 2, covers full previous month)}
+        {--pause=30  : Seconds to sleep between centers (increase to 90 during backfill)}';
 
     protected $description = 'Capture daily snapshot of all CRM payments (+ due dates) for fraud detection.';
 
-    private const BULK_SIZE        = 500;
-    private const SLEEP_BETWEEN_PAGES    = 2;   // seconds — bulk returns 500 rows, far fewer pages
-    private const SLEEP_BETWEEN_CENTERS  = 30;  // seconds — reduced now that total calls are ~20× lower
+    private const BULK_SIZE           = 500;
+    private const SLEEP_BETWEEN_PAGES = 2;
 
     public function handle(Crm $crm): int
     {
@@ -45,8 +45,9 @@ class CrmSnapshotPaymentsCommand extends Command
             ? Carbon::parse($this->option('date'))->toDateString()
             : Carbon::today()->toDateString();
 
-        $months   = max(1, (int) $this->option('months'));
-        $storeIds = array_map('intval', array_filter((array) $this->option('store')));
+        $months       = max(1, (int) $this->option('months'));
+        $pauseSecs    = max(10, (int) $this->option('pause'));
+        $storeIds     = array_map('intval', array_filter((array) $this->option('store')));
 
         $sites = Site::whereNotNull('crm_store_id')->where('crm_store_id', '>', 0)
             ->when(!empty($storeIds), fn ($q) => $q->whereIn('crm_store_id', $storeIds))
@@ -57,15 +58,15 @@ class CrmSnapshotPaymentsCommand extends Command
             return self::FAILURE;
         }
 
-        $this->info("Snapshotting payments for {$date} across {$sites->count()} center(s) [bulk mode, size=" . self::BULK_SIZE . ", window={$months}mo]...");
+        $this->info("Snapshotting payments for {$date} across {$sites->count()} center(s) [bulk, size=" . self::BULK_SIZE . ", pause={$pauseSecs}s]...");
 
         $totalCaptured = 0;
         $totalErrors   = 0;
 
         foreach ($sites as $i => $site) {
             if ($i > 0) {
-                $this->line("  (pause " . self::SLEEP_BETWEEN_CENTERS . "s between centers...)");
-                sleep(self::SLEEP_BETWEEN_CENTERS);
+                $this->line("  (pause {$pauseSecs}s between centers...)");
+                sleep($pauseSecs);
             }
 
             $this->line("  → {$site->name} (#{$site->crm_store_id})");

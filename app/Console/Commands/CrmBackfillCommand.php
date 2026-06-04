@@ -162,17 +162,21 @@ class CrmBackfillCommand extends Command
 
             $this->line("  → snapshot for {$snapDate}");
 
-            $exit = $this->call('crm:snapshot-payments', ['--date' => $snapDate]);
+            $exit = $this->call('crm:snapshot-payments', [
+                '--date'  => $snapDate,
+                '--pause' => 90,   // 90s between centers during backfill — avoids 429
+            ]);
 
             if ($exit !== self::SUCCESS) {
-                $this->error("  [FAIL] snapshot {$snapDate}");
+                $this->error("  [FAIL] snapshot {$snapDate} — waiting 3min before next month...");
                 $failed++;
-            }
-
-            // Pause between months to avoid hammering the API
-            if ($current->copy()->addMonth()->lte($end)) {
-                $this->line('  (pause 15s between months...)');
-                sleep(15);
+                sleep(180); // long wait after a failed month — API needs to recover
+            } else {
+                // Pause between successful months
+                if ($current->copy()->addMonth()->lte($end)) {
+                    $this->line('  (pause 60s between months...)');
+                    sleep(60);
+                }
             }
 
             $current->addMonth();
