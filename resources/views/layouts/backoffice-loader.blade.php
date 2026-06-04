@@ -256,50 +256,55 @@
             if (e.persisted) { pendingXhr = 0; hide(); }
         });
 
-        // Endpoints that should NOT trigger the fullscreen overlay — usually
-        // because they render their own in-modal spinner. The matrix builder
-        // takes 5-15s for big classes and we don't want to lock the UI.
+        // Only show the loader for slow CRM/API routes that actually fetch
+        // remote data. All other backoffice pages (CRUD forms, lists, etc.)
+        // are fast enough to not need a fullscreen overlay.
+        // To force the loader on any link/form, add data-loader="1".
+        var LOADER_PATHS = [
+            /\/crm(\/|$|\?)/,
+            /\/backoffice\/crm(\/|$|\?)/,
+        ];
+
         var NO_LOADER_PATHS = [
             /\/crm\/groups\/classes\/\d+\/payment-matrix(\/export)?$/,
         ];
 
-        // Same-origin backoffice-bound URL? Covers /backoffice/*, /crm/* (legacy),
-        // and root-relative links inside the BO sidebar.
         function isBoUrl(url) {
             if (!url) return false;
             try {
                 var u = new URL(url, window.location.origin);
                 if (u.origin !== window.location.origin) return false;
-                // Opt-out paths (modal-owned XHRs).
                 for (var i = 0; i < NO_LOADER_PATHS.length; i++) {
                     if (NO_LOADER_PATHS[i].test(u.pathname)) return false;
                 }
-                return /\/(backoffice|crm)(\/|$|\?)/.test(u.pathname + u.search);
+                // Only match CRM routes, not all backoffice routes.
+                for (var j = 0; j < LOADER_PATHS.length; j++) {
+                    if (LOADER_PATHS[j].test(u.pathname)) return true;
+                }
+                return false;
             } catch (e) {
                 return false;
             }
         }
 
-        // 1) Show overlay on full-page navigation to another BO page.
+        // 1) Show overlay on navigation — only for CRM routes, or explicit opt-in.
         document.addEventListener('click', function (e) {
             var a = e.target.closest('a');
             if (!a) return;
             if (a.target === '_blank' || a.hasAttribute('download')) return;
             if (a.dataset.noLoader === '1') return;
-            // Hash-only links (in-page anchors) shouldn't trigger an overlay.
             if (a.getAttribute('href') && a.getAttribute('href').charAt(0) === '#') return;
-            // Modifier keys = new tab, leave alone.
             if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-            if (isBoUrl(a.href)) show();
+            if (a.dataset.loader === '1' || isBoUrl(a.href)) show();
         }, true);
 
-        // 2) Filter forms (BO pages POST/GET to /backoffice/* routes).
+        // 2) Forms — only for CRM routes, or explicit opt-in.
         document.addEventListener('submit', function (e) {
             var f = e.target;
             if (!f || f.tagName !== 'FORM') return;
             if (f.dataset.noLoader === '1') return;
             var action = f.getAttribute('action') || window.location.href;
-            if (isBoUrl(action)) show();
+            if (f.dataset.loader === '1' || isBoUrl(action)) show();
         }, true);
 
         // 3) AJAX (fetch + XHR) hitting BO endpoints — autocomplete etc.
