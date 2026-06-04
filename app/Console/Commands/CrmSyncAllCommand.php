@@ -215,8 +215,8 @@ class CrmSyncAllCommand extends Command
     }
 
     /**
-     * Parse "--all --months=2 --delay=600" into Artisan parameter array
-     * and call the command synchronously.
+     * Parse "--all --months=2 --delay=600" into an options array
+     * and call the command via $this->call() so output streams live to the terminal.
      */
     private function callStep(string $command, string $options): int
     {
@@ -231,7 +231,8 @@ class CrmSyncAllCommand extends Command
             }
         }
 
-        return Artisan::call($command, $params);
+        // $this->call() streams output live — Artisan::call() swallows it
+        return $this->call($command, $params);
     }
 
     private function printHeader(): void
