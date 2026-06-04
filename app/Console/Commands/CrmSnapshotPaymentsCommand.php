@@ -75,7 +75,7 @@ class CrmSnapshotPaymentsCommand extends Command
 
         do {
             if ($page > 0) {
-                sleep(2);
+                sleep(5);
             }
 
             $this->line("    Page {$page}...");

@@ -115,18 +115,8 @@ class CrmPresenceImportService
             throw new \RuntimeException('Groupe non lié à une classe CRM. Veuillez configurer crm_class_id.');
         }
 
-        // crm_attendance.crm_class_id = crm_classes.id (local PK), not crm_classes.crm_id
-        // We must look up the local id from the crm_classes table first
-        $localClassId = \App\Models\CrmClass::where('crm_id', $crmClassId)->value('id');
-
-        if (!$localClassId) {
-            throw new \RuntimeException(
-                "Classe CRM #{$crmClassId} non trouvée dans le miroir local. "
-                . "Attendez le prochain sync automatique (toutes les 2h)."
-            );
-        }
-
-        $mirrorAttendance = CrmAttendance::where('crm_class_id', $localClassId)
+        // crm_attendance.crm_class_id stores crm_classes.crm_id (the API's ID field), not the local PK
+        $mirrorAttendance = CrmAttendance::where('crm_class_id', $crmClassId)
             ->whereBetween('date', [$dateStart->toDateString(), $dateEnd->toDateString()])
             ->get();
 
@@ -137,26 +127,20 @@ class CrmPresenceImportService
         $from = $dateStart->toDateString();
         $to   = $dateEnd->toDateString();
 
-        // Check if the class has ANY attendance in the mirror (outside the requested window)
-        $totalInMirror = CrmAttendance::where('crm_class_id', $localClassId)->count();
-        $earliestDate  = CrmAttendance::where('crm_class_id', $localClassId)->min('date');
-        $latestDate    = CrmAttendance::where('crm_class_id', $localClassId)->max('date');
+        $totalInMirror = CrmAttendance::where('crm_class_id', $crmClassId)->count();
+        $earliestDate  = CrmAttendance::where('crm_class_id', $crmClassId)->min('date');
+        $latestDate    = CrmAttendance::where('crm_class_id', $crmClassId)->max('date');
 
         if ($totalInMirror === 0) {
             throw new \RuntimeException(
-                "Aucune séance enregistrée dans le CRM pour la classe #{$crmClassId} (local id: {$localClassId}). "
-                . "Cette classe n'a peut-être pas encore de présences dans le CRM, "
-                . "ou le sync n'a pas encore récupéré ses données. "
-                . "Relancez le sync depuis le serveur : php artisan crm:sync-all --from=attendance"
+                "Aucune séance enregistrée dans le CRM pour la classe #{$crmClassId}. "
+                . "Relancez le sync : php artisan crm:sync-all --from=attendance"
             );
         }
 
         throw new \RuntimeException(
-            "Aucune donnée de présence dans le miroir local pour la période {$from} → {$to}. "
-            . "Le miroir contient {$totalInMirror} séance(s) pour cette classe, "
-            . "mais sur la période {$earliestDate} → {$latestDate}. "
-            . "Si la période demandée est en dehors de cette plage, relancez le sync : "
-            . "php artisan crm:sync-all --from=attendance"
+            "Aucune donnée de présence pour la période {$from} → {$to}. "
+            . "Le miroir contient {$totalInMirror} séance(s) sur {$earliestDate} → {$latestDate}."
         );
     }
 
