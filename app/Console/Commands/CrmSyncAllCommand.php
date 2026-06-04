@@ -74,8 +74,8 @@ class CrmSyncAllCommand extends Command
         ],
         'attendance'       => [
             'crm:sync-attendance',
-            '--all --months=3 --delay=600',
-            'Sync session presence — bulk endpoint 500/page (was 25/page)',
+            '--all --months=12 --delay=600',
+            'Sync session presence — bulk endpoint 500/page, 12 months history',
         ],
         'collections'      => [
             'crm:sync-collections',
@@ -94,7 +94,7 @@ class CrmSyncAllCommand extends Command
         ],
         'presence_summary' => [
             'crm:build-presence-summary',
-            '--all --months=3',
+            '--all --months=12',
             'Aggregate monthly attendance — replaces PHP CarbonPeriod loops',
         ],
         'group_evolution'  => [
