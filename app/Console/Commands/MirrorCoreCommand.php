@@ -45,7 +45,8 @@ class MirrorCoreCommand extends Command
         $this->syncTeachers();
         $this->syncStudents();
         $this->syncRegistrations();
-        $this->syncAttendance();
+        // Attendance is handled by crm:sync-attendance (bulk endpoint, 500/page)
+        // Do NOT sync here — the per-class standard endpoint hangs on shared hosting
 
         $this->info('Core CRM Mirror Synchronization Completed.');
     }
