@@ -46,8 +46,8 @@ class CrmSnapshotPaymentsCommand extends Command
 
         foreach ($sites as $i => $site) {
             if ($i > 0) {
-                $this->line("  (pause 30s between centers...)");
-                sleep(30);
+                $this->line("  (pause 90s between centers...)");
+                sleep(90);
             }
 
             $this->line("  → {$site->name} (#{$site->crm_store_id})");
@@ -74,11 +74,20 @@ class CrmSnapshotPaymentsCommand extends Command
         $captured = 0;
 
         do {
+            if ($page > 0) {
+                sleep(2);
+            }
+
+            $this->line("    Page {$page}...");
+
             $response = $crm->payments()->list(
                 page: $page,
                 size: 25,
                 strStoreId: $site->crm_store_id,
             );
+
+            $count = count($response['data'] ?? []);
+            $this->line("    Page {$page} — {$count} rows");
 
             foreach ($response['data'] ?? [] as $row) {
                 $this->upsertSnapshot($row, $date);

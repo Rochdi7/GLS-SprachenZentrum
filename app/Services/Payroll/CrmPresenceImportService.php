@@ -134,14 +134,29 @@ class CrmPresenceImportService
             return $this->parseFromMirror($mirrorAttendance, $dateStart, $dateEnd);
         }
 
-        // Mirror has no data for this period — do NOT fall back to live API (causes 504 on shared hosting)
-        // The sync runs every 2 hours and covers the last 2 months
         $from = $dateStart->toDateString();
         $to   = $dateEnd->toDateString();
+
+        // Check if the class has ANY attendance in the mirror (outside the requested window)
+        $totalInMirror = CrmAttendance::where('crm_class_id', $localClassId)->count();
+        $earliestDate  = CrmAttendance::where('crm_class_id', $localClassId)->min('date');
+        $latestDate    = CrmAttendance::where('crm_class_id', $localClassId)->max('date');
+
+        if ($totalInMirror === 0) {
+            throw new \RuntimeException(
+                "Aucune séance enregistrée dans le CRM pour la classe #{$crmClassId} (local id: {$localClassId}). "
+                . "Cette classe n'a peut-être pas encore de présences dans le CRM, "
+                . "ou le sync n'a pas encore récupéré ses données. "
+                . "Relancez le sync depuis le serveur : php artisan crm:sync-all --from=attendance"
+            );
+        }
+
         throw new \RuntimeException(
             "Aucune donnée de présence dans le miroir local pour la période {$from} → {$to}. "
-            . "Le sync automatique couvre les 2 derniers mois. "
-            . "Si vous avez besoin de données plus anciennes, contactez l'administrateur."
+            . "Le miroir contient {$totalInMirror} séance(s) pour cette classe, "
+            . "mais sur la période {$earliestDate} → {$latestDate}. "
+            . "Si la période demandée est en dehors de cette plage, relancez le sync : "
+            . "php artisan crm:sync-all --from=attendance"
         );
     }
 
