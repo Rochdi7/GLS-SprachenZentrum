@@ -167,12 +167,20 @@ class BuildGroupEvolutionCommand extends Command
                 if (isset($changementsByGroup[$cid][$sid])) $changements++;
             }
 
+            // Parse ISO datetime from API (e.g. "2026-04-23T23:00:00.000Z") → plain date
+            $classStartDate = isset($raw['START_DATE'])
+                ? Carbon::parse($raw['START_DATE'])->toDateString()
+                : null;
+            $classEndDate = isset($raw['END_DATE'])
+                ? Carbon::parse($raw['END_DATE'])->toDateString()
+                : null;
+
             $upserts[] = [
-                'crm_store_id'     => $storeId,
-                'class_id'         => $cid,
-                'class_name'       => $class->name ?? "#{$cid}",
-                'class_start_date' => $raw['START_DATE'] ?? null,
-                'class_end_date'   => $raw['END_DATE']   ?? null,
+                'crm_store_id'      => $storeId,
+                'class_id'          => $cid,
+                'class_name'        => $class->name ?? "#{$cid}",
+                'class_start_date'  => $classStartDate,
+                'class_end_date'    => $classEndDate,
                 'class_start_month' => $startYm,
                 'debuts'           => $debuts,
                 'ajouts'           => $ajouts,
