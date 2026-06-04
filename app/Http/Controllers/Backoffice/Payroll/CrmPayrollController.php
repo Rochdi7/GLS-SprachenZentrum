@@ -46,45 +46,39 @@ class CrmPayrollController extends BaseCrmController
     {
         $strStoreId = $this->centers->currentStoreId();
         $crmClasses = [];
-        $error = null;
+        $error      = null;
 
-        try {
-            // API max page size is 25 — paginate through all classes
-            $raw = [];
-            $page = 0;
-            do {
-                $response = $this->scopedCrm()->groups()->classes(
-                    page: $page,
-                    size: 25,
-                    strStoreId: $strStoreId,
-                );
-                $raw = array_merge($raw, $response['data'] ?? []);
-                $page++;
-            } while ($response['pagination']['hasMore'] ?? false);
+        // Read from local crm_classes mirror — zero API calls, instant response
+        // Data is kept fresh by crm:sync-all running every 2 hours
+        $classes = \App\Models\CrmClass::query()
+            ->when($strStoreId, fn ($q) => $q->where('site_id', $strStoreId))
+            ->whereNotNull('class_id')
+            ->orderBy('name')
+            ->get();
 
-            // Look up last-used rates from any existing CRM-stub groups
-            $crmIds = array_column($raw, 'ID');
-            $stubGroups = Group::whereIn('crm_class_id', $crmIds)
-                ->with('latestPresenceImport')
-                ->get()
-                ->keyBy('crm_class_id');
+        if ($classes->isEmpty()) {
+            $error = 'Aucune classe trouvée dans le miroir local. Le sync automatique tourne toutes les 2h.';
+        }
 
-            foreach ($raw as $item) {
-                $crmId = $item['ID'] ?? null;
-                if (!$crmId) continue;
-                $stub = $stubGroups->get($crmId);
-                $crmClasses[] = [
-                    'crm_id'       => $crmId,
-                    'class_id'     => $item['CLASS_ID'] ?? null,
-                    'name'         => $item['NAME'] ?? $item['REFERENCE'] ?? "Class {$crmId}",
-                    'level'        => $item['SCHOOL_LEVEL_NAME'] ?? '—',
-                    'teacher'      => $item['EMPLOYEE_TEACHER_FULL_NAME'] ?? '—',
-                    'status'       => $item['STATUS_NAME'] ?? '—',
-                    'last_rate'    => $stub?->latestPresenceImport?->payment_per_student,
-                ];
-            }
-        } catch (\Throwable $e) {
-            $error = $e->getMessage();
+        $crmIds     = $classes->pluck('crm_id')->toArray();
+        $stubGroups = Group::whereIn('crm_class_id', $crmIds)
+            ->with('latestPresenceImport')
+            ->get()
+            ->keyBy('crm_class_id');
+
+        foreach ($classes as $class) {
+            $raw   = $class->raw_data ?? [];
+            $stub  = $stubGroups->get($class->crm_id);
+
+            $crmClasses[] = [
+                'crm_id'    => $class->crm_id,
+                'class_id'  => $class->class_id,
+                'name'      => $class->name,
+                'level'     => $raw['SCHOOL_LEVEL_NAME'] ?? '—',
+                'teacher'   => $raw['EMPLOYEE_TEACHER_FULL_NAME'] ?? '—',
+                'status'    => $raw['STATUS_NAME'] ?? '—',
+                'last_rate' => $stub?->latestPresenceImport?->payment_per_student,
+            ];
         }
 
         $selectedCrmId = $request->get('crm_class_id');
