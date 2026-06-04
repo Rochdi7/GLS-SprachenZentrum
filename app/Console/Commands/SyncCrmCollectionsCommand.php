@@ -56,7 +56,7 @@ class SyncCrmCollectionsCommand extends Command
             return self::FAILURE;
         }
 
-        $query = Site::whereNotNull('crm_store_id');
+        $query = Site::whereNotNull('crm_store_id')->where('crm_store_id', '>', 0);
         if (!$all) {
             $query->whereIn('crm_store_id', array_map('intval', $storeIds));
         }

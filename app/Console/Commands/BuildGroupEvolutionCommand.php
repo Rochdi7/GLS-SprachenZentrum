@@ -56,7 +56,7 @@ class BuildGroupEvolutionCommand extends Command
 
         $this->info("Building group evolution snapshots ({$rangeStart} → {$rangeEnd})");
 
-        $sites = Site::whereNotNull('crm_store_id')
+        $sites = Site::whereNotNull('crm_store_id')->where('crm_store_id', '>', 0)
             ->when(!$this->option('all'), fn ($q) =>
                 $q->whereIn('crm_store_id', array_map('intval', $this->option('store')))
             )

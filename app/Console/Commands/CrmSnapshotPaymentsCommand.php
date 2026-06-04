@@ -30,7 +30,7 @@ class CrmSnapshotPaymentsCommand extends Command
         $date = $this->option('date') ? Carbon::parse($this->option('date'))->toDateString() : Carbon::today()->toDateString();
         $storeIds = array_map('intval', array_filter((array) $this->option('store')));
 
-        $sites = Site::whereNotNull('crm_store_id')
+        $sites = Site::whereNotNull('crm_store_id')->where('crm_store_id', '>', 0)
             ->when(!empty($storeIds), fn ($q) => $q->whereIn('crm_store_id', $storeIds))
             ->get();
 

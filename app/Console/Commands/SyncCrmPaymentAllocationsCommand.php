@@ -82,7 +82,7 @@ class SyncCrmPaymentAllocationsCommand extends Command
 
         $this->info("Syncing payment allocations {$dateFrom} → {$dateTo}");
 
-        $sites = Site::whereNotNull('crm_store_id')
+        $sites = Site::whereNotNull('crm_store_id')->where('crm_store_id', '>', 0)
             ->when(!$this->option('all'), fn ($q) =>
                 $q->whereIn('crm_store_id', array_map('intval', $this->option('store')))
             )

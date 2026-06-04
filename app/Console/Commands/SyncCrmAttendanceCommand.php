@@ -70,7 +70,7 @@ class SyncCrmAttendanceCommand extends Command
 
         $this->info("Syncing attendance {$dateFrom} → {$dateTo}");
 
-        $query = Site::whereNotNull('crm_store_id');
+        $query = Site::whereNotNull('crm_store_id')->where('crm_store_id', '>', 0);
         if (!$all) {
             $query->whereIn('crm_store_id', array_map('intval', $storeIds));
         }

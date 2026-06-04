@@ -91,7 +91,7 @@ class MirrorCoreCommand extends Command
         $this->info('Syncing Teachers from CRM Classes...');
 
         // Map crm_store_id → local site.id
-        $siteMap = Site::whereNotNull('crm_store_id')->pluck('id', 'crm_store_id');
+        $siteMap = Site::whereNotNull('crm_store_id')->where('crm_store_id', '>', 0)->pluck('id', 'crm_store_id');
 
         // Fallback: use any site_id so the NOT NULL constraint is satisfied
         $fallbackSiteId = Site::value('id');
