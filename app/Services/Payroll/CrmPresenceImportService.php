@@ -123,8 +123,15 @@ class CrmPresenceImportService
             return $this->parseFromMirror($mirrorAttendance, $dateStart, $dateEnd);
         }
 
-        // Mirror empty — fetch live from API
-        return $this->parseFromLiveApi($crm, $classId, $dateStart, $dateEnd);
+        // Mirror has no data for this period — do NOT fall back to live API (causes 504 on shared hosting)
+        // The sync runs every 2 hours and covers the last 2 months
+        $from = $dateStart->toDateString();
+        $to   = $dateEnd->toDateString();
+        throw new \RuntimeException(
+            "Aucune donnée de présence dans le miroir local pour la période {$from} → {$to}. "
+            . "Le sync automatique couvre les 2 derniers mois. "
+            . "Si vous avez besoin de données plus anciennes, contactez l'administrateur."
+        );
     }
 
     protected function parseFromMirror(\Illuminate\Support\Collection $records, Carbon $dateStart, Carbon $dateEnd): array
