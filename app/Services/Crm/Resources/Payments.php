@@ -51,6 +51,43 @@ class Payments extends Resource
     }
 
     /**
+     * GET /api/external/v1/bulk/payment-collection — Bulk list payment collection (size up to 500)
+     *
+     * Required scope: payments:read. Same filters as collection().
+     */
+    public function bulkCollection(
+        int $page = 0,
+        int $size = 500,
+        bool $includeTotal = false,
+        ?int $strStoreId = null,
+        ?int $schoolYearId = null,
+        ?int $registrationId = null,
+        ?int $registrationStatusId = null,
+        ?string $serviceTypeIds = null,
+        ?string $levelSessionPackageIds = null,
+        ?string $dueDateStartDate = null,
+        ?string $dueDateEndDate = null,
+        ?int $startDay = null,
+        ?int $endDay = null,
+    ): array {
+        return $this->client->get('/api/external/v1/bulk/payment-collection', array_filter([
+            'page'                   => $page,
+            'size'                   => $size,
+            'includeTotal'           => $includeTotal,
+            'strStoreId'             => $strStoreId,
+            'schoolYearId'           => $schoolYearId,
+            'registrationId'         => $registrationId,
+            'registrationStatusId'   => $registrationStatusId,
+            'serviceTypeIds'         => $serviceTypeIds,
+            'levelSessionPackageIds' => $levelSessionPackageIds,
+            'dueDateStartDate'       => $dueDateStartDate,
+            'dueDateEndDate'         => $dueDateEndDate,
+            'startDay'               => $startDay,
+            'endDay'                 => $endDay,
+        ], fn ($v) => $v !== null));
+    }
+
+    /**
      * GET /api/external/v1/bulk/payments — Bulk list payments (size up to 500)
      *
      * Required scope: payments:read. Same filters as list().

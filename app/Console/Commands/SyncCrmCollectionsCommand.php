@@ -21,7 +21,7 @@ class SyncCrmCollectionsCommand extends Command
 
     private const LOCK_KEY  = 'crm.sync-collections.lock';
     private const LOCK_TTL  = 1800;
-    private const PAGE_SIZE = 25;
+    private const PAGE_SIZE = 500;
     private const BACKOFF   = [5, 15, 30];
 
     public function __construct(protected Crm $crm)
@@ -170,7 +170,7 @@ class SyncCrmCollectionsCommand extends Command
     {
         foreach (self::BACKOFF as $attempt => $waitSec) {
             try {
-                return $crm->payments()->collection(
+                return $crm->payments()->bulkCollection(
                     page: $page,
                     size: self::PAGE_SIZE,
                     includeTotal: false,
@@ -190,7 +190,7 @@ class SyncCrmCollectionsCommand extends Command
             }
         }
 
-        return $crm->payments()->collection(
+        return $crm->payments()->bulkCollection(
             page: $page,
             size: self::PAGE_SIZE,
             includeTotal: false,

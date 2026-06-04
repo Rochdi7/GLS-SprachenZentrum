@@ -20,7 +20,7 @@ class SyncCrmRegistrationsCommand extends Command
 
     private const LOCK_KEY   = 'crm.sync-registrations.lock';
     private const LOCK_TTL   = 1800; // 30 min max
-    private const PAGE_SIZE  = 25;
+    private const PAGE_SIZE  = 500;
     private const BACKOFF    = [5, 15, 30]; // seconds per retry attempt
 
     public function __construct(protected Crm $crm)
@@ -149,7 +149,7 @@ class SyncCrmRegistrationsCommand extends Command
     {
         foreach (self::BACKOFF as $attempt => $waitSec) {
             try {
-                return $crm->registrations()->list(
+                return $crm->registrations()->bulkList(
                     page: $page,
                     size: self::PAGE_SIZE,
                     includeTotal: false,
