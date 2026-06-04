@@ -73,15 +73,9 @@
 
 
 @section('scripts')
-<script src="{{ asset('build/js/plugins/ckeditor/classic/ckeditor.js') }}"></script>
 <script src="{{ URL::asset('build/js/plugins/datepicker-full.min.js') }}"></script>
 
 <script>
-    // CKEditor Init
-    ClassicEditor
-        .create(document.querySelector('#group-description'))
-        .catch(error => console.error(error));
-
     // Date Picker Init — BS5 datepicker, single start date, end auto-calculated (+10 months)
     const dpEl = document.querySelector('#date_range_picker');
     if (dpEl) {
