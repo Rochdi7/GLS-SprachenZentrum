@@ -676,6 +676,10 @@ Route::prefix('backoffice')
             ->middleware('permission:level_followups.view')
             ->name('level_followups.index');
 
+        Route::post('/level-followups/sync', [LevelFollowupController::class, 'syncAll'])
+            ->middleware('permission:level_followups.edit')
+            ->name('level_followups.sync');
+
         Route::get('/level-followups/pdf', [LevelFollowupController::class, 'pdf'])
             ->middleware('permission:level_followups.view')
             ->name('level_followups.pdf');

@@ -306,6 +306,16 @@
                     <h5 class="mb-0">Suivi niveau (rappels profs)</h5>
                     <div class="d-flex align-items-center gap-2">
                         <span class="badge bg-light-primary">{{ $dueFollowups->count() }} rappel(s) du(s)</span>
+                        @can('level_followups.edit')
+                        <form method="POST" action="{{ route('backoffice.level_followups.sync') }}">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-light-secondary"
+                                    onclick="return confirm('Synchroniser le suivi niveau pour tous les groupes actifs ?')"
+                                    title="Synchronise les niveaux pour tous les groupes actifs">
+                                <i class="ti ti-refresh me-1"></i> Sync groupes
+                            </button>
+                        </form>
+                        @endcan
                     </div>
                 </div>
 

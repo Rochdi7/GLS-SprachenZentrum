@@ -14,14 +14,32 @@ use Illuminate\Http\Request;
 
 class LevelFollowupController extends Controller
 {
+    private function scopeToUserSites($query)
+    {
+        $user = auth()->user();
+        if ($user->hasRole('Super Admin')) {
+            return $query;
+        }
+
+        $siteIds = $user->accessibleSiteIds();
+
+        return $query->whereHas('group.site', function ($q) use ($siteIds) {
+            $q->whereIn('id', $siteIds);
+        });
+    }
+
     public function index(Request $request)
     {
-        $now = Carbon::now();
+        $now  = Carbon::now();
+        $user = auth()->user();
+        $isSuperAdmin = $user->hasRole('Super Admin');
 
         $query = GroupLevelFollowup::query()
             ->with(['group.teacher', 'group.site'])
             ->orderBy('status')
             ->orderBy('due_date');
+
+        $this->scopeToUserSites($query);
 
         if ($request->filled('center')) {
             $query->whereHas('group.site', function ($siteQuery) use ($request) {
@@ -36,8 +54,22 @@ class LevelFollowupController extends Controller
         }
 
         $followups = $query->get();
-        $sites = Site::query()->orderBy('name')->get();
-        $teachers = Teacher::query()->orderBy('name')->get();
+
+        // Only show sites/teachers the user can access in filters
+        $accessibleSiteIds = $isSuperAdmin ? null : $user->accessibleSiteIds();
+        $sitesQuery = Site::query()->orderBy('name');
+        if (!$isSuperAdmin) {
+            $sitesQuery->whereIn('id', $accessibleSiteIds);
+        }
+        $sites = $sitesQuery->get();
+
+        $teachersQuery = Teacher::query()->orderBy('name');
+        if (!$isSuperAdmin) {
+            $teachersQuery->whereHas('groups', function ($q) use ($accessibleSiteIds) {
+                $q->whereIn('site_id', $accessibleSiteIds);
+            });
+        }
+        $teachers = $teachersQuery->get();
 
         $rows = $followups
             ->groupBy('group_id')
@@ -94,6 +126,12 @@ class LevelFollowupController extends Controller
 
     public function showGroup(Group $group)
     {
+        $user = auth()->user();
+        abort_unless(
+            $user->hasRole('Super Admin') || $user->canAccessSite($group->site_id),
+            403
+        );
+
         $now = Carbon::now();
         $group->loadMissing(['teacher', 'site']);
         $followups = $this->getGroupFollowups($group);
@@ -109,11 +147,14 @@ class LevelFollowupController extends Controller
     {
         $now = Carbon::now();
 
-        $followups = GroupLevelFollowup::query()
+        $query = GroupLevelFollowup::query()
             ->with(['group.teacher'])
             ->orderBy('status')
-            ->orderBy('due_date')
-            ->get();
+            ->orderBy('due_date');
+
+        $this->scopeToUserSites($query);
+
+        $followups = $query->get();
 
         $rows = $followups
             ->groupBy('group_id')
@@ -166,6 +207,12 @@ class LevelFollowupController extends Controller
 
     public function pdfByGroup(Group $group)
     {
+        $user = auth()->user();
+        abort_unless(
+            $user->hasRole('Super Admin') || $user->canAccessSite($group->site_id),
+            403
+        );
+
         $now = Carbon::now();
         $group->loadMissing(['teacher', 'site']);
         $groupFollowups = $this->getGroupFollowups($group);
@@ -186,6 +233,12 @@ class LevelFollowupController extends Controller
 
     public function complete(GroupLevelFollowup $followup, Request $request)
     {
+        $user = auth()->user();
+        abort_unless(
+            $user->hasRole('Super Admin') || $user->canAccessSite($followup->group?->site_id),
+            403
+        );
+
         $validated = $request->validate([
             'done_notes' => ['nullable', 'string', 'max:5000'],
         ]);
@@ -206,6 +259,12 @@ class LevelFollowupController extends Controller
 
     public function updateNotes(GroupLevelFollowup $followup, Request $request)
     {
+        $user = auth()->user();
+        abort_unless(
+            $user->hasRole('Super Admin') || $user->canAccessSite($followup->group?->site_id),
+            403
+        );
+
         $validated = $request->validate([
             'done_notes' => ['nullable', 'string', 'max:5000'],
         ]);
@@ -220,11 +279,42 @@ class LevelFollowupController extends Controller
 
     public function destroy(GroupLevelFollowup $followup)
     {
+        $user = auth()->user();
+        abort_unless(
+            $user->hasRole('Super Admin') || $user->canAccessSite($followup->group?->site_id),
+            403
+        );
+
         $level = $followup->level;
 
         $followup->delete();
 
         return back()->with('success', "Suivi niveau {$level} supprime.");
+    }
+
+    public function syncAll()
+    {
+        $user = auth()->user();
+        $generator = new LevelFollowupGenerator();
+
+        if ($user->hasRole('Super Admin')) {
+            $generator->generateAllActive();
+            $msg = 'Suivi niveau synchronise pour tous les groupes actifs.';
+        } else {
+            $siteIds = $user->accessibleSiteIds();
+            Group::query()
+                ->where('status', 'active')
+                ->whereNotNull('date_debut')
+                ->whereIn('site_id', $siteIds)
+                ->chunkById(200, function ($groups) use ($generator) {
+                    foreach ($groups as $group) {
+                        $generator->generateForGroup($group);
+                    }
+                });
+            $msg = 'Suivi niveau synchronise pour les groupes de votre centre.';
+        }
+
+        return back()->with('success', $msg);
     }
 
     private function getGroupFollowups(Group $group)
