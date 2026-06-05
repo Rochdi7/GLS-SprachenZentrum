@@ -83,6 +83,7 @@ class BuildGroupEvolutionCommand extends Command
         // Load classes from the local mirror — zero API calls
         $classes = CrmClass::where('site_id', $storeId)
             ->whereNotNull('class_id')
+            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.STATUS_NAME')) = 'En formation'")
             ->get();
 
         if ($classes->isEmpty()) {
