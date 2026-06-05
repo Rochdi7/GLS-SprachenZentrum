@@ -5,7 +5,7 @@
  * Reads its chart payload from a JSON data island:
  *   <script type="application/json" id="crm-group-evolution-data">…</script>
  */
-document.addEventListener('DOMContentLoaded', function () {
+(function initGroupEvolutionChart() {
     const dataEl = document.getElementById('crm-group-evolution-data');
     const el     = document.getElementById('groupEvolutionChart');
     if (!dataEl || !el || typeof ApexCharts === 'undefined') return;
@@ -41,14 +41,14 @@ document.addEventListener('DOMContentLoaded', function () {
             labels: { rotate: -35, style: { fontSize: '11px' } },
         },
         yaxis: { title: { text: "Nombre d'élèves" }, decimalsInFloat: 0 },
-        legend: { show: false }, // legend rendered manually above the chart
+        legend: { show: false },
         grid: { borderColor: '#eef0f3' },
         tooltip: { y: { formatter: v => v + ' élève(s)' } },
     }).render();
-});
+})();
 
 // ─────────────────── Group multi-select behaviour ───────────────────
-document.addEventListener('DOMContentLoaded', function () {
+(function initGroupMultiSelect() {
     const hidden  = document.getElementById('geClassIdsInput');
     const allCbs  = () => Array.from(document.querySelectorAll('.ge-group-cb'));
     const list    = document.getElementById('geGroupList');
@@ -84,4 +84,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     sync();
-});
+})();

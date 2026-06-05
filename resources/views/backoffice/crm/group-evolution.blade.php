@@ -409,7 +409,7 @@
 <script type="application/json" id="crm-group-evolution-data">{!! json_encode($chartGroups, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
 <script src="{{ asset('assets/js/backoffice/crm-group-evolution.js') }}"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+(function initGroupEvolutionDrill() {
     const drillUrl  = '{{ route("backoffice.crm.group-evolution.drill") }}';
     let allRows      = [];
     let activeBucket = '';
@@ -516,6 +516,6 @@ document.addEventListener('DOMContentLoaded', function () {
             </tr>`;
         }).join('');
     }
-});
+})();
 </script>
 @endsection
