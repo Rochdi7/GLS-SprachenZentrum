@@ -149,7 +149,8 @@ class CollectionsService
     private function baseQuery(?int $strStoreId): \Illuminate\Database\Eloquent\Builder
     {
         return CrmCollectionRow::query()
-            ->where('registration_status_name', 'Active')
+            ->whereNotNull('rest_amount')
+            ->where('rest_amount', '>', 0)
             ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId));
     }
 
