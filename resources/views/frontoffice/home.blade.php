@@ -36,7 +36,7 @@
      HERO SECTION
 =========================== --}}
         <section class="hero reveal delay-1" aria-label="Intro">
-            <div class="hero__bg reveal delay-2"
+            <div class="hero__bg"
                 style="background-image: url('{{ asset('assets/images/IMG_4399.avif') }}');">
             </div>
 
