@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\CrmAttendance;
 use App\Models\CrmClass;
-use App\Models\Site;
 use App\Services\Crm\Crm;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -20,8 +19,8 @@ use Illuminate\Support\Facades\Log;
 class SyncCrmAttendanceCommand extends Command
 {
     protected $signature = 'crm:sync-attendance
-        {--store=* : Store IDs to sync (omit for all)}
-        {--all : Sync all stores}
+        {--store=* : Ignored — bulk endpoint streams all stores in one pass}
+        {--all : Ignored — bulk endpoint streams all stores in one pass}
         {--months=2 : Number of months back to sync (default 2)}
         {--delay=500 : Delay between page requests in ms}';
 
@@ -55,64 +54,30 @@ class SyncCrmAttendanceCommand extends Command
 
     private function sync(): int
     {
-        $all      = $this->option('all');
-        $storeIds = $this->option('store');
-        $months   = max(1, min(12, (int) $this->option('months')));
-        $delayMs  = max(100, (int) $this->option('delay'));
-
-        if (!$all && empty($storeIds)) {
-            $this->error('Specify --all or --store=ID');
-            return self::FAILURE;
-        }
+        $months  = max(1, min(12, (int) $this->option('months')));
+        $delayMs = max(100, (int) $this->option('delay'));
 
         $dateFrom = Carbon::today('Africa/Casablanca')->subMonths($months)->startOfMonth()->toDateString();
         $dateTo   = Carbon::today('Africa/Casablanca')->toDateString();
 
-        $this->info("Syncing attendance {$dateFrom} → {$dateTo}");
+        $this->info("Syncing attendance {$dateFrom} → {$dateTo} (all stores, single bulk pass)");
 
-        $query = Site::whereNotNull('crm_store_id')->where('crm_store_id', '>', 0);
-        if (!$all) {
-            $query->whereIn('crm_store_id', array_map('intval', $storeIds));
-        }
-        $sites = $query->get(['id', 'name', 'crm_store_id', 'crm_token']);
+        // The bulk endpoint ignores strStoreId and streams ALL stores in one paginated feed.
+        // Running it per-store wastes requests and drops rows belonging to other stores.
+        // One pass with the global classMap covers everything correctly.
+        $synced = $this->syncAll($dateFrom, $dateTo, $delayMs);
 
-        if ($sites->isEmpty()) {
-            $this->warn('No sites found.');
-            return self::SUCCESS;
-        }
-
-        $totalSynced = 0;
-
-        foreach ($sites as $site) {
-            $storeId = (int) $site->crm_store_id;
-            $this->info("[STORE #{$storeId}] {$site->name}");
-
-            $crm = $site->crm_token
-                ? $this->crm->withToken($site->crm_token)
-                : $this->crm;
-
-            try {
-                $synced = $this->syncStore($crm, $storeId, $dateFrom, $dateTo, $delayMs);
-                $totalSynced += $synced;
-                $this->info("[STORE #{$storeId}] Done — {$synced} records synced");
-            } catch (\Throwable $e) {
-                $this->error("[STORE #{$storeId}] FAILED: {$e->getMessage()}");
-                Log::warning("crm:sync-attendance store #{$storeId} failed: " . $e->getMessage());
-            }
-        }
-
-        // Bust presence suivi cache after sync
         Cache::flush();
 
-        $this->info("[DONE] Total records synced: {$totalSynced}");
+        $this->info("[DONE] Total records synced: {$synced}");
         return self::SUCCESS;
     }
 
-    private function syncStore(Crm $crm, int $storeId, string $dateFrom, string $dateTo, int $delayMs): int
+    private function syncAll(string $dateFrom, string $dateTo, int $delayMs): int
     {
-        // Build class_id → crm_id map for this store
-        $classMap = CrmClass::where('site_id', $storeId)
-            ->whereNotNull('class_id')
+        // Build global class_id → crm_id map across ALL stores.
+        // classMap key = Wimschool CLASS_ID, value = our crm_classes.crm_id (FK used in attendance).
+        $classMap = CrmClass::whereNotNull('class_id')
             ->pluck('crm_id', 'class_id')
             ->toArray();
 
@@ -121,12 +86,12 @@ class SyncCrmAttendanceCommand extends Command
         $hasMore = true;
 
         while ($hasMore) {
-            $this->line("[STORE #{$storeId}] Page {$page}...");
+            $this->line("[ALL] Page {$page}...");
 
-            $response = $this->fetchWithBackoff($crm, $storeId, $dateFrom, $dateTo, $page);
+            $response = $this->fetchWithBackoff($dateFrom, $dateTo, $page);
             $rows     = $response['data'] ?? [];
 
-            $this->line("[STORE #{$storeId}] Page {$page} — " . count($rows) . " rows");
+            $this->line("[ALL] Page {$page} — " . count($rows) . " rows");
 
             $upserts = [];
             $now     = now()->toDateTimeString();
@@ -198,16 +163,13 @@ class SyncCrmAttendanceCommand extends Command
         return $synced;
     }
 
-    private function fetchWithBackoff(Crm $crm, int $storeId, string $dateFrom, string $dateTo, int $page): array
+    private function fetchWithBackoff(string $dateFrom, string $dateTo, int $page): array
     {
         foreach (self::BACKOFF as $attempt => $waitSec) {
             try {
-                // Use bulk endpoint (500/page) instead of standard endpoint (25/page)
-                // Reduces request count from ~320 to ~16 for 8,000 attendance rows
-                return $crm->client()->get(
+                return $this->crm->client()->get(
                     '/api/external/v1/bulk/session-presence',
                     [
-                        'strStoreId'   => $storeId,
                         'startDate'    => $dateFrom,
                         'endDate'      => $dateTo,
                         'page'         => $page,
@@ -221,16 +183,15 @@ class SyncCrmAttendanceCommand extends Command
 
                 if (!$is429) throw $e;
 
-                $this->warn("[STORE #{$storeId}] 429 — retry " . ($attempt + 1) . " after {$waitSec}s");
+                $this->warn("[ALL] 429 — retry " . ($attempt + 1) . " after {$waitSec}s");
                 sleep($waitSec);
             }
         }
 
         // Final attempt after all backoffs exhausted
-        return $crm->client()->get(
+        return $this->crm->client()->get(
             '/api/external/v1/bulk/session-presence',
             [
-                'strStoreId'   => $storeId,
                 'startDate'    => $dateFrom,
                 'endDate'      => $dateTo,
                 'page'         => $page,
