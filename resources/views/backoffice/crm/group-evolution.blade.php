@@ -323,18 +323,6 @@
             </div>
         @endif
 
-        {{-- Methodology note --}}
-        <div class="alert alert-light border mt-3 small">
-            <i class="ti ti-info-circle me-1 text-primary"></i>
-            <strong>Méthodologie :</strong>
-            <ul class="mb-0 mt-1 ps-3">
-                <li><strong style="color:#6f42c1;">Début</strong> — étudiants dont le 1<sup>er</sup> mois payé est le <em>même mois</em> que la date de démarrage du groupe (présents dès le lancement). Pour suivre le cycle complet, choisissez une plage qui couvre le mois de démarrage du groupe.</li>
-                <li><strong style="color:#28a745;">Ajouts</strong> — étudiants dont le 1<sup>er</sup> mois payé est <em>après</em> le mois de démarrage du groupe (arrivés en cours de route).</li>
-                <li><strong style="color:#dc3545;">Quittant</strong> — étudiants qui ont payé un mois mais n'ont pas payé le mois suivant (1 mois manqué), et ne paient aucun autre groupe.</li>
-                <li><strong style="color:#fd7e14;">Changement</strong> — étudiants ayant payé 2 groupes différents avec des paiements consécutifs séparés de ≤ {{ \App\Services\Crm\Stats\GroupEvolutionService::CHANGEMENT_WINDOW_DAYS }} jours. Le départ est crédité au groupe qu'ils ont quitté.</li>
-                <li><strong style="color:#2196f3;">Actifs</strong> — compteur courant du CRM (<code>CLASS_COUNT_STUDENTS_ACTIVE</code>), pas une inférence.</li>
-            </ul>
-        </div>
     @endif
 </div>
 @endsection

@@ -33,7 +33,8 @@
     let tooltip = null;
 
     function draw() {
-        const W = wrap.clientWidth;
+        const W = wrap.clientWidth || wrap.offsetWidth || wrap.getBoundingClientRect().width;
+        if (!W) { requestAnimationFrame(draw); return; }
         const H = 420;
         canvas.width  = W;
         canvas.height = H;
@@ -168,8 +169,8 @@
 
     canvas.addEventListener('mouseleave', () => { if (tooltip) tooltip.style.display = 'none'; });
 
-    // Defer first draw until after layout so clientWidth is non-zero.
-    requestAnimationFrame(draw);
+    // Double-rAF: first pass triggers layout, second pass reads correct clientWidth.
+    requestAnimationFrame(() => requestAnimationFrame(draw));
     window.addEventListener('resize', draw);
 })();
 

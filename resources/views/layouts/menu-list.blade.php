@@ -588,21 +588,23 @@
                 </ul>
             </li>
 
-            {{-- Churn / Risque étudiant --}}
+            {{-- Churn / Risque étudiant — hidden temporarily, re-enable when ready
             <li class="pc-item {{ $crmChurnOpen ? 'active' : '' }}">
                 <a href="{{ route('backoffice.crm.agent.index') }}"
                     class="pc-link {{ $crmChurnOpen ? 'active' : '' }}">
                     <span class="pc-mtext">Churn / Risque</span>
                 </a>
             </li>
+            --}}
 
-            {{-- Agent / Call Center --}}
+            {{-- Agent / Call Center — hidden temporarily, re-enable when ready
             <li class="pc-item {{ $crmAgentOpen ? 'active' : '' }}">
                 <a href="{{ route('backoffice.crm.agent.call-today') }}"
                     class="pc-link {{ $crmAgentOpen ? 'active' : '' }}">
                     <span class="pc-mtext">Agent / Call Center</span>
                 </a>
             </li>
+            --}}
 
             {{-- Recouvrement --}}
             <li class="pc-item {{ $crmCollectionsOpen ? 'active' : '' }}">
