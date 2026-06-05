@@ -106,7 +106,7 @@ class BuildGroupEvolutionCommand extends Command
             $rawId = isset($raw['ID']) ? (int) $raw['ID'] : null;
             if ($rawId === null) continue;
             $classStartMonths[$rawId]  = isset($raw['START_DATE'])
-                ? Carbon::parse($raw['START_DATE'])->format('Y-m')
+                ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
                 : null;
             $classColIdByRawId[$rawId] = (int) $class->class_id;
         }
@@ -135,7 +135,7 @@ class BuildGroupEvolutionCommand extends Command
             } else {
                 // Active — reg START_DATE <= class start → Début, else Ajout
                 $regStartYm = isset($raw['START_DATE'])
-                    ? Carbon::parse($raw['START_DATE'])->format('Y-m')
+                    ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
                     : null;
 
                 if ($startYm && $regStartYm && $regStartYm <= $startYm) {
@@ -162,10 +162,10 @@ class BuildGroupEvolutionCommand extends Command
 
             // Parse ISO datetime from API (e.g. "2026-04-23T23:00:00.000Z") → plain date
             $classStartDate = isset($raw['START_DATE'])
-                ? Carbon::parse($raw['START_DATE'])->toDateString()
+                ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->toDateString()
                 : null;
             $classEndDate = isset($raw['END_DATE'])
-                ? Carbon::parse($raw['END_DATE'])->toDateString()
+                ? Carbon::parse($raw['END_DATE'])->setTimezone('Africa/Casablanca')->toDateString()
                 : null;
 
             $upserts[] = [
