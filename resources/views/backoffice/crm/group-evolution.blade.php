@@ -339,18 +339,6 @@
 </div>
 @endsection
 
-@php
-    // Pre-shape the chart payload so the Blade compiler doesn't have to parse
-    // a multi-line arrow function inside @json() — that combo trips its tokenizer.
-    $chartGroups = array_map(fn ($g) => [
-        'name'        => $g['name'],
-        'debuts'      => $g['debuts'] ?? 0,
-        'ajouts'      => $g['ajouts'],
-        'quittants'   => $g['quittants'],
-        'changements' => $g['changements'],
-        'actifs'      => $g['actifs'],
-    ], $groups);
-@endphp
 
 {{-- Group drill modal --}}
 <div class="modal fade" id="geDrillModal" tabindex="-1">
@@ -407,8 +395,18 @@
 
 @section('scripts')
 <script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
+@php
+    $chartGroups = array_map(fn ($g) => [
+        'name'        => $g['name'],
+        'debuts'      => $g['debuts'] ?? 0,
+        'ajouts'      => $g['ajouts'] ?? 0,
+        'quittants'   => $g['quittants'] ?? 0,
+        'changements' => $g['changements'] ?? 0,
+        'actifs'      => $g['actifs'] ?? 0,
+    ], $groups ?? []);
+@endphp
 {{-- Chart payload — read client-side by crm-group-evolution.js. --}}
-<script type="application/json" id="crm-group-evolution-data">{!! json_encode($chartGroups, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+<script type="application/json" id="crm-group-evolution-data">{!! json_encode($chartGroups, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
 <script src="{{ asset('assets/js/backoffice/crm-group-evolution.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
