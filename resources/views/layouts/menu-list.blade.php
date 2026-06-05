@@ -49,7 +49,8 @@
         request()->routeIs('backoffice.crm.duplicates') ||
         request()->routeIs('backoffice.crm.insights.*');
     $crmCollectionsOpen = request()->routeIs('backoffice.crm.collections.*');
-    $crmAgentOpen       = request()->routeIs('backoffice.crm.agent.*');
+    $crmChurnOpen       = request()->routeIs('backoffice.crm.agent.index');
+    $crmAgentOpen       = request()->routeIs('backoffice.crm.agent.*') && !$crmChurnOpen;
     $crmStatsDashOpen    = request()->routeIs('backoffice.crm.statistiques');
     $crmPresenceSuiviOpen = request()->routeIs('backoffice.crm.presence-suivi');
 @endphp
@@ -587,9 +588,17 @@
                 </ul>
             </li>
 
+            {{-- Churn / Risque étudiant --}}
+            <li class="pc-item {{ $crmChurnOpen ? 'active' : '' }}">
+                <a href="{{ route('backoffice.crm.agent.index') }}"
+                    class="pc-link {{ $crmChurnOpen ? 'active' : '' }}">
+                    <span class="pc-mtext">Churn / Risque</span>
+                </a>
+            </li>
+
             {{-- Agent / Call Center --}}
             <li class="pc-item {{ $crmAgentOpen ? 'active' : '' }}">
-                <a href="{{ route('backoffice.crm.agent.index') }}"
+                <a href="{{ route('backoffice.crm.agent.call-today') }}"
                     class="pc-link {{ $crmAgentOpen ? 'active' : '' }}">
                     <span class="pc-mtext">Agent / Call Center</span>
                 </a>
