@@ -1,8 +1,8 @@
-# Homeschool External API v1
+﻿# Wimschool External API v1
 
 **Base URL:** `https://app.wimschool.com/school-service`  
 **Auth:** `Authorization: Bearer <token>`  
-**Rate limit:** 60 req/min → 429 with `retryAfterSeconds`
+**Rate limit:** 60 req/min â†’ 429 with `retryAfterSeconds`
 
 ---
 
@@ -14,7 +14,7 @@ All transactional endpoints use zero-based cursor pagination.
 
 | Param | Type | Default | Notes |
 |-------|------|---------|-------|
-| `page` | integer | 0 | Zero-based. No hard max — avoid deep paging. |
+| `page` | integer | 0 | Zero-based. No hard max â€” avoid deep paging. |
 | `size` | integer | 10 | Max **25** (standard), max **500** (bulk endpoints) |
 | `includeTotal` | boolean | false | Set `true` only when you need `totalElements`/`totalPages` |
 
@@ -41,7 +41,7 @@ All transactional endpoints use zero-based cursor pagination.
 ```
 
 > `totalElements` and `totalPages` are **only present** when `includeTotal=true`.  
-> Use `hasMore` to drive pagination loops — no `includeTotal` needed.
+> Use `hasMore` to drive pagination loops â€” no `includeTotal` needed.
 
 **Recommended loop pattern:**
 
@@ -80,7 +80,7 @@ List classes/groups.
 |-------|------|-------------|
 | `strStoreId` | int64 | Filter by store |
 | `schoolYearId` | int64 | Filter by school year |
-| `page`, `size`, `includeTotal` | — | Pagination |
+| `page`, `size`, `includeTotal` | â€” | Pagination |
 
 **Key response fields per record:**
 
@@ -113,7 +113,7 @@ List payment allocations. **Best endpoint for linking payments to specific class
 | `startDate` | date | Start of range |
 | `endDate` | date | End of range |
 | `studentId` | any | Filter by student |
-| `page`, `size`, `includeTotal` | — | Pagination |
+| `page`, `size`, `includeTotal` | â€” | Pagination |
 
 **Key response fields:**
 
@@ -121,7 +121,7 @@ List payment allocations. **Best endpoint for linking payments to specific class
 |-------|-------------|
 | `STUDENT_ID` | Student identifier |
 | `CLASS_ID` | Class the payment was allocated to |
-| `SERVICE_TYPE_NAME` | e.g. "Inscription", "Mensualité" |
+| `SERVICE_TYPE_NAME` | e.g. "Inscription", "MensualitÃ©" |
 | `EFFECTIVE_DATE_PAYMENT_ALLOCATION` | Allocation date |
 | `EFFECTIVE_DATE_PAYMENT` | Actual payment date |
 
@@ -145,19 +145,19 @@ List payments.
 | `paymentMethodeId` | any | Filter by method |
 | `startDate` | date | Start of range |
 | `endDate` | date | End of range |
-| `page`, `size`, `includeTotal` | — | Pagination |
+| `page`, `size`, `includeTotal` | â€” | Pagination |
 
-> **No `classId` filter** — cannot isolate payments by group from this endpoint alone.
+> **No `classId` filter** â€” cannot isolate payments by group from this endpoint alone.
 
 ---
 
 ### Payment Collection / Receivables
 
 #### `GET /api/external/v1/payment-collection`
-List payment collection (receivables / créances).
+List payment collection (receivables / crÃ©ances).
 
 #### `GET /api/external/v1/payment-checks`
-List payment checks (chèques).
+List payment checks (chÃ¨ques).
 
 ---
 
@@ -166,7 +166,7 @@ List payment checks (chèques).
 #### `GET /api/external/v1/registrations`
 List registrations.
 
-> Status timestamps may be edited months after the fact — do not use as payment date proxy.
+> Status timestamps may be edited months after the fact â€” do not use as payment date proxy.
 
 ---
 
@@ -182,7 +182,7 @@ List student session presence.
 | `endDate` | date | End of range |
 | `studentId` | any | Filter by student |
 | `classId` | any | Filter by class |
-| `page`, `size`, `includeTotal` | — | Pagination |
+| `page`, `size`, `includeTotal` | â€” | Pagination |
 
 **Key fields:** `STUDENT_ID`, `SESSION_DATE`
 
@@ -214,7 +214,7 @@ List employee calculated salary records per class.
 ## Bulk Endpoints (size max = 500)
 
 Same filters, auth, scopes, and rate limits as standard endpoints.  
-Use for large syncs — 20× fewer HTTP calls than standard (500 vs 25 per page).
+Use for large syncs â€” 20Ã— fewer HTTP calls than standard (500 vs 25 per page).
 
 | Endpoint | Description |
 |----------|-------------|
@@ -234,7 +234,7 @@ Use for large syncs — 20× fewer HTTP calls than standard (500 vs 25 per page)
 
 ## LOV Endpoints (reference lists)
 
-Safety-limited — no deep paging needed. Use for dropdowns and filter options.
+Safety-limited â€” no deep paging needed. Use for dropdowns and filter options.
 
 | Endpoint | Description |
 |----------|-------------|
@@ -260,16 +260,16 @@ Safety-limited — no deep paging needed. Use for dropdowns and filter options.
 | 400 | `VALIDATION_ERROR` | Bad request parameters |
 | 401 | `AUTH_INVALID_TOKEN` | Token missing, expired, disabled, or revoked |
 | 403 | `AUTH_SCOPE_DENIED` | Token valid but missing required scope |
-| 429 | `TOKEN_RATE_LIMIT_PER_MINUTE_EXCEEDED` | 60 req/min exceeded — check `details.retryAfterSeconds` |
-| 500 | — | Unexpected server error |
+| 429 | `TOKEN_RATE_LIMIT_PER_MINUTE_EXCEEDED` | 60 req/min exceeded â€” check `details.retryAfterSeconds` |
+| 500 | â€” | Unexpected server error |
 
 ---
 
 ## Key Design Rules
 
-1. **Never send tenant/store/scope in the token derivation fields** — the server derives them from the Bearer token automatically.
-2. **`strStoreId` is optional** — omit it for ALL_STORES tokens; include it for SELECTED_STORES tokens.
-3. **Use bulk endpoints for any sync fetching more than ~100 records** — standard max is 25/page.
-4. **`includeTotal=false` on every page except when you explicitly need the count** — it adds server overhead.
-5. **`SESSION_DATE` is UTC** — always convert to `Africa/Casablanca` before date comparisons.
+1. **Never send tenant/store/scope in the token derivation fields** â€” the server derives them from the Bearer token automatically.
+2. **`strStoreId` is optional** â€” omit it for ALL_STORES tokens; include it for SELECTED_STORES tokens.
+3. **Use bulk endpoints for any sync fetching more than ~100 records** â€” standard max is 25/page.
+4. **`includeTotal=false` on every page except when you explicitly need the count** â€” it adds server overhead.
+5. **`SESSION_DATE` is UTC** â€” always convert to `Africa/Casablanca` before date comparisons.
 6. **`/payment-allocations` is the only source** that links `STUDENT_ID` + `CLASS_ID` + payment date in one record.

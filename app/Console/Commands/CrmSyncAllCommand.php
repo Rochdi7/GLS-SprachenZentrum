@@ -70,7 +70,7 @@ class CrmSyncAllCommand extends Command
         'classes'          => [
             'homeschool:mirror-core',
             '--months=2',
-            'Mirror classes, students, registrations from Homeschool API',
+            'Mirror classes, students, registrations from Wimschool API',
         ],
         'attendance'       => [
             'crm:sync-attendance',

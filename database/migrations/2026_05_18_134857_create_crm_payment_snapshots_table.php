@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Daily snapshot of every payment row returned by the Homeschool CRM API.
+ * Daily snapshot of every payment row returned by the Wimschool CRM API.
  *
  * One row per (crm_payment_id, snapshot_date). Each day's nightly job upserts
  * the current state; the diff page compares yesterday vs today to surface:

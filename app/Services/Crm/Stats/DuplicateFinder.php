@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 /**
- * Scans student records returned by the Homeschool CRM and identifies likely
+ * Scans student records returned by the Wimschool CRM and identifies likely
  * duplicates by phone, WhatsApp, email, CIN, and name+center.
  *
  * The CRM API doesn't expose a server-side dedup endpoint, so we pull pages of

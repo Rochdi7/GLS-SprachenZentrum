@@ -59,7 +59,7 @@
                     <div class="fw-medium">{{ count($report['duplicates']) }} avance(s) en doublon détectées et masquées</div>
                     <p class="small text-muted mb-0">
                         Des paiements partagent le même étudiant + montant + date effective. Le compteur n'affiche que les avances uniques.
-                        Probables doublons à fusionner dans Homeschool.
+                        Probables doublons à fusionner dans Wimschool.
                     </p>
                 </div>
             </div>

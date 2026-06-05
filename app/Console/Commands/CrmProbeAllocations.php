@@ -24,7 +24,7 @@ class CrmProbeAllocations extends Command
         {--store= : Explicit strStoreId (used when centre is "-")}
         {--payments : Also probe /payments to compare}';
 
-    protected $description = 'Probe the Homeschool /payment-allocations endpoint and show raw counts + sample rows';
+    protected $description = 'Probe the Wimschool /payment-allocations endpoint and show raw counts + sample rows';
 
     public function handle(Crm $crm): int
     {

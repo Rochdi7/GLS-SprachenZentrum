@@ -1,4 +1,4 @@
-# Homeschool CRM API — Complete Guide
+﻿# Wimschool CRM API â€” Complete Guide
 
 > **Base URL:** `CRM_API_BASE_URL` (set in `.env`)  
 > **Auth:** Bearer token (`CRM_API_TOKEN` in `.env`, or per-center token stored on `sites.crm_token`)  
@@ -87,7 +87,7 @@ $crm->students()->sessionPresence(
 );
 ```
 
-**Response rows include:** `STUDENT_ID`, `FIRST_NAME`, `LAST_NAME`, `SESSION_ID`, `SESSION_DATE` (UTC — convert to `Africa/Casablanca`!), `PRESENCE` ("Y"/"N"), `ABSENCE` ("Y"/"N"), `PRESENCE_STATUS` (1/0)
+**Response rows include:** `STUDENT_ID`, `FIRST_NAME`, `LAST_NAME`, `SESSION_ID`, `SESSION_DATE` (UTC â€” convert to `Africa/Casablanca`!), `PRESENCE` ("Y"/"N"), `ABSENCE` ("Y"/"N"), `PRESENCE_STATUS` (1/0)
 
 > **Timezone gotcha:** `SESSION_DATE` is emitted in UTC. Evening Casablanca sessions land on the previous calendar day if you don't call `setTimezone('Africa/Casablanca')`.
 
@@ -263,7 +263,7 @@ $crm->groups()->bulkClasses(size: 100, strStoreId: 12);
 ## 5. LOV (List of Values / Reference Tables)
 
 **Scope:** `lov:read`  
-No pagination — server enforces a `limit` cap (default 100). Cache these aggressively.
+No pagination â€” server enforces a `limit` cap (default 100). Cache these aggressively.
 
 | Method | Endpoint | Returns |
 |---|---|---|
@@ -278,7 +278,7 @@ No pagination — server enforces a `limit` cap (default 100). Cache these aggre
 | `lov()->levelSessionPackages()` | `/lov/level-session-packages` | Course packages |
 | `lov()->categories()` | `/lov/categories` | Student categories |
 | `lov()->banks()` | `/lov/banks` | Bank list |
-| `lov()->subscriptionServices()` | `/subscription-services` | (paginated, size≤25) |
+| `lov()->subscriptionServices()` | `/subscription-services` | (paginated, sizeâ‰¤25) |
 
 ---
 
@@ -299,7 +299,7 @@ $crm->subscriptionServices()->list(
     registrationId: 55,
     levelSessionId: 22,
     levelSessionPackageId: 10,
-    dueDate: '2026-06-30',        // returns services with due_date ≤ this
+    dueDate: '2026-06-30',        // returns services with due_date â‰¤ this
     subscriptionServiceStatusId: 1,
 );
 ```
@@ -391,8 +391,8 @@ $allRows = $crm->client()->parallelFetch(
 ```
 
 ### Rate Limit Handling
-- 429 → waits `Retry-After` seconds (capped at 30s), retries once
-- If still 429 → sets a 60s cool-down flag; subsequent calls fail-fast
+- 429 â†’ waits `Retry-After` seconds (capped at 30s), retries once
+- If still 429 â†’ sets a 60s cool-down flag; subsequent calls fail-fast
 - Error class: `App\Services\Crm\CrmException`
 
 ---
@@ -401,7 +401,7 @@ $allRows = $crm->client()->parallelFetch(
 
 These services sit on top of the raw API and provide dashboard-ready data.
 
-### `CrmStatsService` — KPI Snapshots
+### `CrmStatsService` â€” KPI Snapshots
 ```php
 app(\App\Services\Crm\Stats\CrmStatsService::class)
     ->perCenterKpis(startDate: '2026-01-01', endDate: '2026-06-30');
@@ -417,7 +417,7 @@ app(\App\Services\Crm\Stats\CrmStatsService::class)
 
 ---
 
-### `InsightsService` — Business Analytics
+### `InsightsService` â€” Business Analytics
 ```php
 app(\App\Services\Crm\Stats\InsightsService::class)
 
@@ -437,14 +437,14 @@ app(\App\Services\Crm\Stats\InsightsService::class)
 
 ---
 
-### `PaymentActivityService` — Snapshot Diff Engine
-Compares daily snapshots to detect changes. **No API calls — reads local DB only.**
+### `PaymentActivityService` â€” Snapshot Diff Engine
+Compares daily snapshots to detect changes. **No API calls â€” reads local DB only.**
 
 ```php
 app(\App\Services\Crm\Stats\PaymentActivityService::class)
 
 ->dailyDiff(date: '2026-06-02', strStoreId: 12);
-// Returns: deleted / created / amount_changed / late_edits / user_changed — all paginated
+// Returns: deleted / created / amount_changed / late_edits / user_changed â€” all paginated
 
 ->paymentHistory(paymentId: 12345);
 // Full audit trail: every snapshot of one payment with field-level diff
@@ -452,7 +452,7 @@ app(\App\Services\Crm\Stats\PaymentActivityService::class)
 
 ---
 
-### `DuplicateFinder` — Student Dedup
+### `DuplicateFinder` â€” Student Dedup
 ```php
 app(\App\Services\Crm\Stats\DuplicateFinder::class)->find(strStoreId: 12);
 // Scans up to 3000 students, buckets by: phone, WhatsApp, email, CIN, name+center
@@ -462,7 +462,7 @@ app(\App\Services\Crm\Stats\DuplicateFinder::class)->find(strStoreId: 12);
 
 ---
 
-## CenterContext — Multi-Center Session
+## CenterContext â€” Multi-Center Session
 
 Manages which center the admin is currently viewing.
 
@@ -481,21 +481,21 @@ $ctx->nameForStoreId(12);           // "GLS Casablanca"
 ## What You Can Build
 
 ### Already Built
-- **CRM KPI Dashboard** — per-center student/registration/payment/class counts
-- **Attendance Import** — sync session presence from bulk endpoint → local DB
-- **Payment Snapshot** — nightly sync of payments to `crm_payment_snapshots`
-- **Payment Activity Feed** — daily diff: new/deleted/changed payments
-- **Duplicate Student Finder** — phone/email/CIN/name matching
-- **Retention Funnel** — cohort dropout analysis
-- **Revenue Forecast** — moving-average projection
+- **CRM KPI Dashboard** â€” per-center student/registration/payment/class counts
+- **Attendance Import** â€” sync session presence from bulk endpoint â†’ local DB
+- **Payment Snapshot** â€” nightly sync of payments to `crm_payment_snapshots`
+- **Payment Activity Feed** â€” daily diff: new/deleted/changed payments
+- **Duplicate Student Finder** â€” phone/email/CIN/name matching
+- **Retention Funnel** â€” cohort dropout analysis
+- **Revenue Forecast** â€” moving-average projection
 
 ### What the API Supports That's Not Yet Built
 
 | Feature | Endpoints Needed | Effort |
 |---|---|---|
-| **Receivables Dashboard** (who owes what) | `payment-collection`, `subscription-services` | Low — data already mapped |
+| **Receivables Dashboard** (who owes what) | `payment-collection`, `subscription-services` | Low â€” data already mapped |
 | **Check Tracking** (post-dated cheques calendar) | `payment-checks` + `lov/banks` | Low |
-| **Teacher Salary Report** | `employee-calculated-salary-classes` | Low — endpoint exists |
+| **Teacher Salary Report** | `employee-calculated-salary-classes` | Low â€” endpoint exists |
 | **Payment Allocation Audit** (which payment covers which service) | `payment-allocations` | Low |
 | **Student Profile Page** | `students`, `registrations`, `payments`, `session-presence` | Medium |
 | **Group Enrollment Report** | `groups/classes` (LIST_STUDENT JSON) + `registrations` | Medium |
@@ -504,7 +504,7 @@ $ctx->nameForStoreId(12);           // "GLS Casablanca"
 | **Registration Status Change Log** | `lov/registration-change-status-reasons` + `registrations` | Medium |
 | **Annual Fee Statement per Student** | `payments` + `subscription-services` + PDF via DomPdf | Medium |
 | **Late Payment Alerts** | `payment-collection` with `dueDateEndDate=today` | Low |
-| **Center Comparison Charts** | `perCenterKpis()` already returns data — just add UI | Low |
+| **Center Comparison Charts** | `perCenterKpis()` already returns data â€” just add UI | Low |
 | **Teacher Workload vs Salary** | `groups/classes` (CLASS_COUNT_STUDENTS_ACTIVE) + `employee-calculated-salary-classes` | Medium |
 
 ---
@@ -520,4 +520,4 @@ CRM_API_CONNECT_TIMEOUT=5
 CRM_API_VERIFY_SSL=true
 ```
 
-`config/crm.php` maps these into the `HomeschoolClient` constructor. Per-center tokens are stored in `sites.crm_token` and injected via `Crm::withToken()`.
+`config/crm.php` maps these into the `WimschoolClient` constructor. Per-center tokens are stored in `sites.crm_token` and injected via `Crm::withToken()`.

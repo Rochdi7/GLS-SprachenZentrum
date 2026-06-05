@@ -3,7 +3,7 @@
 namespace App\Services\Payroll;
 
 use App\Models\Group;
-use App\Models\HomeschoolSyncLog;
+use App\Models\WimschoolSyncLog;
 use App\Models\PresenceImport;
 use App\Models\PresenceImportStudent;
 use App\Models\PresenceRecord;
@@ -11,7 +11,7 @@ use App\Services\Crm\Crm;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class HomeschoolAttendanceService
+class WimschoolAttendanceService
 {
     public function __construct(
         protected Crm $crm,
@@ -19,7 +19,7 @@ class HomeschoolAttendanceService
     ) {}
 
     /**
-     * Preview Homeschool API data
+     * Preview Wimschool API data
      */
     public function preview(Group $group, Carbon $dateStart, Carbon $dateEnd): array
     {
@@ -44,7 +44,7 @@ class HomeschoolAttendanceService
     }
 
     /**
-     * Sync attendance from Homeschool API and calculate professor payment
+     * Sync attendance from Wimschool API and calculate professor payment
      */
     public function syncAndCalculate(
         Group $group,
@@ -54,7 +54,7 @@ class HomeschoolAttendanceService
         ?string $notes = null,
         ?int $userId = null
     ): array {
-        $syncLog = HomeschoolSyncLog::create([
+        $syncLog = WimschoolSyncLog::create([
             'group_id' => $group->id,
             'date_start' => $dateStart,
             'date_end' => $dateEnd,

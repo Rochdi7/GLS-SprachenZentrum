@@ -55,7 +55,7 @@ class CrmStudentsController extends BaseCrmController
         $strStoreId = $this->currentStrStoreId();
         $crm        = $this->scopedCrm();
 
-        // The Homeschool API only supports a single `date` filter on
+        // The Wimschool API only supports a single `date` filter on
         // /session-presence (no range). We expose Date début / Date fin in the
         // UI and apply them client-side after the page-walk. Default to the
         // current month so the matrix isn't blank on first load.

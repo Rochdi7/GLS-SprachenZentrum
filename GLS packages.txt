@@ -130,7 +130,7 @@ CRM — Diagnostics
 --------------------------------------------------------------------------------
 
 crm:ping
-  Test connectivity to the Homeschool External API.
+  Test connectivity to the Wimschool External API.
 
   php artisan crm:ping
   php artisan crm:ping --endpoint=payment-methods
@@ -155,11 +155,11 @@ crm:sync-centers
   php artisan crm:sync-centers
 
 --------------------------------------------------------------------------------
-Homeschool — Professor payroll attendance
+Wimschool — Professor payroll attendance
 --------------------------------------------------------------------------------
 
 homeschool:sync-attendance
-  Sync attendance from Homeschool API and compute professor payments.
+  Sync attendance from Wimschool API and compute professor payments.
   Different from crm:sync-attendance — this is for prof payroll, not presence suivi.
 
   php artisan homeschool:sync-attendance

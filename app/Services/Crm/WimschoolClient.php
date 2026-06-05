@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Low-level HTTP client for the Homeschool External API v1.
+ * Low-level HTTP client for the Wimschool External API v1.
  *
  * Holds the Bearer token, base URL, retry and timeout policy. All resource
  * classes go through this - never call Http::get() directly elsewhere in the
@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Log;
  * Intentionally separate from the Laravel CRUD layer: this never touches
  * Eloquent or the local DB.
  */
-class HomeschoolClient
+class WimschoolClient
 {
     protected string $baseUrl;
     protected ?string $token;
@@ -81,7 +81,7 @@ class HomeschoolClient
      */
     public function get(string $path, array $query = [], bool $fresh = false): array
     {
-        Log::info("HomeschoolClient::get path: {$path}, query: " . json_encode($query));
+        Log::info("WimschoolClient::get path: {$path}, query: " . json_encode($query));
         $ttl = (int) config('crm.cache_ttl', 60);
         if ($ttl <= 0) {
             return $this->send('GET', $path, query: $query);
@@ -109,7 +109,7 @@ class HomeschoolClient
      *
      * Falls back to sequential pagination if the API doesn't return totalPages
      * (e.g. when includeTotal=false). For lighter payloads, pass includeTotal=false
-     * in the base query - Homeschool's COUNT query is the slowest part.
+     * in the base query - Wimschool's COUNT query is the slowest part.
      *
      * @param  array<string,mixed>  $baseQuery  Filters (excluding page/size)
      * @return array<int, array<string,mixed>>  Flat list of all rows
@@ -344,7 +344,7 @@ class HomeschoolClient
      */
     protected function send(string $method, string $path, array $query = [], ?array $json = null): array
     {
-        Log::info("HomeschoolClient::send method: {$method}, path: {$path}, query: " . json_encode($query));
+        Log::info("WimschoolClient::send method: {$method}, path: {$path}, query: " . json_encode($query));
         $this->assertConfigured();
 
         $url = $this->baseUrl . '/' . ltrim($path, '/');

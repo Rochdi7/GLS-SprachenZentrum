@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class StatsController extends BaseCrmController
@@ -69,11 +70,23 @@ class StatsController extends BaseCrmController
 
         if (!$latest) return [];
 
+        // Use latest snapshot_date per payment_id to deduplicate across historical
+        // snapshots — this lets the 6/12-month views read older snapshot rows that
+        // the current rolling-2-month snapshot no longer contains.
+        $storeFilter = $storeId ? "AND crm_store_id = {$storeId}" : '';
         $rows = CrmPaymentSnapshot::query()
-            ->where('snapshot_date', $latest)
-            ->whereRaw('effective_date >= ?', [$from])
-            ->where('payment_type_id', 1)
-            ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
+            ->fromRaw("(
+                SELECT crm_store_id, effective_date, amount, payment_type_id
+                FROM crm_payment_snapshots s1
+                WHERE payment_type_id = 1
+                  AND effective_date >= ?
+                  {$storeFilter}
+                  AND snapshot_date = (
+                      SELECT MAX(s2.snapshot_date)
+                      FROM crm_payment_snapshots s2
+                      WHERE s2.crm_payment_id = s1.crm_payment_id
+                  )
+            ) AS deduped", [$from])
             ->selectRaw("crm_store_id, DATE_FORMAT(effective_date,'%Y-%m') as month, SUM(amount) as total")
             ->groupBy('crm_store_id', 'month')
             ->orderBy('month')
@@ -174,11 +187,23 @@ class StatsController extends BaseCrmController
         $prevYearStart  = Carbon::today($tz)->subYear()->startOfMonth()->toDateString();
         $prevYearEnd    = Carbon::today($tz)->subYear()->endOfMonth()->toDateString();
 
-        $sum = fn ($from, $to) => (float) CrmPaymentSnapshot::where('snapshot_date', $latest)
-            ->where('payment_type_id', 1) // Réglement only — exclude inter-caisse transfers
-            ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
-            ->whereBetween('effective_date', [$from, $to])
-            ->sum('amount');
+        $storeFilter = $storeId ? "AND crm_store_id = {$storeId}" : '';
+        // Deduplicate by taking latest snapshot per payment so historical months
+        // (prev_year) are read from older snapshots, not just the rolling-2-month one.
+        $sum = function (string $from, string $to) use ($storeFilter): float {
+            return (float) \Illuminate\Support\Facades\DB::selectOne("
+                SELECT COALESCE(SUM(amount), 0) as total
+                FROM crm_payment_snapshots s1
+                WHERE payment_type_id = 1
+                  AND effective_date BETWEEN ? AND ?
+                  {$storeFilter}
+                  AND snapshot_date = (
+                      SELECT MAX(s2.snapshot_date)
+                      FROM crm_payment_snapshots s2
+                      WHERE s2.crm_payment_id = s1.crm_payment_id
+                  )
+            ", [$from, $to])->total;
+        };
 
         // Uses normalized date_creation column (indexed) instead of JSON_EXTRACT.
         // Populated by crm:backfill-columns + crm:sync-registrations (ongoing).

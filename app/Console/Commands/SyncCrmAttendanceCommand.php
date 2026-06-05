@@ -153,8 +153,11 @@ class SyncCrmAttendanceCommand extends Command
                     || ($row['PRESENCE_STATUS'] ?? 0) == 1;
 
                 // Normalize date_creation — NULL means draft, non-NULL means saisie
+                // Replace ISO 8601 'T' separator with space so MariaDB accepts it
                 $rawDc = $row['DATE_CREATION'] ?? null;
-                $dateCreation = ($rawDc && $rawDc !== 'null') ? $rawDc : null;
+                $dateCreation = ($rawDc && $rawDc !== 'null')
+                    ? str_replace('T', ' ', $rawDc)
+                    : null;
 
                 $upserts[] = [
                     'crm_class_id'      => $crmClassId,

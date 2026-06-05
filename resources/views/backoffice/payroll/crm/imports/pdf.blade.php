@@ -357,7 +357,7 @@
             </div>
             <div class="header-mid">
                 <div class="doc-title">Fiche de Paiement Professeur</div>
-                <div class="doc-subtitle">GLS Sprachenzentrum — Calcul automatique depuis CRM Homeschool</div>
+                <div class="doc-subtitle">GLS Sprachenzentrum — Calcul automatique depuis CRM Wimschool</div>
                 <div style="margin-top:5px">
                     <span class="badge-crm">CRM API</span>
                     <span class="badge-v">Version {{ $import->version }}</span>

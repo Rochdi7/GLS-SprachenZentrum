@@ -1,24 +1,24 @@
-# CRM Local Data Warehouse — Architecture & Implementation Guide
+﻿# CRM Local Data Warehouse â€” Architecture & Implementation Guide
 
-**Project:** GLS Sprachenzentrum — Hostinger Shared Hosting  
-**Goal:** Eliminate all live Homeschool API calls from dashboard pages. Move every expensive
+**Project:** GLS Sprachenzentrum â€” Hostinger Shared Hosting  
+**Goal:** Eliminate all live Wimschool API calls from dashboard pages. Move every expensive
 operation into scheduled background sync jobs. Dashboards become pure SELECT queries.
 
 ---
 
 ## The Problem (Before)
 
-Every dashboard timeout traces to the same root cause: **the Homeschool API is called
+Every dashboard timeout traces to the same root cause: **the Wimschool API is called
 inside an HTTP request cycle**.
 
 | Dashboard | What it did | Worst case |
 |-----------|-------------|------------|
-| `group-evolution` | 40 live API calls (payment-allocations, page size 25) | 5–300 seconds |
-| `presence-suivi` | PHP CarbonPeriod loop: 700+ days × 30 classes = 21,000 iterations | 2–15 seconds |
-| `statistiques` | `JSON_EXTRACT(raw_data,'$.DATE_CREATION')` in WHERE — full table scan | 1–10 seconds |
-| `collections aging` | `cursor()` loop, PHP date math per row | 0.5–5 seconds |
-| `stats/refresh` button | `Artisan::call('crm:snapshot-payments')` — 120s command inside HTTP | instant timeout |
-| Attendance sync | Standard endpoint page size 25 — 320 API requests per sync | rate limit risk |
+| `group-evolution` | 40 live API calls (payment-allocations, page size 25) | 5â€“300 seconds |
+| `presence-suivi` | PHP CarbonPeriod loop: 700+ days Ã— 30 classes = 21,000 iterations | 2â€“15 seconds |
+| `statistiques` | `JSON_EXTRACT(raw_data,'$.DATE_CREATION')` in WHERE â€” full table scan | 1â€“10 seconds |
+| `collections aging` | `cursor()` loop, PHP date math per row | 0.5â€“5 seconds |
+| `stats/refresh` button | `Artisan::call('crm:snapshot-payments')` â€” 120s command inside HTTP | instant timeout |
+| Attendance sync | Standard endpoint page size 25 â€” 320 API requests per sync | rate limit risk |
 
 ---
 
@@ -29,36 +29,36 @@ HOSTINGER CRON (every minute)
   * * * * *  php artisan schedule:run
 
       fires at every even hour
-              │
-              ▼
+              â”‚
+              â–¼
   php artisan crm:sync-all
-  ├── Step 1  homeschool:mirror-core       mirror classes/students/registrations
-  ├── Step 2  crm:sync-attendance          bulk endpoint, 500/page, 600ms delay
-  ├── Step 3  crm:sync-collections         bulk endpoint, 500/page, 500ms delay
-  ├── Step 4  crm:snapshot-payments        daily fraud detection snapshot
-  ├── Step 5  crm:sync-payment-allocations NEW — bulk 500/page, mirrors allocations
-  ├── Step 6  crm:build-presence-summary   NEW — SQL aggregation, replaces PHP loops
-  ├── Step 7  crm:build-group-evolution    NEW — reads local tables, zero API calls
-  └── Step 8  crm:daily-report             CEO morning report
+  â”œâ”€â”€ Step 1  Wimschool:mirror-core       mirror classes/students/registrations
+  â”œâ”€â”€ Step 2  crm:sync-attendance          bulk endpoint, 500/page, 600ms delay
+  â”œâ”€â”€ Step 3  crm:sync-collections         bulk endpoint, 500/page, 500ms delay
+  â”œâ”€â”€ Step 4  crm:snapshot-payments        daily fraud detection snapshot
+  â”œâ”€â”€ Step 5  crm:sync-payment-allocations NEW â€” bulk 500/page, mirrors allocations
+  â”œâ”€â”€ Step 6  crm:build-presence-summary   NEW â€” SQL aggregation, replaces PHP loops
+  â”œâ”€â”€ Step 7  crm:build-group-evolution    NEW â€” reads local tables, zero API calls
+  â””â”€â”€ Step 8  crm:daily-report             CEO morning report
 
               writes to
-              │
-              ▼
+              â”‚
+              â–¼
   LOCAL MySQL (precomputed tables)
-  ├── crm_payment_allocations       NEW mirror table
-  ├── crm_presence_summary          NEW aggregate table
-  ├── crm_group_evolution_snapshot  NEW aggregate table
-  └── crm_sync_log                  NEW progress tracking
+  â”œâ”€â”€ crm_payment_allocations       NEW mirror table
+  â”œâ”€â”€ crm_presence_summary          NEW aggregate table
+  â”œâ”€â”€ crm_group_evolution_snapshot  NEW aggregate table
+  â””â”€â”€ crm_sync_log                  NEW progress tracking
 
               read by
-              │
-              ▼
-  Dashboards  ←  pure SELECT queries, < 200ms
+              â”‚
+              â–¼
+  Dashboards  â†  pure SELECT queries, < 200ms
 ```
 
 **Three rules that permanently prevent timeouts:**
 
-1. `HomeschoolClient::get()` is only called from `app/Console/Commands/`. Never from controllers or services used by dashboards.
+1. `WimschoolClient::get()` is only called from `app/Console/Commands/`. Never from controllers or services used by dashboards.
 2. Heavy computation (CarbonPeriod, cursor loops, aggregations) lives in build commands, not in service methods called during requests.
 3. `Artisan::call()` is never used inside controllers. Refresh buttons clear cache only.
 
@@ -99,7 +99,7 @@ HOSTINGER CRON (every minute)
 
 | Command | Change |
 |---------|--------|
-| `crm:sync-attendance` | `PAGE_SIZE` changed from `25` → `500`. Endpoint changed from standard to `/bulk/session-presence`. 20× fewer API requests. |
+| `crm:sync-attendance` | `PAGE_SIZE` changed from `25` â†’ `500`. Endpoint changed from standard to `/bulk/session-presence`. 20Ã— fewer API requests. |
 | `crm:sync-registrations` | Upsert now also writes `date_creation` and `status_label` normalized columns. |
 | `crm:snapshot-payments` | Upsert now also writes `date_creation_date` normalized column. |
 
@@ -115,7 +115,7 @@ HOSTINGER CRON (every minute)
 | Controller | Change |
 |------------|--------|
 | `StatsController::registrationsByCenter()` | `JSON_EXTRACT(raw_data,'$.DATE_CREATION')` replaced with `date_creation` indexed column. |
-| `StatsController::periodComparison()` | Same fix — normalized column. |
+| `StatsController::periodComparison()` | Same fix â€” normalized column. |
 | `StatsController::refresh()` | `Artisan::call('crm:snapshot-payments')` removed. Now only does `Cache::flush()`. |
 
 ### Updated Kernel.php
@@ -123,7 +123,7 @@ HOSTINGER CRON (every minute)
 Old schedule (8 individual commands at different times) replaced with:
 
 ```php
-// Every 2 hours — master sync
+// Every 2 hours â€” master sync
 $schedule->command('crm:sync-all')
     ->cron('0 */2 * * *')
     ->timezone('Africa/Casablanca')
@@ -141,7 +141,7 @@ $schedule->command('crm:daily-report')
 
 ## Deployment Commands (Run in This Order)
 
-### Phase 1 — Run once on the server
+### Phase 1 â€” Run once on the server
 
 ```bash
 # 1. Run all new migrations
@@ -150,7 +150,7 @@ php artisan migrate
 # 2. Backfill normalized columns from existing raw_data JSON (safe to re-run)
 php artisan crm:backfill-columns
 
-# 3. First manual sync — populate all new tables
+# 3. First manual sync â€” populate all new tables
 php artisan crm:sync-all
 
 # 4. Verify tables have data
@@ -160,14 +160,14 @@ php artisan crm:sync-all
 #   SELECT COUNT(*) FROM crm_presence_summary;
 
 # 5. Test dashboards load fast
-# Visit /backoffice/crm/group-evolution → should be < 1 second
-# Visit /backoffice/crm/presence-suivi  → should be < 1 second
-# Visit /backoffice/crm/statistiques    → should be < 1 second
+# Visit /backoffice/crm/group-evolution â†’ should be < 1 second
+# Visit /backoffice/crm/presence-suivi  â†’ should be < 1 second
+# Visit /backoffice/crm/statistiques    â†’ should be < 1 second
 ```
 
-### Phase 2 — Hostinger Cron (set once, never touch again)
+### Phase 2 â€” Hostinger Cron (set once, never touch again)
 
-In **Hostinger → Hosting → Cron Jobs**, add exactly ONE entry:
+In **Hostinger â†’ Hosting â†’ Cron Jobs**, add exactly ONE entry:
 
 ```
 * * * * *   /usr/local/bin/php /home/USERNAME/domains/DOMAIN/artisan schedule:run >> /dev/null 2>&1
@@ -181,7 +181,7 @@ php artisan schedule:list
 # Should show: crm:sync-all   Every 2 hours
 ```
 
-### Phase 3 — Monitor first automatic run
+### Phase 3 â€” Monitor first automatic run
 
 Check the log after the next even hour:
 ```bash
@@ -196,7 +196,7 @@ tail -f storage/logs/crm-sync-all.log
 # Run full sync (normal)
 php artisan crm:sync-all
 
-# Dry run — shows what would run without executing anything
+# Dry run â€” shows what would run without executing anything
 php artisan crm:sync-all --dry-run
 
 # Resume after a failure (skips already-done steps from today)
@@ -234,7 +234,7 @@ With bulk endpoints (500/page) and 1-second delays:
 | **Per center** | | | | **~95 req** | **~95s** |
 | **4 centers** | +2s between centers | | | **~384 req** | **~13 min** |
 
-Average rate: **~30 req/min** — safely under the 60/min API limit.
+Average rate: **~30 req/min** â€” safely under the 60/min API limit.
 
 ---
 
@@ -242,12 +242,12 @@ Average rate: **~30 req/min** — safely under the 60/min API limit.
 
 | Dashboard | Before | After |
 |-----------|--------|-------|
-| `group-evolution` | 5–300 seconds | < 80ms |
-| `presence-suivi` | 2–8 seconds | < 100ms |
-| `presence-suivi/details` | 3–15 seconds | < 150ms |
-| `statistiques` | 1–10 seconds | < 80ms |
-| `collections aging` | 0.5–5 seconds | < 30ms |
-| `stats/refresh button` | 30–120s timeout | instant |
+| `group-evolution` | 5â€“300 seconds | < 80ms |
+| `presence-suivi` | 2â€“8 seconds | < 100ms |
+| `presence-suivi/details` | 3â€“15 seconds | < 150ms |
+| `statistiques` | 1â€“10 seconds | < 80ms |
+| `collections aging` | 0.5â€“5 seconds | < 30ms |
+| `stats/refresh button` | 30â€“120s timeout | instant |
 
 ---
 
@@ -266,5 +266,5 @@ php artisan crm:sync-all --from=FAILED_STEP_NAME
 php artisan crm:sync-all
 ```
 
-The dashboard will show a "Data pending — run crm:sync-all" message instead of hanging
-or timing out. This is intentional — an empty page is always better than a 300-second timeout.
+The dashboard will show a "Data pending â€” run crm:sync-all" message instead of hanging
+or timing out. This is intentional â€” an empty page is always better than a 300-second timeout.

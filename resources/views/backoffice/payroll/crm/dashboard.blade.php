@@ -74,7 +74,7 @@
         <div class="col-12">
             <div class="alert alert-info">
                 <i class="ph-duotone ph-info me-2"></i>
-                Ce module utilise automatiquement les données de présence depuis le CRM Homeschool.
+                Ce module utilise automatiquement les données de présence depuis le CRM Wimschool.
                 Aucun fichier Excel à importer !
             </div>
         </div>

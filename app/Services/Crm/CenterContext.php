@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Session;
 
 /**
- * Resolves which CRM center (Homeschool store) the user is currently browsing.
+ * Resolves which CRM center (Wimschool store) the user is currently browsing.
  *
  * Sources, in priority order:
  *   1. ?strStoreId= in the URL (one-off override)

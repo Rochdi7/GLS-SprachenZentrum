@@ -45,7 +45,7 @@ use App\Http\Controllers\Backoffice\Payroll\GroupImportController;
 use App\Http\Controllers\Backoffice\Payroll\GroupAnalysisController;
 use App\Http\Controllers\Backoffice\Payroll\PresenceImportController;
 use App\Http\Controllers\Backoffice\Payroll\CrmPayrollController;
-use App\Http\Controllers\Backoffice\Payroll\HomeschoolPayrollController;
+use App\Http\Controllers\Backoffice\Payroll\WimschoolPayrollController;
 
 // Encaissement / Rentabilité
 use App\Http\Controllers\Backoffice\Encaissement\EncaissementController;
@@ -448,16 +448,16 @@ Route::prefix('backoffice')
                     ->name('crm.')
                     ->group(function () {
                         // Dashboard — groups with CRM API imports
-                        Route::get('/', [HomeschoolPayrollController::class, 'index'])->middleware('permission:presence.view')->name('dashboard');
+                        Route::get('/', [WimschoolPayrollController::class, 'index'])->middleware('permission:presence.view')->name('dashboard');
 
                         // Get classes for center
-                        Route::post('/classes-for-center', [HomeschoolPayrollController::class, 'getClassesForCenter'])->middleware('permission:presence.create')->name('classes-for-center');
+                        Route::post('/classes-for-center', [WimschoolPayrollController::class, 'getClassesForCenter'])->middleware('permission:presence.create')->name('classes-for-center');
 
                         // Sync attendance
-                        Route::post('/sync', [HomeschoolPayrollController::class, 'sync'])->middleware('permission:presence.create')->name('sync');
+                        Route::post('/sync', [WimschoolPayrollController::class, 'sync'])->middleware('permission:presence.create')->name('sync');
 
                         // Preview attendance
-                        Route::post('/preview', [HomeschoolPayrollController::class, 'preview'])->middleware('permission:presence.create')->name('preview');
+                        Route::post('/preview', [WimschoolPayrollController::class, 'preview'])->middleware('permission:presence.create')->name('preview');
 
                         // Legacy CRM API imports
                         Route::get('/legacy', [CrmPayrollController::class, 'dashboard'])->middleware('permission:presence.view')->name('legacy.dashboard');
@@ -777,7 +777,7 @@ Route::prefix('backoffice')
 
         /*
         |--------------------------------------------------------------------------
-        | CRM (Homeschool External API) — READ-ONLY proxy pages
+        | CRM (Wimschool External API) — READ-ONLY proxy pages
         | Definitions moved to routes/crmapi.php for better project structure.
         | The require runs inside this prefix('backoffice')->name('backoffice.')
         | group, so URLs and route names are preserved exactly.

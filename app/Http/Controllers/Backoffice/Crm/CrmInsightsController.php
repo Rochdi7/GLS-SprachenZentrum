@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Backoffice\Crm;
 
+use App\Models\CrmRegistration;
 use App\Services\Crm\Stats\AdvancePaymentsService;
 use App\Services\Crm\Stats\GroupEvolutionService;
 use App\Services\Crm\Stats\InsightsService;
 use App\Services\Crm\Stats\PaymentActivityService;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -175,5 +177,34 @@ class CrmInsightsController extends BaseCrmController
             'allGroups'        => $allGroupsForFilter,
             'selectedClassIds' => $selectedClassIds,
         ]);
+    }
+
+    /**
+     * AJAX drill: students registered in a given class.
+     * ?classId=123  — returns all registrations for that class with student name + status.
+     */
+    public function groupEvolutionDrill(Request $request): JsonResponse
+    {
+        $classId = (int) $request->query('classId');
+        if (!$classId) {
+            return response()->json(['rows' => [], 'count' => 0]);
+        }
+
+        $rows = CrmRegistration::where('crm_class_id', $classId)
+            ->orderBy('status_label')
+            ->get(['crm_student_id', 'crm_class_id', 'status_label', 'date_creation', 'raw_data'])
+            ->map(function ($r) {
+                $raw = is_array($r->raw_data) ? $r->raw_data : json_decode($r->raw_data, true);
+                return [
+                    'student_id'   => $r->crm_student_id,
+                    'student_name' => $raw['STUDENT_FULL_NAME'] ?? '—',
+                    'class_name'   => $raw['CLASS_NAME']        ?? '—',
+                    'status'       => $r->status_label          ?? ($raw['REGISTRATION_STATUS_NAME'] ?? '—'),
+                    'start_date'   => $raw['START_DATE']        ?? null,
+                    'registered_at'=> $r->date_creation         ? \Carbon\Carbon::parse($r->date_creation)->format('d/m/Y') : '—',
+                ];
+            });
+
+        return response()->json(['rows' => $rows, 'count' => $rows->count()]);
     }
 }

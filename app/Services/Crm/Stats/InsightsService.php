@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  *
  * Reads from:
  *   - The local crm_payment_snapshots table (fast, daily-fresh)
- *   - The Homeschool CRM API for live registrations / classes data (15-min cache)
+ *   - The Wimschool CRM API for live registrations / classes data (15-min cache)
  *
  * Each public method is a single Blade-friendly DTO (associative array).
  */

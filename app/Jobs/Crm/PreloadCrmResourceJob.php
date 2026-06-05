@@ -42,7 +42,7 @@ class PreloadCrmResourceJob implements ShouldQueue
                 $page = $this->startPage + $p;
                 
                 // We just call get() which will automatically store the result in cache
-                // because of HomeschoolClient's built-in caching logic.
+                // because of WimschoolClient's built-in caching logic.
                 $client->get($this->path, array_merge($this->query, [
                     'page' => $page,
                 ]), fresh: true);

@@ -2,11 +2,11 @@
 
 namespace App\Services\Crm\Resources;
 
-use App\Services\Crm\HomeschoolClient;
+use App\Services\Crm\WimschoolClient;
 
 abstract class Resource
 {
-    public function __construct(protected HomeschoolClient $client)
+    public function __construct(protected WimschoolClient $client)
     {
     }
 }

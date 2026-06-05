@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'CRM (Homeschool API)')
+@section('title', 'CRM (Wimschool API)')
 @section('breadcrumb-item', 'CRM')
 @section('breadcrumb-item-active', 'Accueil')
 
@@ -14,7 +14,7 @@
                 <div>
                     <h5 class="mb-1">
                         <i class="ti ti-cloud-data-connection text-primary me-1"></i>
-                        Homeschool External API v1
+                        Wimschool External API v1
                     </h5>
                     <p class="text-muted small mb-0">
                         Lecture seule. Données interrogées en direct depuis

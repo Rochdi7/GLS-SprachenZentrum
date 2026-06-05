@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| CRM (Homeschool External API) — READ-ONLY proxy pages
+| CRM (Wimschool External API) — READ-ONLY proxy pages
 |--------------------------------------------------------------------------
 | Loaded from routes/backoffice.php inside the
 |   Route::prefix('backoffice')->name('backoffice.')
@@ -66,12 +66,14 @@ Route::prefix('crm')
                 ->where('paymentId', '[0-9]+');
             Route::get('/insights/advances',                       'advances')->name('insights.advances');
             Route::get('/group-evolution',                         'groupEvolution')->name('group-evolution');
+            Route::get('/group-evolution/drill',                   'groupEvolutionDrill')->name('group-evolution.drill');
         });
 
         // Collections dashboard (Module 2).
         Route::prefix('collections')->name('collections.')->group(function () {
             Route::get('/',        [\App\Http\Controllers\Backoffice\Crm\CollectionsController::class, 'index'])->name('index');
             Route::post('/refresh', [\App\Http\Controllers\Backoffice\Crm\CollectionsController::class, 'refresh'])->name('refresh');
+            Route::get('/drill',   [\App\Http\Controllers\Backoffice\Crm\CollectionsController::class, 'drill'])->name('drill');
         });
 
         // Suivi présences — calendrier anti-fraude.

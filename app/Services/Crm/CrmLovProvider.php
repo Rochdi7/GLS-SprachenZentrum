@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
  * already sorted alphabetically, ready to feed straight into a <select>.
  *
  * Why this exists:
- *   - The Homeschool API caps page size at 25 (MAX_SIZE_EXCEEDED). Every dropdown
+ *   - The Wimschool API caps page size at 25 (MAX_SIZE_EXCEEDED). Every dropdown
  *     that talks to /groups/* needs a page-walk; LOV endpoints accept a `limit`
  *     parameter (default 100) which is cheaper. Centralising the walk + the
  *     ID/Name extraction means each controller method becomes a one-liner.
@@ -84,7 +84,7 @@ class CrmLovProvider
     /**
      * Teacher dropdown — scoped to the active store.
      *
-     * The Homeschool API has no /lov/teachers endpoint, but every row returned
+     * The Wimschool API has no /lov/teachers endpoint, but every row returned
      * by /groups/classes carries EMPLOYEE_TEACHER_ID + EMPLOYEE_TEACHER_FULL_NAME.
      * We page-walk classes and extract the unique (id, name) pairs.
      */

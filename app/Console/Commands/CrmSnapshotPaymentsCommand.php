@@ -11,7 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 /**
- * Pulls every payment row from the Homeschool CRM and stores a snapshot for
+ * Pulls every payment row from the Wimschool CRM and stores a snapshot for
  * today's date. Idempotent: re-running on the same day updates rows instead
  * of duplicating.
  *

@@ -5,15 +5,15 @@ namespace App\Http\Controllers\Backoffice\Payroll;
 use App\Http\Controllers\Backoffice\Crm\BaseCrmController;
 use App\Models\CrmClass;
 use App\Models\Group;
-use App\Models\HomeschoolSyncLog;
-use App\Services\Payroll\HomeschoolAttendanceService;
+use App\Models\WimschoolSyncLog;
+use App\Services\Payroll\WimschoolAttendanceService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class HomeschoolPayrollController extends BaseCrmController
+class WimschoolPayrollController extends BaseCrmController
 {
     public function __construct(
-        protected HomeschoolAttendanceService $attendanceService,
+        protected WimschoolAttendanceService $attendanceService,
         protected \App\Services\Crm\Crm $crm,
         protected \App\Services\Crm\CenterContext $centers,
         protected \App\Services\Crm\CrmLovProvider $lovs,
@@ -32,13 +32,13 @@ class HomeschoolPayrollController extends BaseCrmController
             ->orderBy('name')
             ->get();
 
-        $syncLogs = HomeschoolSyncLog::with(['group', 'createdBy'])->latest()->limit(50)->get();
+        $syncLogs = WimschoolSyncLog::with(['group', 'createdBy'])->latest()->limit(50)->get();
 
-        return $this->view('backoffice.payroll.homeschool.index', compact('groups', 'allGroups', 'syncLogs'));
+        return $this->view('backoffice.payroll.wimschool.index', compact('groups', 'allGroups', 'syncLogs'));
     }
 
     /**
-     * Preview Homeschool API data
+     * Preview Wimschool API data
      */
     public function preview(Request $request)
     {

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Cache;
  * paginate everything in parallel and filter IS_AVANCE === 'Y' in PHP.
  *
  * Duplicate detection: same (student + amount + effective_date) → keep one row,
- * mark the rest as duplicates. This matches what Homeschool's UI does internally.
+ * mark the rest as duplicates. This matches what Wimschool's UI does internally.
  *
  * Cached 5 min per (center, date-window) combination.
  */

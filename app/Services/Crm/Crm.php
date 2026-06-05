@@ -12,7 +12,7 @@ use App\Services\Crm\Resources\Students;
 use App\Services\Crm\Resources\SubscriptionServices;
 
 /**
- * Entry point for the Homeschool CRM integration.
+ * Entry point for the Wimschool CRM integration.
  *
  * Usage:
  *
@@ -27,7 +27,7 @@ class Crm
 {
     protected array $resources = [];
 
-    public function __construct(protected HomeschoolClient $client)
+    public function __construct(protected WimschoolClient $client)
     {
     }
 
@@ -71,7 +71,7 @@ class Crm
         return $this->resources[Attendance::class] ??= new Attendance($this->client);
     }
 
-    public function client(): HomeschoolClient
+    public function client(): WimschoolClient
     {
         return $this->client;
     }

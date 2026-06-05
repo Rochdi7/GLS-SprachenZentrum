@@ -10,7 +10,7 @@ class CrmPingCommand extends Command
 {
     protected $signature = 'crm:ping {--endpoint=banks : LOV endpoint to test (banks, categories, payment-methods, ...)}';
 
-    protected $description = 'Verify connectivity to the Homeschool External API using a LOV endpoint.';
+    protected $description = 'Verify connectivity to the Wimschool External API using a LOV endpoint.';
 
     public function handle(Crm $crm): int
     {

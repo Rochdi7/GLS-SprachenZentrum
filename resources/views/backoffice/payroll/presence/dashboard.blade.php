@@ -68,21 +68,21 @@
                         <i class="ph-duotone ph-upload-simple me-1"></i> Nouvel import
                     </a>
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#homeschoolModal">
-                        <i class="ph-duotone ph-sync me-1"></i> Generate From Homeschool API
+                        <i class="ph-duotone ph-sync me-1"></i> Generate From Wimschool API
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Homeschool API Modal -->
+    <!-- Wimschool API Modal -->
     <div class="modal fade" id="homeschoolModal" tabindex="-1" aria-labelledby="homeschoolModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <form id="homeschoolForm" action="{{ route('backoffice.payroll.crm.sync') }}" method="POST">
                     @csrf
                     <div class="modal-header">
-                        <h5 class="modal-title" id="homeschoolModalLabel">Generate Payment From Homeschool API</h5>
+                        <h5 class="modal-title" id="homeschoolModalLabel">Generate Payment From Wimschool API</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -156,7 +156,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-outline-primary" id="previewBtn"
-                            onclick="previewHomeschoolData()">
+                            onclick="previewWimschoolData()">
                             <i class="ph-duotone ph-eye me-1"></i> Preview
                         </button>
                         <button type="submit" class="btn btn-primary">
@@ -330,7 +330,7 @@
             }
         }
 
-        async function previewHomeschoolData() {
+        async function previewWimschoolData() {
             const form = document.getElementById('homeschoolForm');
             const formData = new FormData(form);
             const previewSection = document.getElementById('previewSection');

@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
 /**
- * Seeds the Homeschool CRM mapping (strStoreId + per-center token) onto the
+ * Seeds the Wimschool CRM mapping (strStoreId + per-center token) onto the
  * sites table from the spreadsheet shared by the school.
  *
  * Idempotent: re-running only refreshes crm_store_id / crm_token.

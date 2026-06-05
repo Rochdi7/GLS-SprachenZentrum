@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class HomeschoolSyncLog extends Model
+class WimschoolSyncLog extends Model
 {
     protected $fillable = [
         'group_id',

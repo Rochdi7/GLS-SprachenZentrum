@@ -16,6 +16,9 @@
         .aging-card.border-orange  { border-left-color: #fd7e14 !important; }
         .aging-card.border-danger  { border-left-color: #dc3545 !important; }
         .aging-card.border-dark    { border-left-color: #212529 !important; }
+        .drill-btn { cursor:pointer; opacity:.6; font-size:.85rem; }
+        .drill-btn:hover { opacity:1; }
+        #drillTable td, #drillTable th { font-size:.85rem; }
     </style>
 @endsection
 
@@ -95,95 +98,60 @@
     {{-- ================================================================== --}}
     {{-- KPI CARDS — Row 1: outstanding + due buckets                         --}}
     {{-- ================================================================== --}}
+    @php
+    $kpiCards = [
+        ['type'=>'outstanding', 'label'=>"Montant total en attente",    'value'=>$kpis['outstandingTotal']??null, 'color'=>'primary'],
+        ['type'=>'dueToday',    'label'=>"Tranches dues aujourd'hui",   'value'=>$kpis['dueToday']??null,        'color'=>'info'],
+        ['type'=>'dueWeek',     'label'=>"Tranches dues cette semaine", 'value'=>$kpis['dueWeek']??null,         'color'=>'success'],
+        ['type'=>'dueMonth',    'label'=>"Tranches dues ce mois",       'value'=>$kpis['dueMonth']??null,        'color'=>'warning'],
+    ];
+    $overdueCards = [
+        ['type'=>'overdue7',  'label'=>'En retard &gt; 7 jours',  'value'=>$kpis['overdue7']??null,  'color'=>'secondary', 'style'=>''],
+        ['type'=>'overdue30', 'label'=>'En retard &gt; 30 jours', 'value'=>$kpis['overdue30']??null, 'color'=>'',          'style'=>'border-left:4px solid #fd7e14; color:#fd7e14'],
+        ['type'=>'overdue60', 'label'=>'En retard &gt; 60 jours', 'value'=>$kpis['overdue60']??null, 'color'=>'danger',    'style'=>''],
+        ['type'=>'overdue90', 'label'=>'En retard &gt; 90 jours', 'value'=>$kpis['overdue90']??null, 'color'=>'dark',      'style'=>''],
+    ];
+    @endphp
+
     <div class="row g-3 mb-3">
-        {{-- Outstanding Total --}}
+        @foreach ($kpiCards as $card)
         <div class="col-lg-3 col-md-6">
-            <div class="card kpi-card h-100 border-start border-primary border-3">
-                <div class="card-body">
-                    <div class="kpi-label">Montant total en attente</div>
-                    <h3 class="text-primary">
-                        {{ isset($kpis['outstandingTotal']) ? number_format($kpis['outstandingTotal'], 2, ',', ' ') . ' DH' : '—' }}
-                    </h3>
+            <div class="card kpi-card h-100 border-start border-{{ $card['color'] }} border-3">
+                <div class="card-body d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="kpi-label">{!! $card['label'] !!}</div>
+                        <h3 class="text-{{ $card['color'] }}">
+                            {{ $card['value'] !== null ? number_format($card['value'], 2, ',', ' ') . ' DH' : '—' }}
+                        </h3>
+                    </div>
+                    <span class="drill-btn text-{{ $card['color'] }}" data-type="{{ $card['type'] }}" data-label="{!! $card['label'] !!}" title="Voir les dossiers">
+                        <i class="ph-duotone ph-eye fs-4"></i>
+                    </span>
                 </div>
             </div>
         </div>
-        {{-- Due Today --}}
-        <div class="col-lg-3 col-md-6">
-            <div class="card kpi-card h-100 border-start border-info border-3">
-                <div class="card-body">
-                    <div class="kpi-label">Tranches dues aujourd'hui</div>
-                    <h3 class="text-info">
-                        {{ isset($kpis['dueToday']) ? number_format($kpis['dueToday'], 2, ',', ' ') . ' DH' : '—' }}
-                    </h3>
-                </div>
-            </div>
-        </div>
-        {{-- Due This Week --}}
-        <div class="col-lg-3 col-md-6">
-            <div class="card kpi-card h-100 border-start border-success border-3">
-                <div class="card-body">
-                    <div class="kpi-label">Tranches dues cette semaine</div>
-                    <h3 class="text-success">
-                        {{ isset($kpis['dueWeek']) ? number_format($kpis['dueWeek'], 2, ',', ' ') . ' DH' : '—' }}
-                    </h3>
-                </div>
-            </div>
-        </div>
-        {{-- Due This Month --}}
-        <div class="col-lg-3 col-md-6">
-            <div class="card kpi-card h-100 border-start border-warning border-3">
-                <div class="card-body">
-                    <div class="kpi-label">Tranches dues ce mois</div>
-                    <h3 class="text-warning">
-                        {{ isset($kpis['dueMonth']) ? number_format($kpis['dueMonth'], 2, ',', ' ') . ' DH' : '—' }}
-                    </h3>
-                </div>
-            </div>
-        </div>
+        @endforeach
     </div>
 
-    {{-- KPI CARDS — Row 2: overdue buckets --}}
     <div class="row g-3 mb-4">
+        @foreach ($overdueCards as $card)
         <div class="col-lg-3 col-md-6">
-            <div class="card kpi-card h-100 border-start border-secondary border-3">
-                <div class="card-body">
-                    <div class="kpi-label">En retard &gt; 7 jours</div>
-                    <h3 class="text-secondary">
-                        {{ isset($kpis['overdue7']) ? number_format($kpis['overdue7'], 2, ',', ' ') . ' DH' : '—' }}
-                    </h3>
+            <div class="card kpi-card h-100" style="{{ $card['style'] ?: 'border-left:4px solid var(--bs-'.$card['color'].')' }}">
+                <div class="card-body d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="kpi-label">{!! $card['label'] !!}</div>
+                        <h3 @if($card['style']) style="{{ $card['style'] }}" @else class="text-{{ $card['color'] }}" @endif>
+                            {{ $card['value'] !== null ? number_format($card['value'], 2, ',', ' ') . ' DH' : '—' }}
+                        </h3>
+                    </div>
+                    <span class="drill-btn" @if($card['style']) style="{{ $card['style'] }}" @else class="text-{{ $card['color'] }}" @endif
+                          data-type="{{ $card['type'] }}" data-label="{!! $card['label'] !!}" title="Voir les dossiers">
+                        <i class="ph-duotone ph-eye fs-4"></i>
+                    </span>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card kpi-card h-100" style="border-left: 4px solid #fd7e14;">
-                <div class="card-body">
-                    <div class="kpi-label">En retard &gt; 30 jours</div>
-                    <h3 style="color:#fd7e14">
-                        {{ isset($kpis['overdue30']) ? number_format($kpis['overdue30'], 2, ',', ' ') . ' DH' : '—' }}
-                    </h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card kpi-card h-100 border-start border-danger border-3">
-                <div class="card-body">
-                    <div class="kpi-label">En retard &gt; 60 jours</div>
-                    <h3 class="text-danger">
-                        {{ isset($kpis['overdue60']) ? number_format($kpis['overdue60'], 2, ',', ' ') . ' DH' : '—' }}
-                    </h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card kpi-card h-100 border-start border-dark border-3">
-                <div class="card-body">
-                    <div class="kpi-label">En retard &gt; 90 jours</div>
-                    <h3 class="text-dark">
-                        {{ isset($kpis['overdue90']) ? number_format($kpis['overdue90'], 2, ',', ' ') . ' DH' : '—' }}
-                    </h3>
-                </div>
-            </div>
-        </div>
+        @endforeach
     </div>
 
     {{-- ================================================================== --}}
@@ -198,23 +166,22 @@
                     </div>
                     <div class="card-body">
                         <div class="row g-3">
-                            @foreach ($agingBuckets as $bucket)
+                            @php $agingTypes = ['aging_0','aging_8','aging_31','aging_61','aging_90']; @endphp
+                            @foreach ($agingBuckets as $i => $bucket)
                                 @php
-                                    $colorClass = match($bucket['color']) {
-                                        'orange' => '',
-                                        default  => 'border-' . $bucket['color'],
-                                    };
-                                    $textClass = match($bucket['color']) {
-                                        'orange' => 'style="color:#fd7e14"',
-                                        default  => 'class="text-' . $bucket['color'] . '"',
-                                    };
-                                    $borderStyle = $bucket['color'] === 'orange'
-                                        ? 'border-left: 4px solid #fd7e14;'
-                                        : '';
+                                    $colorClass  = $bucket['color'] === 'orange' ? '' : 'border-' . $bucket['color'];
+                                    $textClass   = $bucket['color'] === 'orange' ? 'style="color:#fd7e14"' : 'class="text-' . $bucket['color'] . '"';
+                                    $borderStyle = $bucket['color'] === 'orange' ? 'border-left:4px solid #fd7e14;' : '';
+                                    $drillType   = $agingTypes[$i] ?? 'aging_0';
                                 @endphp
                                 <div class="col">
                                     <div class="card aging-card {{ $colorClass }}" style="{{ $borderStyle }}">
-                                        <div class="card-body text-center py-3">
+                                        <div class="card-body text-center py-3 position-relative">
+                                            <span class="drill-btn position-absolute top-0 end-0 m-2 {!! $bucket['color'] !== 'orange' ? 'text-'.$bucket['color'] : '' !!}"
+                                                  {!! $bucket['color'] === 'orange' ? 'style="color:#fd7e14"' : '' !!}
+                                                  data-type="{{ $drillType }}" data-label="{{ $bucket['label'] }}" title="Voir les dossiers">
+                                                <i class="ph-duotone ph-eye"></i>
+                                            </span>
                                             <div class="fw-bold fs-5" {!! $textClass !!}>
                                                 {{ number_format($bucket['amount'], 2, ',', ' ') }} DH
                                             </div>
@@ -423,11 +390,129 @@
 
 @endsection
 
+{{-- Drill-down modal --}}
+<div class="modal fade" id="drillModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="ph-duotone ph-users me-2"></i>
+                    <span id="drillModalTitle">Dossiers</span>
+                    <span class="badge bg-secondary ms-2" id="drillModalCount"></span>
+                    <span class="badge bg-light text-dark ms-1" id="drillModalTotal"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="drillLoading" class="text-center py-5">
+                    <div class="spinner-border text-primary"></div>
+                    <p class="mt-2 text-muted">Chargement...</p>
+                </div>
+                <div id="drillContent" class="d-none">
+                    <div class="px-3 pt-2 pb-1">
+                        <input type="text" id="drillSearch" class="form-control form-control-sm" placeholder="Rechercher par nom, centre...">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm align-middle mb-0" id="drillTable">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nom étudiant</th>
+                                    <th>Centre</th>
+                                    <th>Échéance</th>
+                                    <th>Retard</th>
+                                    <th class="text-end">Montant dû</th>
+                                </tr>
+                            </thead>
+                            <tbody id="drillTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="drillEmpty" class="d-none text-center py-5 text-muted">
+                    <i class="ph-duotone ph-check-circle fs-1 text-success"></i>
+                    <p class="mt-2">Aucun dossier dans cette catégorie.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const toastEl = document.getElementById('liveToast');
             if (toastEl) new bootstrap.Toast(toastEl).show();
+
+            const drillUrl  = '{{ route("backoffice.crm.collections.drill") }}';
+            const storeId   = '{{ $strStoreId ?? "" }}';
+            let allRows     = [];
+
+            document.querySelectorAll('.drill-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const type  = this.dataset.type;
+                    const label = this.dataset.label;
+
+                    document.getElementById('drillModalTitle').textContent = label;
+                    document.getElementById('drillModalCount').textContent = '';
+                    document.getElementById('drillModalTotal').textContent = '';
+                    document.getElementById('drillLoading').classList.remove('d-none');
+                    document.getElementById('drillContent').classList.add('d-none');
+                    document.getElementById('drillEmpty').classList.add('d-none');
+                    document.getElementById('drillSearch').value = '';
+
+                    new bootstrap.Modal(document.getElementById('drillModal')).show();
+
+                    const params = new URLSearchParams({ type });
+                    if (storeId) params.set('strStoreId', storeId);
+
+                    fetch(drillUrl + '?' + params)
+                        .then(r => r.json())
+                        .then(data => {
+                            allRows = data.rows;
+                            document.getElementById('drillLoading').classList.add('d-none');
+                            document.getElementById('drillModalCount').textContent = data.count + ' dossier(s)';
+                            document.getElementById('drillModalTotal').textContent = new Intl.NumberFormat('fr-MA').format(data.total) + ' DH';
+
+                            if (data.count === 0) {
+                                document.getElementById('drillEmpty').classList.remove('d-none');
+                            } else {
+                                document.getElementById('drillContent').classList.remove('d-none');
+                                renderRows(allRows);
+                            }
+                        });
+                });
+            });
+
+            document.getElementById('drillSearch').addEventListener('input', function () {
+                const q = this.value.toLowerCase();
+                renderRows(allRows.filter(r =>
+                    (r.student_name || '').toLowerCase().includes(q) ||
+                    (r.store_name   || '').toLowerCase().includes(q)
+                ));
+            });
+
+            function renderRows(rows) {
+                const tbody = document.getElementById('drillTbody');
+                tbody.innerHTML = rows.map((r, i) => {
+                    const overdueClass = r.overdue_days > 90 ? 'bg-dark'
+                        : r.overdue_days > 60 ? 'bg-danger'
+                        : r.overdue_days > 30 ? 'bg-warning text-dark'
+                        : r.overdue_days > 0  ? 'bg-secondary'
+                        : 'bg-light-success text-success';
+                    const overdueLabel = r.overdue_days > 0 ? r.overdue_days + ' j' : 'À jour';
+                    const dueDate = r.due_date
+                        ? new Date(r.due_date).toLocaleDateString('fr-MA', {day:'2-digit',month:'2-digit',year:'numeric'})
+                        : '—';
+                    return `<tr>
+                        <td class="text-muted">${i+1}</td>
+                        <td><strong>${r.student_name}</strong><br><small class="text-muted">#${r.student_id}</small></td>
+                        <td><span class="badge bg-light-primary">${r.store_name}</span></td>
+                        <td><small>${dueDate}</small></td>
+                        <td><span class="badge ${overdueClass}">${overdueLabel}</span></td>
+                        <td class="text-end fw-semibold text-danger">${new Intl.NumberFormat('fr-MA').format(r.amount)} DH</td>
+                    </tr>`;
+                }).join('');
+            }
         });
     </script>
 @endsection

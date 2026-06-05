@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Local mirror of /api/external/v1/bulk/payment-allocations.
  *
- * One row per allocation record from the Homeschool API.
+ * One row per allocation record from the Wimschool API.
  * Synced by: php artisan crm:sync-payment-allocations --all
  *
  * This table is the data source for BuildGroupEvolutionCommand.

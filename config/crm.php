@@ -2,10 +2,10 @@
 
 /*
 |--------------------------------------------------------------------------
-| CRM (Homeschool External API) Configuration
+| CRM (Wimschool External API) Configuration
 |--------------------------------------------------------------------------
 |
-| Settings for the third-party Homeschool CRM that GLS consumes through the
+| Settings for the third-party Wimschool CRM that GLS consumes through the
 | External API v1. Keep this isolated from the local CRUD layer — nothing in
 | this file should ever leak into Eloquent models or the backoffice DB.
 |
@@ -21,7 +21,7 @@ return [
 
     // Cache GET responses for this many seconds (0 = disabled).
     // Pagination clicks, page refreshes, and revisits within this window are
-    // served instantly from the local cache instead of round-tripping to Homeschool.
+    // served instantly from the local cache instead of round-tripping to Wimschool.
     'cache_ttl' => (int) env('CRM_API_CACHE_TTL', 60),
 
     'connect_timeout' => (int) env('CRM_API_CONNECT_TIMEOUT', 5),

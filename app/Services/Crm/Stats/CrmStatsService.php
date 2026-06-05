@@ -3,7 +3,7 @@
 namespace App\Services\Crm\Stats;
 
 use App\Models\Site;
-use App\Services\Crm\HomeschoolClient;
+use App\Services\Crm\WimschoolClient;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Carbon;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 /**
- * Statistics aggregator for the Homeschool CRM.
+ * Statistics aggregator for the Wimschool CRM.
  *
  * Strategy:
  *   - The API's pagination.totalElements field gives us per-store counts cheaply
@@ -26,7 +26,7 @@ class CrmStatsService
 {
     public const CACHE_TTL = 300; // 5 minutes
 
-    public function __construct(protected HomeschoolClient $client)
+    public function __construct(protected WimschoolClient $client)
     {
     }
 

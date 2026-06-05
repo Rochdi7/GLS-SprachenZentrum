@@ -3,27 +3,27 @@
 namespace App\Console\Commands;
 
 use App\Models\Group;
-use App\Services\Payroll\HomeschoolAttendanceService;
+use App\Services\Payroll\WimschoolAttendanceService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
-class SyncHomeschoolAttendance extends Command
+class SyncWimschoolAttendance extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'homeschool:sync-attendance {--group=*} {--date-start=} {--date-end=}';
+    protected $signature = 'wimschool:sync-attendance {--group=*} {--date-start=} {--date-end=}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Synchronise attendance from Homeschool API and calculates professor payment';
+    protected $description = 'Synchronise attendance from Wimschool API and calculates professor payment';
 
-    public function __construct(protected HomeschoolAttendanceService $attendanceService)
+    public function __construct(protected WimschoolAttendanceService $attendanceService)
     {
         parent::__construct();
     }

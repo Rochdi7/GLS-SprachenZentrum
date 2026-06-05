@@ -108,7 +108,7 @@
                 <div>
                     <strong>API CRM temporairement limitée (HTTP 429)</strong>
                     <div class="small text-muted">
-                        L'API Homeschool a appliqué une limite de débit sur le token actuel.
+                        L'API Wimschool a appliqué une limite de débit sur le token actuel.
                         Les comptes Début/Ajouts/Quittant/Changement affichent <strong>0</strong>
                         parce que les allocations n'ont pas pu être récupérées —
                         ce n'est <em>pas</em> une absence de données.
@@ -172,9 +172,15 @@
                                 </thead>
                                 <tbody>
                                     @foreach($groups as $i => $g)
-                                        <tr>
+                                        <tr class="ge-drill-row" style="cursor:pointer;"
+                                            data-class-id="{{ $g['class_id'] }}"
+                                            data-class-name="{{ $g['name'] }}"
+                                            title="Cliquer pour voir les étudiants">
                                             <td class="text-center text-muted">{{ $i + 1 }}</td>
-                                            <td>{{ $g['name'] }}</td>
+                                            <td>
+                                                {{ $g['name'] }}
+                                                <i class="ph-duotone ph-eye ms-1 text-muted" style="font-size:.8rem;opacity:.5;"></i>
+                                            </td>
                                             <td class="text-center ge-cell-debut">{{ $g['debuts'] ?? 0 }}</td>
                                             <td class="text-center ge-cell-ajout">{{ $g['ajouts'] }}</td>
                                             <td class="text-center ge-cell-quittant">{{ $g['quittants'] }}</td>
@@ -346,9 +352,115 @@
     ], $groups);
 @endphp
 
+{{-- Group drill modal --}}
+<div class="modal fade" id="geDrillModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="ph-duotone ph-users me-2 text-primary"></i>
+                    <span id="geDrillTitle">Étudiants</span>
+                    <span class="badge bg-secondary ms-2" id="geDrillCount"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="geDrillLoading" class="text-center py-5">
+                    <div class="spinner-border text-primary"></div>
+                    <p class="mt-2 text-muted">Chargement...</p>
+                </div>
+                <div id="geDrillContent" class="d-none">
+                    <div class="px-3 pt-2 pb-1">
+                        <input type="text" id="geDrillSearch" class="form-control form-control-sm" placeholder="Rechercher par nom...">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm align-middle mb-0">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nom étudiant</th>
+                                    <th>Statut</th>
+                                    <th>Date inscription</th>
+                                    <th>Début</th>
+                                </tr>
+                            </thead>
+                            <tbody id="geDrillTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="geDrillEmpty" class="d-none text-center py-5 text-muted">
+                    <i class="ph-duotone ph-info fs-1"></i>
+                    <p class="mt-2">Aucun étudiant trouvé pour ce groupe.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section('scripts')
 <script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
 {{-- Chart payload — read client-side by crm-group-evolution.js. --}}
 <script type="application/json" id="crm-group-evolution-data">{!! json_encode($chartGroups, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
 <script src="{{ asset('assets/js/backoffice/crm-group-evolution.js') }}" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const drillUrl = '{{ route("backoffice.crm.group-evolution.drill") }}';
+    let allRows = [];
+
+    document.querySelectorAll('.ge-drill-row').forEach(row => {
+        row.addEventListener('click', function () {
+            const classId   = this.dataset.classId;
+            const className = this.dataset.className;
+
+            document.getElementById('geDrillTitle').textContent = className;
+            document.getElementById('geDrillCount').textContent = '';
+            document.getElementById('geDrillLoading').classList.remove('d-none');
+            document.getElementById('geDrillContent').classList.add('d-none');
+            document.getElementById('geDrillEmpty').classList.add('d-none');
+            document.getElementById('geDrillSearch').value = '';
+
+            new bootstrap.Modal(document.getElementById('geDrillModal')).show();
+
+            fetch(drillUrl + '?classId=' + classId)
+                .then(r => r.json())
+                .then(data => {
+                    allRows = data.rows;
+                    document.getElementById('geDrillLoading').classList.add('d-none');
+                    document.getElementById('geDrillCount').textContent = data.count + ' étudiant(s)';
+
+                    if (data.count === 0) {
+                        document.getElementById('geDrillEmpty').classList.remove('d-none');
+                    } else {
+                        document.getElementById('geDrillContent').classList.remove('d-none');
+                        renderRows(allRows);
+                    }
+                });
+        });
+    });
+
+    document.getElementById('geDrillSearch')?.addEventListener('input', function () {
+        const q = this.value.toLowerCase();
+        renderRows(allRows.filter(r => (r.student_name || '').toLowerCase().includes(q)));
+    });
+
+    function renderRows(rows) {
+        const statusColors = {
+            'Active': 'bg-success', 'active': 'bg-success',
+            'Inactive': 'bg-secondary', 'inactive': 'bg-secondary',
+            'Annulé': 'bg-danger', 'Canceled': 'bg-danger',
+        };
+        document.getElementById('geDrillTbody').innerHTML = rows.map((r, i) => {
+            const badge = statusColors[r.status] || 'bg-light text-dark';
+            const start = r.start_date ? new Date(r.start_date).toLocaleDateString('fr-MA',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
+            return `<tr>
+                <td class="text-muted">${i+1}</td>
+                <td><strong>${r.student_name}</strong><br><small class="text-muted">#${r.student_id}</small></td>
+                <td><span class="badge ${badge}">${r.status}</span></td>
+                <td><small>${r.registered_at}</small></td>
+                <td><small>${start}</small></td>
+            </tr>`;
+        }).join('');
+    }
+});
+</script>
 @endsection

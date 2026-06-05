@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 /**
  * Orchestrates CRM API-powered presence import for professor payment calculation.
  *
- * Instead of uploading Excel, fetches presence data directly from Homeschool CRM API
+ * Instead of uploading Excel, fetches presence data directly from Wimschool CRM API
  * using /api/external/v1/session-presence endpoint.
  */
 class CrmPresenceImportService

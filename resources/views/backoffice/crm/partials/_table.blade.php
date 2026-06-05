@@ -123,17 +123,17 @@
         // Translate known errors into a human-friendly French message.
         $friendly = match (true) {
             $status === 401 || $errorCode === 'AUTH_INVALID_TOKEN'
-                => ['title' => 'Token API invalide', 'detail' => 'Le token Homeschool est rejeté. Vérifiez la valeur de CRM_API_TOKEN dans la configuration.'],
+                => ['title' => 'Token API invalide', 'detail' => 'Le token Wimschool est rejeté. Vérifiez la valeur de CRM_API_TOKEN dans la configuration.'],
             $status === 403 || $errorCode === 'AUTH_SCOPE_DENIED'
-                => ['title' => 'Accès refusé', 'detail' => "Le token n'a pas le scope nécessaire pour cet endpoint. Contactez Homeschool pour étendre les permissions."],
+                => ['title' => 'Accès refusé', 'detail' => "Le token n'a pas le scope nécessaire pour cet endpoint. Contactez Wimschool pour étendre les permissions."],
             $status === 429
                 => ['title' => 'Trop de requêtes', 'detail' => 'Limite de requêtes atteinte. Réessayez dans quelques instants.'],
             $errorCode === 'CONNECTION_ERROR' || $status === 0
-                => ['title' => 'API CRM injoignable', 'detail' => 'Impossible de contacter le serveur Homeschool. Vérifiez votre connexion internet ou l\'état du service.'],
+                => ['title' => 'API CRM injoignable', 'detail' => 'Impossible de contacter le serveur Wimschool. Vérifiez votre connexion internet ou l\'état du service.'],
             $status === 500 && is_string($details) && str_contains($details, 'bad SQL grammar')
-                => ['title' => 'Bug serveur côté Homeschool', 'detail' => "Cet endpoint contient une erreur SQL côté Homeschool, pas une erreur de configuration locale. Communiquez-leur le numéro de requête ci-dessous et ils pourront corriger leur requête."],
+                => ['title' => 'Bug serveur côté Wimschool', 'detail' => "Cet endpoint contient une erreur SQL côté Wimschool, pas une erreur de configuration locale. Communiquez-leur le numéro de requête ci-dessous et ils pourront corriger leur requête."],
             $status >= 500
-                => ['title' => 'Erreur serveur Homeschool', 'detail' => "L'API a renvoyé une erreur interne. Communiquez le numéro de requête à Homeschool."],
+                => ['title' => 'Erreur serveur Wimschool', 'detail' => "L'API a renvoyé une erreur interne. Communiquez le numéro de requête à Wimschool."],
             default
                 => ['title' => 'Erreur API CRM', 'detail' => $apiMsg ?: 'Une erreur inattendue s\'est produite.'],
         };
@@ -151,7 +151,7 @@
 
                 @if($requestId)
                     <div class="small mb-2">
-                        <span class="text-muted">Numéro de requête (à transmettre à Homeschool) :</span>
+                        <span class="text-muted">Numéro de requête (à transmettre à Wimschool) :</span>
                         <code class="user-select-all">{{ $requestId }}</code>
                     </div>
                 @endif

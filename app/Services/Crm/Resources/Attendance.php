@@ -3,7 +3,7 @@
 namespace App\Services\Crm\Resources;
 
 /**
- * Bulk attendance/student/registration data from Homeschool External API v1.
+ * Bulk attendance/student/registration data from Wimschool External API v1.
  */
 class Attendance extends Resource
 {

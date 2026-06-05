@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'CRM Homeschool — Paiement Professeurs')
+@section('title', 'CRM Wimschool — Paiement Professeurs')
 @section('breadcrumb-item', 'Paiement Professeurs')
-@section('breadcrumb-item-active', 'CRM Homeschool')
+@section('breadcrumb-item-active', 'CRM Wimschool')
 
 @section('css')
     <link rel="stylesheet" href="{{ URL::asset('build/css/plugins/style.css') }}">
@@ -15,7 +15,7 @@
         <div class="position-fixed top-0 end-0 p-3" style="z-index: 99999">
             <div id="liveToast" class="toast hide" role="alert">
                 <div class="toast-header">
-                    <strong class="me-auto">CRM Homeschool</strong>
+                    <strong class="me-auto">CRM Wimschool</strong>
                     <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
                 </div>
                 <div class="toast-body">{{ session('success') ?? session('error') }}</div>

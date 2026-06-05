@@ -41,12 +41,12 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/level-followups-schedule.log'));
 
-        // ── Step 4 — :40 — Homeschool attendance ─────────────────────────────
-        $schedule->command('homeschool:sync-attendance')
+        // ── Step 4 — :40 — Wimschool attendance ─────────────────────────────
+        $schedule->command('wimschool:sync-attendance')
             ->cron('40 */2 * * *')
             ->timezone('Africa/Casablanca')
             ->withoutOverlapping()
-            ->appendOutputTo(storage_path('logs/homeschool-sync.log'));
+            ->appendOutputTo(storage_path('logs/wimschool-sync.log'));
     }
 
     /**
