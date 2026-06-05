@@ -196,8 +196,8 @@ class CrmInsightsController extends BaseCrmController
             return response()->json(['rows' => [], 'count' => 0]);
         }
 
-        // Get class start month from local mirror
-        $classRecord = CrmClass::where('class_id', $classId)->first(['raw_data']);
+        // class_id param = CLASS_ID (e.g. 9896); registrations use crm_id (e.g. 9298)
+        $classRecord = CrmClass::where('class_id', $classId)->first(['crm_id', 'raw_data']);
         $classRaw    = $classRecord
             ? (is_array($classRecord->raw_data) ? $classRecord->raw_data : json_decode($classRecord->raw_data, true))
             : [];
@@ -205,8 +205,10 @@ class CrmInsightsController extends BaseCrmController
             ? Carbon::parse($classRaw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
             : null;
 
-        // Fetch all registrations for this class
-        $registrations = CrmRegistration::where('crm_class_id', $classId)
+        // registrations.crm_class_id = crm_classes.crm_id (not class_id)
+        $crmId = $classRecord?->crm_id ?? $classId;
+
+        $registrations = CrmRegistration::where('crm_class_id', $crmId)
             ->orderBy('status')
             ->get(['crm_student_id', 'status', 'date_creation', 'raw_data']);
 
