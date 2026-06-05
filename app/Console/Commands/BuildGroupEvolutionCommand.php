@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\CrmClass;
-use App\Models\CrmCollectionRow;
 use App\Models\CrmGroupEvolutionSnapshot;
 use App\Models\CrmPaymentAllocation;
+use App\Models\CrmRegistration;
 use App\Models\Site;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -34,8 +34,8 @@ use Illuminate\Support\Facades\Log;
  * The five buckets (matching the UI labels):
  *   debuts      — students whose first allocation month = class START_DATE month
  *   ajouts      — students who joined after class started (or have "inscription" service)
- *   quittants   — students with unpaid collection rows (not transfers)
- *   changements — students archived in this class but active in another (transfers)
+ *   quittants   — students with registration status "Annulé" in this class
+ *   changements — students with registration status "Archive" in this class
  *   actifs      — CLASS_COUNT_STUDENTS_ACTIVE from crm_classes.raw_data
  */
 class BuildGroupEvolutionCommand extends Command
@@ -119,23 +119,27 @@ class BuildGroupEvolutionCommand extends Command
             }
         }
 
-        // Build archived/active student maps from raw_data stored during class mirror
-        $archivedMap = [];
-        $activeMap   = [];
-        foreach ($classes as $class) {
-            $cid             = (int) $class->class_id;
-            $raw             = $class->raw_data ?? [];
-            $archivedMap[$cid] = $this->parseStudentList($raw['LIST_STUDENT_ARCHIVED'] ?? []);
-            $activeMap[$cid]   = $this->parseStudentList($raw['LIST_STUDENT_ACTIVE']   ?? []);
+        // Build quittants/changements from registrations — same logic as the drill endpoint.
+        // quittant  = registration status "Annulé"
+        // changement = registration status "Archive"
+        $classIds = $classes->pluck('class_id')->map(fn ($id) => (int) $id)->all();
+
+        $registrations = CrmRegistration::where('crm_store_id', $storeId)
+            ->whereIn('crm_class_id', $classIds)
+            ->whereIn('status', ['Annulé', 'Archive'])
+            ->get(['crm_student_id', 'crm_class_id', 'status']);
+
+        $quittantsByGroup   = [];
+        $changementsByGroup = [];
+        foreach ($registrations as $reg) {
+            $sid = (int) $reg->crm_student_id;
+            $cid = (int) $reg->crm_class_id;
+            if ($reg->status === 'Annulé') {
+                $quittantsByGroup[$cid][$sid]   = true;
+            } else {
+                $changementsByGroup[$cid][$sid] = true;
+            }
         }
-
-        // Detect changements: archived in class A, currently active in class B
-        $changementsByGroup = $this->detectChangements($studentMonths, $archivedMap, $activeMap);
-
-        // Detect quittants from local crm_collection_rows (zero API calls)
-        $quittantsByGroup = $this->detectQuittants(
-            $storeId, $rangeStart, $rangeEnd, $studentMonths, $changementsByGroup
-        );
 
         $now     = now();
         $upserts = [];
@@ -162,10 +166,13 @@ class BuildGroupEvolutionCommand extends Command
                     // All payments after start month → Ajout (joined later)
                     $ajouts++;
                 }
-
-                if (isset($quittantsByGroup[$cid][$sid]))   $quittants++;
-                if (isset($changementsByGroup[$cid][$sid])) $changements++;
             }
+
+            // Quittants and changements come from registration status (same logic as drill endpoint).
+            // These are counted independently of payment allocations — an annulé student
+            // may have no allocations in the current range.
+            $quittants   = count($quittantsByGroup[$cid]   ?? []);
+            $changements = count($changementsByGroup[$cid] ?? []);
 
             // Parse ISO datetime from API (e.g. "2026-04-23T23:00:00.000Z") → plain date
             $classStartDate = isset($raw['START_DATE'])
@@ -210,94 +217,4 @@ class BuildGroupEvolutionCommand extends Command
         return count($upserts);
     }
 
-    /**
-     * A student is a Changement if they are archived in class A
-     * AND currently active in a different class B.
-     */
-    private function detectChangements(
-        array $studentMonths,
-        array $archivedMap,
-        array $activeMap,
-    ): array {
-        $result = [];
-
-        foreach ($studentMonths as $sid => $_) {
-            // Classes where this student appears in LIST_STUDENT_ARCHIVED
-            $archivedIn = [];
-            foreach ($archivedMap as $cid => $ids) {
-                if (in_array($sid, $ids, true)) {
-                    $archivedIn[] = $cid;
-                }
-            }
-            if (empty($archivedIn)) continue;
-
-            // Check if they are active in any OTHER class
-            foreach ($activeMap as $cid => $ids) {
-                if (in_array($sid, $ids, true) && !in_array($cid, $archivedIn, true)) {
-                    foreach ($archivedIn as $archivedCid) {
-                        $result[$archivedCid][$sid] = true;
-                    }
-                    break;
-                }
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * A student is a Quittant if they have unpaid collection rows in the range
-     * and are not already classified as a Changement.
-     */
-    private function detectQuittants(
-        int    $storeId,
-        string $start,
-        string $end,
-        array  $studentMonths,
-        array  $changements,
-    ): array {
-        // Mover IDs are excluded — transfers are not quittants
-        $moverIds = [];
-        foreach ($changements as $byStudent) {
-            foreach ($byStudent as $sid => $_) {
-                $moverIds[$sid] = true;
-            }
-        }
-
-        $rows = CrmCollectionRow::where('crm_store_id', $storeId)
-            ->where('registration_status_name', 'Active')
-            ->whereBetween('due_date', [$start, $end])
-            ->where('rest_amount', '>', 0)
-            ->get(['student_id', 'class_id']);
-
-        $result = [];
-        foreach ($rows as $row) {
-            $sid = $row->student_id;
-            $cid = (int) $row->class_id;
-            if (!$sid || !$cid) continue;
-            if (isset($moverIds[$sid])) continue;
-            if (!isset($studentMonths[$sid][$cid])) continue;
-            $result[$cid][$sid] = true;
-        }
-
-        return $result;
-    }
-
-    private function parseStudentList(mixed $list): array
-    {
-        if (is_array($list)) {
-            return array_map(fn ($s) => (int) ($s['STUDENT_ID'] ?? $s['ID'] ?? $s), $list);
-        }
-        if (is_string($list) && !empty(trim($list))) {
-            try {
-                $decoded = json_decode($list, true, 512, JSON_THROW_ON_ERROR);
-                if (is_array($decoded)) {
-                    return array_map(fn ($s) => (int) ($s['STUDENT_ID'] ?? $s['ID'] ?? $s), $decoded);
-                }
-            } catch (\Throwable) {
-            }
-            return array_map(fn ($p) => (int) trim($p), explode(',', $list));
-        }
-        return [];
-    }
 }

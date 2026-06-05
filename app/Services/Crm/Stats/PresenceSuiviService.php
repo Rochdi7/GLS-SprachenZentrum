@@ -371,8 +371,9 @@ class PresenceSuiviService
                     'session_ref'   => $r->session_reference,
                     'start_time'    => $r->start_time ? substr($r->start_time, 0, 5) : null,
                     'end_time'      => $r->end_time   ? substr($r->end_time,   0, 5) : null,
-                    'present'       => (int) $r->present_count,
-                    'absent'        => (int) $r->total - (int) $r->present_count,
+                    // Draft/Brouillon = attendance not entered yet → 0/0, not raw absent counts
+                    'present'       => $status === 'draft' ? 0 : (int) $r->present_count,
+                    'absent'        => $status === 'draft' ? 0 : (int) $r->total - (int) $r->present_count,
                     'total'         => (int) $r->total,
                     'created_by'    => $r->created_by,
                     'date_creation' => $r->date_creation
