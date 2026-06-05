@@ -226,7 +226,8 @@ class CrmInsightsController extends BaseCrmController
                     ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
                     : null;
 
-                if ($classStartYm && $regStartYm && $regStartYm === $classStartYm) {
+                if ($classStartYm && $regStartYm && $regStartYm <= $classStartYm) {
+                    // Registered at or before class start month → founding member
                     $bucket = 'debut';
                 } elseif ($classStartYm && $regStartYm && $regStartYm > $classStartYm) {
                     $bucket = 'ajout';
