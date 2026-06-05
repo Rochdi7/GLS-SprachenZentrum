@@ -177,7 +177,18 @@
                                 <span class="signal-pill">{{ $r }}</span>
                             @endforeach
                             @if(count($reasons) > 2)
-                                <span class="signal-pill text-muted">+{{ count($reasons) - 2 }}</span>
+                                {{-- Hidden extra signals, revealed on click --}}
+                                <span class="signals-extra d-none">
+                                    @foreach(array_slice($reasons, 2) as $r)
+                                        <span class="signal-pill">{{ $r }}</span>
+                                    @endforeach
+                                </span>
+                                <span class="signal-pill text-primary signal-toggle"
+                                      role="button"
+                                      title="Voir tous les signaux"
+                                      style="cursor:pointer">
+                                    +{{ count($reasons) - 2 }} voir
+                                </span>
                             @endif
                         </td>
                         <td>
@@ -270,6 +281,18 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('modalStudentName').textContent    = this.dataset.studentName;
             document.getElementById('callStudentId').value             = this.dataset.studentId;
             document.getElementById('callRegistrationId').value        = this.dataset.registrationId ?? '';
+        });
+    });
+
+    // Expand hidden signals on +N click
+    document.querySelectorAll('.signal-toggle').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const extra = this.previousElementSibling;
+            const expanded = !extra.classList.contains('d-none');
+            extra.classList.toggle('d-none', expanded);
+            this.textContent = expanded
+                ? '+' + extra.querySelectorAll('.signal-pill').length + ' voir'
+                : 'masquer';
         });
     });
 
