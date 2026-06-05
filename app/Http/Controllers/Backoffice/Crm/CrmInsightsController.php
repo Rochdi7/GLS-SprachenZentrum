@@ -196,14 +196,14 @@ class CrmInsightsController extends BaseCrmController
         }
 
         // class_id col = CLASS_ID from API (e.g. 9867); registrations.crm_class_id = crm_id (e.g. 9272)
-        $classRecord = CrmClass::where('class_id', $classId)->first(['crm_id', 'crm_store_id', 'raw_data']);
+        $classRecord = CrmClass::where('class_id', $classId)->first(['crm_id', 'site_id', 'raw_data']);
         $classRaw    = $classRecord
             ? (is_array($classRecord->raw_data) ? $classRecord->raw_data : json_decode($classRecord->raw_data, true))
             : [];
         $classStartYm = isset($classRaw['START_DATE'])
             ? Carbon::parse($classRaw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
             : null;
-        $storeId = $classRecord?->crm_store_id;
+        $storeId = $classRecord?->site_id;
         $crmId   = $classRecord?->crm_id ?? $classId;
 
         $registrations = CrmRegistration::where('crm_class_id', $crmId)
