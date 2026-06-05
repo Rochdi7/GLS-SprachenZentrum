@@ -6,7 +6,6 @@
 @section('breadcrumb-item-active', 'Statistiques')
 
 @section('css')
-    <link rel="stylesheet" href="{{ URL::asset('build/css/plugins/apexcharts.css') }}">
 @endsection
 
 @php

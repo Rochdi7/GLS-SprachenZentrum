@@ -5,7 +5,6 @@
 @section('breadcrumb-item-active', 'Dashboard')
 
 @section('css')
-<link rel="stylesheet" href="{{ URL::asset('build/css/plugins/apexcharts.css') }}">
 @endsection
 
 @section('content')
@@ -566,6 +565,19 @@ IDs: bar-chart-1, bar-chart-2, pie-chart-2
 @section('scripts')
 {{-- ApexCharts THEME --}}
 <script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
+<script>
+// chart-apex.js is a theme demo file targeting ~20 chart IDs; only 3 exist here.
+// Wrap the constructor so missing elements are silently skipped.
+(function () {
+    var _Real = window.ApexCharts;
+    window.ApexCharts = function (el, opts) {
+        if (!el) return { render: function () { return Promise.resolve(); } };
+        return new _Real(el, opts);
+    };
+    window.ApexCharts.prototype = _Real.prototype;
+    Object.assign(window.ApexCharts, _Real);
+})();
+</script>
 <script src="{{ URL::asset('build/js/chart_maps/chart-apex.js') }}"></script>
 
 {{-- Peity THEME --}}

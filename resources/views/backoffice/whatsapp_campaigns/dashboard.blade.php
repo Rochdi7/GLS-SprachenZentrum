@@ -5,7 +5,6 @@
 @section('breadcrumb-item-active', 'Tableau de bord WhatsApp')
 
 @section('css')
-<link rel="stylesheet" href="{{ URL::asset('build/css/plugins/apexcharts.css') }}">
 <style>
     .wa-kpi .card-body { padding: 18px; }
     .wa-kpi h3 { font-size: 24px; font-weight: 700; margin: 0; }
