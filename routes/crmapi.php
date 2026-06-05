@@ -84,6 +84,17 @@ Route::prefix('crm')
         Route::get('/statistiques',         [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'index'])->name('statistiques');
         Route::post('/statistiques/refresh', [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'refresh'])->name('statistiques.refresh');
 
+        // Agent / Call-Center dashboard.
+        Route::prefix('agent')->name('agent.')->controller(\App\Http\Controllers\Backoffice\Crm\AgentDashboardController::class)->group(function () {
+            Route::get('/',                    'index')->name('index');
+            Route::get('/call-today',          'callToday')->name('call-today');
+            Route::get('/follow-ups',          'followUps')->name('follow-ups');
+            Route::post('/follow-ups',         'saveFollowUp')->name('follow-ups.save');
+            Route::get('/unpaid',              'unpaid')->name('unpaid');
+            Route::get('/new-without-payment', 'newWithoutPayment')->name('new-without-payment');
+            Route::get('/student-card',        'studentCard')->name('student-card');
+        });
+
         // Daily CEO Reports (Module 1).
         Route::prefix('reports')->name('reports.')->group(function () {
             Route::get('/',          [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'index'])->name('index');

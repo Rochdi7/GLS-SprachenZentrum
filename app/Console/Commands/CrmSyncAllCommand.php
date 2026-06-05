@@ -102,6 +102,11 @@ class CrmSyncAllCommand extends Command
             '--all --months=6',
             'Precompute group evolution snapshot — zero API calls on dashboard',
         ],
+        'churn_scores'     => [
+            'crm:churn-scores',
+            '--all',
+            'Compute student churn/risk scores from local DB — no API calls',
+        ],
         'daily_report'     => [
             'crm:daily-report',
             '',

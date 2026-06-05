@@ -49,6 +49,7 @@
         request()->routeIs('backoffice.crm.duplicates') ||
         request()->routeIs('backoffice.crm.insights.*');
     $crmCollectionsOpen = request()->routeIs('backoffice.crm.collections.*');
+    $crmAgentOpen       = request()->routeIs('backoffice.crm.agent.*');
     $crmStatsDashOpen    = request()->routeIs('backoffice.crm.statistiques');
     $crmPresenceSuiviOpen = request()->routeIs('backoffice.crm.presence-suivi');
 @endphp
@@ -584,6 +585,14 @@
                         </a>
                     </li>
                 </ul>
+            </li>
+
+            {{-- Agent / Call Center --}}
+            <li class="pc-item {{ $crmAgentOpen ? 'active' : '' }}">
+                <a href="{{ route('backoffice.crm.agent.index') }}"
+                    class="pc-link {{ $crmAgentOpen ? 'active' : '' }}">
+                    <span class="pc-mtext">Agent / Call Center</span>
+                </a>
             </li>
 
             {{-- Recouvrement --}}
