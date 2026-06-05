@@ -776,6 +776,22 @@ Route::prefix('backoffice')
             });
 
         /*
+        |----------------------------------------------------------------------
+        | Scheduled / Email Reports
+        |----------------------------------------------------------------------
+        */
+        Route::prefix('reports/scheduled')
+            ->name('reports.scheduled.')
+            ->group(function () {
+                Route::get('/', [\App\Http\Controllers\Backoffice\Reports\ScheduledReportsController::class, 'index'])
+                    ->name('index');
+                Route::post('/send-weekly', [\App\Http\Controllers\Backoffice\Reports\ScheduledReportsController::class, 'sendWeekly'])
+                    ->name('send-weekly');
+                Route::post('/send-monthly', [\App\Http\Controllers\Backoffice\Reports\ScheduledReportsController::class, 'sendMonthly'])
+                    ->name('send-monthly');
+            });
+
+        /*
         |--------------------------------------------------------------------------
         | CRM (Wimschool External API) — READ-ONLY proxy pages
         | Definitions moved to routes/crmapi.php for better project structure.

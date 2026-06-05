@@ -10,7 +10,7 @@
             <ul class="list-inline footer-link mb-0">
                 <li class="list-inline-item"><a href="/index">Accueil</a></li>
                 <li class="list-inline-item"><a href="https://codesommet.com/" target="_blank">Documentation</a></li>
-                <li class="list-inline-item"><a href="https://Gls Team.support-hub.io/" target="_blank">Support</a></li>
+                <li class="list-inline-item"><a href="https://codesommet.com/" target="_blank">Support</a></li>
             </ul>
         </div>
     </div>

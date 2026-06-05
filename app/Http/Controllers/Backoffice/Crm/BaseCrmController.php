@@ -40,10 +40,26 @@ abstract class BaseCrmController extends Controller
      *
      * @param  \Closure(?int $strStoreId): array<string,mixed>  $call
      */
+    /**
+     * Resolve strStoreId from the URL.
+     * If ?strStoreId= is present but empty → explicitly means "all centers" (bypass session).
+     * If ?strStoreId= is absent → fall back to session.
+     */
+    private function resolveUrlStoreId(): ?int
+    {
+        if (!request()->has('strStoreId')) {
+            return null; // not in URL → let CenterContext use session
+        }
+        $val = request()->query('strStoreId');
+        return ($val !== null && $val !== '') ? (int) $val : -1; // -1 = explicit "all"
+    }
+
     protected function render(string $viewName, \Closure $call, array $extra = []): View
     {
-        $urlOverride = request()->filled('strStoreId') ? (int) request()->query('strStoreId') : null;
-        $strStoreId  = $this->centers->currentStoreId($urlOverride);
+        $raw        = $this->resolveUrlStoreId();
+        $urlOverride = ($raw !== null && $raw > 0) ? $raw : null;
+        // If strStoreId was explicitly set to empty in URL, bypass session entirely
+        $strStoreId = ($raw === -1) ? null : $this->centers->currentStoreId($urlOverride);
 
         $payload = null;
         $error   = null;
@@ -68,8 +84,9 @@ abstract class BaseCrmController extends Controller
      */
     protected function scopedCrm(): Crm
     {
-        $urlOverride = request()->filled('strStoreId') ? (int) request()->query('strStoreId') : null;
-        $token = $this->centers->currentToken($urlOverride);
+        $raw         = $this->resolveUrlStoreId();
+        $urlOverride = ($raw !== null && $raw > 0) ? $raw : null;
+        $token       = $this->centers->currentToken($urlOverride);
         return $this->crm->withToken($token);
     }
 
@@ -104,7 +121,9 @@ abstract class BaseCrmController extends Controller
      */
     protected function currentStrStoreId(): ?int
     {
-        $urlOverride = request()->filled('strStoreId') ? (int) request()->query('strStoreId') : null;
+        $raw         = $this->resolveUrlStoreId();
+        $urlOverride = ($raw !== null && $raw > 0) ? $raw : null;
+        if ($raw === -1) return null; // explicit "all centers"
         return $this->centers->currentStoreId($urlOverride);
     }
 }

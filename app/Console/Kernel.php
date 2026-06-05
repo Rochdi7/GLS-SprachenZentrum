@@ -47,6 +47,29 @@ class Kernel extends ConsoleKernel
             ->timezone('Africa/Casablanca')
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/wimschool-sync.log'));
+
+        // ── Weekly reports — every Friday at midnight (Casablanca) ───────────
+        // Controlled by REPORTS_AUTO_SEND_ENABLED=true in .env
+        $weeklyDay  = config('reports.weekly_send_day', 5);   // 5 = Friday
+        $weeklyTime = config('reports.weekly_send_time', '00:00');
+        $tz         = config('reports.timezone', 'Africa/Casablanca');
+
+        $weeklyReports = [
+            'weekly-presence',
+            'weekly-prof-payment',
+            'weekly-unpaid-students',
+            'weekly-group-performance',
+            'weekly-center-performance',
+        ];
+
+        foreach ($weeklyReports as $type) {
+            $schedule->command("reports:send {$type}")
+                ->weeklyOn($weeklyDay, $weeklyTime)
+                ->timezone($tz)
+                ->withoutOverlapping()
+                ->when(fn () => (bool) config('reports.auto_send_enabled', false))
+                ->appendOutputTo(storage_path("logs/report-{$type}.log"));
+        }
     }
 
     /**
