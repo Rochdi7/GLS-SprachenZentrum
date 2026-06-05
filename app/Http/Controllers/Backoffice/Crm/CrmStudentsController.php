@@ -108,9 +108,9 @@ class CrmStudentsController extends BaseCrmController
                     $rowsBefore = count($allRows);
                 } else {
                     $allRows = $crm->client()->pagedScan(
-                        path: '/api/external/v1/session-presence',
+                        path: '/api/external/v1/bulk/session-presence',
                         baseQuery: $baseQuery + array_filter(['date' => $shared['date']]),
-                        pageSize: 25,
+                        pageSize: 500,
                         maxPages: 80,
                         concurrency: 3,
                     );
@@ -132,7 +132,7 @@ class CrmStudentsController extends BaseCrmController
                 // Preload: if we are in per-day mode, the parallel fetch already did the range.
                 // If we are in paged-scan mode, preload the next 3 pages.
                 if (!$shouldFetchByDay) {
-                    $crm->client()->preload('/api/external/v1/session-presence', $baseQuery, 3, 1);
+                    $crm->client()->preload('/api/external/v1/bulk/session-presence', $baseQuery, 3, 1);
                 }
             }
         } catch (CrmException $e) {
@@ -215,9 +215,9 @@ class CrmStudentsController extends BaseCrmController
         }
         if ($start->diffInDays($end) > 62) {
             return $crm->client()->pagedScan(
-                path: '/api/external/v1/session-presence',
+                path: '/api/external/v1/bulk/session-presence',
                 baseQuery: $baseQuery,
-                pageSize: 25,
+                pageSize: 500,
                 maxPages: 80,
                 concurrency: 3,
             );
@@ -231,10 +231,10 @@ class CrmStudentsController extends BaseCrmController
         }
 
         return $crm->client()->parallelFetch(
-            path: '/api/external/v1/session-presence',
+            path: '/api/external/v1/bulk/session-presence',
             baseQuery: $baseQuery,
             variantQueries: $variants,
-            pageSize: 25,
+            pageSize: 500,
             concurrency: 3,
         );
     }

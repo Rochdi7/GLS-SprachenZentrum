@@ -259,10 +259,10 @@ class MirrorCoreCommand extends Command
             }
 
             $page = 0;
-            $size = 25;
+            $size = 500;
 
             do {
-                $response = $this->crm->client()->get('/api/external/v1/session-presence', [
+                $response = $this->crm->client()->get('/api/external/v1/bulk/session-presence', [
                     'classId'  => $class->class_id,
                     'dateFrom' => $dateFrom,
                     'dateTo'   => $dateTo,

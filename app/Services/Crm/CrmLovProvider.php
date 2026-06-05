@@ -49,11 +49,11 @@ class CrmLovProvider
 
             // Parallel scan for classes to extract LOV data in one pass (approx 2-3s total)
             $rows = $scopedCrm->client()->pagedScan(
-                path: '/api/external/v1/groups/classes',
+                path: '/api/external/v1/bulk/groups/classes',
                 baseQuery: array_filter(['strStoreId' => $strStoreId], fn($v) => $v !== null),
-                pageSize: 25,
+                pageSize: 500,
                 maxPages: 30,
-                concurrency: 2, // Conservative for production rate limits
+                concurrency: 2,
             );
 
             // Log the first row to check what keys we have

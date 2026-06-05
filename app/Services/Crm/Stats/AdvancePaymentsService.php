@@ -57,9 +57,9 @@ class AdvancePaymentsService
 
                 // Parallel pagination via the new client helper
                 $allRows = $this->crm->client()->pagedScan(
-                    path: '/api/external/v1/payments',
+                    path: '/api/external/v1/bulk/payments',
                     baseQuery: $baseQuery,
-                    pageSize: self::PAGE_SIZE,
+                    pageSize: 500,
                     maxPages: self::MAX_PAGES,
                     concurrency: 3,
                 );

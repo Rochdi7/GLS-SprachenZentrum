@@ -53,9 +53,9 @@ class PaymentMatrixBuilder
         try {
             // First try with classId filter
             $allocRows = $crm->client()->pagedScan(
-                path: '/api/external/v1/payment-allocations',
+                path: '/api/external/v1/bulk/payment-allocations',
                 baseQuery: $baseQuery + ['classId' => $classId],
-                pageSize: 25,
+                pageSize: 500,
                 maxPages: 40,
                 concurrency: 2,
                 interBatchDelayMs: 400,
@@ -69,7 +69,7 @@ class PaymentMatrixBuilder
             try {
                 // Fall back to full scan without classId, then filter by studentId locally
                 $allocRows = $crm->client()->pagedScan(
-                    path: '/api/external/v1/payment-allocations',
+                    path: '/api/external/v1/bulk/payment-allocations',
                     baseQuery: $baseQuery,
                     pageSize: 25,
                     maxPages: 40,

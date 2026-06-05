@@ -257,9 +257,9 @@ class WimschoolAttendanceService
 
         if ($start->diffInDays($end) > 62) {
             return $this->crm->client()->pagedScan(
-                path: '/api/external/v1/session-presence',
+                path: '/api/external/v1/bulk/session-presence',
                 baseQuery: ['classId' => $classId],
-                pageSize: 25,
+                pageSize: 500,
                 maxPages: 20,
                 concurrency: 2,
             );
@@ -273,10 +273,10 @@ class WimschoolAttendanceService
         }
 
         return $this->crm->client()->parallelFetch(
-            path: '/api/external/v1/session-presence',
+            path: '/api/external/v1/bulk/session-presence',
             baseQuery: ['classId' => $classId],
             variantQueries: $variants,
-            pageSize: 25,
+            pageSize: 500,
             concurrency: 3,
         );
     }
