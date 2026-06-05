@@ -87,6 +87,11 @@ class CrmSyncAllCommand extends Command
             '--months=2',
             'Daily payment snapshot — 2 months window covers full previous month for stats',
         ],
+        'registrations'    => [
+            'crm:sync-registrations',
+            '--all',
+            'Mirror registrations — feeds group evolution buckets (Début/Ajout/Quittant/Changement)',
+        ],
         'allocations'      => [
             'crm:sync-payment-allocations',
             '--all --months=6 --delay=1000',
@@ -99,7 +104,7 @@ class CrmSyncAllCommand extends Command
         ],
         'group_evolution'  => [
             'crm:build-group-evolution',
-            '--all --months=6',
+            '--all',
             'Precompute group evolution snapshot — zero API calls on dashboard',
         ],
         'churn_scores'     => [
