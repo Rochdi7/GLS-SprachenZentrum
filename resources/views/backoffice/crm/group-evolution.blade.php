@@ -362,11 +362,11 @@
                         <input type="text" id="geDrillSearch" class="form-control form-control-sm" placeholder="Rechercher par nom...">
                     </div>
                     <div class="px-3 pb-2 d-flex gap-2 flex-wrap" id="geDrillBucketTabs">
-                        <button type="button" class="btn btn-sm btn-primary ge-bucket-tab active" data-bucket="">Tous</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary ge-bucket-tab" data-bucket="debut" style="--bs-btn-color:#6f42c1;--bs-btn-border-color:#6f42c1;">Début</button>
-                        <button type="button" class="btn btn-sm btn-outline-success ge-bucket-tab" data-bucket="ajout">Ajouts</button>
-                        <button type="button" class="btn btn-sm btn-outline-danger ge-bucket-tab" data-bucket="quittant">Quittant</button>
-                        <button type="button" class="btn btn-sm ge-bucket-tab" data-bucket="changement" style="color:#fd7e14;border:1px solid #fd7e14;background:transparent;">Changement</button>
+                        <button type="button" class="btn btn-sm btn-primary ge-bucket-tab active" data-bucket="" data-status="">Tous</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary ge-bucket-tab" data-bucket="debut" data-status="" style="--bs-btn-color:#6f42c1;--bs-btn-border-color:#6f42c1;">Début</button>
+                        <button type="button" class="btn btn-sm btn-outline-success ge-bucket-tab" data-bucket="ajout" data-status="">Ajouts</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger ge-bucket-tab" data-bucket="" data-status="Annulé">Annulé</button>
+                        <button type="button" class="btn btn-sm ge-bucket-tab" data-bucket="" data-status="Archive" style="color:#fd7e14;border:1px solid #fd7e14;background:transparent;">Archive</button>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover table-sm align-middle mb-0">
@@ -394,7 +394,6 @@
 </div>
 
 @section('scripts')
-<script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
 @php
     $chartGroups = array_map(fn ($g) => [
         'name'        => $g['name'],
@@ -413,6 +412,7 @@
     const drillUrl  = '{{ route("backoffice.crm.group-evolution.drill") }}';
     let allRows      = [];
     let activeBucket = '';
+    let activeStatus = '';
 
     document.querySelectorAll('.ge-drill-row').forEach(row => {
         row.addEventListener('click', function () {
@@ -427,8 +427,9 @@
             document.getElementById('geDrillEmpty').classList.add('d-none');
             document.getElementById('geDrillSearch').value = '';
             activeBucket = '';
+            activeStatus = '';
             document.querySelectorAll('.ge-bucket-tab').forEach(b => b.classList.remove('active', 'btn-primary'));
-            const allTab = document.querySelector('.ge-bucket-tab[data-bucket=""]');
+            const allTab = document.querySelector('.ge-bucket-tab[data-bucket=""][data-status=""]');
             if (allTab) { allTab.classList.add('active', 'btn-primary'); }
 
             new bootstrap.Modal(document.getElementById('geDrillModal')).show();
@@ -464,6 +465,7 @@
     document.querySelectorAll('.ge-bucket-tab').forEach(btn => {
         btn.addEventListener('click', function () {
             activeBucket = this.dataset.bucket;
+            activeStatus = this.dataset.status;
             document.querySelectorAll('.ge-bucket-tab').forEach(b => {
                 b.classList.remove('active', 'btn-primary', 'btn-secondary', 'btn-success', 'btn-danger');
             });
@@ -477,23 +479,23 @@
         const filtered = allRows.filter(r => {
             const matchName   = (r.student_name || '').toLowerCase().includes(q);
             const matchBucket = !activeBucket || r.bucket === activeBucket;
-            return matchName && matchBucket;
+            const matchStatus = !activeStatus || r.status === activeStatus;
+            return matchName && matchBucket && matchStatus;
         });
         const countEl = document.getElementById('geDrillCount');
-        countEl.textContent = filtered.length + ' étudiant(s)' + (activeBucket ? ' · ' + bucketLabel(activeBucket) : '');
+        const label = activeBucket ? bucketLabel(activeBucket) : (activeStatus || '');
+        countEl.textContent = filtered.length + ' étudiant(s)' + (label ? ' · ' + label : '');
         renderRows(filtered);
     }
 
     function bucketLabel(b) {
-        return { debut: 'Début', ajout: 'Ajouts', quittant: 'Quittant', changement: 'Changement' }[b] || b;
+        return { debut: 'Début', ajout: 'Ajouts' }[b] || b;
     }
 
     function bucketBadge(b) {
         const map = {
-            debut:      '<span class="badge" style="background:#6f42c1;">Début</span>',
-            ajout:      '<span class="badge bg-success">Ajouts</span>',
-            quittant:   '<span class="badge bg-danger">Quittant</span>',
-            changement: '<span class="badge" style="background:#fd7e14;">Changement</span>',
+            debut: '<span class="badge" style="background:#6f42c1;">Début</span>',
+            ajout: '<span class="badge bg-success">Ajouts</span>',
         };
         return b ? (map[b] || `<span class="badge bg-light text-dark">${b}</span>`) : '<span class="text-muted small">—</span>';
     }

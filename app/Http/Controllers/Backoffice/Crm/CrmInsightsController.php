@@ -223,17 +223,16 @@ class CrmInsightsController extends BaseCrmController
                 ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
                 : null;
 
-            $timingBucket = match(true) {
+            // Bucket = timing-based (debut/ajout) for ALL statuses.
+            // Status (Active/Annulé/Archive) is shown separately as a badge — a student
+            // who paid the group's first month IS a Début, even if they later cancelled.
+            $bucket = match(true) {
                 $classStartYm && $regStartYm && $regStartYm <= $classStartYm => 'debut',
                 $classStartYm && $regStartYm && $regStartYm > $classStartYm  => 'ajout',
                 default => $classStartYm ? 'ajout' : 'debut',
             };
 
-            $bucket = match($status) {
-                'Annulé'  => 'quittant',
-                'Archive' => 'changement',
-                default   => $timingBucket,
-            };
+            $timingBucket = $bucket;
 
             return [
                 'student_id'     => $r->crm_student_id,
