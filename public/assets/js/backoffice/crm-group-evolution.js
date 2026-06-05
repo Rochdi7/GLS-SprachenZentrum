@@ -168,7 +168,8 @@
 
     canvas.addEventListener('mouseleave', () => { if (tooltip) tooltip.style.display = 'none'; });
 
-    draw();
+    // Defer first draw until after layout so clientWidth is non-zero.
+    requestAnimationFrame(draw);
     window.addEventListener('resize', draw);
 })();
 
