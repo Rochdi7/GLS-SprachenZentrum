@@ -223,7 +223,9 @@ class CrmSnapshotPaymentsCommand extends Command
                 'reference'               => $row['REFERENCE']               ?? null,
                 'amount'                  => $row['AMOUNT']                  ?? null,
                 'rest_amount'             => $echeance['rest_amount']        ?? null,
-                'effective_date'          => $row['EFFECTIVE_DATE']          ?? null,
+                'effective_date'          => isset($row['EFFECTIVE_DATE']) && $row['EFFECTIVE_DATE']
+                    ? Carbon::parse($row['EFFECTIVE_DATE'])->setTimezone('Africa/Casablanca')->toDateString()
+                    : null,
                 'due_date'                => $echeance['due_date']           ?? null,
                 'payment_method_id'       => $row['PAYMENT_METHOD_ID']       ?? null,
                 'payment_method_name'     => $row['PAYMENT_METHOD_NAME']     ?? null,

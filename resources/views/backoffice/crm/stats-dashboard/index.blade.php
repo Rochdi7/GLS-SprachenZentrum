@@ -137,6 +137,10 @@
                     <p class="text-muted text-center py-5">Aucune donnée — lancez <code>crm:snapshot-payments</code>.</p>
                 @else
                     <div id="chartEncaissement" class="chart-wrap"></div>
+                    <div class="text-muted mt-2" style="font-size:.75rem">
+                        <i class="ph-duotone ph-info me-1"></i>
+                        Réglement uniquement. Écart possible avec le CRM (±5%) : les paiements saisis rétroactivement apparaissent dans le mois de saisie, pas dans le mois de la date effective.
+                    </div>
                 @endif
             </div>
         </div>

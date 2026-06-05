@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $color    = $isToday  ? 'success' : 'warning';
     $icon     = $isToday  ? 'ph-check-circle' : 'ph-warning';
     $title    = 'Données issues du snapshot du ' . $snap->translatedFormat('d/m/Y') .
-                '. Mis à jour chaque nuit à 01h30.';
+                '. Mis à jour toutes les 2h. Note : les montants peuvent différer légèrement du CRM (±5%) car l\'API filtre par date de saisie, pas par date effective — les paiements saisis rétroactivement apparaissent dans le mois de saisie, pas dans le mois de la date effective.';
 @endphp
 <span class="badge bg-light-{{ $color }} text-{{ $color }} d-inline-flex align-items-center gap-1 px-2 py-1"
       style="font-size:.75rem;font-weight:500;border-radius:6px"

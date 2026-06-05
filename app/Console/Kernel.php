@@ -27,6 +27,17 @@ class Kernel extends ConsoleKernel
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/crm-sync-all.log'));
 
+        // ── Monthly re-snapshot — 5th of each month at 03:00 ────────────────
+        // Re-fetches last 3 months to catch retroactive CRM entries (payments
+        // entered weeks after their effective_date — common in Wimschool CRM).
+        // Runs last day of month — fetches 4 months back to catch retroactive entries
+        // (payments entered weeks after their effective_date — common in Wimschool CRM)
+        $schedule->command('crm:snapshot-payments --months=4')
+            ->monthlyOn(28, '03:00')
+            ->timezone('Africa/Casablanca')
+            ->withoutOverlapping(240)
+            ->appendOutputTo(storage_path('logs/crm-snapshot-monthly.log'));
+
         // ── Step 2 — :20 — Daily report (after sync finishes) ────────────────
         $schedule->command('crm:daily-report')
             ->cron('20 */2 * * *')
