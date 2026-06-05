@@ -267,7 +267,7 @@
 @endcan
 --}}
 
-@can('presence.view')
+{{-- @can('presence.view')
     <li class="pc-item pc-hasmenu {{ $presenceOpen ? 'pc-trigger' : '' }}">
         <a href="#!" class="pc-link">
             <span class="pc-micon"><i class="ph-duotone ph-chalkboard-teacher"></i></span>
@@ -281,10 +281,9 @@
                     <span class="pc-mtext">Tableau de bord</span>
                 </a>
             </li>
-            {{-- Excel import hidden from menu (logic preserved) --}}
         </ul>
     </li>
-@endcan
+@endcan --}}
 
 @if (false)
     {{-- Hidden: not ready for production --}}
