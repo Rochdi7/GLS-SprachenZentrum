@@ -467,6 +467,7 @@ Route::prefix('backoffice')
                         Route::get('/legacy/group/{group}/import/{import}', [CrmPayrollController::class, 'show'])->middleware('permission:presence.view')->name('legacy.import.show');
                         Route::get('/legacy/group/{group}/import/{import}/pdf', [CrmPayrollController::class, 'pdf'])->middleware('permission:presence.view')->name('legacy.import.pdf');
                         Route::post('/legacy/group/{group}/import/{import}/recalculate', [CrmPayrollController::class, 'recalculate'])->middleware('permission:presence.edit')->name('legacy.import.recalculate');
+                        Route::delete('/legacy/group/{group}/import/{import}', [CrmPayrollController::class, 'destroy'])->middleware('role:Super Admin')->name('legacy.import.destroy');
                     });
             });
 

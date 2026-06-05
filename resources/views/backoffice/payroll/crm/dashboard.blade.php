@@ -232,6 +232,20 @@
                                                 <i class="ph-duotone ph-plus"></i>
                                             </a>
                                         @endif
+                                        @role('Super Admin')
+                                            @if ($latest)
+                                                <form method="POST"
+                                                      action="{{ route('backoffice.payroll.crm.legacy.import.destroy', ['group' => $group->id, 'import' => $latest->id]) }}"
+                                                      onsubmit="return confirm('Supprimer le dernier paiement (v{{ $latest->version }}) ? Cette action est irréversible.')"
+                                                      class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer le dernier paiement">
+                                                        <i class="ph-duotone ph-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        @endrole
                                     </div>
                                 </td>
                             </tr>

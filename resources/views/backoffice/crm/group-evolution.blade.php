@@ -388,8 +388,8 @@
                                     <th>Nom étudiant</th>
                                     <th>Statut</th>
                                     <th>Bucket</th>
-                                    <th>Date inscription</th>
-                                    <th>Début</th>
+                                    <th>Mois inscr.</th>
+                                    <th>Date inscr.</th>
                                 </tr>
                             </thead>
                             <tbody id="geDrillTbody"></tbody>
@@ -413,8 +413,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const drillUrl  = '{{ route("backoffice.crm.group-evolution.drill") }}';
-    const startDate = document.querySelector('[name="startDate"]')?.value || '';
-    const endDate   = document.querySelector('[name="endDate"]')?.value   || '';
     let allRows      = [];
     let activeBucket = '';
 
@@ -425,6 +423,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             document.getElementById('geDrillTitle').textContent = className;
             document.getElementById('geDrillCount').textContent = '';
+            document.getElementById('geDrillSubtitle')?.remove();
             document.getElementById('geDrillLoading').classList.remove('d-none');
             document.getElementById('geDrillContent').classList.add('d-none');
             document.getElementById('geDrillEmpty').classList.add('d-none');
@@ -436,18 +435,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
             new bootstrap.Modal(document.getElementById('geDrillModal')).show();
 
-            const url = drillUrl + '?classId=' + classId
-                      + (startDate ? '&startDate=' + startDate : '')
-                      + (endDate   ? '&endDate='   + endDate   : '');
-
-            fetch(url)
+            fetch(drillUrl + '?classId=' + classId)
                 .then(r => r.json())
                 .then(data => {
                     allRows = data.rows;
                     document.getElementById('geDrillLoading').classList.add('d-none');
-                    document.getElementById('geDrillCount').textContent = data.count + ' étudiant(s)';
+
+                    // Show class start month as subtitle
+                    if (data.class_start_ym) {
+                        const sub = document.createElement('small');
+                        sub.id = 'geDrillSubtitle';
+                        sub.className = 'text-muted ms-2';
+                        sub.textContent = 'Début groupe : ' + data.class_start_ym;
+                        document.getElementById('geDrillTitle').after(sub);
+                    }
 
                     if (data.count === 0) {
+                        document.getElementById('geDrillCount').textContent = '0 étudiant(s)';
                         document.getElementById('geDrillEmpty').classList.remove('d-none');
                     } else {
                         document.getElementById('geDrillContent').classList.remove('d-none');
@@ -498,20 +502,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function renderRows(rows) {
         const statusColors = {
-            'Active': 'bg-success', 'active': 'bg-success',
-            'Inactive': 'bg-secondary', 'inactive': 'bg-secondary',
-            'Annulé': 'bg-danger', 'Canceled': 'bg-danger',
+            'Active':  'bg-success',
+            'Annulé':  'bg-danger',
+            'Archive': 'bg-secondary',
         };
         document.getElementById('geDrillTbody').innerHTML = rows.map((r, i) => {
             const badge = statusColors[r.status] || 'bg-light text-dark';
-            const start = r.start_date ? new Date(r.start_date).toLocaleDateString('fr-MA',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
             return `<tr>
                 <td class="text-muted">${i+1}</td>
                 <td><strong>${r.student_name}</strong><br><small class="text-muted">#${r.student_id}</small></td>
                 <td><span class="badge ${badge}">${r.status}</span></td>
                 <td>${bucketBadge(r.bucket)}</td>
+                <td><small class="text-muted">${r.reg_start_ym || '—'}</small></td>
                 <td><small>${r.registered_at}</small></td>
-                <td><small>${start}</small></td>
             </tr>`;
         }).join('');
     }

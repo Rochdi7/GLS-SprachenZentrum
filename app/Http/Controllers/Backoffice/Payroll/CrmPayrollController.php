@@ -225,6 +225,20 @@ class CrmPayrollController extends BaseCrmController
     }
 
     /**
+     * Delete a CRM import (super admin only).
+     */
+    public function destroy(Group $group, PresenceImport $import)
+    {
+        $import->paymentSummary?->delete();
+        $import->students()->each(fn($s) => $s->records()->delete() && $s->delete());
+        $import->delete();
+
+        return redirect()
+            ->route('backoffice.payroll.crm.legacy.group.imports', $group)
+            ->with('success', 'Import v' . $import->version . ' supprimé.');
+    }
+
+    /**
      * Update rate and recalculate payment.
      */
     public function recalculate(Request $request, Group $group, PresenceImport $import)

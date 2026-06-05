@@ -71,13 +71,18 @@ class GroupEvolutionService
         }
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($strStoreId, $startDate, $endDate) {
-            // Read from precomputed snapshot — one SELECT, < 80ms, zero API calls
+            // Read from precomputed snapshot — one SELECT, < 80ms, zero API calls.
+            // When multiple snapshot ranges overlap the requested window (e.g. the command
+            // was run with different --months values), keep only the most-recently computed
+            // row per class to avoid duplicating groups in the table.
             $rows = CrmGroupEvolutionSnapshot::query()
                 ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId))
                 ->where('range_start', '<=', $startDate)
                 ->where('range_end', '>=', $endDate)
-                ->orderBy('class_name')
-                ->get();
+                ->orderByDesc('computed_at') // most recent first so unique() keeps the latest
+                ->get()
+                ->unique('class_id')         // one row per class — keeps the most recently computed
+                ->sortBy('class_name');       // restore display order
 
             if ($rows->isEmpty()) {
                 // No snapshot yet — show a helpful message instead of timing out
