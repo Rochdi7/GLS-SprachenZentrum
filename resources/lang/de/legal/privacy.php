@@ -40,6 +40,9 @@ return [
         's9_title' => 'Formulare, Server-Logs und integrierte Dienste',
         's9_text' => 'Der Website-Anbieter kann automatisch bestimmte Informationen in Log-Dateien erfassen (Browsertyp/-version, Betriebssystem, Referrer-URL, Anfragezeitpunkt, IP-Adresse). Wenn Sie uns über ein Formular kontaktieren, verarbeiten wir die bereitgestellten Informationen, um auf Ihre Anfrage zu antworten. Die Website kann auch Dienste von Drittanbietern einbinden (z. B. Karten, Videos oder Schriftarten). Wenn diese Dienste geladen werden, können technische Daten (einschließlich Ihrer IP-Adresse) an deren Anbieter übermittelt werden.',
 
+        's10_title' => 'Über GLS Sprachenzentrum',
+        's10_text' => 'Das GLS Sprachenzentrum ist ein Sprachenzentrum mit Sitz in Marokko. Unsere Studierenden befinden sich ausschließlich in Marokko. Wir haben keinerlei Verbindung, Zugehörigkeit oder rechtliche bzw. kommerzielle Beziehung zu der deutschen Einrichtung „GLS Sprachen Zentrum Berlin" in Deutschland. Unsere Dienstleistungen, Kurse und Website sind vollständig unabhängig von dieser Organisation.',
+
     ],
 
 ];

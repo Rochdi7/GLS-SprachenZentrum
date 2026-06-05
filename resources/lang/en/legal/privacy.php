@@ -40,6 +40,9 @@ return [
         's9_title' => 'Forms, server logs and integrated services',
         's9_text' => 'The website provider may automatically collect certain information in log files (browser type/version, operating system, referrer URL, request time, IP address). If you contact us via a form, we process the information provided to respond to your request. The website may also integrate third-party services (for example maps, videos or fonts). When these services are loaded, technical data (including your IP address) may be transmitted to their providers.',
 
+        's10_title' => 'About GLS Sprachenzentrum',
+        's10_text' => 'GLS Sprachenzentrum is a language center located in Morocco. Our students are exclusively based in Morocco. We have no link, affiliation, or legal or commercial relationship with the German institution "GLS Sprachen Zentrum Berlin", located in Germany. Our services, courses, and website are entirely independent from that organization.',
+
     ],
 
 ];

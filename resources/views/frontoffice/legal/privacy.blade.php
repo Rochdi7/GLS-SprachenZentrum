@@ -68,6 +68,11 @@
                 </ol>
                 <p>{!! __('legal/privacy.content.s9_text') !!}</p>
 
+                <ol start="10" role="list">
+                    <li><strong>{{ __('legal/privacy.content.s10_title') }}</strong></li>
+                </ol>
+                <p>{!! __('legal/privacy.content.s10_text') !!}</p>
+
             </div>
         </div>
     </div>

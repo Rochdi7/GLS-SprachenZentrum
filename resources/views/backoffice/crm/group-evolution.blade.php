@@ -373,6 +373,13 @@
                     <div class="px-3 pt-2 pb-1">
                         <input type="text" id="geDrillSearch" class="form-control form-control-sm" placeholder="Rechercher par nom...">
                     </div>
+                    <div class="px-3 pb-2 d-flex gap-2 flex-wrap" id="geDrillBucketTabs">
+                        <button type="button" class="btn btn-sm btn-primary ge-bucket-tab active" data-bucket="">Tous</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary ge-bucket-tab" data-bucket="debut" style="--bs-btn-color:#6f42c1;--bs-btn-border-color:#6f42c1;">Début</button>
+                        <button type="button" class="btn btn-sm btn-outline-success ge-bucket-tab" data-bucket="ajout">Ajouts</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger ge-bucket-tab" data-bucket="quittant">Quittant</button>
+                        <button type="button" class="btn btn-sm ge-bucket-tab" data-bucket="changement" style="color:#fd7e14;border:1px solid #fd7e14;background:transparent;">Changement</button>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-hover table-sm align-middle mb-0">
                             <thead class="table-light sticky-top">
@@ -380,6 +387,7 @@
                                     <th>#</th>
                                     <th>Nom étudiant</th>
                                     <th>Statut</th>
+                                    <th>Bucket</th>
                                     <th>Date inscription</th>
                                     <th>Début</th>
                                 </tr>
@@ -404,8 +412,11 @@
 <script src="{{ asset('assets/js/backoffice/crm-group-evolution.js') }}" defer></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const drillUrl = '{{ route("backoffice.crm.group-evolution.drill") }}';
-    let allRows = [];
+    const drillUrl  = '{{ route("backoffice.crm.group-evolution.drill") }}';
+    const startDate = document.querySelector('[name="startDate"]')?.value || '';
+    const endDate   = document.querySelector('[name="endDate"]')?.value   || '';
+    let allRows      = [];
+    let activeBucket = '';
 
     document.querySelectorAll('.ge-drill-row').forEach(row => {
         row.addEventListener('click', function () {
@@ -418,10 +429,18 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('geDrillContent').classList.add('d-none');
             document.getElementById('geDrillEmpty').classList.add('d-none');
             document.getElementById('geDrillSearch').value = '';
+            activeBucket = '';
+            document.querySelectorAll('.ge-bucket-tab').forEach(b => b.classList.remove('active', 'btn-primary'));
+            const allTab = document.querySelector('.ge-bucket-tab[data-bucket=""]');
+            if (allTab) { allTab.classList.add('active', 'btn-primary'); }
 
             new bootstrap.Modal(document.getElementById('geDrillModal')).show();
 
-            fetch(drillUrl + '?classId=' + classId)
+            const url = drillUrl + '?classId=' + classId
+                      + (startDate ? '&startDate=' + startDate : '')
+                      + (endDate   ? '&endDate='   + endDate   : '');
+
+            fetch(url)
                 .then(r => r.json())
                 .then(data => {
                     allRows = data.rows;
@@ -432,16 +451,50 @@ document.addEventListener('DOMContentLoaded', function () {
                         document.getElementById('geDrillEmpty').classList.remove('d-none');
                     } else {
                         document.getElementById('geDrillContent').classList.remove('d-none');
-                        renderRows(allRows);
+                        applyFilters();
                     }
                 });
         });
     });
 
-    document.getElementById('geDrillSearch')?.addEventListener('input', function () {
-        const q = this.value.toLowerCase();
-        renderRows(allRows.filter(r => (r.student_name || '').toLowerCase().includes(q)));
+    document.getElementById('geDrillSearch')?.addEventListener('input', applyFilters);
+
+    document.querySelectorAll('.ge-bucket-tab').forEach(btn => {
+        btn.addEventListener('click', function () {
+            activeBucket = this.dataset.bucket;
+            document.querySelectorAll('.ge-bucket-tab').forEach(b => {
+                b.classList.remove('active', 'btn-primary', 'btn-secondary', 'btn-success', 'btn-danger');
+            });
+            this.classList.add('active');
+            applyFilters();
+        });
     });
+
+    function applyFilters() {
+        const q = (document.getElementById('geDrillSearch')?.value || '').toLowerCase();
+        const filtered = allRows.filter(r => {
+            const matchName   = (r.student_name || '').toLowerCase().includes(q);
+            const matchBucket = !activeBucket || r.bucket === activeBucket;
+            return matchName && matchBucket;
+        });
+        const countEl = document.getElementById('geDrillCount');
+        countEl.textContent = filtered.length + ' étudiant(s)' + (activeBucket ? ' · ' + bucketLabel(activeBucket) : '');
+        renderRows(filtered);
+    }
+
+    function bucketLabel(b) {
+        return { debut: 'Début', ajout: 'Ajouts', quittant: 'Quittant', changement: 'Changement' }[b] || b;
+    }
+
+    function bucketBadge(b) {
+        const map = {
+            debut:      '<span class="badge" style="background:#6f42c1;">Début</span>',
+            ajout:      '<span class="badge bg-success">Ajouts</span>',
+            quittant:   '<span class="badge bg-danger">Quittant</span>',
+            changement: '<span class="badge" style="background:#fd7e14;">Changement</span>',
+        };
+        return b ? (map[b] || `<span class="badge bg-light text-dark">${b}</span>`) : '<span class="text-muted small">—</span>';
+    }
 
     function renderRows(rows) {
         const statusColors = {
@@ -456,6 +509,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td class="text-muted">${i+1}</td>
                 <td><strong>${r.student_name}</strong><br><small class="text-muted">#${r.student_id}</small></td>
                 <td><span class="badge ${badge}">${r.status}</span></td>
+                <td>${bucketBadge(r.bucket)}</td>
                 <td><small>${r.registered_at}</small></td>
                 <td><small>${start}</small></td>
             </tr>`;

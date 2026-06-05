@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Backoffice\Crm;
 
+use App\Models\CrmClass;
+use App\Models\CrmCollectionRow;
+use App\Models\CrmPaymentAllocation;
 use App\Models\CrmRegistration;
 use App\Services\Crm\Stats\AdvancePaymentsService;
 use App\Services\Crm\Stats\GroupEvolutionService;
@@ -180,31 +183,136 @@ class CrmInsightsController extends BaseCrmController
     }
 
     /**
-     * AJAX drill: students registered in a given class.
-     * ?classId=123  — returns all registrations for that class with student name + status.
+     * AJAX drill: students registered in a given class with bucket classification.
+     * ?classId=123&startDate=2026-01-01&endDate=2026-06-05
      */
     public function groupEvolutionDrill(Request $request): JsonResponse
     {
-        $classId = (int) $request->query('classId');
+        $classId   = (int) $request->query('classId');
+        $startDate = $request->query('startDate') ?: now()->subDays(180)->toDateString();
+        $endDate   = $request->query('endDate')   ?: now()->toDateString();
+
         if (!$classId) {
             return response()->json(['rows' => [], 'count' => 0]);
         }
 
+        // --- Classify each student in this class into a bucket ---
+
+        // 1. Payment allocations for this class in the date range
+        $allocations = CrmPaymentAllocation::where('class_id', $classId)
+            ->where('allocation_date', '>=', $startDate)
+            ->where('allocation_date', '<=', $endDate)
+            ->get(['student_id', 'allocation_month', 'is_inscription']);
+
+        // Build per-student month sets and inscription flags
+        $studentMonths    = []; // [student_id => ['YYYY-MM' => true]]
+        $inscriptionFlags = []; // [student_id => true]
+        foreach ($allocations as $alloc) {
+            $sid = $alloc->student_id;
+            $studentMonths[$sid][$alloc->allocation_month] = true;
+            if ($alloc->is_inscription) {
+                $inscriptionFlags[$sid] = true;
+            }
+        }
+
+        // 2. Class start month + store id (single query)
+        $classRecord = CrmClass::where('class_id', $classId)->first(['site_id', 'raw_data']);
+        $storeId     = $classRecord ? (int) $classRecord->site_id : null;
+        $classRaw    = $classRecord ? (is_array($classRecord->raw_data) ? $classRecord->raw_data : json_decode($classRecord->raw_data, true)) : [];
+        $startYm     = isset($classRaw['START_DATE'])
+            ? Carbon::parse($classRaw['START_DATE'])->format('Y-m')
+            : null;
+
+        // 3. Archived/active lists for changement detection
+        $archivedStudents = $this->parseStudentIdList($classRaw['LIST_STUDENT_ARCHIVED'] ?? []);
+
+        // Students archived in this class but active elsewhere = changement
+        $changementIds = [];
+        if (!empty($archivedStudents)) {
+            $archivedSet  = array_flip($archivedStudents);
+            $otherClasses = CrmClass::where('site_id', $storeId)
+                ->where('class_id', '!=', $classId)
+                ->whereNotNull('raw_data')
+                ->get(['class_id', 'raw_data']);
+            foreach ($otherClasses as $oc) {
+                $ocRaw    = is_array($oc->raw_data) ? $oc->raw_data : json_decode($oc->raw_data, true);
+                $ocActive = $this->parseStudentIdList($ocRaw['LIST_STUDENT_ACTIVE'] ?? []);
+                foreach ($ocActive as $sid) {
+                    if (isset($archivedSet[$sid])) {
+                        $changementIds[$sid] = true;
+                    }
+                }
+            }
+        }
+
+        // 4. Quittants: unpaid collection rows for this class in range, not changements
+        $quittantIds = [];
+        $unpaidRows  = CrmCollectionRow::where('crm_store_id', $storeId)
+            ->where('class_id', $classId)
+            ->where('registration_status_name', 'Active')
+            ->whereBetween('due_date', [$startDate, $endDate])
+            ->where('rest_amount', '>', 0)
+            ->pluck('student_id');
+        foreach ($unpaidRows as $sid) {
+            if (!isset($changementIds[$sid]) && isset($studentMonths[$sid])) {
+                $quittantIds[$sid] = true;
+            }
+        }
+
+        // 5. Assign bucket per student
+        $buckets = [];
+        foreach ($studentMonths as $sid => $months) {
+            if (isset($changementIds[$sid])) {
+                $buckets[$sid] = 'changement';
+            } elseif (isset($quittantIds[$sid])) {
+                $buckets[$sid] = 'quittant';
+            } elseif (isset($inscriptionFlags[$sid])) {
+                $buckets[$sid] = 'ajout';
+            } elseif ($startYm && isset($months[$startYm])) {
+                $buckets[$sid] = 'debut';
+            } else {
+                $buckets[$sid] = 'ajout';
+            }
+        }
+
+        // --- Fetch registrations for display ---
         $rows = CrmRegistration::where('crm_class_id', $classId)
             ->orderBy('status_label')
             ->get(['crm_student_id', 'crm_class_id', 'status_label', 'date_creation', 'raw_data'])
-            ->map(function ($r) {
+            ->map(function ($r) use ($buckets) {
                 $raw = is_array($r->raw_data) ? $r->raw_data : json_decode($r->raw_data, true);
+                $sid = $r->crm_student_id;
                 return [
-                    'student_id'   => $r->crm_student_id,
+                    'student_id'   => $sid,
                     'student_name' => $raw['STUDENT_FULL_NAME'] ?? '—',
                     'class_name'   => $raw['CLASS_NAME']        ?? '—',
                     'status'       => $r->status_label          ?? ($raw['REGISTRATION_STATUS_NAME'] ?? '—'),
                     'start_date'   => $raw['START_DATE']        ?? null,
-                    'registered_at'=> $r->date_creation         ? \Carbon\Carbon::parse($r->date_creation)->format('d/m/Y') : '—',
+                    'registered_at'=> $r->date_creation ? Carbon::parse($r->date_creation)->format('d/m/Y') : '—',
+                    'bucket'       => $buckets[$sid] ?? null,
                 ];
             });
 
         return response()->json(['rows' => $rows, 'count' => $rows->count()]);
+    }
+
+    private function parseStudentIdList(mixed $list): array
+    {
+        if (is_array($list)) {
+            return array_values(array_filter(array_map(
+                fn($s) => (int) (is_array($s) ? ($s['STUDENT_ID'] ?? $s['ID'] ?? 0) : $s),
+                $list
+            )));
+        }
+        if (is_string($list) && trim($list) !== '') {
+            $decoded = json_decode($list, true);
+            if (is_array($decoded)) {
+                return array_values(array_filter(array_map(
+                    fn($s) => (int) (is_array($s) ? ($s['STUDENT_ID'] ?? $s['ID'] ?? 0) : $s),
+                    $decoded
+                )));
+            }
+        }
+        return [];
     }
 }
