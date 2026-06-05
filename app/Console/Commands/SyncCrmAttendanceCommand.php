@@ -22,13 +22,15 @@ class SyncCrmAttendanceCommand extends Command
         {--store=* : Ignored — bulk endpoint streams all stores in one pass}
         {--all : Ignored — bulk endpoint streams all stores in one pass}
         {--months=2 : Number of months back to sync (default 2)}
-        {--delay=500 : Delay between page requests in ms}';
+        {--delay=500 : Delay between page requests in ms}
+        {--max-pages=200 : Max pages per run to avoid OOM on shared hosting (default 200)}
+        {--from-page=0 : Start from this page (for manual resume)}';
 
     protected $description = 'Sync CRM session-presence (attendance) to local crm_attendance table';
 
     private const LOCK_KEY  = 'crm.sync-attendance.lock';
     private const LOCK_TTL  = 3600;
-    private const PAGE_SIZE = 500; // bulk endpoint supports up to 500 (was 25 on standard endpoint — 20× improvement)
+    private const PAGE_SIZE = 500;
     private const BACKOFF   = [5, 15, 30];
 
     public function __construct(protected Crm $crm)
@@ -54,18 +56,17 @@ class SyncCrmAttendanceCommand extends Command
 
     private function sync(): int
     {
-        $months  = max(1, min(12, (int) $this->option('months')));
-        $delayMs = max(100, (int) $this->option('delay'));
+        $months   = max(1, min(12, (int) $this->option('months')));
+        $delayMs  = max(100, (int) $this->option('delay'));
+        $maxPages = max(1, (int) $this->option('max-pages'));
+        $fromPage = max(0, (int) $this->option('from-page'));
 
         $dateFrom = Carbon::today('Africa/Casablanca')->subMonths($months)->startOfMonth()->toDateString();
         $dateTo   = Carbon::today('Africa/Casablanca')->toDateString();
 
-        $this->info("Syncing attendance {$dateFrom} → {$dateTo} (all stores, single bulk pass)");
+        $this->info("Syncing attendance {$dateFrom} → {$dateTo} (all stores, pages {$fromPage}–" . ($fromPage + $maxPages - 1) . ")");
 
-        // The bulk endpoint ignores strStoreId and streams ALL stores in one paginated feed.
-        // Running it per-store wastes requests and drops rows belonging to other stores.
-        // One pass with the global classMap covers everything correctly.
-        $synced = $this->syncAll($dateFrom, $dateTo, $delayMs);
+        $synced = $this->syncAll($dateFrom, $dateTo, $delayMs, $maxPages, $fromPage);
 
         Cache::flush();
 
@@ -73,19 +74,20 @@ class SyncCrmAttendanceCommand extends Command
         return self::SUCCESS;
     }
 
-    private function syncAll(string $dateFrom, string $dateTo, int $delayMs): int
+    private function syncAll(string $dateFrom, string $dateTo, int $delayMs, int $maxPages, int $fromPage): int
     {
-        // Build global class_id → crm_id map across ALL stores.
-        // classMap key = Wimschool CLASS_ID, value = our crm_classes.crm_id (FK used in attendance).
+        // Global classMap: Wimschool CLASS_ID → our crm_classes.crm_id (FK in attendance).
+        // Bulk endpoint streams ALL stores mixed — one pass covers everything.
         $classMap = CrmClass::whereNotNull('class_id')
             ->pluck('crm_id', 'class_id')
             ->toArray();
 
-        $page    = 0;
+        $page    = $fromPage;
         $synced  = 0;
         $hasMore = true;
+        $pagesRun = 0;
 
-        while ($hasMore) {
+        while ($hasMore && $pagesRun < $maxPages) {
             $this->line("[ALL] Page {$page}...");
 
             $response = $this->fetchWithBackoff($dateFrom, $dateTo, $page);
@@ -154,10 +156,16 @@ class SyncCrmAttendanceCommand extends Command
             $pagination = $response['pagination'] ?? [];
             $hasMore    = ($pagination['hasMore'] ?? false) || ($pagination['hasNext'] ?? false);
             $page++;
+            $pagesRun++;
 
             if ($hasMore && $delayMs > 0) {
                 usleep($delayMs * 1000);
             }
+        }
+
+        if ($hasMore) {
+            $this->warn("[ALL] Page limit reached. Resume with: --from-page={$page} --max-pages={$maxPages}");
+            Log::info('crm:sync-attendance page limit reached', ['next_page' => $page]);
         }
 
         return $synced;
