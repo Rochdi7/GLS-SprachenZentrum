@@ -365,6 +365,7 @@
                         <button type="button" class="btn btn-sm btn-primary ge-bucket-tab active" data-bucket="" data-status="">Tous</button>
                         <button type="button" class="btn btn-sm btn-outline-secondary ge-bucket-tab" data-bucket="debut" data-status="" style="--bs-btn-color:#6f42c1;--bs-btn-border-color:#6f42c1;">Début</button>
                         <button type="button" class="btn btn-sm btn-outline-success ge-bucket-tab" data-bucket="ajout" data-status="">Ajouts</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary ge-bucket-tab" data-bucket="unpaid" data-status="">Non payé</button>
                         <button type="button" class="btn btn-sm btn-outline-danger ge-bucket-tab" data-bucket="" data-status="Annulé">Annulé</button>
                         <button type="button" class="btn btn-sm ge-bucket-tab" data-bucket="" data-status="Archive" style="color:#fd7e14;border:1px solid #fd7e14;background:transparent;">Archive</button>
                     </div>
@@ -376,7 +377,7 @@
                                     <th>Nom étudiant</th>
                                     <th>Statut</th>
                                     <th>Bucket</th>
-                                    <th>Mois inscr.</th>
+                                    <th>1er paiement</th>
                                     <th>Date inscr.</th>
                                 </tr>
                             </thead>
@@ -478,7 +479,7 @@
         const q = (document.getElementById('geDrillSearch')?.value || '').toLowerCase();
         const filtered = allRows.filter(r => {
             const matchName   = (r.student_name || '').toLowerCase().includes(q);
-            const matchBucket = !activeBucket || r.bucket === activeBucket;
+            const matchBucket = !activeBucket || r.payment_bucket === activeBucket;
             const matchStatus = !activeStatus || r.status === activeStatus;
             return matchName && matchBucket && matchStatus;
         });
@@ -489,15 +490,16 @@
     }
 
     function bucketLabel(b) {
-        return { debut: 'Début', ajout: 'Ajouts' }[b] || b;
+        return { debut: 'Début', ajout: 'Ajouts', unpaid: 'Non payé' }[b] || b;
     }
 
     function bucketBadge(b) {
         const map = {
-            debut: '<span class="badge" style="background:#6f42c1;">Début</span>',
-            ajout: '<span class="badge bg-success">Ajouts</span>',
+            debut:  '<span class="badge" style="background:#6f42c1;">Début</span>',
+            ajout:  '<span class="badge bg-success">Ajouts</span>',
+            unpaid: '<span class="badge bg-light text-muted border">Non payé</span>',
         };
-        return b ? (map[b] || `<span class="badge bg-light text-dark">${b}</span>`) : '<span class="text-muted small">—</span>';
+        return map[b] || '<span class="text-muted small">—</span>';
     }
 
     function renderRows(rows) {
@@ -512,8 +514,8 @@
                 <td class="text-muted">${i+1}</td>
                 <td><strong>${r.student_name}</strong><br><small class="text-muted">#${r.student_id}</small></td>
                 <td><span class="badge ${badge}">${r.status}</span></td>
-                <td>${bucketBadge(r.bucket)}</td>
-                <td><small class="text-muted">${r.reg_start_ym || '—'}</small></td>
+                <td>${bucketBadge(r.payment_bucket)}</td>
+                <td><small class="text-muted">${r.first_paid_month || '—'}</small></td>
                 <td><small>${r.registered_at}</small></td>
             </tr>`;
         }).join('');

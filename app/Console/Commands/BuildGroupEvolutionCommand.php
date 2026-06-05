@@ -8,6 +8,7 @@ use App\Models\CrmRegistration;
 use App\Models\Site;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -30,11 +31,15 @@ use Illuminate\Support\Facades\Log;
  *   php artisan crm:build-group-evolution --store=1234
  *
  * The five buckets (matching the UI labels):
- *   debuts      — Active registrations with START_DATE month <= class START_DATE month
- *   ajouts      — Active registrations with START_DATE month >  class START_DATE month
+ *   debuts      — students whose first real monthly payment (non-inscription) is in the same
+ *                 month as the class START_DATE, regardless of current registration status
+ *   ajouts      — students whose first real monthly payment is strictly after class start month
  *   quittants   — students with registration status "Annulé" in this class
  *   changements — students with registration status "Archive" in this class
  *   actifs      — CLASS_COUNT_STUDENTS_ACTIVE from crm_classes.raw_data
+ *
+ * Note: Début/Ajout are payment-based (not registration START_DATE-based).
+ * A student registered in Jan who never paid is neither Début nor Ajout (unpaid).
  */
 class BuildGroupEvolutionCommand extends Command
 {
@@ -116,32 +121,58 @@ class BuildGroupEvolutionCommand extends Command
 
         $this->line("   " . $registrations->count() . " registrations loaded from local DB");
 
+        // ── All non-inscription monthly payment months per student (store-wide) ──
+        // crm_payment_snapshots has no class_id, so we fetch all months per student
+        // and then filter per-registration using the registration START_DATE as a floor:
+        // "first payment for this class" = earliest payment month >= registration START_DATE.
+        // This excludes payments made for previous groups before the student joined this one.
+        $allStudentIds = $registrations->pluck('crm_student_id')->unique()->values()->all();
+
+        $payMonthsByStudent = DB::table('crm_payment_snapshots')
+            ->where('crm_store_id', $storeId)
+            ->whereIn('student_id', $allStudentIds)
+            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(payload, '$.ITEMS_NAME')) NOT LIKE '%inscription%'")
+            ->selectRaw('student_id, DATE_FORMAT(effective_date, "%Y-%m") as pay_month')
+            ->distinct()
+            ->get()
+            ->groupBy('student_id')  // [student_id => Collection<{pay_month}>]
+            ->map(fn ($rows) => $rows->pluck('pay_month')->sort()->values()->all());
+
+        $this->line("   " . $payMonthsByStudent->count() . " students with payment records");
+
         $debutsByGroup      = [];
         $ajoutsByGroup      = [];
         $quittantsByGroup   = [];
         $changementsByGroup = [];
 
         foreach ($registrations as $reg) {
-            $sid     = (int) $reg->crm_student_id;
-            $cid     = (int) $reg->crm_class_id;
-            $status  = $reg->status;
-            $raw     = is_array($reg->raw_data) ? $reg->raw_data : json_decode($reg->raw_data, true);
-            $startYm = $classStartMonths[$cid] ?? null;
+            $sid      = (int) $reg->crm_student_id;
+            $cid      = (int) $reg->crm_class_id;
+            $status   = $reg->status;
+            $classYm  = $classStartMonths[$cid] ?? null;
+            $raw      = is_array($reg->raw_data) ? $reg->raw_data : json_decode($reg->raw_data, true);
 
-            // Quittant/Changement are independent of Début/Ajout — a student can be
-            // both a founding member (Début) AND have later cancelled (Quittant).
+            // Status buckets are independent of payment timing.
             if ($status === 'Annulé') {
                 $quittantsByGroup[$cid][$sid] = true;
             } elseif ($status === 'Archive') {
                 $changementsByGroup[$cid][$sid] = true;
             }
 
-            // All statuses count toward Début/Ajout based on registration START_DATE
-            $regStartYm = isset($raw['START_DATE'])
-                ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
-                : null;
+            if (!$classYm) continue;
 
-            if ($startYm && $regStartYm && $regStartYm <= $startYm) {
+            // Registration START_DATE = when the student joined this specific class.
+            // First payment for THIS class = earliest month >= registration start date.
+            // This avoids attributing payments made for prior groups to this class.
+            $regYm    = isset($raw['START_DATE'])
+                ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
+                : $classYm;
+            $months   = $payMonthsByStudent->get($sid, []);
+            $firstForClass = collect($months)->first(fn ($m) => $m >= $regYm);
+
+            if (!$firstForClass) continue; // unpaid — not counted in debut or ajout
+
+            if ($firstForClass <= $classYm) {
                 $debutsByGroup[$cid][$sid] = true;
             } else {
                 $ajoutsByGroup[$cid][$sid] = true;

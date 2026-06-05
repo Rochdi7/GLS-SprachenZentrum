@@ -11,6 +11,7 @@ use App\Services\Crm\Stats\PaymentActivityService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 /**
@@ -181,13 +182,11 @@ class CrmInsightsController extends BaseCrmController
     }
 
     /**
-     * AJAX drill: students registered in a given class with bucket classification.
+     * AJAX drill: students registered in a given class with payment-based bucket classification.
      *
-     * Bucket rules (from registration status + start date vs class start month):
-     *   - Quittant   : status = 'Annulé'
-     *   - Changement : status = 'Archive'
-     *   - Début      : status = 'Active' AND registration START_DATE month == class START_DATE month
-     *   - Ajout      : status = 'Active' AND registration START_DATE month is after class START_DATE month
+     * Début/Ajout are determined by the student's first real monthly payment month
+     * (non-inscription fees) relative to the class start month — NOT by registration START_DATE.
+     * Status (Active/Annulé/Archive) is shown as a separate badge and never overrides the bucket.
      */
     public function groupEvolutionDrill(Request $request): JsonResponse
     {
@@ -196,62 +195,73 @@ class CrmInsightsController extends BaseCrmController
             return response()->json(['rows' => [], 'count' => 0]);
         }
 
-        // class_id param = CLASS_ID (e.g. 9896); registrations use crm_id (e.g. 9298)
-        $classRecord = CrmClass::where('class_id', $classId)->first(['crm_id', 'raw_data']);
+        // class_id col = CLASS_ID from API (e.g. 9867); registrations.crm_class_id = crm_id (e.g. 9272)
+        $classRecord = CrmClass::where('class_id', $classId)->first(['crm_id', 'crm_store_id', 'raw_data']);
         $classRaw    = $classRecord
             ? (is_array($classRecord->raw_data) ? $classRecord->raw_data : json_decode($classRecord->raw_data, true))
             : [];
         $classStartYm = isset($classRaw['START_DATE'])
             ? Carbon::parse($classRaw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
             : null;
-
-        // registrations.crm_class_id = crm_classes.crm_id (not class_id)
-        $crmId = $classRecord?->crm_id ?? $classId;
+        $storeId = $classRecord?->crm_store_id;
+        $crmId   = $classRecord?->crm_id ?? $classId;
 
         $registrations = CrmRegistration::where('crm_class_id', $crmId)
             ->orderBy('status')
             ->get(['crm_student_id', 'status', 'date_creation', 'raw_data']);
 
-        $rows = $registrations->map(function ($r) use ($classStartYm) {
+        // All non-inscription monthly payment months per student in this store.
+        // We use registration START_DATE as a floor so payments made for prior groups
+        // don't pollute the first-payment-for-this-class calculation.
+        $studentIds = $registrations->pluck('crm_student_id')->unique()->values()->all();
+
+        $payMonthsByStudent = DB::table('crm_payment_snapshots')
+            ->where('crm_store_id', $storeId)
+            ->whereIn('student_id', $studentIds)
+            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(payload, '$.ITEMS_NAME')) NOT LIKE '%inscription%'")
+            ->selectRaw('student_id, DATE_FORMAT(effective_date, "%Y-%m") as pay_month')
+            ->distinct()
+            ->get()
+            ->groupBy('student_id')
+            ->map(fn ($rows) => $rows->pluck('pay_month')->sort()->values()->all());
+
+        $rows = $registrations->map(function ($r) use ($classStartYm, $payMonthsByStudent) {
             $raw    = is_array($r->raw_data) ? $r->raw_data : json_decode($r->raw_data, true);
-            $status = $r->status;
+            $sid    = (int) $r->crm_student_id;
 
-            // Quittant/Changement and Début/Ajout are independent — a student can be
-            // a founding member (Début) who later cancelled (Quittant).
-            // Primary display bucket = status-based; secondary = timing-based.
-            $regStartYm = isset($raw['START_DATE'])
+            $regYm  = isset($raw['START_DATE'])
                 ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
-                : null;
+                : $classStartYm;
 
-            // Bucket = timing-based (debut/ajout) for ALL statuses.
-            // Status (Active/Annulé/Archive) is shown separately as a badge — a student
-            // who paid the group's first month IS a Début, even if they later cancelled.
-            $bucket = match(true) {
-                $classStartYm && $regStartYm && $regStartYm <= $classStartYm => 'debut',
-                $classStartYm && $regStartYm && $regStartYm > $classStartYm  => 'ajout',
-                default => $classStartYm ? 'ajout' : 'debut',
+            // First payment for THIS class = earliest month >= registration START_DATE
+            $months        = $payMonthsByStudent->get($sid, []);
+            $firstForClass = collect($months)->first(fn ($m) => $m >= $regYm);
+
+            $paymentBucket = match(true) {
+                !$classStartYm || !$firstForClass      => 'unpaid',
+                $firstForClass <= $classStartYm        => 'debut',
+                default                                => 'ajout',
             };
 
-            $timingBucket = $bucket;
-
             return [
-                'student_id'     => $r->crm_student_id,
-                'student_name'   => $raw['STUDENT_FULL_NAME'] ?? '—',
-                'status'         => $status,
-                'bucket'         => $bucket,
-                'timing_bucket'  => $timingBucket,
-                'reg_start_ym'   => $regStartYm,
-                'registered_at'  => $r->date_creation
+                'student_id'              => $sid,
+                'student_name'            => $raw['STUDENT_FULL_NAME'] ?? '—',
+                'status'                  => $r->status,
+                'bucket'                  => $paymentBucket !== 'unpaid' ? $paymentBucket : null,
+                'first_paid_month'        => $firstForClass,
+                'has_first_month_payment' => $firstForClass !== null,
+                'payment_bucket'          => $paymentBucket,
+                'reg_start_ym'            => $regYm,
+                'registered_at'           => $r->date_creation
                     ? Carbon::parse($r->date_creation)->format('d/m/Y')
                     : '—',
-                'start_date'     => $raw['START_DATE'] ?? null,
             ];
         });
 
         return response()->json([
-            'rows'            => $rows,
-            'count'           => $rows->count(),
-            'class_start_ym'  => $classStartYm,
+            'rows'           => $rows,
+            'count'          => $rows->count(),
+            'class_start_ym' => $classStartYm,
         ]);
     }
 }
