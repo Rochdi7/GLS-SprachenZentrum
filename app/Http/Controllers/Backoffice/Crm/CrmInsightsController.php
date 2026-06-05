@@ -216,41 +216,36 @@ class CrmInsightsController extends BaseCrmController
             $raw    = is_array($r->raw_data) ? $r->raw_data : json_decode($r->raw_data, true);
             $status = $r->status;
 
-            // Bucket: quittant = Annulé, changement = Archive,
-            // début/ajout = Active compared to class start month
-            if ($status === 'Annulé') {
-                $bucket = 'quittant';
-            } elseif ($status === 'Archive') {
-                $bucket = 'changement';
-            } else {
-                // Active — compare the student's registration START_DATE month to class start month
-                $regStartYm = isset($raw['START_DATE'])
-                    ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
-                    : null;
+            // Quittant/Changement and Début/Ajout are independent — a student can be
+            // a founding member (Début) who later cancelled (Quittant).
+            // Primary display bucket = status-based; secondary = timing-based.
+            $regStartYm = isset($raw['START_DATE'])
+                ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
+                : null;
 
-                if ($classStartYm && $regStartYm && $regStartYm <= $classStartYm) {
-                    // Registered at or before class start month → founding member
-                    $bucket = 'debut';
-                } elseif ($classStartYm && $regStartYm && $regStartYm > $classStartYm) {
-                    $bucket = 'ajout';
-                } else {
-                    // No date info — treat as début if class start unknown
-                    $bucket = $classStartYm ? 'ajout' : 'debut';
-                }
-            }
+            $timingBucket = match(true) {
+                $classStartYm && $regStartYm && $regStartYm <= $classStartYm => 'debut',
+                $classStartYm && $regStartYm && $regStartYm > $classStartYm  => 'ajout',
+                default => $classStartYm ? 'ajout' : 'debut',
+            };
+
+            $bucket = match($status) {
+                'Annulé'  => 'quittant',
+                'Archive' => 'changement',
+                default   => $timingBucket,
+            };
 
             return [
-                'student_id'    => $r->crm_student_id,
-                'student_name'  => $raw['STUDENT_FULL_NAME'] ?? '—',
-                'status'        => $status,
-                'bucket'        => $bucket,
-                'reg_start_ym'  => isset($raw['START_DATE'])
-                    ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
-                    : null,
-                'registered_at' => $r->date_creation
+                'student_id'     => $r->crm_student_id,
+                'student_name'   => $raw['STUDENT_FULL_NAME'] ?? '—',
+                'status'         => $status,
+                'bucket'         => $bucket,
+                'timing_bucket'  => $timingBucket,
+                'reg_start_ym'   => $regStartYm,
+                'registered_at'  => $r->date_creation
                     ? Carbon::parse($r->date_creation)->format('d/m/Y')
                     : '—',
-                'start_date'    => $raw['START_DATE'] ?? null,
+                'start_date'     => $raw['START_DATE'] ?? null,
             ];
         });
 

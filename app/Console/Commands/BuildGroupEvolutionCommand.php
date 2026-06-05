@@ -128,21 +128,23 @@ class BuildGroupEvolutionCommand extends Command
             $raw     = is_array($reg->raw_data) ? $reg->raw_data : json_decode($reg->raw_data, true);
             $startYm = $classStartMonths[$cid] ?? null;
 
+            // Quittant/Changement are independent of Début/Ajout — a student can be
+            // both a founding member (Début) AND have later cancelled (Quittant).
             if ($status === 'Annulé') {
                 $quittantsByGroup[$cid][$sid] = true;
             } elseif ($status === 'Archive') {
                 $changementsByGroup[$cid][$sid] = true;
-            } else {
-                // Active — reg START_DATE <= class start → Début, else Ajout
-                $regStartYm = isset($raw['START_DATE'])
-                    ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
-                    : null;
+            }
 
-                if ($startYm && $regStartYm && $regStartYm <= $startYm) {
-                    $debutsByGroup[$cid][$sid] = true;
-                } else {
-                    $ajoutsByGroup[$cid][$sid] = true;
-                }
+            // All statuses count toward Début/Ajout based on registration START_DATE
+            $regStartYm = isset($raw['START_DATE'])
+                ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
+                : null;
+
+            if ($startYm && $regStartYm && $regStartYm <= $startYm) {
+                $debutsByGroup[$cid][$sid] = true;
+            } else {
+                $ajoutsByGroup[$cid][$sid] = true;
             }
         }
 
