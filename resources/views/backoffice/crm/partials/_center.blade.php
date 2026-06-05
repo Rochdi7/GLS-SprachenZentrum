@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     <i class="ti ti-building me-1 text-primary"></i> Centre actif
                 </label>
             </div>
-            <div class="col-12 col-sm">
-                <select name="crm_store_id" class="form-select form-select-sm" onchange="this.form.submit()">
+            <div class="col-12 col-sm" style="min-width:220px">
+                <select name="crm_store_id" class="form-select form-select-sm" onchange="this.form.submit()" style="min-width:220px">
                     <option value="">— Tous les centres autorisés —</option>
                     @foreach($crmCenters as $site)
                         <option value="{{ $site->crm_store_id }}"

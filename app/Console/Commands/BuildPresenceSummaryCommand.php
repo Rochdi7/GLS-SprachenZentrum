@@ -72,10 +72,10 @@ class BuildPresenceSummaryCommand extends Command
                 'c.name as class_name',
                 // First day of month — consistent date key for crm_presence_summary.month
                 DB::raw("DATE_FORMAT(a.date, '%Y-%m-01') as month"),
-                // date_creation NOT NULL = this student-session record has been saisied
-                DB::raw('COUNT(DISTINCT CASE WHEN a.date_creation IS NOT NULL THEN a.date END) as saisie_sessions'),
-                // date_creation IS NULL = recorded but not formally entered (draft)
-                DB::raw('COUNT(DISTINCT CASE WHEN a.date_creation IS NULL THEN a.date END) as draft_sessions'),
+                // PRESENCE_STATUS != 0 = teacher entered presence/absence for this session
+                DB::raw("COUNT(DISTINCT CASE WHEN JSON_UNQUOTE(JSON_EXTRACT(a.raw_data, '$.PRESENCE_STATUS')) != '0' THEN a.date END) as saisie_sessions"),
+                // PRESENCE_STATUS = 0 = session exists in CRM but no presence entered yet (brouillon)
+                DB::raw("COUNT(DISTINCT CASE WHEN JSON_UNQUOTE(JSON_EXTRACT(a.raw_data, '$.PRESENCE_STATUS')) = '0' THEN a.date END) as draft_sessions"),
                 DB::raw('SUM(a.is_present) as total_present'),
                 DB::raw('(COUNT(*) - SUM(a.is_present)) as total_absent'),
                 DB::raw('COUNT(DISTINCT a.crm_student_id) as total_students'),

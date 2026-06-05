@@ -72,18 +72,19 @@ class PresenceSuiviService
 
                 if (!isset($sessionsByDay[$date][$cid])) {
                     $sessionsByDay[$date][$cid] = [
-                        'session_ref'   => $row->session_reference ?? $raw['SESSION_REFERENCE'] ?? null,
-                        'session_id'    => $raw['SESSION_ID']        ?? null,
-                        'class_name'    => $raw['CLASS_NAME']        ?? ($classes[$cid]->name ?? ''),
-                        'teacher'       => $raw['EMPLOYEE_TEACHER_FULL_NAME'] ?? '—',
-                        'start_time'    => $raw['SESSION_START_TIME'] ?? null,
-                        'end_time'      => $raw['SESSION_END_TIME']   ?? null,
-                        // Use normalized column — avoids JSON_EXTRACT per row
-                        'date_creation' => $row->date_creation ?? $raw['DATE_CREATION'] ?? null,
-                        'created_by'    => $raw['USER_CREATION_FULL_NAME'] ?? null,
-                        'present'       => 0,
-                        'absent'        => 0,
-                        'total'         => 0,
+                        'session_ref'    => $row->session_reference ?? $raw['SESSION_REFERENCE'] ?? null,
+                        'session_id'     => $raw['SESSION_ID']        ?? null,
+                        'class_name'     => $raw['CLASS_NAME']        ?? ($classes[$cid]->name ?? ''),
+                        'teacher'        => $raw['EMPLOYEE_TEACHER_FULL_NAME'] ?? '—',
+                        'start_time'     => $raw['SESSION_START_TIME'] ?? null,
+                        'end_time'       => $raw['SESSION_END_TIME']   ?? null,
+                        'date_creation'  => $row->date_creation ?? $raw['DATE_CREATION'] ?? null,
+                        'created_by'     => $raw['USER_CREATION_FULL_NAME'] ?? null,
+                        // PRESENCE_STATUS=0 means session exists but no attendance entered
+                        'presence_status'=> $raw['PRESENCE_STATUS'] ?? null,
+                        'present'        => 0,
+                        'absent'         => 0,
+                        'total'          => 0,
                     ];
                 }
 
@@ -345,11 +346,11 @@ class PresenceSuiviService
                 ->groupBy('a.crm_class_id', 'a.date', 'a.date_creation', 'a.session_reference')
                 ->orderBy('a.date', 'desc');
 
-            // Filter by status using the indexed column — no JSON_EXTRACT in WHERE
+            // Filter by PRESENCE_STATUS: 0 = brouillon/not entered, !=0 = saisie
             if ($status === 'saisie') {
-                $query->whereNotNull('a.date_creation');
+                $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(a.raw_data, '$.PRESENCE_STATUS')) != '0'");
             } else {
-                $query->whereNull('a.date_creation');
+                $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(a.raw_data, '$.PRESENCE_STATUS')) = '0'");
             }
 
             $rows    = $query->get();
@@ -454,7 +455,8 @@ class PresenceSuiviService
 
     private function resolveStatus(array $info): string
     {
-        return !empty($info['date_creation']) ? 'saisie' : 'draft';
+        $ps = $info['presence_status'] ?? null;
+        return ($ps !== null && (int) $ps !== 0) ? 'saisie' : 'draft';
     }
 
     private function buildWeeks(Carbon $start, Carbon $end, array $days): array

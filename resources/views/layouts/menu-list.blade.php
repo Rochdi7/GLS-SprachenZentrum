@@ -564,7 +564,7 @@
                 </ul>
             </li>
 
-            {{-- Paiement Professeurs CRM --}}
+            {{-- Paiement Professeurs --}}
             <li class="pc-item pc-hasmenu {{ request()->routeIs('backoffice.payroll.crm.*') ? 'pc-trigger' : '' }}">
                 <a href="#!" class="pc-link">
                     <span class="pc-mtext">Paiement Profs</span>
@@ -583,16 +583,10 @@
                             <span class="pc-mtext">Importer depuis CRM</span>
                         </a>
                     </li>
-                    <li class="pc-item {{ request()->routeIs('backoffice.crm.groups.classes') ? 'active' : '' }}">
-                        <a href="{{ route('backoffice.crm.groups.classes') }}"
-                            class="pc-link {{ request()->routeIs('backoffice.crm.groups.classes') ? 'active' : '' }}">
-                            <span class="pc-mtext">Classes CRM</span>
-                        </a>
-                    </li>
                 </ul>
             </li>
 
-            {{-- Collections / Recouvrement --}}
+            {{-- Recouvrement --}}
             <li class="pc-item {{ $crmCollectionsOpen ? 'active' : '' }}">
                 <a href="{{ route('backoffice.crm.collections.index') }}"
                     class="pc-link {{ $crmCollectionsOpen ? 'active' : '' }}">
@@ -600,92 +594,42 @@
                 </a>
             </li>
 
-            {{-- Rapports CEO Quotidiens --}}
-            <li class="pc-item {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">
-                <a href="{{ route('backoffice.crm.reports.index') }}"
-                    class="pc-link {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">
-                    <span class="pc-mtext">Rapports CEO</span>
-                </a>
-            </li>
-
-            {{-- Statistiques Rentabilité --}}
-            <li class="pc-item {{ $crmStatsDashOpen ? 'active' : '' }}">
-                <a href="{{ route('backoffice.crm.statistiques') }}"
-                    class="pc-link {{ $crmStatsDashOpen ? 'active' : '' }}">
-                    <span class="pc-mtext">📊 Statistiques</span>
-                </a>
-            </li>
-
             {{-- Suivi Présences --}}
             <li class="pc-item {{ $crmPresenceSuiviOpen ? 'active' : '' }}">
                 <a href="{{ route('backoffice.crm.presence-suivi') }}"
                     class="pc-link {{ $crmPresenceSuiviOpen ? 'active' : '' }}">
-                    <span class="pc-mtext">🗓 Suivi Présences</span>
+                    <span class="pc-mtext">Suivi Présences</span>
                 </a>
             </li>
 
-            {{-- Statistiques submenu --}}
-            <li class="pc-item pc-hasmenu {{ $crmStatsOpen ? 'pc-trigger' : '' }}">
+            {{-- Statistiques (submenu grouping all analytics) --}}
+            @php
+                $crmAllStatsOpen = $crmStatsDashOpen || $crmStatsOpen || request()->routeIs('backoffice.crm.reports.*');
+            @endphp
+            <li class="pc-item pc-hasmenu {{ $crmAllStatsOpen ? 'pc-trigger' : '' }}">
                 <a href="#!" class="pc-link">
                     <span class="pc-mtext">Statistiques</span>
                     <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
                 </a>
                 <ul class="pc-submenu">
+                    <li class="pc-item {{ $crmStatsDashOpen ? 'active' : '' }}">
+                        <a href="{{ route('backoffice.crm.statistiques') }}"
+                            class="pc-link {{ $crmStatsDashOpen ? 'active' : '' }}">
+                            <span class="pc-mtext">Rentabilité par centre</span>
+                        </a>
+                    </li>
                     <li class="pc-item {{ request()->routeIs('backoffice.crm.group-evolution') ? 'active' : '' }}">
                         <a href="{{ route('backoffice.crm.group-evolution') }}"
                             class="pc-link {{ request()->routeIs('backoffice.crm.group-evolution') ? 'active' : '' }}">
                             <span class="pc-mtext">Évolution par groupe</span>
                         </a>
                     </li>
-                    {{-- Hidden from sidebar for now, but uncomment if needed:
-                <li class="pc-item {{ request()->routeIs('backoffice.crm.index') ? 'active' : '' }}">
-                    <a href="{{ route('backoffice.crm.index') }}" class="pc-link {{ request()->routeIs('backoffice.crm.index') ? 'active' : '' }}">
-                        <span class="pc-mtext">Vue d'ensemble</span>
-                    </a>
-                </li>
-                <li class="pc-item {{ request()->routeIs('backoffice.crm.stats') ? 'active' : '' }}">
-                    <a href="{{ route('backoffice.crm.stats') }}" class="pc-link {{ request()->routeIs('backoffice.crm.stats') ? 'active' : '' }}">
-                        <span class="pc-mtext">Statistiques</span>
-                    </a>
-                </li>
-                <li class="pc-item {{ request()->routeIs('backoffice.crm.duplicates') ? 'active' : '' }}">
-                    <a href="{{ route('backoffice.crm.duplicates') }}" class="pc-link {{ request()->routeIs('backoffice.crm.duplicates') ? 'active' : '' }}">
-                        <span class="pc-mtext">Doublons</span>
-                    </a>
-                </li>
-                --}}
-                    {{-- Insights hidden for now, uncomment if needed:
-                <li class="pc-item {{ request()->routeIs('backoffice.crm.insights.cash-handlers') ? 'active' : '' }}">
-                    <a href="{{ route('backoffice.crm.insights.cash-handlers') }}" class="pc-link {{ request()->routeIs('backoffice.crm.insights.cash-handlers') ? 'active' : '' }}">
-                        <span class="pc-mtext">Cash handlers</span>
-                    </a>
-                </li>
-                <li class="pc-item {{ request()->routeIs('backoffice.crm.insights.reconciliation') ? 'active' : '' }}">
-                    <a href="{{ route('backoffice.crm.insights.reconciliation') }}" class="pc-link {{ request()->routeIs('backoffice.crm.insights.reconciliation') ? 'active' : '' }}">
-                        <span class="pc-mtext">Réconciliation</span>
-                    </a>
-                </li>
-                <li class="pc-item {{ request()->routeIs('backoffice.crm.insights.retention') ? 'active' : '' }}">
-                    <a href="{{ route('backoffice.crm.insights.retention') }}" class="pc-link {{ request()->routeIs('backoffice.crm.insights.retention') ? 'active' : '' }}">
-                        <span class="pc-mtext">Rétention</span>
-                    </a>
-                </li>
-                <li class="pc-item {{ request()->routeIs('backoffice.crm.insights.forecast') ? 'active' : '' }}">
-                    <a href="{{ route('backoffice.crm.insights.forecast') }}" class="pc-link {{ request()->routeIs('backoffice.crm.insights.forecast') ? 'active' : '' }}">
-                        <span class="pc-mtext">Prévisions revenus</span>
-                    </a>
-                </li>
-                <li class="pc-item {{ request()->routeIs('backoffice.crm.insights.payment-activity') ? 'active' : '' }}">
-                    <a href="{{ route('backoffice.crm.insights.payment-activity') }}" class="pc-link {{ request()->routeIs('backoffice.crm.insights.payment-activity') ? 'active' : '' }}">
-                        <span class="pc-mtext">Activité paiements</span>
-                    </a>
-                </li>
-                <li class="pc-item {{ request()->routeIs('backoffice.crm.insights.advances') ? 'active' : '' }}">
-                    <a href="{{ route('backoffice.crm.insights.advances') }}" class="pc-link {{ request()->routeIs('backoffice.crm.insights.advances') ? 'active' : '' }}">
-                        <span class="pc-mtext">Avances</span>
-                    </a>
-                </li>
-                --}}
+                    <li class="pc-item {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">
+                        <a href="{{ route('backoffice.crm.reports.index') }}"
+                            class="pc-link {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">
+                            <span class="pc-mtext">Rapports CEO</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
         </ul>
