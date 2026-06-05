@@ -93,9 +93,10 @@ class SyncCrmCollectionsCommand extends Command
 
     private function syncStore(Crm $crm, int $storeId, string $storeName, int $delayMs): int
     {
-        $page    = 0;
-        $synced  = 0;
-        $hasMore = true;
+        $page      = 0;
+        $synced    = 0;
+        $hasMore   = true;
+        $fetchedIds = [];
 
         while ($hasMore) {
             $this->line("[STORE #{$storeId}] Fetching page {$page}...");
@@ -110,6 +111,7 @@ class SyncCrmCollectionsCommand extends Command
 
             foreach ($rows as $row) {
                 if (empty($row['ID'])) continue;
+                $fetchedIds[] = (string) $row['ID'];
 
                 // DUE_DATE arrives as ISO datetime e.g. "2025-08-31T23:00:00.000Z" — normalise to Y-m-d
                 $rawDue  = $row['DUE_DATE'] ?? null;
@@ -160,6 +162,17 @@ class SyncCrmCollectionsCommand extends Command
 
             if ($hasMore && $delayMs > 0) {
                 usleep($delayMs * 1000);
+            }
+        }
+
+        // Delete stale rows — rows in our DB that no longer exist in the CRM
+        // (fully paid students, cancelled registrations, etc.)
+        if (!empty($fetchedIds)) {
+            $deleted = CrmCollectionRow::where('crm_store_id', $storeId)
+                ->whereNotIn('crm_id', $fetchedIds)
+                ->delete();
+            if ($deleted > 0) {
+                $this->line("[STORE #{$storeId}] Deleted {$deleted} stale rows");
             }
         }
 
