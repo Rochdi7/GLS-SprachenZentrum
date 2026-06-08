@@ -139,7 +139,7 @@
                     <div id="chartEncaissement" class="chart-wrap"></div>
                     <div class="text-muted mt-2" style="font-size:.75rem">
                         <i class="ph-duotone ph-info me-1"></i>
-                        Réglement uniquement. Écart possible avec le CRM (±5%) : les paiements saisis rétroactivement apparaissent dans le mois de saisie, pas dans le mois de la date effective.
+                        Tous types de paiement (Règlement + transferts inter-caisse). Écart possible avec le CRM (±5%) : les paiements saisis rétroactivement apparaissent dans le mois de saisie, pas dans le mois de la date effective.
                     </div>
                 @endif
             </div>
@@ -321,7 +321,7 @@
 
                 <p class="text-muted small mt-3 mb-0">
                     <i class="ph-duotone ph-info me-1"></i>
-                    Source : snapshots locaux (table <code>crm_payment_snapshots</code>). Règlements uniquement (type 1).
+                    Source : snapshots locaux (table <code>crm_payment_snapshots</code>). Tous types de paiement.
                 </p>
             </div>
         </div>
