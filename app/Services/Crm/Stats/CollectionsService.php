@@ -162,8 +162,8 @@ class CollectionsService
             $threeMonthsAgo = Carbon::today()->subMonths(3)->startOfMonth()->toDateString();
 
             $rows = CrmPaymentSnapshot::query()
-                ->selectRaw("crm_store_id, DATE_FORMAT(effective_date, '%Y-%m') AS month, SUM(amount) AS total")
-                ->whereRaw('effective_date >= ?', [$threeMonthsAgo])
+                ->selectRaw("crm_store_id, DATE_FORMAT(date_creation_date, '%Y-%m') AS month, SUM(amount) AS total")
+                ->whereRaw('date_creation_date >= ?', [$threeMonthsAgo])
                 ->where('payment_type_id', 1) // Réglement only — exclude inter-caisse transfers
                 ->groupBy('crm_store_id', 'month')
                 ->orderBy('month')

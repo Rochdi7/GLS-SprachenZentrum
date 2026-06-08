@@ -279,11 +279,11 @@ class InsightsService
             $actuals = DB::table('crm_payment_snapshots')
                 ->selectRaw('
                     crm_store_id,
-                    DATE_FORMAT(effective_date, "%Y-%m") as month_label,
+                    DATE_FORMAT(date_creation_date, "%Y-%m") as month_label,
                     SUM(amount) as total
                 ')
                 ->whereDate('snapshot_date', Carbon::today())
-                ->whereNotNull('effective_date')
+                ->whereNotNull('date_creation_date')
                 ->groupBy('crm_store_id', 'month_label')
                 ->get()
                 ->groupBy('crm_store_id');

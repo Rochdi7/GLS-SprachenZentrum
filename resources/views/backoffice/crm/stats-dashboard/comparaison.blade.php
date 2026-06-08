@@ -55,23 +55,6 @@
             <input type="date" id="comp-end" class="form-control form-control-sm" style="min-width:140px"
                    value="{{ now()->toDateString() }}">
         </div>
-        <div class="col-sm-auto">
-            <label class="form-label fw-semibold mb-1 small">Grouper par</label>
-            <select id="comp-groupby" class="form-select form-select-sm" style="min-width:140px">
-                <option value="day">Jour</option>
-                <option value="week">Semaine</option>
-                <option value="month" selected>Mois</option>
-            </select>
-        </div>
-        <div class="col-sm-auto">
-            <label class="form-label fw-semibold mb-1 small d-block">Période rapide</label>
-            <div class="d-flex gap-1 flex-wrap">
-                <button class="btn btn-sm btn-outline-secondary comp-preset" data-p="month">Ce mois</button>
-                <button class="btn btn-sm btn-outline-secondary comp-preset" data-p="3m">3 mois</button>
-                <button class="btn btn-sm btn-outline-secondary comp-preset" data-p="6m">6 mois</button>
-                <button class="btn btn-sm btn-outline-secondary comp-preset" data-p="year">Cette année</button>
-            </div>
-        </div>
         <div class="col-sm-auto ms-sm-auto">
             <label class="form-label mb-1 d-block" style="visibility:hidden">x</label>
             <button id="comp-search" class="btn btn-primary btn-sm px-4">
@@ -230,25 +213,6 @@
 
     const medals = ['🥇','🥈','🥉'];
 
-    // ── presets ────────────────────────────────────────────────────────
-    document.querySelectorAll('.comp-preset').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const today = new Date();
-            let s, e = today;
-            switch (this.dataset.p) {
-                case 'month': s = new Date(today.getFullYear(), today.getMonth(), 1); break;
-                case '3m':    s = new Date(today); s.setMonth(today.getMonth()-3); s.setDate(1); break;
-                case '6m':    s = new Date(today); s.setMonth(today.getMonth()-6); s.setDate(1); break;
-                case 'year':  s = new Date(today.getFullYear(), 0, 1); break;
-            }
-            document.getElementById('comp-start').value = toIso(s);
-            document.getElementById('comp-end').value   = toIso(e);
-            document.querySelectorAll('.comp-preset').forEach(b => b.classList.replace('btn-primary','btn-outline-secondary'));
-            this.classList.replace('btn-outline-secondary','btn-primary');
-            fetch();
-        });
-    });
-
     // ── chart type toggle ──────────────────────────────────────────────
     document.querySelectorAll('[data-ct]').forEach(btn => {
         btn.addEventListener('click', function () {
@@ -266,7 +230,7 @@
     function fetch() {
         const start   = document.getElementById('comp-start').value;
         const end     = document.getElementById('comp-end').value;
-        const groupBy = document.getElementById('comp-groupby').value;
+        const groupBy = 'month';
         const stores  = [...document.querySelectorAll('.store-cb:checked')].map(c => c.value);
 
         if (!start || !end || !stores.length) return;
