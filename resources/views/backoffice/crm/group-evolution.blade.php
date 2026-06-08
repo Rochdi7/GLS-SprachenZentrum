@@ -383,6 +383,7 @@
 </div>
 
 @section('scripts')
+<script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
 @php
     $chartGroups = array_map(fn ($g) => [
         'name'        => $g['name'],

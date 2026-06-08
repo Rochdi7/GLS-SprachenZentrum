@@ -248,16 +248,40 @@
         </div>
     @endif
 
-    {{-- Regenerate button --}}
+    {{-- Actions --}}
     <div class="row">
-        <div class="col-12 text-end">
+        <div class="col-12 d-flex justify-content-end align-items-center gap-2 flex-wrap">
+
+            {{-- Email status + resend --}}
+            @if ($report->email_sent_at)
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2" style="font-size:.8rem">
+                    <i class="ph-duotone ph-check-circle me-1"></i>
+                    Envoyé le {{ $report->email_sent_at->format('d/m/Y à H:i') }}
+                </span>
+            @else
+                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2" style="font-size:.8rem">
+                    <i class="ph-duotone ph-warning-circle me-1"></i>
+                    Email non envoyé
+                </span>
+            @endif
+
+            <form method="POST" action="{{ route('backoffice.crm.reports.resend', ['date' => $report->report_date->toDateString()]) }}" class="d-inline"
+                  onsubmit="return confirm('{{ $report->email_sent_at ? 'Email déjà envoyé le ' . $report->email_sent_at->format('d/m/Y à H:i') . '. Renvoyer quand même ?' : 'Envoyer le rapport par email ?' }}')">
+                @csrf
+                <button type="submit" class="btn btn-sm {{ $report->email_sent_at ? 'btn-outline-warning' : 'btn-warning' }}">
+                    <i class="ph-duotone ph-paper-plane-tilt me-1"></i>
+                    {{ $report->email_sent_at ? 'Renvoyer' : 'Envoyer par email' }}
+                </button>
+            </form>
+
             <form method="POST" action="{{ route('backoffice.crm.reports.generate') }}" class="d-inline">
                 @csrf
                 <input type="hidden" name="date" value="{{ $report->report_date->toDateString() }}">
                 <button type="submit" class="btn btn-outline-secondary btn-sm">
-                    <i class="ph-duotone ph-arrows-clockwise me-1"></i> Regénérer ce rapport
+                    <i class="ph-duotone ph-arrows-clockwise me-1"></i> Regénérer
                 </button>
             </form>
+
         </div>
     </div>
 

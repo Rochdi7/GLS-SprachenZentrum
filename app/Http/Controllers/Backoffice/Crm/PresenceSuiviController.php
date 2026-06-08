@@ -9,6 +9,7 @@ use App\Services\Crm\Stats\PresenceSuiviService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
@@ -30,7 +31,16 @@ class PresenceSuiviController extends BaseCrmController
         $bustCache  = $request->boolean('refresh');
 
         if ($bustCache) {
+            // Flush all presence-related caches for this store + month
             Cache::forget("crm.presence_suivi.{$storeId}.{$yearMonth}");
+            Cache::forget("crm.presence_suivi.totals.{$storeId}");
+            Cache::forget("crm.presence_suivi.employees.{$storeId}");
+            Cache::forget("crm.presence_suivi.global.{$yearMonth}");
+            Cache::forget("crm.presence_suivi.details.{$storeId}.saisie");
+            Cache::forget("crm.presence_suivi.details.{$storeId}.draft");
+
+            // Rebuild the monthly aggregate so totals reflect the latest raw_data in DB.
+            Artisan::call('crm:build-presence-summary', ['--all' => true, '--months' => 3]);
         }
 
         $data         = $this->service->buildMonth($storeId, $yearMonth);
@@ -61,5 +71,50 @@ class PresenceSuiviController extends BaseCrmController
         $groups = $this->service->groupDetails($storeId, $status);
 
         return response()->json(['groups' => $groups]);
+    }
+
+    /**
+     * POST /presence-suivi/resync
+     *
+     * Pulls the last 2 months of attendance from Wimschool (updating PRESENCE_STATUS
+     * for sessions where reception entered absence via email), then rebuilds the
+     * presence_summary aggregate. Returns JSON so the UI can poll or redirect.
+     */
+    public function resync(Request $request): JsonResponse
+    {
+        $storeId   = $this->currentStrStoreId();
+        $yearMonth = $request->input('month', Carbon::today('Africa/Casablanca')->format('Y-m'));
+
+        // Prevent concurrent re-syncs
+        if (Cache::has('crm.presence_suivi.resync.lock')) {
+            return response()->json(['status' => 'locked', 'message' => 'Synchronisation déjà en cours, veuillez patienter.'], 409);
+        }
+        Cache::put('crm.presence_suivi.resync.lock', true, 300);
+
+        try {
+            // 1. Re-pull attendance rows from Wimschool (updates PRESENCE_STATUS in raw_data)
+            Artisan::call('crm:sync-attendance', [
+                '--months'    => 2,
+                '--max-pages' => 60,
+                '--delay'     => 200,
+            ]);
+
+            // 2. Rebuild the aggregate table from the freshly-synced rows
+            Artisan::call('crm:build-presence-summary', ['--all' => true, '--months' => 3]);
+
+            // 3. Flush all presence caches so next page load reads the rebuilt data
+            foreach (['saisie', 'draft'] as $s) {
+                Cache::forget("crm.presence_suivi.details.{$storeId}.{$s}");
+            }
+            Cache::forget("crm.presence_suivi.totals.{$storeId}");
+            Cache::forget("crm.presence_suivi.employees.{$storeId}");
+            Cache::forget("crm.presence_suivi.global.{$yearMonth}");
+            Cache::forget("crm.presence_suivi.{$storeId}.{$yearMonth}");
+
+        } finally {
+            Cache::forget('crm.presence_suivi.resync.lock');
+        }
+
+        return response()->json(['status' => 'ok', 'message' => 'Synchronisation terminée. Les statuts de présence sont à jour.']);
     }
 }

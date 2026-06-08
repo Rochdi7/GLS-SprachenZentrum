@@ -77,8 +77,14 @@ Route::prefix('crm')
         });
 
         // Suivi présences — calendrier anti-fraude.
-        Route::get('/presence-suivi',         [\App\Http\Controllers\Backoffice\Crm\PresenceSuiviController::class, 'index'])->name('presence-suivi');
-        Route::get('/presence-suivi/details', [\App\Http\Controllers\Backoffice\Crm\PresenceSuiviController::class, 'details'])->name('presence-suivi.details');
+        Route::get('/presence-suivi',          [\App\Http\Controllers\Backoffice\Crm\PresenceSuiviController::class, 'index'])->name('presence-suivi');
+        Route::get('/presence-suivi/details',  [\App\Http\Controllers\Backoffice\Crm\PresenceSuiviController::class, 'details'])->name('presence-suivi.details');
+        // Legacy narrow resync kept for backward-compat; now delegates to CrmResyncController
+        Route::post('/presence-suivi/resync',  [\App\Http\Controllers\Backoffice\Crm\PresenceSuiviController::class, 'resync'])->name('presence-suivi.resync');
+
+        // Global on-demand re-sync dashboard (all CRM data domains).
+        Route::get('/resync',  [\App\Http\Controllers\Backoffice\Crm\CrmResyncController::class, 'index'])->name('resync');
+        Route::post('/resync', [\App\Http\Controllers\Backoffice\Crm\CrmResyncController::class, 'run'])->name('resync.run');
 
         // Statistiques par centre (encaissement + recouvrement + inscriptions).
         Route::get('/statistiques',                      [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'index'])->name('statistiques');
@@ -103,6 +109,8 @@ Route::prefix('crm')
             Route::get('/',          [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'index'])->name('index');
             Route::post('/generate', [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'generate'])->name('generate');
             Route::get('/{date}',    [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'show'])->name('show')
+                ->where('date', '\d{4}-\d{2}-\d{2}');
+            Route::post('/{date}/resend', [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'resend'])->name('resend')
                 ->where('date', '\d{4}-\d{2}-\d{2}');
         });
     });

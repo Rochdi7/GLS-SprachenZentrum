@@ -12,7 +12,10 @@
 
     let groups;
     try { groups = JSON.parse(dataEl.textContent); } catch (e) { return; }
-    if (!Array.isArray(groups) || groups.length === 0) return;
+    if (!Array.isArray(groups) || groups.length === 0) {
+        wrap.innerHTML = '<div class="text-center text-muted py-5"><i class="ph-duotone ph-chart-bar" style="font-size:3rem;opacity:.3;"></i><p class="mt-2 small">Aucun groupe à afficher</p></div>';
+        return;
+    }
 
     const SERIES = [
         { key: 'debuts',      label: 'Début',      color: '#6f42c1' },
@@ -22,156 +25,93 @@
         { key: 'actifs',      label: 'Actifs',     color: '#2196f3' },
     ];
 
-    // ── canvas setup ──────────────────────────────────────────────────
-    const canvas = document.createElement('canvas');
-    wrap.appendChild(canvas);
+    // If ApexCharts is available, use it (reliable resize, no canvas width issues)
+    if (typeof ApexCharts !== 'undefined') {
+        renderApex(groups);
+        return;
+    }
 
-    const PAD = { top: 24, right: 20, bottom: 90, left: 48 };
-    const BAR_GAP   = 2;   // px between bars within a group
-    const GRP_GAP   = 0.35; // fraction of group width used as spacing
+    // Fallback: pure HTML horizontal bar chart (no canvas dependency)
+    renderHtmlBars(groups);
 
-    let tooltip = null;
+    function renderApex(groups) {
+        const categories = groups.map(g => g.name.length > 20 ? g.name.slice(0, 20) + '…' : g.name);
+        const series = SERIES.map(s => ({
+            name: s.label,
+            data: groups.map(g => g[s.key] || 0),
+            color: s.color,
+        }));
 
-    function draw() {
-        const W = wrap.clientWidth || wrap.offsetWidth || wrap.getBoundingClientRect().width;
-        if (!W) { requestAnimationFrame(draw); return; }
-        const H = 420;
-        canvas.width  = W;
-        canvas.height = H;
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, W, H);
+        new ApexCharts(wrap, {
+            chart: {
+                type: 'bar',
+                height: 400,
+                toolbar: { show: false },
+                animations: { enabled: true, speed: 400 },
+            },
+            series,
+            xaxis: {
+                categories,
+                labels: {
+                    rotate: -40,
+                    rotateAlways: groups.length > 5,
+                    trim: true,
+                    style: { fontSize: '11px', colors: '#6c757d' },
+                },
+            },
+            yaxis: {
+                labels: { style: { fontSize: '11px', colors: '#6c757d' } },
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: groups.length <= 3 ? '40%' : groups.length <= 6 ? '60%' : '80%',
+                    borderRadius: 3,
+                    dataLabels: { position: 'top' },
+                },
+            },
+            dataLabels: {
+                enabled: groups.length <= 6,
+                offsetY: -18,
+                style: { fontSize: '9px', colors: ['#374151'], fontWeight: 600 },
+                formatter: v => v === 0 ? '' : v,
+            },
+            legend: { show: false }, // legend already rendered in Blade
+            tooltip: {
+                shared: true,
+                intersect: false,
+                y: { formatter: v => v + ' élève(s)' },
+            },
+            grid: {
+                borderColor: '#eef0f3',
+                strokeDashArray: 3,
+            },
+            colors: SERIES.map(s => s.color),
+        }).render();
+    }
 
-        const chartW = W - PAD.left - PAD.right;
-        const chartH = H - PAD.top  - PAD.bottom;
-
-        // max value across all series/groups
+    function renderHtmlBars(groups) {
         const maxVal = Math.max(1, ...groups.flatMap(g => SERIES.map(s => g[s.key] || 0)));
-        const yTick  = niceStep(maxVal);
-        const yMax   = Math.ceil(maxVal / yTick) * yTick;
-
-        const n  = groups.length;
-        const grpW = chartW / n;
-        const barW = Math.max(3, (grpW * (1 - GRP_GAP)) / SERIES.length - BAR_GAP);
-
-        // grid + y-axis
-        ctx.strokeStyle = '#eef0f3';
-        ctx.lineWidth   = 1;
-        ctx.fillStyle   = '#6c757d';
-        ctx.font        = '11px system-ui,sans-serif';
-        ctx.textAlign   = 'right';
-        ctx.textBaseline = 'middle';
-        for (let v = 0; v <= yMax; v += yTick) {
-            const y = PAD.top + chartH - (v / yMax) * chartH;
-            ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + chartW, y); ctx.stroke();
-            ctx.fillText(v, PAD.left - 6, y);
-        }
-
-        // x-axis labels (rotated)
-        ctx.textAlign = 'right';
-        ctx.textBaseline = 'top';
-        ctx.fillStyle = '#495057';
-        ctx.font = '10px system-ui,sans-serif';
-        groups.forEach((g, i) => {
-            const cx = PAD.left + i * grpW + grpW / 2;
-            const y  = PAD.top + chartH + 6;
-            ctx.save();
-            ctx.translate(cx, y);
-            ctx.rotate(-0.6);
-            ctx.fillText(g.name, 0, 0);
-            ctx.restore();
-        });
-
-        // bars + value labels
-        groups.forEach((g, i) => {
-            const grpStart = PAD.left + i * grpW + grpW * GRP_GAP / 2;
-            SERIES.forEach((s, si) => {
+        let html = '<div style="overflow-x:auto;padding:8px 0">';
+        groups.forEach(g => {
+            html += `<div style="margin-bottom:18px">
+                <div style="font-size:.8rem;font-weight:600;color:#374151;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${g.name}</div>`;
+            SERIES.forEach(s => {
                 const val = g[s.key] || 0;
-                const bh  = (val / yMax) * chartH;
-                const bx  = grpStart + si * (barW + BAR_GAP);
-                const by  = PAD.top + chartH - bh;
-
-                // rounded top
-                ctx.fillStyle = s.color;
-                const r = Math.min(3, barW / 2, bh);
-                ctx.beginPath();
-                ctx.moveTo(bx + r, by);
-                ctx.lineTo(bx + barW - r, by);
-                ctx.quadraticCurveTo(bx + barW, by, bx + barW, by + r);
-                ctx.lineTo(bx + barW, by + bh);
-                ctx.lineTo(bx, by + bh);
-                ctx.lineTo(bx, by + r);
-                ctx.quadraticCurveTo(bx, by, bx + r, by);
-                ctx.closePath();
-                ctx.fill();
-
-                // value label above bar
-                if (val > 0 && barW > 8) {
-                    ctx.fillStyle = '#495057';
-                    ctx.font = 'bold 9px system-ui,sans-serif';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'bottom';
-                    ctx.fillText(val, bx + barW / 2, by - 2);
-                }
+                const pct = Math.round(val / maxVal * 100);
+                html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+                    <div style="width:80px;font-size:.72rem;color:#6c757d;text-align:right;flex-shrink:0">${s.label}</div>
+                    <div style="flex:1;background:#f0f0f0;border-radius:4px;height:14px;overflow:hidden">
+                        <div style="width:${pct}%;height:100%;background:${s.color};border-radius:4px;transition:width .4s"></div>
+                    </div>
+                    <div style="width:28px;font-size:.72rem;font-weight:700;color:${s.color};text-align:right;flex-shrink:0">${val}</div>
+                </div>`;
             });
+            html += '</div>';
         });
-
-        // store geometry for hover
-        canvas._geo = { groups, grpW, barW, PAD, chartH, yMax, SERIES };
+        html += '</div>';
+        wrap.innerHTML = html;
     }
-
-    function niceStep(max) {
-        const raw = max / 5;
-        const mag = Math.pow(10, Math.floor(Math.log10(raw)));
-        for (const f of [1, 2, 5, 10]) { if (raw <= f * mag) return f * mag; }
-        return mag * 10;
-    }
-
-    // ── tooltip ───────────────────────────────────────────────────────
-    function ensureTooltip() {
-        if (tooltip) return;
-        tooltip = document.createElement('div');
-        tooltip.style.cssText = 'position:fixed;background:#333;color:#fff;padding:7px 10px;border-radius:6px;font-size:12px;pointer-events:none;display:none;z-index:9999;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.25)';
-        document.body.appendChild(tooltip);
-    }
-
-    canvas.addEventListener('mousemove', function (e) {
-        const geo = canvas._geo;
-        if (!geo) return;
-        ensureTooltip();
-        const rect = canvas.getBoundingClientRect();
-        const mx   = e.clientX - rect.left;
-        const my   = e.clientY - rect.top;
-        const { groups, grpW, barW, PAD, chartH, yMax, SERIES } = geo;
-
-        let found = null;
-        groups.forEach((g, i) => {
-            const grpStart = PAD.left + i * grpW + grpW * GRP_GAP / 2;
-            SERIES.forEach((s, si) => {
-                const val = g[s.key] || 0;
-                const bh  = (val / yMax) * chartH;
-                const bx  = grpStart + si * (barW + BAR_GAP);
-                const by  = PAD.top + chartH - bh;
-                if (mx >= bx && mx <= bx + barW && my >= by && my <= by + bh) {
-                    found = { group: g.name, series: s.label, color: s.color, val };
-                }
-            });
-        });
-
-        if (found) {
-            tooltip.innerHTML = `<strong>${found.group}</strong><br><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${found.color};margin-right:5px;"></span>${found.series}: <strong>${found.val}</strong> élève(s)`;
-            tooltip.style.display = 'block';
-            tooltip.style.left = (e.clientX + 14) + 'px';
-            tooltip.style.top  = (e.clientY - 36) + 'px';
-        } else {
-            tooltip.style.display = 'none';
-        }
-    });
-
-    canvas.addEventListener('mouseleave', () => { if (tooltip) tooltip.style.display = 'none'; });
-
-    // Double-rAF: first pass triggers layout, second pass reads correct clientWidth.
-    requestAnimationFrame(() => requestAnimationFrame(draw));
-    window.addEventListener('resize', draw);
 })();
 
 // ─────────────────── Group multi-select behaviour ───────────────────
@@ -184,8 +124,6 @@
     const btnNone = document.getElementById('geSelectNone');
     if (!hidden || !list) return;
 
-    // Sync the hidden field. Empty = "show all" (server-side default).
-    // If every box is ticked we also store empty to keep URLs short.
     const sync = () => {
         const boxes = allCbs();
         const checked = boxes.filter(b => b.checked).map(b => b.value);
@@ -201,7 +139,6 @@
     btnAll?.addEventListener('click',  () => { allCbs().forEach(b => b.checked = true);  sync(); });
     btnNone?.addEventListener('click', () => { allCbs().forEach(b => b.checked = false); sync(); });
 
-    // Live search filter inside the dropdown.
     search?.addEventListener('input', () => {
         const q = search.value.trim().toLowerCase();
         document.querySelectorAll('.ge-group-item').forEach(item => {

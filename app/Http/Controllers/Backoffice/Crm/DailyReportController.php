@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice\Crm;
 
+use App\Jobs\Crm\SendDailyReportJob;
 use App\Models\CrmDailyReport;
 use App\Models\CrmPaymentSnapshot;
 use App\Services\Crm\CenterContext;
@@ -63,5 +64,16 @@ class DailyReportController extends BaseCrmController
         return redirect()
             ->route('backoffice.crm.reports.show', ['date' => $report->report_date->toDateString()])
             ->with('success', 'Rapport généré pour le ' . $report->report_date->format('d/m/Y') . '.');
+    }
+
+    public function resend(string $date): RedirectResponse
+    {
+        $report = CrmDailyReport::where('report_date', $date)->firstOrFail();
+
+        SendDailyReportJob::dispatch($report);
+
+        return redirect()
+            ->route('backoffice.crm.reports.show', ['date' => $date])
+            ->with('success', 'Rapport renvoyé par email pour le ' . $report->report_date->format('d/m/Y') . '.');
     }
 }

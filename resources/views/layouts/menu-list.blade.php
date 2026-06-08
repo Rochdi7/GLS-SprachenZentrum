@@ -456,6 +456,14 @@
                 </a>
             </li>
 
+            {{-- Re-sync CRM --}}
+            <li class="pc-item {{ request()->routeIs('backoffice.crm.resync') ? 'active' : '' }}">
+                <a href="{{ route('backoffice.crm.resync') }}"
+                    class="pc-link {{ request()->routeIs('backoffice.crm.resync') ? 'active' : '' }}">
+                    <span class="pc-mtext">Re-sync données</span>
+                </a>
+            </li>
+
             {{-- Statistiques (submenu grouping all analytics) --}}
             @php
                 $crmAllStatsOpen = $crmStatsDashOpen || $crmStatsCompOpen || $crmStatsOpen || request()->routeIs('backoffice.crm.reports.*');
