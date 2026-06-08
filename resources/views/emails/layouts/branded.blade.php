@@ -53,8 +53,8 @@
                             <img src="{{ $logoCid }}" alt="GLS Sprachenzentrum" width="160"
                                 style="display:block;width:160px;max-width:60%;height:auto;border:0;outline:none;">
                             <div
-                                style="margin-top:14px;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#7a716c;font-weight:600;">
-                                Deutsch · Maroc · seit 2008
+                                style="margin-top:10px;font-size:15px;letter-spacing:1px;color:#181615;font-weight:700;">
+                                GLS Sprachenzentrum
                             </div>
                         </td>
                     </tr>

@@ -123,9 +123,6 @@
            class="btn btn-sm btn-outline-secondary" title="Rafraîchir cache">
             <i class="ph-duotone ph-arrows-clockwise"></i>
         </a>
-        <button id="btn-resync" type="button" class="btn btn-sm btn-warning" title="Re-synchroniser depuis Wimschool (met à jour les statuts absence)">
-            <i class="ph-duotone ph-cloud-arrow-down me-1"></i>Re-sync API
-        </button>
         @include('backoffice.crm.partials._sync_badge')
     </div>
 </div>
@@ -435,39 +432,6 @@
 @section('scripts')
 <script>
 const detailsUrl = "{{ route('backoffice.crm.presence-suivi.details') }}{{ request()->has('strStoreId') ? '?strStoreId='.request('strStoreId') : '' }}";
-const resyncUrl  = "{{ route('backoffice.crm.presence-suivi.resync') }}";
-const resyncMonth = "{{ $yearMonth }}";
-
-document.getElementById('btn-resync').addEventListener('click', function () {
-    const btn = this;
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Synchronisation…';
-
-    fetch(resyncUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
-        },
-        body: JSON.stringify({ month: resyncMonth }),
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.status === 'locked') {
-            alert(data.message);
-            btn.disabled = false;
-            btn.innerHTML = '<i class="ph-duotone ph-cloud-arrow-down me-1"></i>Re-sync API';
-        } else {
-            // Reload page so all stats reflect freshly-synced data
-            window.location.reload();
-        }
-    })
-    .catch(() => {
-        alert('Erreur lors de la synchronisation. Réessayez dans quelques secondes.');
-        btn.disabled = false;
-        btn.innerHTML = '<i class="ph-duotone ph-cloud-arrow-down me-1"></i>Re-sync API';
-    });
-});
 
 function openDetails(status) {
     const colors = { saisie: '#1cc88a', draft: '#e74c3c' };

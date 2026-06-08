@@ -135,25 +135,8 @@
         </div>
     @else
         <div class="row g-3">
-            {{-- Chart card --}}
-            <div class="col-12 col-xl-7">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="text-center text-primary ge-card-title mb-3">ÉVOLUTION PAR GROUPE</h5>
-                        <div class="mb-2 d-flex flex-wrap gap-3 justify-content-center">
-                            <span class="ge-legend"><span class="ge-dot" style="background:#6f42c1;"></span> Début (inscrits au démarrage)</span>
-                            <span class="ge-legend"><span class="ge-dot" style="background:#28a745;"></span> Ajouts (Les ajouts)</span>
-                            <span class="ge-legend"><span class="ge-dot" style="background:#dc3545;"></span> Départs définitifs (Quittant)</span>
-                            <span class="ge-legend"><span class="ge-dot" style="background:#fd7e14;"></span> Changements de groupe</span>
-                            <span class="ge-legend"><span class="ge-dot" style="background:#2196f3;"></span> Actifs actuellement</span>
-                        </div>
-                        <div id="groupEvolutionChart" style="min-height: 420px;"></div>
-                    </div>
-                </div>
-            </div>
-
             {{-- Detail table card --}}
-            <div class="col-12 col-xl-5">
+            <div class="col-12">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body">
                         <h5 class="text-center text-primary ge-card-title mb-3">DÉTAILS PAR GROUPE</h5>
@@ -384,19 +367,6 @@
 
 @section('scripts')
 <script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
-@php
-    $chartGroups = array_map(fn ($g) => [
-        'name'        => $g['name'],
-        'debuts'      => $g['debuts'] ?? 0,
-        'ajouts'      => $g['ajouts'] ?? 0,
-        'quittants'   => $g['quittants'] ?? 0,
-        'changements' => $g['changements'] ?? 0,
-        'actifs'      => $g['actifs'] ?? 0,
-    ], $groups ?? []);
-@endphp
-{{-- Chart payload — read client-side by crm-group-evolution.js. --}}
-<script type="application/json" id="crm-group-evolution-data">{!! json_encode($chartGroups, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
-<script src="{{ asset('assets/js/backoffice/crm-group-evolution.js') }}"></script>
 <script>
 (function initGroupEvolutionDrill() {
     const drillUrl  = '{{ route("backoffice.crm.group-evolution.drill") }}';
