@@ -84,7 +84,7 @@
         <td style="padding:8px 12px;font-size:12px;font-weight:700;color:#7a716c;text-align:center;">Présence</td>
         <td style="padding:8px 12px;font-size:12px;font-weight:700;color:#7a716c;text-align:right;">Revenus</td>
     </tr>
-    @foreach($centers as $center)
+    @foreach($chartData as $center)
     <tr style="border-top:1px solid #efeae0;">
         <td style="padding:8px 12px;font-size:13.5px;font-weight:600;">{{ $center['center_name'] }}</td>
         <td style="padding:8px 12px;font-size:13.5px;text-align:center;">{{ $center['new_registrations'] }}</td>

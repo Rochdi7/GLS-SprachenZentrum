@@ -71,9 +71,9 @@ class StatsController extends BaseCrmController
 
         $rows = CrmPaymentSnapshot::query()
             ->fromRaw("(
-                SELECT crm_store_id, effective_date, amount
+                SELECT crm_store_id, date_creation_date, amount
                 FROM crm_payment_snapshots s1
-                WHERE effective_date BETWEEN ? AND ?
+                WHERE date_creation_date BETWEEN ? AND ?
                   {$storeFilter}
                   AND snapshot_date = (
                       SELECT MAX(s2.snapshot_date)
@@ -133,9 +133,9 @@ class StatsController extends BaseCrmController
             : '';
 
         $dateFmt = match ($groupBy) {
-            'month' => "DATE_FORMAT(s1.effective_date,'%Y-%m')",
-            'week'  => "DATE_FORMAT(s1.effective_date,'%x-W%v')",
-            default => "DATE_FORMAT(s1.effective_date,'%Y-%m-%d')",
+            'month' => "DATE_FORMAT(s1.date_creation_date,'%Y-%m')",
+            'week'  => "DATE_FORMAT(s1.date_creation_date,'%x-W%v')",
+            default => "DATE_FORMAT(s1.date_creation_date,'%Y-%m-%d')",
         };
 
         $rows = DB::select("
@@ -145,7 +145,7 @@ class StatsController extends BaseCrmController
                 SUM(s1.amount)  AS total,
                 COUNT(*)        AS nb
             FROM crm_payment_snapshots s1
-            WHERE s1.effective_date BETWEEN ? AND ?
+            WHERE s1.date_creation_date BETWEEN ? AND ?
               {$storeFilter}
               AND s1.snapshot_date = (
                   SELECT MAX(s2.snapshot_date)
@@ -217,9 +217,9 @@ class StatsController extends BaseCrmController
         $storeFilter = $storeId ? "AND crm_store_id = {$storeId}" : '';
         $rows = CrmPaymentSnapshot::query()
             ->fromRaw("(
-                SELECT crm_store_id, effective_date, amount, payment_type_id
+                SELECT crm_store_id, date_creation_date, amount, payment_type_id
                 FROM crm_payment_snapshots s1
-                WHERE effective_date >= ?
+                WHERE date_creation_date >= ?
                   {$storeFilter}
                   AND snapshot_date = (
                       SELECT MAX(s2.snapshot_date)
@@ -227,7 +227,7 @@ class StatsController extends BaseCrmController
                       WHERE s2.crm_payment_id = s1.crm_payment_id
                   )
             ) AS deduped", [$from])
-            ->selectRaw("crm_store_id, DATE_FORMAT(effective_date,'%Y-%m') as month, SUM(amount) as total")
+            ->selectRaw("crm_store_id, DATE_FORMAT(date_creation_date,'%Y-%m') as month, SUM(amount) as total")
             ->groupBy('crm_store_id', 'month')
             ->orderBy('month')
             ->get();
@@ -334,7 +334,7 @@ class StatsController extends BaseCrmController
             return (float) \Illuminate\Support\Facades\DB::selectOne("
                 SELECT COALESCE(SUM(amount), 0) as total
                 FROM crm_payment_snapshots s1
-                WHERE effective_date BETWEEN ? AND ?
+                WHERE date_creation_date BETWEEN ? AND ?
                   {$storeFilter}
                   AND snapshot_date = (
                       SELECT MAX(s2.snapshot_date)

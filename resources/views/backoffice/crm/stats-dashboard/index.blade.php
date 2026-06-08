@@ -124,7 +124,7 @@
 <div class="row g-3 mb-4">
 
     {{-- Encaissement par centre par mois --}}
-    <div class="col-xl-8">
+    <div class="col-12">
         <div class="card chart-card h-100">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="ph-duotone ph-chart-line me-2 text-primary"></i>Encaissement par centre — {{ $months }} derniers mois</h5>
@@ -142,21 +142,6 @@
         </div>
     </div>
 
-    {{-- Recouvrement (créances actives) --}}
-    <div class="col-xl-4">
-        <div class="card chart-card h-100">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="ph-duotone ph-warning me-2 text-danger"></i>Créances actives par centre</h5>
-            </div>
-            <div class="card-body">
-                @if (empty($recouvrement))
-                    <p class="text-muted text-center py-5">Aucune donnée.</p>
-                @else
-                    <div id="chartRecouvrement" class="chart-wrap"></div>
-                @endif
-            </div>
-        </div>
-    </div>
 </div>
 
 {{-- ── Inscriptions chart ───────────────────────────────────────────── --}}
@@ -320,54 +305,6 @@
     </div>
 </div>
 
-{{-- ── Recouvrement detail table ────────────────────────────────────── --}}
-@if (!empty($recouvrement))
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="ph-duotone ph-table me-2"></i>Détail recouvrement par centre (inscriptions actives)</h5>
-            </div>
-            <div class="card-body pt-2">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-sm align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Centre</th>
-                                <th class="text-end">Total dû</th>
-                                <th class="text-end text-danger">En retard</th>
-                                <th class="text-end text-warning">À venir</th>
-                                <th class="text-end">Dossiers</th>
-                                <th style="width:20%">Retard / Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($recouvrement as $r)
-                            @php $pctOverdue = $r['total_due'] > 0 ? round($r['overdue'] / $r['total_due'] * 100) : 0; @endphp
-                            <tr>
-                                <td><span class="badge bg-light-primary">{{ $r['store_name'] }}</span></td>
-                                <td class="text-end fw-semibold">{{ number_format($r['total_due'], 0, ',', ' ') }} DH</td>
-                                <td class="text-end text-danger">{{ number_format($r['overdue'], 0, ',', ' ') }} DH</td>
-                                <td class="text-end text-warning">{{ number_format($r['upcoming'], 0, ',', ' ') }} DH</td>
-                                <td class="text-end">{{ $r['dossiers'] }}</td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="progress flex-grow-1" style="height:8px">
-                                            <div class="progress-bar bg-danger" style="width:{{ $pctOverdue }}%"></div>
-                                        </div>
-                                        <small class="text-muted">{{ $pctOverdue }}%</small>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-@endif
 
 @endsection
 
@@ -440,56 +377,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         style: { fontSize: '12px' },
                         formatter: fmtDH,
                     },
-                },
-                legend: legendCfg,
-                tooltip: {
-                    shared: true,
-                    intersect: false,
-                    y: { formatter: fullDH },
-                },
-            }).render();
-        })();
-        @endif
-
-        @if (!empty($recouvrement))
-        // ── 2. Créances — vertical stacked bar (fixes label overlap) ─────
-        (function () {
-            const data     = @json($recouvrement);
-            // Short center names to avoid overlap
-            const cats     = data.map(r => r.store_name.replace('GLS ', ''));
-            const overdue  = data.map(r => Math.round(r.overdue));
-            const upcoming = data.map(r => Math.round(r.upcoming));
-
-            new ApexCharts(document.querySelector('#chartRecouvrement'), {
-                chart: {
-                    type: 'bar',
-                    height: 380,
-                    stacked: true,
-                    toolbar: { show: false },
-                    fontFamily: 'inherit',
-                },
-                series: [
-                    { name: 'En retard', data: overdue },
-                    { name: 'À venir',  data: upcoming },
-                ],
-                colors: ['#dc3545', '#ffc107'],
-                plotOptions: {
-                    bar: {
-                        horizontal: false,   // VERTICAL — no label overlap
-                        columnWidth: '50%',
-                        borderRadius: 4,
-                        borderRadiusApplication: 'end',
-                    },
-                },
-                dataLabels: { enabled: false },
-                grid: gridCfg,
-                xaxis: {
-                    ...axisBase,
-                    categories: cats,
-                    labels: { style: { fontSize: '12px', fontWeight: 600 } },
-                },
-                yaxis: {
-                    labels: { formatter: fmtDH, style: { fontSize: '12px' } },
                 },
                 legend: legendCfg,
                 tooltip: {

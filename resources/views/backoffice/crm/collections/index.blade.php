@@ -19,6 +19,14 @@
         .drill-btn { cursor:pointer; opacity:.6; font-size:.85rem; }
         .drill-btn:hover { opacity:1; }
         #drillTable td, #drillTable th { font-size:.85rem; }
+        /* Responsive table improvements */
+        .col-xl-7, .col-xl-5 { min-width: 0; }
+        .table-card .card-body { padding: .75rem; }
+        .table td, .table th { white-space: nowrap; font-size: .82rem; }
+        /* Pagination */
+        .tbl-pagination { display:flex; align-items:center; justify-content:space-between; padding:.5rem .75rem; border-top:1px solid #f0f0f0; flex-wrap:wrap; gap:.5rem; }
+        .tbl-pagination .page-info { font-size:.78rem; color:#6c757d; }
+        .tbl-pagination .btn-group .btn { font-size:.78rem; padding:.25rem .55rem; }
     </style>
 @endsection
 
@@ -204,63 +212,66 @@
     <div class="row g-3 mb-4">
 
         {{-- Top Debtors --}}
-        <div class="col-xl-7">
+        <div class="col-xl-7 col-12">
             <div class="card table-card h-100">
-                <div class="card-header">
+                <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="mb-0">
                         <i class="ph-duotone ph-users me-2"></i>
                         Top débiteurs
-                        <span class="badge bg-light-danger text-danger ms-2">{{ count($topDebtors) }}</span>
+                        <span class="badge bg-light-danger text-danger ms-2" id="debtorsBadge">{{ count($topDebtors) }}</span>
                     </h5>
+                    <input type="text" id="debtorsSearch" class="form-control form-control-sm ms-2" style="max-width:180px" placeholder="Rechercher…">
                 </div>
-                <div class="card-body pt-2">
+                <div class="card-body p-0">
                     @if (empty($topDebtors))
                         <p class="text-muted text-center py-4 mb-0">Aucune donnée disponible.</p>
                     @else
                         <div class="table-responsive">
-                            <table class="table table-hover table-sm align-middle mb-0">
+                            <table class="table table-hover table-sm align-middle mb-0" id="debtorsTable">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>#</th>
+                                        <th style="width:36px">#</th>
                                         <th>Etudiant</th>
-                                        <th>Centre</th>
-                                        <th class="text-end">Montant dû</th>
-                                        <th class="text-end">Retard</th>
+                                        <th style="width:120px">Centre</th>
+                                        <th class="text-end" style="width:120px">Montant dû</th>
+                                        <th class="text-end" style="width:70px">Retard</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="debtorsTbody">
                                     @foreach ($topDebtors as $i => $debtor)
                                         <tr>
-                                            <td class="text-muted small">{{ $i + 1 }}</td>
+                                            <td class="text-muted">{{ $i + 1 }}</td>
                                             <td>
-                                                <strong>{{ $debtor['student_name'] }}</strong>
-                                                <br><small class="text-muted">#{{ $debtor['student_id'] }}</small>
+                                                <div class="fw-semibold">{{ $debtor['student_name'] }}</div>
+                                                <small class="text-muted">#{{ $debtor['student_id'] }}</small>
                                             </td>
-                                            <td>
-                                                <span class="badge bg-light-primary">{{ $debtor['store_name'] }}</span>
-                                            </td>
+                                            <td><span class="badge bg-light-primary text-primary">{{ $debtor['store_name'] }}</span></td>
                                             <td class="text-end fw-semibold text-danger">
-                                                {{ number_format($debtor['total_owed'], 2, ',', ' ') }} DH
+                                                {{ number_format($debtor['total_owed'], 0, ',', ' ') }} DH
                                             </td>
                                             <td class="text-end">
-                                                @if ($debtor['overdue_days'] > 0)
-                                                    @php
-                                                        $badgeClass = $debtor['overdue_days'] > 90 ? 'bg-dark'
-                                                            : ($debtor['overdue_days'] > 60 ? 'bg-danger'
-                                                            : ($debtor['overdue_days'] > 30 ? 'bg-warning text-dark'
-                                                            : 'bg-secondary'));
-                                                    @endphp
-                                                    <span class="badge {{ $badgeClass }}">
-                                                        {{ $debtor['overdue_days'] }} j
-                                                    </span>
-                                                @else
-                                                    <span class="badge bg-light-success text-success">À jour</span>
-                                                @endif
+                                                @php
+                                                    $bc = $debtor['overdue_days'] > 90 ? 'bg-dark'
+                                                        : ($debtor['overdue_days'] > 60 ? 'bg-danger'
+                                                        : ($debtor['overdue_days'] > 30 ? 'bg-warning text-dark'
+                                                        : ($debtor['overdue_days'] > 0  ? 'bg-secondary' : 'bg-light-success text-success')));
+                                                @endphp
+                                                <span class="badge {{ $bc }}">
+                                                    {{ $debtor['overdue_days'] > 0 ? $debtor['overdue_days'].' j' : 'À jour' }}
+                                                </span>
                                             </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="tbl-pagination" id="debtorsPagination">
+                            <span class="page-info" id="debtorsInfo"></span>
+                            <div class="btn-group">
+                                <button class="btn btn-outline-secondary" id="debtorsPrev"><i class="ti ti-chevron-left"></i></button>
+                                <span class="btn btn-outline-secondary disabled" id="debtorsPages" style="pointer-events:none;min-width:80px;text-align:center;font-size:.78rem"></span>
+                                <button class="btn btn-outline-secondary" id="debtorsNext"><i class="ti ti-chevron-right"></i></button>
+                            </div>
                         </div>
                     @endif
                 </div>
@@ -268,55 +279,49 @@
         </div>
 
         {{-- Upcoming Dues --}}
-        <div class="col-xl-5">
+        <div class="col-xl-5 col-12">
             <div class="card table-card h-100">
-                <div class="card-header">
+                <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="mb-0">
                         <i class="ph-duotone ph-calendar-check me-2"></i>
-                        Echéances à venir (14 j)
-                        <span class="badge bg-light-info text-info ms-2">{{ count($upcomingDues) }}</span>
+                        Echéances à venir <span class="text-muted small">(14 j)</span>
+                        <span class="badge bg-light-info text-info ms-2" id="duesBadge">{{ count($upcomingDues) }}</span>
                     </h5>
+                    <input type="text" id="duesSearch" class="form-control form-control-sm ms-2" style="max-width:160px" placeholder="Rechercher…">
                 </div>
-                <div class="card-body pt-2">
+                <div class="card-body p-0">
                     @if (empty($upcomingDues))
                         <p class="text-muted text-center py-4 mb-0">Aucune échéance prochaine.</p>
                     @else
                         <div class="table-responsive">
-                            <table class="table table-hover table-sm align-middle mb-0">
+                            <table class="table table-hover table-sm align-middle mb-0" id="duesTable">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Etudiant</th>
-                                        <th class="text-end">Montant</th>
-                                        <th>Echéance</th>
-                                        <th class="text-center">Dans</th>
+                                        <th class="text-end" style="width:110px">Montant</th>
+                                        <th style="width:90px">Echéance</th>
+                                        <th class="text-center" style="width:60px">Dans</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="duesTbody">
                                     @foreach ($upcomingDues as $due)
                                         <tr>
                                             <td>
-                                                <span class="fw-semibold">{{ $due['student_name'] }}</span>
-                                                <br><small class="text-muted">{{ $due['store_name'] }}</small>
+                                                <div class="fw-semibold">{{ $due['student_name'] }}</div>
+                                                <small class="text-muted">{{ $due['store_name'] }}</small>
                                             </td>
                                             <td class="text-end fw-semibold">
-                                                {{ number_format($due['amount'], 2, ',', ' ') }} DH
+                                                {{ number_format($due['amount'], 0, ',', ' ') }} DH
                                             </td>
-                                            <td>
-                                                <small>{{ $due['due_date'] ? \Carbon\Carbon::parse($due['due_date'])->format('d/m/Y') : '—' }}</small>
-                                            </td>
+                                            <td><small>{{ $due['due_date'] ? \Carbon\Carbon::parse($due['due_date'])->format('d/m/Y') : '—' }}</small></td>
                                             <td class="text-center">
                                                 @if ($due['days_until'] !== null)
                                                     @php
                                                         $dc = $due['days_until'];
-                                                        $badgeClass = $dc === 0 ? 'bg-danger'
-                                                            : ($dc <= 3  ? 'bg-warning text-dark'
-                                                            : 'bg-light-success text-success');
+                                                        $bc = $dc === 0 ? 'bg-danger' : ($dc <= 3 ? 'bg-warning text-dark' : 'bg-light-success text-success');
                                                     @endphp
-                                                    <span class="badge {{ $badgeClass }}">
-                                                        {{ $dc === 0 ? 'Auj.' : ($dc . ' j') }}
-                                                    </span>
-                                                @else
-                                                    —
+                                                    <span class="badge {{ $bc }}">{{ $dc === 0 ? 'Auj.' : $dc.' j' }}</span>
+                                                @else —
                                                 @endif
                                             </td>
                                         </tr>
@@ -324,69 +329,20 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="tbl-pagination" id="duesPagination">
+                            <span class="page-info" id="duesInfo"></span>
+                            <div class="btn-group">
+                                <button class="btn btn-outline-secondary" id="duesPrev"><i class="ti ti-chevron-left"></i></button>
+                                <span class="btn btn-outline-secondary disabled" id="duesPages" style="pointer-events:none;min-width:80px;text-align:center;font-size:.78rem"></span>
+                                <button class="btn btn-outline-secondary" id="duesNext"><i class="ti ti-chevron-right"></i></button>
+                            </div>
+                        </div>
                     @endif
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- ================================================================== --}}
-    {{-- PERFORMANCE BY CENTER (local DB)                                      --}}
-    {{-- ================================================================== --}}
-    @if (!empty($perfByCenter))
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card table-card">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="ph-duotone ph-chart-bar me-2"></i>
-                            Encaissements par centre — 3 derniers mois
-                        </h5>
-                    </div>
-                    <div class="card-body pt-2">
-                        @php
-                            // Collect all months from the pivot
-                            $allMonths = collect($perfByCenter)
-                                ->flatMap(fn($m) => array_keys($m))
-                                ->unique()->sort()->values()->all();
-                        @endphp
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-sm align-middle mb-0">
-                                @php
-                                    $storeNames = $crmCenters->whereNotNull('crm_store_id')
-                                        ->pluck('name', 'crm_store_id')->toArray();
-                                @endphp
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Centre</th>
-                                        @foreach ($allMonths as $m)
-                                            <th class="text-end">{{ \Carbon\Carbon::createFromFormat('Y-m', $m)->translatedFormat('M Y') }}</th>
-                                        @endforeach
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($perfByCenter as $storeId => $months)
-                                        <tr>
-                                            <td><span class="badge bg-light-primary">{{ $storeNames[$storeId] ?? 'Store #'.$storeId }}</span></td>
-                                            @foreach ($allMonths as $m)
-                                                <td class="text-end">
-                                                    @if (isset($months[$m]))
-                                                        {{ number_format($months[$m], 2, ',', ' ') }} DH
-                                                    @else
-                                                        <span class="text-muted">—</span>
-                                                    @endif
-                                                </td>
-                                            @endforeach
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
 
 @endsection
 
@@ -482,6 +438,43 @@
                         });
                 });
             });
+
+            // ── Table pagination helper ────────────────────────────────────────
+            function initTablePagination(tbodyId, searchId, prevId, nextId, pagesId, infoId, pageSize) {
+                const tbody  = document.getElementById(tbodyId);
+                if (!tbody) return;
+                const allRows = Array.from(tbody.querySelectorAll('tr'));
+                let filtered  = allRows;
+                let page      = 1;
+
+                function pages() { return Math.max(1, Math.ceil(filtered.length / pageSize)); }
+
+                function render() {
+                    const start = (page - 1) * pageSize;
+                    allRows.forEach(r => r.style.display = 'none');
+                    filtered.slice(start, start + pageSize).forEach(r => r.style.display = '');
+                    document.getElementById(pagesId).textContent = `Page ${page} / ${pages()}`;
+                    document.getElementById(infoId).textContent  = `${filtered.length} résultat(s)`;
+                    document.getElementById(prevId).disabled = page === 1;
+                    document.getElementById(nextId).disabled = page === pages();
+                }
+
+                document.getElementById(prevId).addEventListener('click', () => { if (page > 1) { page--; render(); } });
+                document.getElementById(nextId).addEventListener('click', () => { if (page < pages()) { page++; render(); } });
+
+                document.getElementById(searchId).addEventListener('input', function () {
+                    const q = this.value.toLowerCase();
+                    filtered = allRows.filter(r => r.textContent.toLowerCase().includes(q));
+                    page = 1;
+                    render();
+                });
+
+                render();
+            }
+
+            initTablePagination('debtorsTbody', 'debtorsSearch', 'debtorsPrev', 'debtorsNext', 'debtorsPages', 'debtorsInfo', 10);
+            initTablePagination('duesTbody',    'duesSearch',    'duesPrev',    'duesNext',    'duesPages',    'duesInfo',    10);
+            // ──────────────────────────────────────────────────────────────────
 
             document.getElementById('drillSearch').addEventListener('input', function () {
                 const q = this.value.toLowerCase();

@@ -448,15 +448,7 @@
                 </a>
             </li>
 
-            {{-- Suivi Présences --}}
-            <li class="pc-item {{ $crmPresenceSuiviOpen ? 'active' : '' }}">
-                <a href="{{ route('backoffice.crm.presence-suivi') }}"
-                    class="pc-link {{ $crmPresenceSuiviOpen ? 'active' : '' }}">
-                    <span class="pc-mtext">Suivi Présences</span>
-                </a>
-            </li>
-
-            {{-- Statistiques (submenu grouping all analytics) --}}
+{{-- Statistiques (submenu grouping all analytics) --}}
             @php
                 $crmAllStatsOpen = $crmStatsDashOpen || $crmStatsCompOpen || $crmStatsOpen || request()->routeIs('backoffice.crm.reports.*');
             @endphp

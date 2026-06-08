@@ -57,7 +57,7 @@
         </div>
         <div class="col-sm-auto">
             <label class="form-label fw-semibold mb-1 small">Grouper par</label>
-            <select id="comp-groupby" class="form-select form-select-sm" style="min-width:110px">
+            <select id="comp-groupby" class="form-select form-select-sm" style="min-width:140px">
                 <option value="day">Jour</option>
                 <option value="week">Semaine</option>
                 <option value="month" selected>Mois</option>

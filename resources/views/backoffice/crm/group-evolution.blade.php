@@ -32,15 +32,7 @@
                 @endif
             </div>
             <div class="row g-2 align-items-end">
-                <div class="col-12 col-md-3">
-                    <label class="form-label small mb-1 text-muted">Date de début</label>
-                    <input type="date" name="startDate" value="{{ $startDate }}" class="form-control form-control-sm">
-                </div>
-                <div class="col-12 col-md-3">
-                    <label class="form-label small mb-1 text-muted">Date de fin</label>
-                    <input type="date" name="endDate" value="{{ $endDate }}" class="form-control form-control-sm">
-                </div>
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-6">
                     <label class="form-label small mb-1 text-muted">Groupes</label>
                     {{-- Hidden field that the JS toggles below sync into. The
                          dropdown is purely visual; this is what's actually sent. --}}
@@ -87,7 +79,7 @@
                     </button>
                 </div>
                 <div class="col-auto">
-                    <a href="{{ url()->current() }}?refresh=1&startDate={{ $startDate }}&endDate={{ $endDate }}{{ !empty($selectedClassIds) ? '&classIds=' . implode(',', $selectedClassIds) : '' }}" class="btn btn-sm btn-outline-secondary" title="Recalculer (ignorer le cache)">
+                    <a href="{{ url()->current() }}?refresh=1{{ !empty($selectedClassIds) ? '&classIds=' . implode(',', $selectedClassIds) : '' }}" class="btn btn-sm btn-outline-secondary" title="Recalculer (ignorer le cache)">
                         <i class="ti ti-refresh me-1"></i> Recharger
                     </a>
                 </div>
@@ -225,7 +217,7 @@
             </div>
             <div class="col-6 col-md-4 col-xl">
                 <div class="card shadow-sm ge-kpi-card h-100"><div class="card-body text-center">
-                    <span class="ge-icon" style="background:#fff4e5; color:#fd7e14;"><i class="ti ti-arrows-exchange"></i></span>
+                    <span class="ge-icon" style="background:#fff4e5; color:#fd7e14;"><i class="ph-duotone ph-swap" style="font-size:1.7rem"></i></span>
                     <div class="small fw-semibold mt-2" style="color:#fd7e14;">Total des changements<br>de groupe (Changement)</div>
                     <div class="h2 mb-0 mt-1" style="color:#fd7e14;">{{ $totals['changements'] }}</div>
                     <div class="ge-help">Élèves ayant changé de groupe</div>
