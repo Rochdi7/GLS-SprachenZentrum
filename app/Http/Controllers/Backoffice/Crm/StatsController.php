@@ -74,6 +74,7 @@ class StatsController extends BaseCrmController
                 SELECT crm_store_id, date_creation_date, amount
                 FROM crm_payment_snapshots s1
                 WHERE date_creation_date BETWEEN ? AND ?
+                  AND payment_type_id = 1
                   {$storeFilter}
                   AND snapshot_date = (
                       SELECT MAX(s2.snapshot_date)
@@ -146,6 +147,7 @@ class StatsController extends BaseCrmController
                 COUNT(*)        AS nb
             FROM crm_payment_snapshots s1
             WHERE s1.date_creation_date BETWEEN ? AND ?
+              AND s1.payment_type_id = 1
               {$storeFilter}
               AND s1.snapshot_date = (
                   SELECT MAX(s2.snapshot_date)
@@ -217,9 +219,10 @@ class StatsController extends BaseCrmController
         $storeFilter = $storeId ? "AND crm_store_id = {$storeId}" : '';
         $rows = CrmPaymentSnapshot::query()
             ->fromRaw("(
-                SELECT crm_store_id, date_creation_date, amount, payment_type_id
+                SELECT crm_store_id, date_creation_date, amount
                 FROM crm_payment_snapshots s1
                 WHERE date_creation_date >= ?
+                  AND payment_type_id = 1
                   {$storeFilter}
                   AND snapshot_date = (
                       SELECT MAX(s2.snapshot_date)
@@ -335,6 +338,7 @@ class StatsController extends BaseCrmController
                 SELECT COALESCE(SUM(amount), 0) as total
                 FROM crm_payment_snapshots s1
                 WHERE date_creation_date BETWEEN ? AND ?
+                  AND payment_type_id = 1
                   {$storeFilter}
                   AND snapshot_date = (
                       SELECT MAX(s2.snapshot_date)

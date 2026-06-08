@@ -39,10 +39,17 @@ class InsightsService
         $weekStart ??= Carbon::now()->startOfWeek();
         $weekEnd     = $weekStart->copy()->endOfWeek();
 
+        // Filter by date_creation_date (when cashier recorded payment) and Réglement only.
+        // snapshot_date is the nightly copy date — not the collection date.
         $base = CrmPaymentSnapshot::query()
-            ->whereDate('snapshot_date', '>=', $weekStart->toDateString())
-            ->whereDate('snapshot_date', '<=', $weekEnd->toDateString())
+            ->whereBetween('date_creation_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+            ->where('payment_type_id', 1)
             ->whereNotNull('user_creation_full_name')
+            ->whereRaw('snapshot_date = (
+                SELECT MAX(s2.snapshot_date)
+                FROM crm_payment_snapshots s2
+                WHERE s2.crm_payment_id = crm_payment_snapshots.crm_payment_id
+            )')
             ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId));
 
         // Per-employee aggregation
@@ -116,11 +123,18 @@ class InsightsService
     {
         $start = Carbon::today()->subDays($days - 1);
 
-        // Pull aggregated daily totals straight from the snapshots
+        // Group by date_creation_date (when cashier recorded the payment), Réglement only.
+        // Use latest snapshot per payment to avoid double-counting nightly copies.
         $raw = CrmPaymentSnapshot::query()
-            ->whereDate('snapshot_date', '>=', $start->toDateString())
+            ->whereBetween('date_creation_date', [$start->toDateString(), Carbon::today()->toDateString()])
+            ->where('payment_type_id', 1)
+            ->whereRaw('snapshot_date = (
+                SELECT MAX(s2.snapshot_date)
+                FROM crm_payment_snapshots s2
+                WHERE s2.crm_payment_id = crm_payment_snapshots.crm_payment_id
+            )')
             ->selectRaw('
-                snapshot_date,
+                date_creation_date as snapshot_date,
                 crm_store_id,
                 SUM(CASE WHEN payment_method_id = 1 THEN amount ELSE 0 END) as cash,
                 SUM(CASE WHEN payment_method_id = 2 THEN amount ELSE 0 END) as cheque,
@@ -128,8 +142,8 @@ class InsightsService
                 SUM(amount) as total,
                 COUNT(*) as n
             ')
-            ->groupBy('snapshot_date', 'crm_store_id')
-            ->orderBy('snapshot_date')
+            ->groupBy('date_creation_date', 'crm_store_id')
+            ->orderBy('date_creation_date')
             ->get();
 
         $sites = Site::whereNotNull('crm_store_id')->orderBy('name')->get()->keyBy('crm_store_id');

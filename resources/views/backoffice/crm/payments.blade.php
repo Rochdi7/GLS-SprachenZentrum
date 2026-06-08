@@ -18,6 +18,17 @@
         'schoolYearId'     => ['label' => 'Année scolaire', 'type' => 'select', 'options' => $lovSchoolYears, 'empty' => '— Toutes les années —'],
     ]])
 
+    @if(isset($snapshotTotal) && $snapshotTotal !== null)
+    <div class="alert alert-primary d-flex align-items-center gap-2 mb-3 py-2">
+        <i class="ti ti-cash fs-5"></i>
+        <span>
+            <strong>Montant total (Réglement) :</strong>
+            {{ number_format($snapshotTotal, 0, ',', ' ') }} DH
+        </span>
+        <small class="text-muted ms-2">— Réglement uniquement, basé sur date de saisie</small>
+    </div>
+    @endif
+
     <div class="card"><div class="card-body">
         @include('backoffice.crm.partials._table')
     </div></div>

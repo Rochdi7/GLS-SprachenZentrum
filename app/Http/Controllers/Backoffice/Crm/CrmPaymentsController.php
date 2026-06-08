@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice\Crm;
 
+use App\Models\CrmPaymentSnapshot;
 use App\Services\Crm\CrmException;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -16,6 +17,10 @@ class CrmPaymentsController extends BaseCrmController
     {
         $strStoreId = $this->currentStrStoreId();
         $size = (int) $r->query('size', 5);
+
+        // Snapshot total — Réglement only (payment_type_id = 1), filtered by
+        // date_creation_date so it matches the CRM API's startDate/endDate behaviour.
+        $snapshotTotal = $this->paymentsSnapshotTotal($r, $strStoreId);
 
         return $this->render(
             'backoffice.crm.payments',
@@ -51,8 +56,50 @@ class CrmPaymentsController extends BaseCrmController
                 'lovPaymentStatuses' => $this->lovs->paymentStatuses(),
                 'lovPaymentMethods'  => $this->lovs->paymentMethods(),
                 'lovSchoolYears'     => $this->lovs->schoolYears($strStoreId),
+                'snapshotTotal'      => $snapshotTotal,
             ],
         );
+    }
+
+    /**
+     * Compute the Réglement-only total from the local snapshot table.
+     * Only runs when at least a date range is set (avoids a full-table scan).
+     * Returns null when not enough filters are active to give a meaningful total.
+     */
+    private function paymentsSnapshotTotal(Request $r, ?int $strStoreId): ?float
+    {
+        $startDate = $r->query('startDate') ?: null;
+        $endDate   = $r->query('endDate')   ?: null;
+
+        // Require at least a date range to show a total.
+        if (!$startDate || !$endDate) {
+            return null;
+        }
+
+        // Only show Réglement total when no type filter or type filter = Réglement (id=1).
+        $paymentTypeId = $r->filled('paymentTypeId') ? (int) $r->query('paymentTypeId') : null;
+        if ($paymentTypeId !== null && $paymentTypeId !== 1) {
+            return null;
+        }
+
+        $query = CrmPaymentSnapshot::query()
+            ->where('payment_type_id', 1)
+            ->whereBetween('date_creation_date', [$startDate, $endDate])
+            ->whereRaw('snapshot_date = (
+                SELECT MAX(s2.snapshot_date)
+                FROM crm_payment_snapshots s2
+                WHERE s2.crm_payment_id = crm_payment_snapshots.crm_payment_id
+            )');
+
+        if ($strStoreId) {
+            $query->where('crm_store_id', $strStoreId);
+        }
+
+        if ($r->filled('studentId')) {
+            $query->where('student_id', (int) $r->query('studentId'));
+        }
+
+        return (float) $query->sum('amount');
     }
 
     public function paymentChecks(Request $r): View
