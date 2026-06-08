@@ -19,14 +19,10 @@
         request()->routeIs('backoffice.applications.*') ||
         request()->routeIs('backoffice.leads.*') ||
         request()->routeIs('backoffice.newsletter_subscribers.*');
-    $payrollOpen = request()->routeIs('backoffice.payroll.*') && !request()->routeIs('backoffice.payroll.presence.*');
-    $presenceOpen = request()->routeIs('backoffice.payroll.presence.*');
     $contentOpen = request()->routeIs('backoffice.blog.*');
-    $encaissementOpen = request()->routeIs('backoffice.encaissements.*');
     $rhOpen = request()->routeIs('backoffice.schedules.*') || request()->routeIs('backoffice.planning.*');
     $adminOpen = request()->routeIs('backoffice.users.*') || request()->routeIs('backoffice.roles.*');
     $crmOpen = request()->routeIs('backoffice.crm.*');
-    $whatsappOpen = request()->routeIs('backoffice.whatsapp_campaigns.*');
 
     // New variables for CRM split
     $crmDataOpen =
@@ -48,9 +44,7 @@
         request()->routeIs('backoffice.crm.stats') ||
         request()->routeIs('backoffice.crm.duplicates') ||
         request()->routeIs('backoffice.crm.insights.*');
-    $crmCollectionsOpen = request()->routeIs('backoffice.crm.collections.*');
-    $crmChurnOpen       = request()->routeIs('backoffice.crm.agent.index');
-    $crmAgentOpen       = request()->routeIs('backoffice.crm.agent.*') && !$crmChurnOpen;
+    $crmCollectionsOpen  = request()->routeIs('backoffice.crm.collections.*');
     $crmStatsDashOpen    = request()->routeIs('backoffice.crm.statistiques');
     $crmPresenceSuiviOpen = request()->routeIs('backoffice.crm.presence-suivi');
 @endphp
@@ -243,119 +237,6 @@
     @endcanany
 @endhasanyrole
 
-{{-- Hidden: not ready for production
-@can('payroll.view')
-<li class="pc-item pc-hasmenu {{ $payrollOpen ? 'pc-trigger' : '' }}">
-    <a href="#!" class="pc-link">
-        <span class="pc-micon"><i class="ph-duotone ph-wallet"></i></span>
-        <span class="pc-mtext">Suivi Paiement</span>
-        <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
-    </a>
-    <ul class="pc-submenu">
-        <li class="pc-item {{ request()->routeIs('backoffice.payroll.dashboard') ? 'active' : '' }}">
-            <a href="{{ route('backoffice.payroll.dashboard') }}" class="pc-link {{ request()->routeIs('backoffice.payroll.dashboard') ? 'active' : '' }}">
-                <span class="pc-mtext">Tableau de bord</span>
-            </a>
-        </li>
-        @can('payroll.create')
-        <li class="pc-item {{ request()->routeIs('backoffice.payroll.import.create') ? 'active' : '' }}">
-            <a href="{{ route('backoffice.payroll.import.create') }}" class="pc-link {{ request()->routeIs('backoffice.payroll.import.create') ? 'active' : '' }}">
-                <span class="pc-mtext">Importer CRM</span>
-            </a>
-        </li>
-        @endcan
-    </ul>
-</li>
-@endcan
---}}
-
-{{-- @can('presence.view')
-    <li class="pc-item pc-hasmenu {{ $presenceOpen ? 'pc-trigger' : '' }}">
-        <a href="#!" class="pc-link">
-            <span class="pc-micon"><i class="ph-duotone ph-chalkboard-teacher"></i></span>
-            <span class="pc-mtext">Paiement Professeurs</span>
-            <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
-        </a>
-        <ul class="pc-submenu">
-            <li class="pc-item {{ request()->routeIs('backoffice.payroll.presence.dashboard') ? 'active' : '' }}">
-                <a href="{{ route('backoffice.payroll.presence.dashboard') }}"
-                    class="pc-link {{ request()->routeIs('backoffice.payroll.presence.dashboard') ? 'active' : '' }}">
-                    <span class="pc-mtext">Tableau de bord</span>
-                </a>
-            </li>
-        </ul>
-    </li>
-@endcan --}}
-
-@if (false)
-    {{-- Hidden: not ready for production --}}
-    @can('encaissements.view')
-        <li class="pc-item pc-hasmenu {{ $encaissementOpen ? 'pc-trigger' : '' }}">
-            <a href="#!" class="pc-link">
-                <span class="pc-micon"><i class="ph-duotone ph-money"></i></span>
-                <span class="pc-mtext">Encaissements</span>
-                <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
-            </a>
-            <ul class="pc-submenu">
-                <li class="pc-item {{ request()->routeIs('backoffice.encaissements.dashboard') ? 'active' : '' }}">
-                    <a href="{{ route('backoffice.encaissements.dashboard') }}"
-                        class="pc-link {{ request()->routeIs('backoffice.encaissements.dashboard') ? 'active' : '' }}">
-                        <span class="pc-mtext">Tableau de bord</span>
-                    </a>
-                </li>
-                <li
-                    class="pc-item {{ request()->routeIs('backoffice.encaissements.index') || request()->routeIs('backoffice.encaissements.show') ? 'active' : '' }}">
-                    <a href="{{ route('backoffice.encaissements.index') }}"
-                        class="pc-link {{ request()->routeIs('backoffice.encaissements.index') ? 'active' : '' }}">
-                        <span class="pc-mtext">Liste encaissements</span>
-                    </a>
-                </li>
-                @can('encaissements.create')
-                    <li class="pc-item {{ request()->routeIs('backoffice.encaissements.imports.create') ? 'active' : '' }}">
-                        <a href="{{ route('backoffice.encaissements.imports.create') }}"
-                            class="pc-link {{ request()->routeIs('backoffice.encaissements.imports.create') ? 'active' : '' }}">
-                            <span class="pc-mtext">Importer</span>
-                        </a>
-                    </li>
-                @endcan
-                <li
-                    class="pc-item {{ request()->routeIs('backoffice.encaissements.imports.index') || request()->routeIs('backoffice.encaissements.imports.show') ? 'active' : '' }}">
-                    <a href="{{ route('backoffice.encaissements.imports.index') }}"
-                        class="pc-link {{ request()->routeIs('backoffice.encaissements.imports.index') || request()->routeIs('backoffice.encaissements.imports.show') ? 'active' : '' }}">
-                        <span class="pc-mtext">Historique imports</span>
-                    </a>
-                </li>
-                {{-- Hidden for now — routes still work, just off the sidebar
-        <li class="pc-item {{ request()->routeIs('backoffice.encaissements.rentabilite') ? 'active' : '' }}">
-            <a href="{{ route('backoffice.encaissements.rentabilite') }}" class="pc-link {{ request()->routeIs('backoffice.encaissements.rentabilite') ? 'active' : '' }}">
-                <span class="pc-mtext">Rentabilité</span>
-            </a>
-        </li>
-        <li class="pc-item {{ request()->routeIs('backoffice.encaissements.operators') ? 'active' : '' }}">
-            <a href="{{ route('backoffice.encaissements.operators') }}" class="pc-link {{ request()->routeIs('backoffice.encaissements.operators') ? 'active' : '' }}">
-                <span class="pc-mtext">Opérateurs</span>
-            </a>
-        </li>
-        <li class="pc-item {{ request()->routeIs('backoffice.encaissements.expenses.*') ? 'active' : '' }}">
-            <a href="{{ route('backoffice.encaissements.expenses.index') }}" class="pc-link {{ request()->routeIs('backoffice.encaissements.expenses.*') ? 'active' : '' }}">
-                <span class="pc-mtext">Charges</span>
-            </a>
-        </li>
-        <li class="pc-item {{ request()->routeIs('backoffice.encaissements.recouvrement') || request()->routeIs('backoffice.encaissements.impayes.*') ? 'active' : '' }}">
-            <a href="{{ route('backoffice.encaissements.recouvrement') }}" class="pc-link {{ request()->routeIs('backoffice.encaissements.recouvrement') || request()->routeIs('backoffice.encaissements.impayes.*') ? 'active' : '' }}">
-                <span class="pc-mtext">Recouvrement & Impayés</span>
-            </a>
-        </li>
-        <li class="pc-item {{ request()->routeIs('backoffice.encaissements.primes.index') || request()->routeIs('backoffice.encaissements.primes.config') ? 'active' : '' }}">
-            <a href="{{ route('backoffice.encaissements.primes.index') }}" class="pc-link {{ request()->routeIs('backoffice.encaissements.primes.index') || request()->routeIs('backoffice.encaissements.primes.config') ? 'active' : '' }}">
-                <span class="pc-mtext">Primes (auto)</span>
-            </a>
-        </li>
-        --}}
-            </ul>
-        </li>
-    @endcan
-@endif
 
 <li class="pc-item pc-hasmenu {{ $rhOpen ? 'pc-trigger' : '' }}">
     <a href="#!" class="pc-link">
@@ -416,36 +297,6 @@
     </li>
 @endcanany
 
-{{-- Hidden: not ready for production
-@can('whatsapp_campaigns.view')
-<li class="pc-item pc-hasmenu {{ $whatsappOpen ? 'pc-trigger' : '' }}">
-    <a href="#!" class="pc-link">
-        <span class="pc-micon"><i class="ph-duotone ph-whatsapp-logo"></i></span>
-        <span class="pc-mtext">Campagnes WhatsApp</span>
-        <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
-    </a>
-    <ul class="pc-submenu">
-        <li class="pc-item {{ request()->routeIs('backoffice.whatsapp_campaigns.dashboard') ? 'active' : '' }}">
-            <a href="{{ route('backoffice.whatsapp_campaigns.dashboard') }}" class="pc-link {{ request()->routeIs('backoffice.whatsapp_campaigns.dashboard') ? 'active' : '' }}">
-                <span class="pc-mtext">Tableau de bord</span>
-            </a>
-        </li>
-        <li class="pc-item {{ request()->routeIs('backoffice.whatsapp_campaigns.index') ? 'active' : '' }}">
-            <a href="{{ route('backoffice.whatsapp_campaigns.index') }}" class="pc-link {{ request()->routeIs('backoffice.whatsapp_campaigns.index') ? 'active' : '' }}">
-                <span class="pc-mtext">Historique</span>
-            </a>
-        </li>
-        @can('whatsapp_campaigns.create')
-        <li class="pc-item {{ request()->routeIs('backoffice.whatsapp_campaigns.create') ? 'active' : '' }}">
-            <a href="{{ route('backoffice.whatsapp_campaigns.create') }}" class="pc-link {{ request()->routeIs('backoffice.whatsapp_campaigns.create') ? 'active' : '' }}">
-                <span class="pc-mtext">Nouvelle campagne</span>
-            </a>
-        </li>
-        @endcan
-    </ul>
-</li>
-@endcan
---}}
 
 @canany(['users.view', 'roles.view'])
     <li class="pc-item pc-hasmenu {{ $adminOpen ? 'pc-trigger' : '' }}">
@@ -587,24 +438,6 @@
                     </li>
                 </ul>
             </li>
-
-            {{-- Churn / Risque étudiant — hidden temporarily, re-enable when ready
-            <li class="pc-item {{ $crmChurnOpen ? 'active' : '' }}">
-                <a href="{{ route('backoffice.crm.agent.index') }}"
-                    class="pc-link {{ $crmChurnOpen ? 'active' : '' }}">
-                    <span class="pc-mtext">Churn / Risque</span>
-                </a>
-            </li>
-            --}}
-
-            {{-- Agent / Call Center — hidden temporarily, re-enable when ready
-            <li class="pc-item {{ $crmAgentOpen ? 'active' : '' }}">
-                <a href="{{ route('backoffice.crm.agent.call-today') }}"
-                    class="pc-link {{ $crmAgentOpen ? 'active' : '' }}">
-                    <span class="pc-mtext">Agent / Call Center</span>
-                </a>
-            </li>
-            --}}
 
             {{-- Recouvrement --}}
             <li class="pc-item {{ $crmCollectionsOpen ? 'active' : '' }}">

@@ -73,8 +73,7 @@ class StatsController extends BaseCrmController
             ->fromRaw("(
                 SELECT crm_store_id, effective_date, amount
                 FROM crm_payment_snapshots s1
-                WHERE payment_type_id = 1
-                  AND effective_date BETWEEN ? AND ?
+                WHERE effective_date BETWEEN ? AND ?
                   {$storeFilter}
                   AND snapshot_date = (
                       SELECT MAX(s2.snapshot_date)
@@ -138,8 +137,7 @@ class StatsController extends BaseCrmController
             ->fromRaw("(
                 SELECT crm_store_id, effective_date, amount, payment_type_id
                 FROM crm_payment_snapshots s1
-                WHERE payment_type_id = 1
-                  AND effective_date >= ?
+                WHERE effective_date >= ?
                   {$storeFilter}
                   AND snapshot_date = (
                       SELECT MAX(s2.snapshot_date)
@@ -254,8 +252,7 @@ class StatsController extends BaseCrmController
             return (float) \Illuminate\Support\Facades\DB::selectOne("
                 SELECT COALESCE(SUM(amount), 0) as total
                 FROM crm_payment_snapshots s1
-                WHERE payment_type_id = 1
-                  AND effective_date BETWEEN ? AND ?
+                WHERE effective_date BETWEEN ? AND ?
                   {$storeFilter}
                   AND snapshot_date = (
                       SELECT MAX(s2.snapshot_date)

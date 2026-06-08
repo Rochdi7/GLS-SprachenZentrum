@@ -37,15 +37,11 @@ class RolePermissionSeeder extends Seeder
             'applications'     => ['view', 'create', 'edit', 'delete'],
             'users'            => ['view', 'create', 'edit', 'delete'],
             'roles'            => ['view', 'create', 'edit', 'delete'],
-            'payroll'          => ['view', 'create', 'edit', 'delete'],
-            'presence'         => ['view', 'create', 'edit', 'delete'],
             'level_followups'  => ['view', 'create', 'edit', 'delete'],
             'weekly_reports'   => ['view', 'create', 'edit', 'delete'],
             'schedules'        => ['view', 'create', 'edit', 'delete'],
-            'encaissements'    => ['view', 'create', 'edit', 'delete'],
-            'whatsapp_campaigns' => ['view', 'create', 'edit', 'delete'],
             'newsletter_subscribers' => ['view', 'delete'],
-            'crm'              => ['view'],
+            'crm'              => ['view', 'create', 'edit', 'delete'],
             'crm_prof_payment' => ['view', 'create', 'edit', 'delete'],
         ];
 
@@ -59,9 +55,12 @@ class RolePermissionSeeder extends Seeder
             }
         }
 
-        // Purge legacy permissions: the standalone "employees" CRUD has been merged
-        // into "users" — any lingering employees.* grants are meaningless now.
+        // Purge legacy / removed module permissions
         Permission::where('name', 'like', 'employees.%')->delete();
+        Permission::where('name', 'like', 'payroll.%')->delete();
+        Permission::where('name', 'like', 'presence.%')->delete();
+        Permission::where('name', 'like', 'encaissements.%')->delete();
+        Permission::where('name', 'like', 'whatsapp_campaigns.%')->delete();
 
         /*
         |----------------------------------------------------------------------
@@ -99,7 +98,7 @@ class RolePermissionSeeder extends Seeder
             'level_followups.view', 'level_followups.create', 'level_followups.edit',
             'weekly_reports.view', 'weekly_reports.create', 'weekly_reports.edit',
 
-            // Ecole — view + create/edit, no delete (reception shouldn't delete data)
+            // Ecole — view + create/edit, no delete
             'sites.view',
             'teachers.view', 'teachers.create', 'teachers.edit',
             'groups.view', 'groups.create', 'groups.edit',
@@ -115,8 +114,11 @@ class RolePermissionSeeder extends Seeder
             'leads.view',
             'lead_stats.view',
 
-            // Quizzes — view only (teachers/admins manage content)
+            // Quizzes — view only
             'quizzes.view',
+
+            // CRM — view access
+            'crm.view',
         ];
         $reception->syncPermissions($receptionPermissions);
     }
