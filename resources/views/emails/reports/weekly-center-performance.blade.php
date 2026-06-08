@@ -26,17 +26,10 @@
 
 @if(count($reportData['centers']) > 0)
 
-{{-- SVG Bar Chart --}}
+{{-- CSS Bar Chart (Gmail-safe: pure table/div, no SVG/JS) --}}
 @php
-    $centers   = collect($reportData['centers'])->sortByDesc('revenue')->values();
-    $maxRev    = $centers->max('revenue') ?: 1;
-    $barH      = 22;
-    $gap       = 10;
-    $labelW    = 110;
-    $barMaxW   = 260;
-    $valW      = 80;
-    $totalW    = $labelW + $barMaxW + $valW + 16;
-    $svgH      = $centers->count() * ($barH + $gap) + 10;
+    $chartData = collect($reportData['centers'])->sortByDesc('revenue')->values();
+    $maxRev    = $chartData->max('revenue') ?: 1;
     $colors    = ['#1d4ed8','#16a34a','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#ec4899'];
 @endphp
 
@@ -44,45 +37,42 @@
     Revenus par centre
 </p>
 
-<div style="background:#f8fafc;border-radius:10px;padding:16px;margin:0 0 20px 0;overflow:hidden;">
-<svg xmlns="http://www.w3.org/2000/svg" width="{{ $totalW }}" height="{{ $svgH }}"
-     viewBox="0 0 {{ $totalW }} {{ $svgH }}"
-     style="display:block;max-width:100%;font-family:Arial,Helvetica,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+    style="background:#f8fafc;border-radius:10px;padding:0;margin:0 0 20px 0;">
+    <tr><td style="padding:14px 14px 8px 14px;">
 
-    @foreach($centers as $i => $center)
+    @foreach($chartData as $i => $center)
     @php
-        $y       = $i * ($barH + $gap) + 5;
-        $barW    = $maxRev > 0 ? round($center['revenue'] / $maxRev * $barMaxW) : 0;
-        $color   = $colors[$i % count($colors)];
-        $label   = mb_strlen($center['center_name']) > 14
-                    ? mb_substr($center['center_name'], 0, 13) . '…'
-                    : $center['center_name'];
-        $valText = $center['revenue'] > 0
+        $pct   = $maxRev > 0 ? max(2, round($center['revenue'] / $maxRev * 100)) : 2;
+        $color = $colors[$i % count($colors)];
+        $val   = $center['revenue'] > 0
                     ? number_format($center['revenue'], 0, ',', ' ') . ' MAD'
                     : '—';
     @endphp
-
-    {{-- Label --}}
-    <text x="{{ $labelW - 8 }}" y="{{ $y + $barH * 0.68 }}"
-          text-anchor="end" font-size="11.5" fill="#374151">{{ $label }}</text>
-
-    {{-- Bar background --}}
-    <rect x="{{ $labelW }}" y="{{ $y }}" width="{{ $barMaxW }}" height="{{ $barH }}"
-          rx="5" fill="#e5e7eb"/>
-
-    {{-- Bar fill --}}
-    @if($barW > 0)
-    <rect x="{{ $labelW }}" y="{{ $y }}" width="{{ $barW }}" height="{{ $barH }}"
-          rx="5" fill="{{ $color }}" opacity="0.85"/>
-    @endif
-
-    {{-- Value --}}
-    <text x="{{ $labelW + $barMaxW + 8 }}" y="{{ $y + $barH * 0.68 }}"
-          font-size="11" fill="#111827" font-weight="bold">{{ $valText }}</text>
-
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+        style="margin-bottom:8px;">
+        <tr>
+            <td width="100" style="font-size:11.5px;color:#374151;padding-right:8px;vertical-align:middle;white-space:nowrap;">
+                {{ $center['center_name'] }}
+            </td>
+            <td style="vertical-align:middle;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                    style="background:#e5e7eb;border-radius:5px;height:20px;">
+                    <tr>
+                        <td width="{{ $pct }}%" style="background:{{ $color }};border-radius:5px;height:20px;line-height:20px;font-size:0;">&nbsp;</td>
+                        <td width="{{ 100 - $pct }}%" style="height:20px;font-size:0;">&nbsp;</td>
+                    </tr>
+                </table>
+            </td>
+            <td width="90" style="font-size:11px;font-weight:700;color:#111827;padding-left:8px;text-align:right;vertical-align:middle;white-space:nowrap;">
+                {{ $val }}
+            </td>
+        </tr>
+    </table>
     @endforeach
-</svg>
-</div>
+
+    </td></tr>
+</table>
 
 {{-- Data table --}}
 <p style="margin:0 0 10px 0;font-weight:700;font-size:14px;color:#181615;">Performance par centre</p>

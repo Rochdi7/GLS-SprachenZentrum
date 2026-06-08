@@ -43,55 +43,54 @@
     </tr>
 </table>
 
-{{-- SVG Bar Chart --}}
+{{-- CSS Bar Chart (Gmail-safe: pure table, no SVG/JS) --}}
 @if($centersRanking->count() > 0)
 @php
-    $sorted   = $centersRanking->sortByDesc('amount')->values();
-    $maxAmt   = $sorted->max('amount') ?: 1;
-    $barH     = 22;
-    $gap      = 10;
-    $labelW   = 110;
-    $barMaxW  = 260;
-    $valW     = 90;
-    $totalW   = $labelW + $barMaxW + $valW + 16;
-    $svgH     = $sorted->count() * ($barH + $gap) + 10;
-    $colors   = ['#16a34a','#1d4ed8','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#ec4899'];
+    $sorted = $centersRanking->sortByDesc('amount')->values();
+    $maxAmt = $sorted->max('amount') ?: 1;
+    $colors = ['#16a34a','#1d4ed8','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#ec4899'];
 @endphp
 
 <p style="margin:0 0 10px 0;font-weight:700;font-size:14px;color:#181615;">
     Encaissements par centre — hier
 </p>
 
-<div style="background:#f8fafc;border-radius:10px;padding:16px;margin:0 0 20px 0;overflow:hidden;">
-<svg xmlns="http://www.w3.org/2000/svg" width="{{ $totalW }}" height="{{ $svgH }}"
-     viewBox="0 0 {{ $totalW }} {{ $svgH }}"
-     style="display:block;max-width:100%;font-family:Arial,Helvetica,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+    style="background:#f8fafc;border-radius:10px;margin:0 0 20px 0;">
+    <tr><td style="padding:14px 14px 8px 14px;">
 
     @foreach($sorted as $i => $center)
     @php
-        $y       = $i * ($barH + $gap) + 5;
-        $barW    = round($center['amount'] / $maxAmt * $barMaxW);
-        $color   = $colors[$i % count($colors)];
-        $name    = $center['name'] ?? '';
-        $label   = mb_strlen($name) > 14 ? mb_substr($name, 0, 13) . '…' : $name;
-        $valText = $center['amount'] > 0
+        $pct   = max(2, round($center['amount'] / $maxAmt * 100));
+        $color = $colors[$i % count($colors)];
+        $val   = $center['amount'] > 0
                     ? number_format($center['amount'], 0, ',', ' ') . ' MAD'
                     : '—';
     @endphp
-    <text x="{{ $labelW - 8 }}" y="{{ $y + $barH * 0.68 }}"
-          text-anchor="end" font-size="11.5" fill="#374151">{{ $label }}</text>
-    <rect x="{{ $labelW }}" y="{{ $y }}" width="{{ $barMaxW }}" height="{{ $barH }}"
-          rx="5" fill="#e5e7eb"/>
-    @if($barW > 0)
-    <rect x="{{ $labelW }}" y="{{ $y }}" width="{{ $barW }}" height="{{ $barH }}"
-          rx="5" fill="{{ $color }}" opacity="0.85"/>
-    @endif
-    <text x="{{ $labelW + $barMaxW + 8 }}" y="{{ $y + $barH * 0.68 }}"
-          font-size="11" fill="#111827" font-weight="bold">{{ $valText }}</text>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+        style="margin-bottom:8px;">
+        <tr>
+            <td width="100" style="font-size:11.5px;color:#374151;padding-right:8px;vertical-align:middle;white-space:nowrap;">
+                {{ $center['name'] ?? '' }}
+            </td>
+            <td style="vertical-align:middle;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                    style="background:#e5e7eb;border-radius:5px;height:20px;">
+                    <tr>
+                        <td width="{{ $pct }}%" style="background:{{ $color }};border-radius:5px;height:20px;line-height:20px;font-size:0;">&nbsp;</td>
+                        <td width="{{ 100 - $pct }}%" style="height:20px;font-size:0;">&nbsp;</td>
+                    </tr>
+                </table>
+            </td>
+            <td width="90" style="font-size:11px;font-weight:700;color:#111827;padding-left:8px;text-align:right;vertical-align:middle;white-space:nowrap;">
+                {{ $val }}
+            </td>
+        </tr>
+    </table>
     @endforeach
 
-</svg>
-</div>
+    </td></tr>
+</table>
 
 {{-- Ranking table --}}
 <p style="margin:0 0 10px 0;font-weight:700;font-size:14px;color:#181615;">
