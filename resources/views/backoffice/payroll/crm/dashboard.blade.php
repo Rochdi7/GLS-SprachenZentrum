@@ -270,6 +270,15 @@
 <script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
 <script type="module">
     import { DataTable } from "/build/js/plugins/module.js";
+
+    DataTable.ext.search.push(function (settings, data, dataIndex, rowData, counter) {
+        if (settings.nTable.id !== 'pc-dt-simple') return true;
+        const siteId = document.getElementById('site-filter')?.value ?? '';
+        if (!siteId) return true;
+        const row = settings.nTable.tBodies[0].rows[counter];
+        return row && row.dataset.siteId === siteId;
+    });
+
     window.dt = new DataTable("#pc-dt-simple");
 </script>
 <script>
@@ -278,10 +287,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (toastEl) new bootstrap.Toast(toastEl).show();
 
     document.getElementById('site-filter').addEventListener('change', function () {
-        const siteId = this.value;
-        document.querySelectorAll('#pc-dt-simple tbody tr[data-site-id]').forEach(row => {
-            row.style.display = (!siteId || row.dataset.siteId === siteId) ? '' : 'none';
-        });
+        window.dt?.draw();
     });
 
     // Bar chart — paiement par professeur

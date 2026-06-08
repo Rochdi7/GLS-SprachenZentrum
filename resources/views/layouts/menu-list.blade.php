@@ -419,25 +419,10 @@
             </li>
 
             {{-- Paiement Professeurs --}}
-            <li class="pc-item pc-hasmenu {{ request()->routeIs('backoffice.payroll.crm.*') ? 'pc-trigger' : '' }}">
-                <a href="#!" class="pc-link">
+            <li class="pc-item {{ request()->routeIs('backoffice.payroll.crm.*') ? 'active' : '' }}">
+                <a href="{{ route('backoffice.payroll.crm.legacy.dashboard') }}" class="pc-link">
                     <span class="pc-mtext">Paiement Profs</span>
-                    <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
                 </a>
-                <ul class="pc-submenu">
-                    <li class="pc-item {{ request()->routeIs('backoffice.payroll.crm.legacy.dashboard') ? 'active' : '' }}">
-                        <a href="{{ route('backoffice.payroll.crm.legacy.dashboard') }}"
-                            class="pc-link {{ request()->routeIs('backoffice.payroll.crm.legacy.dashboard') ? 'active' : '' }}">
-                            <span class="pc-mtext">Tableau de bord</span>
-                        </a>
-                    </li>
-                    <li class="pc-item {{ request()->routeIs('backoffice.payroll.crm.legacy.import.create') ? 'active' : '' }}">
-                        <a href="{{ route('backoffice.payroll.crm.legacy.import.create') }}"
-                            class="pc-link {{ request()->routeIs('backoffice.payroll.crm.legacy.import.create') ? 'active' : '' }}">
-                            <span class="pc-mtext">Importer depuis CRM</span>
-                        </a>
-                    </li>
-                </ul>
             </li>
 
             {{-- Recouvrement --}}
