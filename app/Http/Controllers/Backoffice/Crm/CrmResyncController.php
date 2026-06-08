@@ -186,10 +186,16 @@ class CrmResyncController extends BaseCrmController
 
     /**
      * POST /crm/resync
-     * Runs the requested domain sync and returns JSON with step results.
+     * Runs the requested domain sync, or unlocks a stuck lock.
      */
     public function run(Request $request): JsonResponse
     {
+        // Special action: force-clear a stuck lock without syncing
+        if ($request->input('action') === 'unlock') {
+            Cache::forget(self::LOCK_KEY);
+            return response()->json(['status' => 'ok', 'message' => 'Verrou libéré. Vous pouvez relancer la synchronisation.']);
+        }
+
         $domain = $request->input('domain', 'all');
 
         if (!array_key_exists($domain, $this->domains())) {

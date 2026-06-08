@@ -59,6 +59,18 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/wimschool-sync.log'));
 
+        // ── Deep resync every 2h — pulls 3 months of history so that any data
+        //    modified in Wimschool during the day (absences entered by reception,
+        //    payment corrections, inscription updates) is reflected well before
+        //    the next business day. Runs at :50 so it starts after sync-all finishes.
+        //    Force-clears stuck web-UI locks before each run.
+        $schedule->command('crm:nightly-resync')
+            ->cron('50 */2 * * *')
+            ->timezone('Africa/Casablanca')
+            ->withoutOverlapping(110)
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/crm-nightly-resync.log'));
+
         // ── Weekly reports — every Friday at midnight (Casablanca) ───────────
         // Controlled by REPORTS_AUTO_SEND_ENABLED=true in .env
         $weeklyDay  = config('reports.weekly_send_day', 5);   // 5 = Friday

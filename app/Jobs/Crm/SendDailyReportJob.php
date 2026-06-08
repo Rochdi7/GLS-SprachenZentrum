@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Crm;
 
+use App\Mail\Reports\DailyCeoReportMail;
 use App\Models\CrmDailyReport;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -9,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class SendDailyReportJob implements ShouldQueue
 {
@@ -21,22 +23,18 @@ class SendDailyReportJob implements ShouldQueue
     {
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
-        // Log the report generation. Wire actual email dispatch here when ready.
-        Log::info('Daily CRM report generated', [
-            'date'             => $this->report->report_date->toDateString(),
-            'revenue'          => $this->report->revenue_yesterday,
-            'registrations'    => $this->report->new_registrations,
-            'at_risk'          => $this->report->students_at_risk,
-            'best_center'      => $this->report->best_center,
-            'generated_at'     => $this->report->generated_at?->toDateTimeString(),
-        ]);
+        $recipient = config('reports.ceo_email', 'rochdi.karouali1234@gmail.com');
 
-        // Mark as sent (log-only for now — update to actual timestamp after email is wired)
+        Mail::to($recipient)->send(new DailyCeoReportMail($this->report));
+
         $this->report->update(['email_sent_at' => now()]);
+
+        Log::info('Daily CEO report sent', [
+            'date'      => $this->report->report_date->toDateString(),
+            'to'        => $recipient,
+            'sent_at'   => now()->toDateTimeString(),
+        ]);
     }
 }

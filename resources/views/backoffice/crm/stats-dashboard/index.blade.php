@@ -137,10 +137,6 @@
                     <p class="text-muted text-center py-5">Aucune donnée — lancez <code>crm:snapshot-payments</code>.</p>
                 @else
                     <div id="chartEncaissement" class="chart-wrap"></div>
-                    <div class="text-muted mt-2" style="font-size:.75rem">
-                        <i class="ph-duotone ph-info me-1"></i>
-                        Tous types de paiement (Règlement + transferts inter-caisse). Écart possible avec le CRM (±5%) : les paiements saisis rétroactivement apparaissent dans le mois de saisie, pas dans le mois de la date effective.
-                    </div>
                 @endif
             </div>
         </div>
@@ -319,10 +315,6 @@
                     <p class="mt-2 mb-0">Aucun encaissement sur cette période.</p>
                 </div>
 
-                <p class="text-muted small mt-3 mb-0">
-                    <i class="ph-duotone ph-info me-1"></i>
-                    Source : snapshots locaux (table <code>crm_payment_snapshots</code>). Tous types de paiement.
-                </p>
             </div>
         </div>
     </div>
