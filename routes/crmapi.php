@@ -81,8 +81,9 @@ Route::prefix('crm')
         Route::get('/presence-suivi/details', [\App\Http\Controllers\Backoffice\Crm\PresenceSuiviController::class, 'details'])->name('presence-suivi.details');
 
         // Statistiques par centre (encaissement + recouvrement + inscriptions).
-        Route::get('/statistiques',         [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'index'])->name('statistiques');
-        Route::post('/statistiques/refresh', [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'refresh'])->name('statistiques.refresh');
+        Route::get('/statistiques',                      [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'index'])->name('statistiques');
+        Route::post('/statistiques/refresh',             [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'refresh'])->name('statistiques.refresh');
+        Route::get('/statistiques/encaissement-range',   [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'encaissementRange'])->name('statistiques.encaissement-range');
 
         // Agent / Call-Center dashboard.
         Route::prefix('agent')->name('agent.')->controller(\App\Http\Controllers\Backoffice\Crm\AgentDashboardController::class)->group(function () {

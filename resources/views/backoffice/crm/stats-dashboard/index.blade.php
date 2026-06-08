@@ -233,6 +233,101 @@
     </div>
 </div>
 
+{{-- ── Encaissement par période (date range checker) ───────────────── --}}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h5 class="mb-0">
+                    <i class="ph-duotone ph-calendar-check me-2 text-primary"></i>
+                    Encaissement par période — par centre
+                </h5>
+                <small class="text-muted" id="enc-range-snapshot"></small>
+            </div>
+            <div class="card-body">
+
+                {{-- Date inputs --}}
+                <div class="row g-3 mb-4 align-items-end">
+                    <div class="col-auto">
+                        <label class="form-label fw-semibold mb-1">
+                            <i class="ph-duotone ph-calendar-blank me-1 text-primary"></i>
+                            Date de début
+                        </label>
+                        <input type="date" id="enc-start-date" class="form-control" style="min-width:170px">
+                    </div>
+                    <div class="col-auto">
+                        <label class="form-label fw-semibold mb-1">
+                            <i class="ph-duotone ph-calendar-blank me-1 text-primary"></i>
+                            Date de fin
+                        </label>
+                        <input type="date" id="enc-end-date" class="form-control" style="min-width:170px">
+                    </div>
+                    <div class="col-auto">
+                        <button id="enc-range-btn" class="btn btn-primary" type="button">
+                            <i class="ph-duotone ph-magnifying-glass me-1"></i>
+                            Vérifier
+                        </button>
+                    </div>
+                    <div class="col-auto d-flex gap-2 flex-wrap">
+                        <button class="btn btn-sm btn-outline-secondary enc-preset" data-preset="today">Aujourd'hui</button>
+                        <button class="btn btn-sm btn-outline-secondary enc-preset" data-preset="7d">7 jours</button>
+                        <button class="btn btn-sm btn-outline-secondary enc-preset" data-preset="30d">30 jours</button>
+                        <button class="btn btn-sm btn-outline-secondary enc-preset" data-preset="month">Ce mois</button>
+                    </div>
+                </div>
+
+                {{-- Loading + error state --}}
+                <div id="enc-range-loading" class="text-center py-4 d-none">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="text-muted mt-2 mb-0 small">Chargement…</p>
+                </div>
+                <div id="enc-range-error" class="alert alert-danger d-none"></div>
+
+                {{-- Results --}}
+                <div id="enc-range-results" class="d-none">
+
+                    {{-- KPI row --}}
+                    <div class="row g-3 mb-4" id="enc-range-kpis"></div>
+
+                    {{-- Chart --}}
+                    <div class="mb-4">
+                        <div id="enc-range-chart" style="min-height:320px"></div>
+                    </div>
+
+                    {{-- Table --}}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Centre</th>
+                                    <th class="text-end">Encaissé (DH)</th>
+                                    <th class="text-end">Nb paiements</th>
+                                    <th style="width:30%">Part</th>
+                                </tr>
+                            </thead>
+                            <tbody id="enc-range-tbody"></tbody>
+                            <tfoot id="enc-range-tfoot" class="table-secondary fw-semibold"></tfoot>
+                        </table>
+                    </div>
+
+                </div>
+
+                {{-- Empty state --}}
+                <div id="enc-range-empty" class="text-center py-5 text-muted d-none">
+                    <i class="ph-duotone ph-chart-bar" style="font-size:2.5rem"></i>
+                    <p class="mt-2 mb-0">Aucun encaissement sur cette période.</p>
+                </div>
+
+                <p class="text-muted small mt-3 mb-0">
+                    <i class="ph-duotone ph-info me-1"></i>
+                    Source : snapshots locaux (table <code>crm_payment_snapshots</code>). Règlements uniquement (type 1).
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- ── Recouvrement detail table ────────────────────────────────────── --}}
 @if (!empty($recouvrement))
 <div class="row mb-4">
@@ -463,5 +558,247 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }, 300);
 });
+
+// ── Encaissement range checker ────────────────────────────────────────
+(function () {
+    'use strict';
+
+    const ENDPOINT  = '{{ route("backoffice.crm.statistiques.encaissement-range") }}';
+    const COLORS    = ['#4680ff','#1cc88a','#ffc107','#dc3545','#0dcaf0','#6f42c1','#fd7e14'];
+
+    let rangeChart  = null;
+
+    function fmtDH(v) {
+        if (v >= 1_000_000) return (v / 1_000_000).toFixed(2).replace(/\.?0+$/, '') + ' M DH';
+        if (v >= 1_000)     return (v / 1_000).toFixed(1).replace('.0', '') + ' k DH';
+        return v.toLocaleString('fr-MA') + ' DH';
+    }
+
+    function fullDH(v) {
+        return new Intl.NumberFormat('fr-MA', { minimumFractionDigits: 2 }).format(v) + ' DH';
+    }
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function toIso(d) {
+        return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
+
+    // Pre-set shortcuts
+    document.querySelectorAll('.enc-preset').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const today = new Date();
+            let s, e;
+            switch (this.dataset.preset) {
+                case 'today':
+                    s = e = today; break;
+                case '7d':
+                    s = new Date(today); s.setDate(today.getDate() - 6); e = today; break;
+                case '30d':
+                    s = new Date(today); s.setDate(today.getDate() - 29); e = today; break;
+                case 'month':
+                    s = new Date(today.getFullYear(), today.getMonth(), 1); e = today; break;
+            }
+            document.getElementById('enc-start-date').value = toIso(s);
+            document.getElementById('enc-end-date').value   = toIso(e);
+            document.querySelectorAll('.enc-preset').forEach(b => b.classList.remove('active','btn-primary'));
+            document.querySelectorAll('.enc-preset').forEach(b => b.classList.add('btn-outline-secondary'));
+            this.classList.remove('btn-outline-secondary');
+            this.classList.add('active', 'btn-primary');
+            fetchRange();
+        });
+    });
+
+    document.getElementById('enc-range-btn').addEventListener('click', fetchRange);
+
+    function fetchRange() {
+        const start = document.getElementById('enc-start-date').value;
+        const end   = document.getElementById('enc-end-date').value;
+        if (!start || !end) {
+            showError('Veuillez choisir une date de début et de fin.');
+            return;
+        }
+        if (start > end) {
+            showError('La date de début doit être ≤ la date de fin.');
+            return;
+        }
+
+        setLoading(true);
+        clearResults();
+
+        const params = new URLSearchParams({ startDate: start, endDate: end });
+        @if ($storeId)
+        params.set('strStoreId', '{{ $storeId }}');
+        @endif
+
+        fetch(`${ENDPOINT}?${params}`, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(r => r.json())
+            .then(json => {
+                setLoading(false);
+                if (json.error) { showError(json.error); return; }
+                if (!json.data || json.data.length === 0) {
+                    document.getElementById('enc-range-empty').classList.remove('d-none');
+                    return;
+                }
+                renderResults(json);
+            })
+            .catch(err => {
+                setLoading(false);
+                showError('Erreur réseau : ' + err.message);
+            });
+    }
+
+    function renderResults(json) {
+        const { data, grand_total, grand_nb, start_date, end_date, snapshot } = json;
+
+        // Snapshot badge
+        if (snapshot) {
+            document.getElementById('enc-range-snapshot').textContent = 'Snapshot : ' + snapshot;
+        }
+
+        // KPI cards
+        const kpiEl = document.getElementById('enc-range-kpis');
+        kpiEl.innerHTML = `
+            <div class="col-6 col-lg-3">
+                <div class="card border-primary border-2 h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted small mb-1"><i class="ph-duotone ph-money me-1 text-primary"></i>Total encaissé</div>
+                        <div class="fw-bold fs-5 text-primary">${fullDH(grand_total)}</div>
+                        <div class="text-muted" style="font-size:.75rem">${start_date} → ${end_date}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="card border-success border-2 h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted small mb-1"><i class="ph-duotone ph-receipt me-1 text-success"></i>Nb paiements</div>
+                        <div class="fw-bold fs-5 text-success">${grand_nb.toLocaleString('fr-MA')}</div>
+                        <div class="text-muted" style="font-size:.75rem">sur tous les centres</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="card border-info border-2 h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted small mb-1"><i class="ph-duotone ph-buildings me-1 text-info"></i>Centres actifs</div>
+                        <div class="fw-bold fs-5 text-info">${data.length}</div>
+                        <div class="text-muted" style="font-size:.75rem">avec encaissement</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="card border-warning border-2 h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted small mb-1"><i class="ph-duotone ph-chart-pie me-1 text-warning"></i>Moy. / paiement</div>
+                        <div class="fw-bold fs-5 text-warning">${grand_nb > 0 ? fullDH(grand_total / grand_nb) : '—'}</div>
+                        <div class="text-muted" style="font-size:.75rem">montant moyen</div>
+                    </div>
+                </div>
+            </div>`;
+
+        // Chart
+        if (rangeChart) { rangeChart.destroy(); rangeChart = null; }
+        const names  = data.map(r => r.store_name.replace(/^GLS\s*/i, ''));
+        const totals = data.map(r => Math.round(r.total));
+
+        rangeChart = new ApexCharts(document.getElementById('enc-range-chart'), {
+            chart: {
+                type: 'bar',
+                height: 300,
+                toolbar: { show: false },
+                fontFamily: 'inherit',
+            },
+            series: [{ name: 'Encaissé (DH)', data: totals }],
+            colors: COLORS,
+            plotOptions: {
+                bar: {
+                    distributed: true,
+                    borderRadius: 6,
+                    columnWidth: '55%',
+                    dataLabels: { position: 'top' },
+                },
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: fmtDH,
+                offsetY: -22,
+                style: { fontSize: '11px', colors: ['#374151'] },
+            },
+            grid: { borderColor: '#f0f0f0', strokeDashArray: 4 },
+            xaxis: {
+                categories: names,
+                axisBorder: { show: false },
+                axisTicks: { show: false },
+                labels: { style: { fontSize: '12px', fontWeight: 600 } },
+            },
+            yaxis: {
+                labels: { formatter: fmtDH, style: { fontSize: '11px' } },
+            },
+            legend: { show: false },
+            tooltip: {
+                y: {
+                    formatter: v => new Intl.NumberFormat('fr-MA', { minimumFractionDigits: 2 }).format(v) + ' DH',
+                },
+            },
+        });
+        rangeChart.render();
+
+        // Table
+        const tbody = document.getElementById('enc-range-tbody');
+        const tfoot = document.getElementById('enc-range-tfoot');
+        tbody.innerHTML = '';
+
+        data.forEach((r, i) => {
+            const pct = grand_total > 0 ? (r.total / grand_total * 100).toFixed(1) : 0;
+            const color = COLORS[i % COLORS.length];
+            tbody.innerHTML += `
+                <tr>
+                    <td class="text-muted">${i + 1}</td>
+                    <td><span class="badge" style="background:${color}20;color:${color};font-size:.8rem">${r.store_name}</span></td>
+                    <td class="text-end fw-semibold text-primary">${new Intl.NumberFormat('fr-MA', {minimumFractionDigits:2}).format(r.total)} DH</td>
+                    <td class="text-end">${r.nb.toLocaleString('fr-MA')}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="progress flex-grow-1" style="height:8px">
+                                <div class="progress-bar" style="width:${pct}%;background:${color}"></div>
+                            </div>
+                            <small class="text-muted">${pct}%</small>
+                        </div>
+                    </td>
+                </tr>`;
+        });
+
+        tfoot.innerHTML = `
+            <tr>
+                <td colspan="2">Total</td>
+                <td class="text-end">${new Intl.NumberFormat('fr-MA', {minimumFractionDigits:2}).format(grand_total)} DH</td>
+                <td class="text-end">${grand_nb.toLocaleString('fr-MA')}</td>
+                <td></td>
+            </tr>`;
+
+        document.getElementById('enc-range-results').classList.remove('d-none');
+    }
+
+    function setLoading(on) {
+        document.getElementById('enc-range-loading').classList.toggle('d-none', !on);
+    }
+
+    function clearResults() {
+        document.getElementById('enc-range-results').classList.add('d-none');
+        document.getElementById('enc-range-empty').classList.add('d-none');
+        document.getElementById('enc-range-error').classList.add('d-none');
+        document.getElementById('enc-range-kpis').innerHTML = '';
+        document.getElementById('enc-range-tbody').innerHTML = '';
+        document.getElementById('enc-range-tfoot').innerHTML = '';
+        if (rangeChart) { rangeChart.destroy(); rangeChart = null; }
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('enc-range-error');
+        el.textContent = msg;
+        el.classList.remove('d-none');
+    }
+
+})();
 </script>
 @endsection

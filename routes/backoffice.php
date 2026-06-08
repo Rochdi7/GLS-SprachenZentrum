@@ -448,26 +448,26 @@ Route::prefix('backoffice')
                     ->name('crm.')
                     ->group(function () {
                         // Dashboard — groups with CRM API imports
-                        Route::get('/', [WimschoolPayrollController::class, 'index'])->middleware('permission:presence.view')->name('dashboard');
+                        Route::get('/', [WimschoolPayrollController::class, 'index'])->middleware('permission:crm_prof_payment.view')->name('dashboard');
 
                         // Get classes for center
-                        Route::post('/classes-for-center', [WimschoolPayrollController::class, 'getClassesForCenter'])->middleware('permission:presence.create')->name('classes-for-center');
+                        Route::post('/classes-for-center', [WimschoolPayrollController::class, 'getClassesForCenter'])->middleware('permission:crm_prof_payment.create')->name('classes-for-center');
 
                         // Sync attendance
-                        Route::post('/sync', [WimschoolPayrollController::class, 'sync'])->middleware('permission:presence.create')->name('sync');
+                        Route::post('/sync', [WimschoolPayrollController::class, 'sync'])->middleware('permission:crm_prof_payment.create')->name('sync');
 
                         // Preview attendance
-                        Route::post('/preview', [WimschoolPayrollController::class, 'preview'])->middleware('permission:presence.create')->name('preview');
+                        Route::post('/preview', [WimschoolPayrollController::class, 'preview'])->middleware('permission:crm_prof_payment.create')->name('preview');
 
                         // Legacy CRM API imports
-                        Route::get('/legacy', [CrmPayrollController::class, 'dashboard'])->middleware('permission:presence.view')->name('legacy.dashboard');
-                        Route::get('/legacy/import/create', [CrmPayrollController::class, 'create'])->middleware('permission:presence.create')->name('legacy.import.create');
-                        Route::post('/legacy/import', [CrmPayrollController::class, 'store'])->middleware('permission:presence.create')->name('legacy.import.store');
-                        Route::get('/legacy/group/{group}/imports', [CrmPayrollController::class, 'index'])->middleware('permission:presence.view')->name('legacy.group.imports');
-                        Route::get('/legacy/group/{group}/import/{import}', [CrmPayrollController::class, 'show'])->middleware('permission:presence.view')->name('legacy.import.show');
-                        Route::get('/legacy/group/{group}/import/{import}/pdf', [CrmPayrollController::class, 'pdf'])->middleware('permission:presence.view')->name('legacy.import.pdf');
-                        Route::post('/legacy/group/{group}/import/{import}/recalculate', [CrmPayrollController::class, 'recalculate'])->middleware('permission:presence.edit')->name('legacy.import.recalculate');
-                        Route::delete('/legacy/group/{group}/import/{import}', [CrmPayrollController::class, 'destroy'])->middleware('role:Super Admin')->name('legacy.import.destroy');
+                        Route::get('/legacy', [CrmPayrollController::class, 'dashboard'])->middleware('permission:crm_prof_payment.view')->name('legacy.dashboard');
+                        Route::get('/legacy/import/create', [CrmPayrollController::class, 'create'])->middleware('permission:crm_prof_payment.create')->name('legacy.import.create');
+                        Route::post('/legacy/import', [CrmPayrollController::class, 'store'])->middleware('permission:crm_prof_payment.create')->name('legacy.import.store');
+                        Route::get('/legacy/group/{group}/imports', [CrmPayrollController::class, 'index'])->middleware('permission:crm_prof_payment.view')->name('legacy.group.imports');
+                        Route::get('/legacy/group/{group}/import/{import}', [CrmPayrollController::class, 'show'])->middleware('permission:crm_prof_payment.view')->name('legacy.import.show');
+                        Route::get('/legacy/group/{group}/import/{import}/pdf', [CrmPayrollController::class, 'pdf'])->middleware('permission:crm_prof_payment.view')->name('legacy.import.pdf');
+                        Route::post('/legacy/group/{group}/import/{import}/recalculate', [CrmPayrollController::class, 'recalculate'])->middleware('permission:crm_prof_payment.edit')->name('legacy.import.recalculate');
+                        Route::delete('/legacy/group/{group}/import/{import}', [CrmPayrollController::class, 'destroy'])->middleware('permission:crm_prof_payment.delete')->name('legacy.import.destroy');
                     });
             });
 

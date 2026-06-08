@@ -46,6 +46,7 @@ class RolePermissionSeeder extends Seeder
             'whatsapp_campaigns' => ['view', 'create', 'edit', 'delete'],
             'newsletter_subscribers' => ['view', 'delete'],
             'crm'              => ['view'],
+            'crm_prof_payment' => ['view', 'create', 'edit', 'delete'],
         ];
 
         // Create all permissions

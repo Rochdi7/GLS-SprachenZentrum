@@ -50,6 +50,66 @@ class StatsController extends BaseCrmController
         ]));
     }
 
+    public function encaissementRange(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $startDate = $request->query('startDate');
+        $endDate   = $request->query('endDate');
+        $storeId   = $request->query('strStoreId') ? (int) $request->query('strStoreId') : null;
+
+        if (!$startDate || !$endDate) {
+            return response()->json(['error' => 'startDate et endDate sont requis.'], 422);
+        }
+
+        try {
+            Carbon::parse($startDate);
+            Carbon::parse($endDate);
+        } catch (\Throwable) {
+            return response()->json(['error' => 'Dates invalides.'], 422);
+        }
+
+        $storeFilter = $storeId ? "AND crm_store_id = {$storeId}" : '';
+
+        $rows = CrmPaymentSnapshot::query()
+            ->fromRaw("(
+                SELECT crm_store_id, effective_date, amount
+                FROM crm_payment_snapshots s1
+                WHERE payment_type_id = 1
+                  AND effective_date BETWEEN ? AND ?
+                  {$storeFilter}
+                  AND snapshot_date = (
+                      SELECT MAX(s2.snapshot_date)
+                      FROM crm_payment_snapshots s2
+                      WHERE s2.crm_payment_id = s1.crm_payment_id
+                  )
+            ) AS deduped", [$startDate, $endDate])
+            ->selectRaw('crm_store_id, SUM(amount) as total, COUNT(*) as nb')
+            ->groupBy('crm_store_id')
+            ->orderByDesc('total')
+            ->get();
+
+        $sites = Site::whereNotNull('crm_store_id')
+            ->pluck('name', 'crm_store_id');
+
+        $data = $rows->map(fn ($r) => [
+            'store_id'   => (int) $r->crm_store_id,
+            'store_name' => $sites[$r->crm_store_id] ?? 'Store #' . $r->crm_store_id,
+            'total'      => (float) $r->total,
+            'nb'         => (int) $r->nb,
+        ])->values()->toArray();
+
+        $grandTotal = array_sum(array_column($data, 'total'));
+        $grandNb    = array_sum(array_column($data, 'nb'));
+
+        return response()->json([
+            'data'        => $data,
+            'grand_total' => $grandTotal,
+            'grand_nb'    => $grandNb,
+            'start_date'  => $startDate,
+            'end_date'    => $endDate,
+            'snapshot'    => CrmPaymentSnapshot::max('snapshot_date'),
+        ]);
+    }
+
     public function refresh(Request $request): RedirectResponse
     {
         // Bust stats cache only — never run sync commands inside HTTP requests
