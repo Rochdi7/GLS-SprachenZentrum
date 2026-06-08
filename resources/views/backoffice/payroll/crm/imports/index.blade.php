@@ -82,7 +82,7 @@
                                         <td>
                                             @if ($import->is_crm_api)
                                                 <span class="badge bg-light-success">
-                                                    <i class="ph-duotone ph-cloud me-1"></i> CRM API
+                                                    <i class="ph-duotone ph-cloud me-1"></i> GLS Portal
                                                 </span>
                                             @else
                                                 <span class="badge bg-light-secondary">

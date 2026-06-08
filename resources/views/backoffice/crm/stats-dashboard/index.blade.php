@@ -33,19 +33,9 @@
         </h4>
     </div>
     <div class="col-auto d-flex gap-2">
-        {{-- Period selector --}}
-        <div class="btn-group btn-group-sm">
-            @foreach ($monthsOptions as $m => $label)
-                <a href="{{ route('backoffice.crm.statistiques', array_merge(request()->query(), ['months' => $m])) }}"
-                   class="btn btn-outline-primary period-btn {{ $months == $m ? 'active' : '' }}">
-                    {{ $label }}
-                </a>
-            @endforeach
-        </div>
         {{-- Center filter --}}
         @if ($crmCenters->isNotEmpty())
             <form method="GET" action="{{ route('backoffice.crm.statistiques') }}" class="d-flex gap-1">
-                <input type="hidden" name="months" value="{{ $months }}">
                 <select name="strStoreId" class="form-select form-select-sm" style="width:200px" onchange="this.form.submit()">
                     <option value="">— Tous les centres —</option>
                     @foreach ($crmCenters->whereNotNull('crm_store_id') as $center)

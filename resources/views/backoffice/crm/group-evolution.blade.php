@@ -359,6 +359,7 @@
 
 @section('scripts')
 <script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
+<script src="{{ asset('assets/js/backoffice/crm-group-evolution.js') }}" defer></script>
 <script>
 (function initGroupEvolutionDrill() {
     const drillUrl  = '{{ route("backoffice.crm.group-evolution.drill") }}';
