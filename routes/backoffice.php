@@ -790,6 +790,8 @@ Route::prefix('backoffice')
                     ->name('send-weekly');
                 Route::post('/send-monthly', [\App\Http\Controllers\Backoffice\Reports\ScheduledReportsController::class, 'sendMonthly'])
                     ->name('send-monthly');
+                Route::post('/resend/{log}', [\App\Http\Controllers\Backoffice\Reports\ScheduledReportsController::class, 'resend'])
+                    ->name('resend');
             });
 
         /*

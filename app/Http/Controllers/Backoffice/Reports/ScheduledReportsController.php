@@ -9,6 +9,7 @@ use App\Mail\Reports\WeeklyGroupPerformanceReportMail;
 use App\Mail\Reports\WeeklyPresenceReportMail;
 use App\Mail\Reports\WeeklyProfPaymentReportMail;
 use App\Mail\Reports\WeeklyUnpaidStudentsReportMail;
+use App\Models\ReportSendLog;
 use App\Services\Reports\Monthly\MonthlyRevenueReportService;
 use App\Services\Reports\ReportPeriodResolver;
 use App\Services\Reports\Weekly\WeeklyCenterPerformanceReportService;
@@ -18,6 +19,7 @@ use App\Services\Reports\Weekly\WeeklyProfPaymentReportService;
 use App\Services\Reports\Weekly\WeeklyUnpaidStudentsReportService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
@@ -25,19 +27,21 @@ class ScheduledReportsController extends Controller
 {
     public function index(): View
     {
+        $logs = ReportSendLog::with('sender')
+            ->latest()
+            ->limit(50)
+            ->get();
+
         return view('backoffice.reports.scheduled.index', [
             'autoSendEnabled' => (bool) config('reports.auto_send_enabled', false),
             'testMode'        => (bool) config('reports.test_mode', true),
             'testEmail'       => config('reports.test_email'),
             'timezone'        => config('reports.timezone', 'Africa/Casablanca'),
             'maxDays'         => config('reports.max_period_days', 31),
+            'logs'            => $logs,
         ]);
     }
 
-    /**
-     * Manually trigger a weekly report for a custom period.
-     * Validates that the range does not exceed max_period_days.
-     */
     public function sendWeekly(Request $request): RedirectResponse
     {
         $type = $request->input('type');
@@ -57,14 +61,11 @@ class ScheduledReportsController extends Controller
 
         [$data, $mailClass] = $this->buildWeekly($type, $period['from'], $period['to']);
 
-        $this->dispatch($mailClass, $data);
+        $this->dispatch($mailClass, $data, 'weekly', $validated['type'], $period['from'], $period['to']);
 
         return back()->with('success', "Rapport [{$type}] envoyé pour la période {$resolver->label($period['from'], $period['to'])}.");
     }
 
-    /**
-     * Manually trigger the monthly revenue report for a specific month.
-     */
     public function sendMonthly(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -78,9 +79,26 @@ class ScheduledReportsController extends Controller
         $service = app(MonthlyRevenueReportService::class);
         $data    = $service->generate($period['from'], $period['to']);
 
-        $this->dispatch(MonthlyRevenueReportMail::class, $data);
+        $this->dispatch(MonthlyRevenueReportMail::class, $data, 'monthly', 'monthly-revenue', $period['from'], $period['to']);
 
         return back()->with('success', "Rapport mensuel envoyé pour {$data['month_label']}.");
+    }
+
+    /**
+     * Resend a previously logged report using the same type + period.
+     */
+    public function resend(ReportSendLog $log): RedirectResponse
+    {
+        if ($log->category === 'monthly') {
+            $service = app(MonthlyRevenueReportService::class);
+            $data    = $service->generate($log->period_from, $log->period_to);
+            $this->dispatch(MonthlyRevenueReportMail::class, $data, 'monthly', 'monthly-revenue', $log->period_from, $log->period_to);
+        } else {
+            [$data, $mailClass] = $this->buildWeekly($log->type, $log->period_from, $log->period_to);
+            $this->dispatch($mailClass, $data, 'weekly', $log->type, $log->period_from, $log->period_to);
+        }
+
+        return back()->with('success', "Rapport [" . ReportSendLog::typeLabel($log->type) . "] renvoyé.");
     }
 
     // -------------------------------------------------------------------------
@@ -88,22 +106,45 @@ class ScheduledReportsController extends Controller
     private function buildWeekly(string $type, $from, $to): array
     {
         return match ($type) {
-            'weekly-presence'          => [app(WeeklyPresenceReportService::class)->generate($from, $to),          WeeklyPresenceReportMail::class],
-            'weekly-prof-payment'      => [app(WeeklyProfPaymentReportService::class)->generate($from, $to),       WeeklyProfPaymentReportMail::class],
-            'weekly-unpaid-students'   => [app(WeeklyUnpaidStudentsReportService::class)->generate($from, $to),    WeeklyUnpaidStudentsReportMail::class],
-            'weekly-group-performance' => [app(WeeklyGroupPerformanceReportService::class)->generate($from, $to),  WeeklyGroupPerformanceReportMail::class],
-            'weekly-center-performance'=> [app(WeeklyCenterPerformanceReportService::class)->generate($from, $to), WeeklyCenterPerformanceReportMail::class],
+            'weekly-presence'           => [app(WeeklyPresenceReportService::class)->generate($from, $to),          WeeklyPresenceReportMail::class],
+            'weekly-prof-payment'       => [app(WeeklyProfPaymentReportService::class)->generate($from, $to),       WeeklyProfPaymentReportMail::class],
+            'weekly-unpaid-students'    => [app(WeeklyUnpaidStudentsReportService::class)->generate($from, $to),    WeeklyUnpaidStudentsReportMail::class],
+            'weekly-group-performance'  => [app(WeeklyGroupPerformanceReportService::class)->generate($from, $to),  WeeklyGroupPerformanceReportMail::class],
+            'weekly-center-performance' => [app(WeeklyCenterPerformanceReportService::class)->generate($from, $to), WeeklyCenterPerformanceReportMail::class],
         };
     }
 
-    private function dispatch(string $mailClass, array $data): void
+    private function dispatch(string $mailClass, array $data, string $category, string $type, $from, $to): void
     {
         $recipients = config('reports.test_mode', true)
             ? [config('reports.test_email')]
             : (config('reports.recipients') ?: [config('reports.test_email')]);
 
-        foreach ($recipients as $email) {
-            Mail::to($email)->send(new $mailClass($data));
+        $status = 'success';
+        $error  = null;
+
+        try {
+            foreach ($recipients as $email) {
+                Mail::to($email)->send(new $mailClass($data));
+            }
+        } catch (\Throwable $e) {
+            $status = 'failed';
+            $error  = $e->getMessage();
+        }
+
+        ReportSendLog::create([
+            'type'        => $type,
+            'category'    => $category,
+            'period_from' => $from instanceof \Carbon\Carbon ? $from->toDateString() : $from,
+            'period_to'   => $to instanceof \Carbon\Carbon   ? $to->toDateString()   : $to,
+            'recipients'  => $recipients,
+            'status'      => $status,
+            'error'       => $error,
+            'sent_by'     => Auth::id(),
+        ]);
+
+        if ($status === 'failed') {
+            throw new \RuntimeException("Échec envoi rapport: {$error}");
         }
     }
 }

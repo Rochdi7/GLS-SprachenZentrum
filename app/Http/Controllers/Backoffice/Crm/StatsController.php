@@ -109,6 +109,88 @@ class StatsController extends BaseCrmController
         ]);
     }
 
+    public function comparaison(): View
+    {
+        $sites = Site::whereNotNull('crm_store_id')->orderBy('name')->get(['id', 'name', 'crm_store_id']);
+        $snapshotDate = CrmPaymentSnapshot::max('snapshot_date');
+
+        return $this->view('backoffice.crm.stats-dashboard.comparaison', compact('sites', 'snapshotDate'));
+    }
+
+    public function comparaisonData(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $startDate = $request->query('startDate');
+        $endDate   = $request->query('endDate');
+        $storeIds  = array_filter(array_map('intval', (array) $request->query('stores', [])));
+        $groupBy   = in_array($request->query('groupBy'), ['day', 'week', 'month']) ? $request->query('groupBy') : 'day';
+
+        if (!$startDate || !$endDate) {
+            return response()->json(['error' => 'startDate et endDate requis.'], 422);
+        }
+
+        $storeFilter = !empty($storeIds)
+            ? 'AND s1.crm_store_id IN (' . implode(',', $storeIds) . ')'
+            : '';
+
+        $dateFmt = match ($groupBy) {
+            'month' => "DATE_FORMAT(s1.effective_date,'%Y-%m')",
+            'week'  => "DATE_FORMAT(s1.effective_date,'%x-W%v')",
+            default => "DATE_FORMAT(s1.effective_date,'%Y-%m-%d')",
+        };
+
+        $rows = DB::select("
+            SELECT
+                s1.crm_store_id,
+                {$dateFmt} AS period,
+                SUM(s1.amount)  AS total,
+                COUNT(*)        AS nb
+            FROM crm_payment_snapshots s1
+            WHERE s1.effective_date BETWEEN ? AND ?
+              {$storeFilter}
+              AND s1.snapshot_date = (
+                  SELECT MAX(s2.snapshot_date)
+                  FROM crm_payment_snapshots s2
+                  WHERE s2.crm_payment_id = s1.crm_payment_id
+              )
+            GROUP BY s1.crm_store_id, period
+            ORDER BY period, s1.crm_store_id
+        ", [$startDate, $endDate]);
+
+        $sites   = Site::whereNotNull('crm_store_id')->pluck('name', 'crm_store_id');
+        $periods = collect($rows)->pluck('period')->unique()->sort()->values()->toArray();
+        $stores  = collect($rows)->pluck('crm_store_id')->unique()->values()->toArray();
+
+        // pivot: store_id => [period => [total, nb]]
+        $pivot = [];
+        foreach ($rows as $r) {
+            $pivot[$r->crm_store_id][$r->period] = [
+                'total' => (float) $r->total,
+                'nb'    => (int)   $r->nb,
+            ];
+        }
+
+        // totals per store
+        $storeTotals = [];
+        foreach ($stores as $sid) {
+            $storeTotals[$sid] = [
+                'name'  => $sites[$sid] ?? "Store #{$sid}",
+                'total' => array_sum(array_column($pivot[$sid] ?? [], 'total')),
+                'nb'    => array_sum(array_column($pivot[$sid] ?? [], 'nb')),
+            ];
+        }
+        uasort($storeTotals, fn($a, $b) => $b['total'] <=> $a['total']);
+
+        return response()->json([
+            'periods'      => $periods,
+            'stores'       => $storeTotals,
+            'pivot'        => $pivot,
+            'start_date'   => $startDate,
+            'end_date'     => $endDate,
+            'group_by'     => $groupBy,
+            'snapshot'     => CrmPaymentSnapshot::max('snapshot_date'),
+        ]);
+    }
+
     public function refresh(Request $request): RedirectResponse
     {
         // Bust stats cache only — never run sync commands inside HTTP requests

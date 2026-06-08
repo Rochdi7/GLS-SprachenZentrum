@@ -45,7 +45,8 @@
         request()->routeIs('backoffice.crm.duplicates') ||
         request()->routeIs('backoffice.crm.insights.*');
     $crmCollectionsOpen  = request()->routeIs('backoffice.crm.collections.*');
-    $crmStatsDashOpen    = request()->routeIs('backoffice.crm.statistiques');
+    $crmStatsDashOpen    = request()->routeIs('backoffice.crm.statistiques') && !request()->routeIs('backoffice.crm.statistiques.comparaison*');
+    $crmStatsCompOpen    = request()->routeIs('backoffice.crm.statistiques.comparaison*');
     $crmPresenceSuiviOpen = request()->routeIs('backoffice.crm.presence-suivi');
 @endphp
 
@@ -457,7 +458,7 @@
 
             {{-- Statistiques (submenu grouping all analytics) --}}
             @php
-                $crmAllStatsOpen = $crmStatsDashOpen || $crmStatsOpen || request()->routeIs('backoffice.crm.reports.*');
+                $crmAllStatsOpen = $crmStatsDashOpen || $crmStatsCompOpen || $crmStatsOpen || request()->routeIs('backoffice.crm.reports.*');
             @endphp
             <li class="pc-item pc-hasmenu {{ $crmAllStatsOpen ? 'pc-trigger' : '' }}">
                 <a href="#!" class="pc-link">
@@ -469,6 +470,12 @@
                         <a href="{{ route('backoffice.crm.statistiques') }}"
                             class="pc-link {{ $crmStatsDashOpen ? 'active' : '' }}">
                             <span class="pc-mtext">Rentabilité par centre</span>
+                        </a>
+                    </li>
+                    <li class="pc-item {{ $crmStatsCompOpen ? 'active' : '' }}">
+                        <a href="{{ route('backoffice.crm.statistiques.comparaison') }}"
+                            class="pc-link {{ $crmStatsCompOpen ? 'active' : '' }}">
+                            <span class="pc-mtext">Comparaison centres</span>
                         </a>
                     </li>
                     <li class="pc-item {{ request()->routeIs('backoffice.crm.group-evolution') ? 'active' : '' }}">

@@ -235,6 +235,87 @@
             </div>
         </div>
 
+        {{-- ─── Send History ────────────────────────────────────────────── --}}
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0 fw-semibold">
+                        <i class="bi bi-list-check me-2 text-secondary"></i>
+                        Historique des envois
+                    </h5>
+                    <small class="text-muted">50 derniers envois</small>
+                </div>
+                <div class="card-body p-0">
+                    @if($logs->isEmpty())
+                        <p class="text-muted text-center py-4 mb-0">Aucun envoi enregistré.</p>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Période</th>
+                                        <th>Destinataires</th>
+                                        <th>Statut</th>
+                                        <th>Envoyé par</th>
+                                        <th>Date</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($logs as $log)
+                                        <tr class="{{ $log->status === 'failed' ? 'table-danger' : '' }}">
+                                            <td>
+                                                <span class="fw-semibold">{{ \App\Models\ReportSendLog::typeLabel($log->type) }}</span>
+                                                <span class="badge bg-light text-secondary ms-1">{{ $log->category }}</span>
+                                            </td>
+                                            <td class="text-nowrap">
+                                                {{ $log->period_from->format('d/m/Y') }}
+                                                →
+                                                {{ $log->period_to->format('d/m/Y') }}
+                                            </td>
+                                            <td>
+                                                @foreach($log->recipients as $email)
+                                                    <span class="badge bg-light text-dark border">{{ $email }}</span>
+                                                @endforeach
+                                            </td>
+                                            <td>
+                                                @if($log->status === 'success')
+                                                    <span class="badge bg-success">
+                                                        <i class="bi bi-check-circle me-1"></i>Envoyé
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-danger" data-bs-toggle="tooltip" title="{{ $log->error }}">
+                                                        <i class="bi bi-x-circle me-1"></i>Échec
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="text-muted small">
+                                                {{ $log->sender?->name ?? 'Auto' }}
+                                            </td>
+                                            <td class="text-muted small text-nowrap">
+                                                {{ $log->created_at->setTimezone('Africa/Casablanca')->format('d/m/Y H:i') }}
+                                            </td>
+                                            <td>
+                                                <form method="POST"
+                                                    action="{{ route('backoffice.reports.scheduled.resend', $log) }}"
+                                                    onsubmit="return confirm('Renvoyer ce rapport ?')">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-outline-primary btn-sm">
+                                                        <i class="bi bi-arrow-repeat me-1"></i>Renvoyer
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 @endsection
@@ -248,6 +329,11 @@ document.querySelectorAll('.quick-send').forEach(btn => {
         form.querySelector('[name="type"]').value = this.dataset.type;
         form.submit();
     });
+});
+
+// Bootstrap tooltips for error messages
+document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+    new bootstrap.Tooltip(el);
 });
 </script>
 @endsection
