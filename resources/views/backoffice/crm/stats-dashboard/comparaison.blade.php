@@ -43,62 +43,57 @@
 
 {{-- Filters --}}
 <div class="filter-card mb-4">
-    <div class="row g-3 align-items-end">
-
-        {{-- Date range --}}
-        <div class="col-auto">
+    {{-- Row 1: dates + groupby + presets + search --}}
+    <div class="row g-2 align-items-end mb-3">
+        <div class="col-sm-auto">
             <label class="form-label fw-semibold mb-1 small">Date de début</label>
-            <input type="date" id="comp-start" class="form-control form-control-sm" style="min-width:150px"
+            <input type="date" id="comp-start" class="form-control form-control-sm" style="min-width:140px"
                    value="{{ now()->startOfMonth()->toDateString() }}">
         </div>
-        <div class="col-auto">
+        <div class="col-sm-auto">
             <label class="form-label fw-semibold mb-1 small">Date de fin</label>
-            <input type="date" id="comp-end" class="form-control form-control-sm" style="min-width:150px"
+            <input type="date" id="comp-end" class="form-control form-control-sm" style="min-width:140px"
                    value="{{ now()->toDateString() }}">
         </div>
-
-        {{-- Group by --}}
-        <div class="col-auto">
+        <div class="col-sm-auto">
             <label class="form-label fw-semibold mb-1 small">Grouper par</label>
-            <select id="comp-groupby" class="form-select form-select-sm">
+            <select id="comp-groupby" class="form-select form-select-sm" style="min-width:110px">
                 <option value="day">Jour</option>
                 <option value="week">Semaine</option>
                 <option value="month" selected>Mois</option>
             </select>
         </div>
-
-        {{-- Presets --}}
-        <div class="col-auto">
+        <div class="col-sm-auto">
             <label class="form-label fw-semibold mb-1 small d-block">Période rapide</label>
             <div class="d-flex gap-1 flex-wrap">
-                <button class="btn btn-xs btn-outline-secondary comp-preset" data-p="month">Ce mois</button>
-                <button class="btn btn-xs btn-outline-secondary comp-preset" data-p="3m">3 mois</button>
-                <button class="btn btn-xs btn-outline-secondary comp-preset" data-p="6m">6 mois</button>
-                <button class="btn btn-xs btn-outline-secondary comp-preset" data-p="year">Cette année</button>
+                <button class="btn btn-sm btn-outline-secondary comp-preset" data-p="month">Ce mois</button>
+                <button class="btn btn-sm btn-outline-secondary comp-preset" data-p="3m">3 mois</button>
+                <button class="btn btn-sm btn-outline-secondary comp-preset" data-p="6m">6 mois</button>
+                <button class="btn btn-sm btn-outline-secondary comp-preset" data-p="year">Cette année</button>
             </div>
         </div>
-
-        {{-- Centres --}}
-        <div class="col">
-            <label class="form-label fw-semibold mb-1 small">Centres à comparer</label>
-            <div class="d-flex gap-3 flex-wrap" id="store-checkboxes">
-                @foreach ($siteList as $i => $site)
-                    <label class="store-cb-label d-flex align-items-center gap-1 small">
-                        <input type="checkbox" class="store-cb form-check-input mt-0"
-                               value="{{ $site->crm_store_id }}" checked
-                               style="accent-color: {{ $storeColors[$i % count($storeColors)] }}">
-                        <span style="color:{{ $storeColors[$i % count($storeColors)] }};font-weight:600">
-                            {{ $site->name }}
-                        </span>
-                    </label>
-                @endforeach
-            </div>
-        </div>
-
-        <div class="col-auto">
+        <div class="col-sm-auto ms-sm-auto">
+            <label class="form-label mb-1 d-block" style="visibility:hidden">x</label>
             <button id="comp-search" class="btn btn-primary btn-sm px-4">
                 <i class="ph-duotone ph-magnifying-glass me-1"></i> Comparer
             </button>
+        </div>
+    </div>
+
+    {{-- Row 2: centres checkboxes --}}
+    <div class="border-top pt-2">
+        <label class="form-label fw-semibold mb-2 small">Centres à comparer</label>
+        <div class="d-flex gap-3 flex-wrap" id="store-checkboxes">
+            @foreach ($siteList as $i => $site)
+                <label class="store-cb-label d-flex align-items-center gap-1 small">
+                    <input type="checkbox" class="store-cb form-check-input mt-0"
+                           value="{{ $site->crm_store_id }}" checked
+                           style="accent-color: {{ $storeColors[$i % count($storeColors)] }}">
+                    <span style="color:{{ $storeColors[$i % count($storeColors)] }};font-weight:600">
+                        {{ $site->name }}
+                    </span>
+                </label>
+            @endforeach
         </div>
     </div>
 </div>
@@ -337,20 +332,32 @@
 
         const storeEntries = Object.entries(data.stores);
         const colorMap = buildColorMap(storeEntries.map(([id]) => id));
+        const isBar = chartType === 'bar';
 
         const series = storeEntries.map(([storeId, info]) => ({
             name: info.name,
             data: data.periods.map(p => data.pivot[storeId]?.[p]?.total ?? 0),
         }));
 
-        const opts = {
+        const opts = isBar ? {
             series,
-            chart: { type: chartType === 'bar' ? 'bar' : 'line', height: 380, toolbar: { show: false }, animations: { enabled: true } },
-            stroke: { curve: 'smooth', width: chartType === 'bar' ? 0 : 3 },
+            chart: { type: 'bar', height: 380, toolbar: { show: false }, animations: { enabled: true } },
             plotOptions: { bar: { columnWidth: '60%', borderRadius: 4 } },
             colors: storeEntries.map(([id]) => colorMap[id]),
             xaxis: { categories: data.periods, labels: { style: { fontSize: '11px' } } },
             yaxis: { labels: { formatter: v => fmtDH(v) } },
+            tooltip: { y: { formatter: v => fullDH(v) } },
+            legend: { position: 'top' },
+            grid: { borderColor: '#f0f0f0' },
+            dataLabels: { enabled: false },
+        } : {
+            series,
+            chart: { type: 'line', height: 380, toolbar: { show: false }, animations: { enabled: true } },
+            stroke: { curve: 'smooth', width: 3 },
+            markers: { size: data.periods.length <= 2 ? 6 : 4, hover: { size: 8 } },
+            colors: storeEntries.map(([id]) => colorMap[id]),
+            xaxis: { categories: data.periods, labels: { style: { fontSize: '11px' } } },
+            yaxis: { labels: { formatter: v => fmtDH(v) }, min: 0 },
             tooltip: { y: { formatter: v => fullDH(v) } },
             legend: { position: 'top' },
             grid: { borderColor: '#f0f0f0' },
