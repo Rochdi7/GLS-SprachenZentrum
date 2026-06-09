@@ -6,6 +6,7 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ URL::asset('build/css/plugins/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <style>
         .kpi-card .card-body { padding: 1.25rem 1rem; }
         .kpi-card h3 { font-size: 1.6rem; font-weight: 700; margin: 0; }
@@ -204,6 +205,110 @@
                 </div>
             </div>
         </div>
+    @endif
+
+    {{-- ================================================================== --}}
+    {{-- CHARTS ROW: Aging donut + Perf by center bar                         --}}
+    {{-- ================================================================== --}}
+    <div class="row g-3 mb-4">
+        {{-- Aging donut --}}
+        <div class="col-xl-4 col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="ph-duotone ph-chart-donut me-2"></i>Répartition ancienneté</h5>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center" style="min-height:260px">
+                    <canvas id="agingDonutChart" style="max-height:240px"></canvas>
+                </div>
+            </div>
+        </div>
+
+        {{-- Recovery rate by center --}}
+        <div class="col-xl-8 col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="ph-duotone ph-chart-bar me-2"></i>Encaissement ce mois vs. reste à recouvrer</h5>
+                </div>
+                <div class="card-body d-flex align-items-center" style="min-height:260px">
+                    <canvas id="centerBarChart" style="max-height:240px;width:100%"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- ================================================================== --}}
+    {{-- BEST RECOVERY CENTERS                                                 --}}
+    {{-- ================================================================== --}}
+    @if (!empty($recoveryByCenter))
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">
+                        <i class="ph-duotone ph-trophy me-2 text-warning"></i>
+                        Meilleurs centres récupérateurs
+                        <small class="text-muted fw-normal ms-2">— encaissement ce mois vs. restant dû</small>
+                    </h5>
+                    <span class="badge bg-light-success text-success">Ce mois</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:36px">#</th>
+                                    <th>Centre</th>
+                                    <th class="text-end" style="width:160px">Encaissé ce mois</th>
+                                    <th class="text-end" style="width:150px">Restant dû</th>
+                                    <th class="text-end" style="width:80px">Dossiers</th>
+                                    <th style="min-width:160px">Taux de recouvrement</th>
+                                    <th class="text-end" style="width:150px">Encaissé 3 mois</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($recoveryByCenter as $i => $center)
+                                @php
+                                    $rate  = $center['recovery_rate'];
+                                    $rateColor = $rate >= 70 ? 'success' : ($rate >= 40 ? 'warning' : 'danger');
+                                    $medal = $i === 0 ? '🥇' : ($i === 1 ? '🥈' : ($i === 2 ? '🥉' : ($i + 1)));
+                                @endphp
+                                <tr>
+                                    <td class="fw-bold text-center">{{ $medal }}</td>
+                                    <td>
+                                        <span class="fw-semibold">{{ $center['store_name'] }}</span>
+                                    </td>
+                                    <td class="text-end fw-bold text-success">
+                                        {{ number_format($center['collected_month'], 0, ',', ' ') }} DH
+                                    </td>
+                                    <td class="text-end text-danger">
+                                        {{ number_format($center['outstanding'], 0, ',', ' ') }} DH
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="badge bg-light-secondary text-secondary">{{ $center['dossiers'] }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="progress flex-grow-1" style="height:8px">
+                                                <div class="progress-bar bg-{{ $rateColor }}"
+                                                     style="width:{{ min(100, $rate) }}%"></div>
+                                            </div>
+                                            <span class="badge bg-light-{{ $rateColor }} text-{{ $rateColor }} ms-1" style="min-width:52px">
+                                                {{ $rate }}%
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="text-end text-muted">
+                                        {{ number_format($center['collected_3m'], 0, ',', ' ') }} DH
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     @endif
 
     {{-- ================================================================== --}}
@@ -475,6 +580,99 @@
             initTablePagination('debtorsTbody', 'debtorsSearch', 'debtorsPrev', 'debtorsNext', 'debtorsPages', 'debtorsInfo', 10);
             initTablePagination('duesTbody',    'duesSearch',    'duesPrev',    'duesNext',    'duesPages',    'duesInfo',    10);
             // ──────────────────────────────────────────────────────────────────
+
+            // ── Aging donut chart ─────────────────────────────────────────────
+            @php
+                $agingLabels  = [];
+                $agingAmounts = [];
+                $agingColors  = ['#198754','#ffc107','#fd7e14','#dc3545','#212529'];
+                foreach (($agingBuckets ?? []) as $bucket) {
+                    $agingLabels[]  = $bucket['label'];
+                    $agingAmounts[] = round($bucket['amount'], 2);
+                }
+            @endphp
+            const agingCtx = document.getElementById('agingDonutChart');
+            if (agingCtx && {{ count($agingBuckets ?? []) }} > 0) {
+                new Chart(agingCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: @json($agingLabels),
+                        datasets: [{
+                            data: @json($agingAmounts),
+                            backgroundColor: @json($agingColors),
+                            borderWidth: 2,
+                            borderColor: '#fff',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { font: { size: 11 } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => ' ' + new Intl.NumberFormat('fr-MA').format(ctx.parsed) + ' DH'
+                                }
+                            }
+                        },
+                        cutout: '62%',
+                    }
+                });
+            }
+
+            // ── Recovery bar chart (collected vs outstanding per center) ───────
+            @php
+                $barLabels     = [];
+                $barCollected  = [];
+                $barOutstanding = [];
+                foreach (($recoveryByCenter ?? []) as $center) {
+                    $barLabels[]      = $center['store_name'];
+                    $barCollected[]   = round($center['collected_month'], 2);
+                    $barOutstanding[] = round($center['outstanding'], 2);
+                }
+            @endphp
+            const barCtx = document.getElementById('centerBarChart');
+            if (barCtx && {{ count($recoveryByCenter ?? []) }} > 0) {
+                new Chart(barCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: @json($barLabels),
+                        datasets: [
+                            {
+                                label: 'Encaissé ce mois',
+                                data: @json($barCollected),
+                                backgroundColor: 'rgba(25,135,84,0.75)',
+                                borderRadius: 4,
+                            },
+                            {
+                                label: 'Restant dû',
+                                data: @json($barOutstanding),
+                                backgroundColor: 'rgba(220,53,69,0.55)',
+                                borderRadius: 4,
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'top', labels: { font: { size: 11 } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => ' ' + ctx.dataset.label + ': ' + new Intl.NumberFormat('fr-MA').format(ctx.parsed.y) + ' DH'
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { ticks: { font: { size: 10 } } },
+                            y: {
+                                ticks: {
+                                    callback: v => (v >= 1000 ? (v/1000).toFixed(0)+'k' : v) + ' DH',
+                                    font: { size: 10 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
 
             document.getElementById('drillSearch').addEventListener('input', function () {
                 const q = this.value.toLowerCase();

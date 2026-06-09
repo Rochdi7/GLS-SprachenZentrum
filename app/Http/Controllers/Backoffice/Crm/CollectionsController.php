@@ -45,17 +45,19 @@ class CollectionsController extends BaseCrmController
         $upcomingDues    = [];
         $agingBuckets    = [];
         $perfByCenter    = [];
+        $recoveryByCenter = [];
 
         try {
             // Scope the service to the current center's token
             $scopedCrm   = $this->scopedCrm();
             $service     = new CollectionsService($scopedCrm);
 
-            $kpis         = $service->kpis($strStoreId);
-            $topDebtors   = $service->topDebtors($strStoreId);
-            $upcomingDues = $service->upcomingDues($strStoreId);
-            $agingBuckets = $service->agingBuckets($strStoreId);
-            $perfByCenter = $this->collections->performanceByCenter(); // local DB, no scoping needed
+            $kpis             = $service->kpis($strStoreId);
+            $topDebtors       = $service->topDebtors($strStoreId);
+            $upcomingDues     = $service->upcomingDues($strStoreId);
+            $agingBuckets     = $service->agingBuckets($strStoreId);
+            $perfByCenter     = $this->collections->performanceByCenter();
+            $recoveryByCenter = $this->collections->recoveryByCenter($strStoreId);
         } catch (\Throwable $e) {
             $error = $e->getMessage();
         }
@@ -68,6 +70,7 @@ class CollectionsController extends BaseCrmController
             'upcomingDues',
             'agingBuckets',
             'perfByCenter',
+            'recoveryByCenter',
             'strStoreId',
             'error',
             'snapshotDate',
@@ -134,6 +137,7 @@ class CollectionsController extends BaseCrmController
         Cache::forget('crm.collections.upcoming:' . $suffix . ':14');
         Cache::forget('crm.collections.aging:' . $suffix);
         Cache::forget('crm.collections.perf_by_center');
+        Cache::forget('crm.collections.recovery_by_center:' . $suffix);
 
         return redirect()
             ->route('backoffice.crm.collections.index', array_filter(['strStoreId' => $strStoreId]))

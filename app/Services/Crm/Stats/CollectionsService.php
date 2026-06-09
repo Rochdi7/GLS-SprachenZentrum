@@ -115,19 +115,22 @@ class CollectionsService
             $today = Carbon::today();
 
             $buckets = [
-                'current'  => ['label' => '0–7 j',   'count' => 0, 'amount' => 0.0, 'color' => 'success'],
-                'mild'     => ['label' => '8–30 j',   'count' => 0, 'amount' => 0.0, 'color' => 'warning'],
-                'serious'  => ['label' => '31–60 j',  'count' => 0, 'amount' => 0.0, 'color' => 'orange'],
-                'critical' => ['label' => '61–90 j',  'count' => 0, 'amount' => 0.0, 'color' => 'danger'],
-                'extreme'  => ['label' => '90 j+',    'count' => 0, 'amount' => 0.0, 'color' => 'dark'],
+                'current'  => ['label' => 'Retard 0–7 j',   'count' => 0, 'amount' => 0.0, 'color' => 'success'],
+                'mild'     => ['label' => 'Retard 8–30 j',   'count' => 0, 'amount' => 0.0, 'color' => 'warning'],
+                'serious'  => ['label' => 'Retard 31–60 j',  'count' => 0, 'amount' => 0.0, 'color' => 'orange'],
+                'critical' => ['label' => 'Retard 61–90 j',  'count' => 0, 'amount' => 0.0, 'color' => 'danger'],
+                'extreme'  => ['label' => 'Retard 90 j+',    'count' => 0, 'amount' => 0.0, 'color' => 'dark'],
             ];
 
+            // diffInDays(today, false): positive = overdue, negative = not yet due.
+            // Only bucket rows that are actually overdue (>= 0 days late).
             $this->baseQuery($strStoreId)
                 ->whereNotNull('due_date')
+                ->where('due_date', '<=', $today->toDateString())
                 ->selectRaw('due_date, rest_amount')
                 ->cursor()
                 ->each(function ($row) use (&$buckets, $today) {
-                    $diffDays = Carbon::parse($row->due_date)->diffInDays($today, false);
+                    $diffDays = (int) Carbon::parse($row->due_date)->diffInDays($today, false);
                     $amount   = (float) $row->rest_amount;
 
                     $bucket = match (true) {
@@ -152,6 +155,92 @@ class CollectionsService
             ->whereNotNull('rest_amount')
             ->where('rest_amount', '>', 0)
             ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId));
+    }
+
+    public function recoveryByCenter(?int $strStoreId): array
+    {
+        $key = 'crm.collections.recovery_by_center:' . ($strStoreId ?: 'all');
+
+        return Cache::remember($key, 900, function () use ($strStoreId) {
+            // Outstanding (unpaid rest_amount per center, active registrations)
+            $outstanding = CrmCollectionRow::query()
+                ->whereNotNull('rest_amount')
+                ->where('rest_amount', '>', 0)
+                ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId))
+                ->selectRaw('crm_store_id, store_name, SUM(rest_amount) as outstanding, COUNT(*) as dossiers')
+                ->groupBy('crm_store_id', 'store_name')
+                ->get()
+                ->keyBy('crm_store_id');
+
+            // Collected this month (Réglement only, date_creation_date, latest snapshot)
+            $thisMonthStart = Carbon::today()->startOfMonth()->toDateString();
+            $today          = Carbon::today()->toDateString();
+
+            $collected = CrmPaymentSnapshot::query()
+                ->whereBetween('date_creation_date', [$thisMonthStart, $today])
+                ->where('payment_type_id', 1)
+                ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId))
+                ->whereRaw('snapshot_date = (
+                    SELECT MAX(s2.snapshot_date)
+                    FROM crm_payment_snapshots s2
+                    WHERE s2.crm_payment_id = crm_payment_snapshots.crm_payment_id
+                )')
+                ->selectRaw('crm_store_id, SUM(amount) as collected_month, COUNT(*) as payments_month')
+                ->groupBy('crm_store_id')
+                ->get()
+                ->keyBy('crm_store_id');
+
+            // Collected last 3 months for trend
+            $threeMonthsAgo = Carbon::today()->subMonths(3)->startOfMonth()->toDateString();
+            $collected3m = CrmPaymentSnapshot::query()
+                ->whereBetween('date_creation_date', [$threeMonthsAgo, $today])
+                ->where('payment_type_id', 1)
+                ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId))
+                ->whereRaw('snapshot_date = (
+                    SELECT MAX(s2.snapshot_date)
+                    FROM crm_payment_snapshots s2
+                    WHERE s2.crm_payment_id = crm_payment_snapshots.crm_payment_id
+                )')
+                ->selectRaw('crm_store_id, SUM(amount) as collected_3m')
+                ->groupBy('crm_store_id')
+                ->get()
+                ->keyBy('crm_store_id');
+
+            // Merge all store IDs
+            $storeIds = $outstanding->keys()
+                ->merge($collected->keys())
+                ->unique();
+
+            $result = [];
+            foreach ($storeIds as $sid) {
+                $o    = $outstanding[$sid]   ?? null;
+                $c    = $collected[$sid]     ?? null;
+                $c3m  = $collected3m[$sid]   ?? null;
+
+                $outstandingAmt  = (float) ($o?->outstanding     ?? 0);
+                $collectedMonth  = (float) ($c?->collected_month  ?? 0);
+                $collected3mAmt  = (float) ($c3m?->collected_3m  ?? 0);
+                $totalExposure   = $outstandingAmt + $collectedMonth;
+
+                $result[] = [
+                    'store_id'        => (int) $sid,
+                    'store_name'      => $o?->store_name ?? 'Store #' . $sid,
+                    'outstanding'     => $outstandingAmt,
+                    'dossiers'        => (int) ($o?->dossiers ?? 0),
+                    'collected_month' => $collectedMonth,
+                    'collected_3m'    => $collected3mAmt,
+                    'payments_month'  => (int) ($c?->payments_month ?? 0),
+                    'recovery_rate'   => $totalExposure > 0
+                        ? round($collectedMonth / $totalExposure * 100, 1)
+                        : 0.0,
+                ];
+            }
+
+            // Sort by collected_month desc (best collectors first)
+            usort($result, fn ($a, $b) => $b['collected_month'] <=> $a['collected_month']);
+
+            return $result;
+        });
     }
 
     public function performanceByCenter(): array
