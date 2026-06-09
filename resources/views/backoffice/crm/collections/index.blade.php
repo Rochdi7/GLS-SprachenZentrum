@@ -116,7 +116,7 @@
     ];
     $overdueCards = [
         ['type'=>'overdue7',  'label'=>'En retard &gt; 7 jours',  'value'=>$kpis['overdue7']??null,  'color'=>'secondary', 'style'=>''],
-        ['type'=>'overdue30', 'label'=>'En retard &gt; 30 jours', 'value'=>$kpis['overdue30']??null, 'color'=>'',          'style'=>'border-left:4px solid #fd7e14; color:#fd7e14'],
+        ['type'=>'overdue30', 'label'=>'En retard &gt; 30 jours', 'value'=>$kpis['overdue30']??null, 'color'=>'warning',   'style'=>''],
         ['type'=>'overdue60', 'label'=>'En retard &gt; 60 jours', 'value'=>$kpis['overdue60']??null, 'color'=>'danger',    'style'=>''],
         ['type'=>'overdue90', 'label'=>'En retard &gt; 90 jours', 'value'=>$kpis['overdue90']??null, 'color'=>'dark',      'style'=>''],
     ];
@@ -145,15 +145,15 @@
     <div class="row g-3 mb-4">
         @foreach ($overdueCards as $card)
         <div class="col-lg-3 col-md-6">
-            <div class="card kpi-card h-100" style="{{ $card['style'] ?: 'border-left:4px solid var(--bs-'.$card['color'].')' }}">
+            <div class="card kpi-card h-100 border-start border-{{ $card['color'] }} border-3">
                 <div class="card-body d-flex justify-content-between align-items-start">
                     <div>
                         <div class="kpi-label">{!! $card['label'] !!}</div>
-                        <h3 @if($card['style']) style="{{ $card['style'] }}" @else class="text-{{ $card['color'] }}" @endif>
+                        <h3 class="text-{{ $card['color'] }}">
                             {{ $card['value'] !== null ? number_format($card['value'], 2, ',', ' ') . ' DH' : '—' }}
                         </h3>
                     </div>
-                    <span class="drill-btn" @if($card['style']) style="{{ $card['style'] }}" @else class="text-{{ $card['color'] }}" @endif
+                    <span class="drill-btn text-{{ $card['color'] }}"
                           data-type="{{ $card['type'] }}" data-label="{!! $card['label'] !!}" title="Voir les dossiers">
                         <i class="ph-duotone ph-eye fs-4"></i>
                     </span>
