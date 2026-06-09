@@ -226,12 +226,6 @@
                                                 <i class="ph-duotone ph-eye"></i>
                                             </a>
                                         @endif
-                                        @if ($group->crm_class_id)
-                                            <a href="{{ route('backoffice.payroll.crm.legacy.import.create', ['crm_class_id' => $group->crm_class_id]) }}"
-                                               class="btn btn-sm btn-outline-success" title="Ajouter un paiement">
-                                                <i class="ph-duotone ph-plus"></i>
-                                            </a>
-                                        @endif
                                         @role('Super Admin')
                                             @if ($latest)
                                                 <form method="POST"

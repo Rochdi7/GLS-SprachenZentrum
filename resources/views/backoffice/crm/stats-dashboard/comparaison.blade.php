@@ -272,7 +272,7 @@
         const storeEntries = Object.entries(data.stores);
         const grandTotal = storeEntries.reduce((s,[,v]) => s + v.total, 0);
         const grandNb    = storeEntries.reduce((s,[,v]) => s + v.nb, 0);
-        const top        = storeEntries[0];
+        const top        = storeEntries.reduce((best, curr) => curr[1].total > best[1].total ? curr : best, storeEntries[0]);
 
         const kpis = [
             { label: 'Total encaissé', val: fullDH(grandTotal), color: '#4680ff' },
@@ -379,7 +379,7 @@
 
     // ── Rank table ─────────────────────────────────────────────────────
     function renderRankTable(data) {
-        const storeEntries = Object.entries(data.stores);
+        const storeEntries = Object.entries(data.stores).sort((a, b) => b[1].total - a[1].total);
         const grandTotal   = storeEntries.reduce((s,[,v]) => s + v.total, 0);
         const colorMap     = buildColorMap(storeEntries.map(([id]) => id));
 
