@@ -164,73 +164,16 @@
     </div>
 
     {{-- ================================================================== --}}
-    {{-- AGING BUCKETS                                                         --}}
-    {{-- ================================================================== --}}
-    @if (!empty($agingBuckets))
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="ph-duotone ph-clock me-2"></i>Répartition par ancienneté</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            @php $agingTypes = ['aging_0','aging_8','aging_31','aging_61','aging_90']; @endphp
-                            @foreach ($agingBuckets as $i => $bucket)
-                                @php
-                                    $colorClass  = $bucket['color'] === 'orange' ? '' : 'border-' . $bucket['color'];
-                                    $textClass   = $bucket['color'] === 'orange' ? 'style="color:#fd7e14"' : 'class="text-' . $bucket['color'] . '"';
-                                    $borderStyle = $bucket['color'] === 'orange' ? 'border-left:4px solid #fd7e14;' : '';
-                                    $drillType   = $agingTypes[$i] ?? 'aging_0';
-                                @endphp
-                                <div class="col">
-                                    <div class="card aging-card {{ $colorClass }}" style="{{ $borderStyle }}">
-                                        <div class="card-body text-center py-3 position-relative">
-                                            <span class="drill-btn position-absolute top-0 end-0 m-2 {!! $bucket['color'] !== 'orange' ? 'text-'.$bucket['color'] : '' !!}"
-                                                  {!! $bucket['color'] === 'orange' ? 'style="color:#fd7e14"' : '' !!}
-                                                  data-type="{{ $drillType }}" data-label="{{ $bucket['label'] }}" title="Voir les dossiers">
-                                                <i class="ph-duotone ph-eye"></i>
-                                            </span>
-                                            <div class="fw-bold fs-5" {!! $textClass !!}>
-                                                {{ number_format($bucket['amount'], 2, ',', ' ') }} DH
-                                            </div>
-                                            <div class="text-muted small">{{ $bucket['label'] }}</div>
-                                            <div class="badge bg-light text-dark mt-1">{{ $bucket['count'] }} dossier(s)</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
-
-    {{-- ================================================================== --}}
-    {{-- CHARTS ROW: Aging donut + Perf by center bar                         --}}
+    {{-- CHARTS ROW: Perf by center bar                                        --}}
     {{-- ================================================================== --}}
     <div class="row g-3 mb-4">
-        {{-- Aging donut --}}
-        <div class="col-xl-4 col-md-6">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="ph-duotone ph-chart-donut me-2"></i>Répartition ancienneté</h5>
-                </div>
-                <div class="card-body d-flex align-items-center justify-content-center" style="min-height:260px">
-                    <canvas id="agingDonutChart" style="max-height:240px"></canvas>
-                </div>
-            </div>
-        </div>
-
-        {{-- Recovery rate by center --}}
-        <div class="col-xl-8 col-md-6">
-            <div class="card h-100">
+        <div class="col-12">
+            <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0"><i class="ph-duotone ph-chart-bar me-2"></i>Encaissement ce mois vs. reste à recouvrer</h5>
                 </div>
                 <div class="card-body d-flex align-items-center" style="min-height:260px">
-                    <canvas id="centerBarChart" style="max-height:240px;width:100%"></canvas>
+                    <canvas id="centerBarChart" style="max-height:260px;width:100%"></canvas>
                 </div>
             </div>
         </div>
@@ -580,44 +523,6 @@
             initTablePagination('debtorsTbody', 'debtorsSearch', 'debtorsPrev', 'debtorsNext', 'debtorsPages', 'debtorsInfo', 10);
             initTablePagination('duesTbody',    'duesSearch',    'duesPrev',    'duesNext',    'duesPages',    'duesInfo',    10);
             // ──────────────────────────────────────────────────────────────────
-
-            // ── Aging donut chart ─────────────────────────────────────────────
-            @php
-                $agingLabels  = [];
-                $agingAmounts = [];
-                $agingColors  = ['#198754','#ffc107','#fd7e14','#dc3545','#212529'];
-                foreach (($agingBuckets ?? []) as $bucket) {
-                    $agingLabels[]  = $bucket['label'];
-                    $agingAmounts[] = round($bucket['amount'], 2);
-                }
-            @endphp
-            const agingCtx = document.getElementById('agingDonutChart');
-            if (agingCtx && {{ count($agingBuckets ?? []) }} > 0) {
-                new Chart(agingCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: @json($agingLabels),
-                        datasets: [{
-                            data: @json($agingAmounts),
-                            backgroundColor: @json($agingColors),
-                            borderWidth: 2,
-                            borderColor: '#fff',
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { position: 'bottom', labels: { font: { size: 11 } } },
-                            tooltip: {
-                                callbacks: {
-                                    label: ctx => ' ' + new Intl.NumberFormat('fr-MA').format(ctx.parsed) + ' DH'
-                                }
-                            }
-                        },
-                        cutout: '62%',
-                    }
-                });
-            }
 
             // ── Recovery bar chart (collected vs outstanding per center) ───────
             @php
