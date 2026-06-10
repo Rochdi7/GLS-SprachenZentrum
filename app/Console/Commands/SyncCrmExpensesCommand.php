@@ -28,7 +28,8 @@ class SyncCrmExpensesCommand extends Command
         {--store=*     : Specific crm_store_id values}
         {--from=       : Start date ISO yyyy-MM-dd (default: 9 months back)}
         {--months=     : How many months back from today (overrides --from)}
-        {--delay=500   : Delay between pages in ms}';
+        {--delay=500   : Delay between pages in ms}
+        {--dump        : Dump first raw API row and exit (for field discovery)}';
 
     protected $description = 'Mirror CRM expenses to local site_expenses table';
 
@@ -67,6 +68,11 @@ class SyncCrmExpensesCommand extends Command
         if (!$all && empty($storeIds)) {
             $this->error('Specify --all or --store=ID');
             return self::FAILURE;
+        }
+
+        // --dump: fetch one page from first store and print raw row keys/values
+        if ($this->option('dump')) {
+            return $this->dumpFirstRow($all, $storeIds);
         }
 
         // Resolve date range
@@ -225,6 +231,37 @@ class SyncCrmExpensesCommand extends Command
             ['type', 'label', 'amount', 'month', 'expense_date', 'reference',
              'payment_method', 'operator_name', 'notes', 'updated_at'],
         );
+    }
+
+    private function dumpFirstRow(bool $all, array $storeIds): int
+    {
+        $query = Site::whereNotNull('crm_store_id')->where('crm_store_id', '>', 0);
+        if (!$all) {
+            $query->whereIn('crm_store_id', array_map('intval', $storeIds));
+        }
+        $site = $query->first(['id', 'name', 'crm_store_id', 'crm_token']);
+
+        if (!$site) {
+            $this->error('No site found.');
+            return self::FAILURE;
+        }
+
+        $crm = $site->crm_token ? $this->crm->withToken($site->crm_token) : $this->crm;
+        $response = $crm->expenses()->list(page: 0, size: 1, strStoreId: (int) $site->crm_store_id);
+        $rows = $response['data'] ?? [];
+
+        if (empty($rows)) {
+            $this->warn('No rows returned.');
+            return self::SUCCESS;
+        }
+
+        $row = $rows[0];
+        $this->info('=== RAW API FIELDS (first row) ===');
+        foreach ($row as $key => $value) {
+            $this->line(sprintf('  %-40s %s', $key, json_encode($value)));
+        }
+        $this->info('=== END ===');
+        return self::SUCCESS;
     }
 
     private function fetchWithBackoff(
