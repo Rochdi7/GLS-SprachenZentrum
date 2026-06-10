@@ -53,7 +53,11 @@ class EncaissementDashboardController extends Controller
         // Chart data
         $monthlyEvolution = $this->analytics->getMonthlyEvolution($sid, 12);
         $methodEvolution  = $this->analytics->getMethodEvolution($sid, 6);
-        $annualSummary    = $this->analytics->getAnnualSummary($sid, (int) $year);
+        try {
+            $annualSummary = $this->analytics->getAnnualSummary($sid, (int) $year);
+        } catch (\Throwable) {
+            $annualSummary = [];
+        }
 
         // Backward-compat for existing view bits that still read $month
         $month = $period;

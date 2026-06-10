@@ -310,29 +310,33 @@ class EncaissementAnalyticsService
         // Conditions per business rules:
         //   - REGISTRATION_STATUS_ID <> 10 (exclude cancelled registrations)
         //   - DUE_DATE within the year range
-        $caQ = DB::table('crm_collection_rows')
-            ->whereBetween('due_date', [$yearStart->toDateString(), $yearEnd->toDateString()])
-            ->whereNotNull('total_price')
-            ->where(function ($q) {
-                $q->whereNull('registration_status_id')
-                  ->orWhere('registration_status_id', '<>', 10);
-            })
-            ->select(
-                DB::raw('YEAR(due_date) as y'),
-                DB::raw('MONTH(due_date) as m'),
-                DB::raw('SUM(total_price) as total'),
-                DB::raw('SUM(COALESCE(rest_amount, 0)) as reste'),
-            )
-            ->groupBy(DB::raw('YEAR(due_date), MONTH(due_date)'));
+        try {
+            $caQ = DB::table('crm_collection_rows')
+                ->whereBetween('due_date', [$yearStart->toDateString(), $yearEnd->toDateString()])
+                ->whereNotNull('total_price')
+                ->where(function ($q) {
+                    $q->whereNull('registration_status_id')
+                      ->orWhere('registration_status_id', '<>', 10);
+                })
+                ->select(
+                    DB::raw('YEAR(due_date) as y'),
+                    DB::raw('MONTH(due_date) as m'),
+                    DB::raw('SUM(total_price) as total'),
+                    DB::raw('SUM(COALESCE(rest_amount, 0)) as reste'),
+                )
+                ->groupBy(DB::raw('YEAR(due_date), MONTH(due_date)'));
 
-        if ($siteId) {
-            $storeIds = Site::where('id', $siteId)->pluck('crm_store_id')->filter()->values()->toArray();
-            if (!empty($storeIds)) {
-                $caQ->whereIn('crm_store_id', $storeIds);
+            if ($siteId) {
+                $storeIds = Site::where('id', $siteId)->pluck('crm_store_id')->filter()->values()->toArray();
+                if (!empty($storeIds)) {
+                    $caQ->whereIn('crm_store_id', $storeIds);
+                }
             }
-        }
 
-        $caByMonth = collect($caQ->get())->keyBy(fn ($r) => sprintf('%04d-%02d', $r->y, $r->m));
+            $caByMonth = collect($caQ->get())->keyBy(fn ($r) => sprintf('%04d-%02d', $r->y, $r->m));
+        } catch (\Throwable) {
+            $caByMonth = collect();
+        }
 
         // ── Build 12-month result array ──────────────────────────────────────
         $results = [];
