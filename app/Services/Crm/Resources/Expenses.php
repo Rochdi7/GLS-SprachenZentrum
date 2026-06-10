@@ -17,7 +17,7 @@ class Expenses extends Resource
      */
     public function list(
         int $page = 0,
-        int $size = 500,
+        int $size = 25,
         bool $includeTotal = true,
         ?int $strStoreId = null,
         ?string $startDate = null,

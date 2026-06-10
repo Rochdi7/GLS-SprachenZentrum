@@ -34,7 +34,7 @@ class SyncCrmExpensesCommand extends Command
 
     private const LOCK_KEY  = 'crm.sync-expenses.lock';
     private const LOCK_TTL  = 1800;
-    private const PAGE_SIZE = 500;
+    private const PAGE_SIZE = 25;
     private const BACKOFF   = [5, 15, 30];
 
     public function __construct(protected Crm $crm)
