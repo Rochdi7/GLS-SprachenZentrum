@@ -118,5 +118,6 @@
 @endsection
 
 @section('scripts')
+    <script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
     <script src="{{ URL::asset('assets/js/backoffice/crm-expenses.js') }}"></script>
 @endsection
