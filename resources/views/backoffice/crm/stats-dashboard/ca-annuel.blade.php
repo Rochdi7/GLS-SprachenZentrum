@@ -27,7 +27,7 @@
     <div class="col-auto d-flex align-items-center gap-2">
         {{-- Site picker --}}
         <form method="GET" action="{{ route('backoffice.crm.statistiques.ca-annuel') }}" id="site-form" class="d-flex gap-2 align-items-center">
-            <select name="store_id" id="ca-store-select" class="form-select form-select-sm" style="min-width:170px;">
+            <select name="store_id" id="ca-store-select" class="form-select form-select-sm" style="min-width:170px;" data-choices-init="true">
                 <option value="">— Tous les centres —</option>
                 @foreach ($sites as $site)
                     <option value="{{ $site->crm_store_id }}" {{ $storeId == $site->crm_store_id ? 'selected' : '' }}>
@@ -123,11 +123,4 @@
 @section('scripts')
     <script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
     <script src="{{ URL::asset('assets/js/backoffice/crm-ca-annuel.js') }}?v=2"></script>
-    <script>
-    // Choices.js wraps the native select — listen on the underlying element via 'change'
-    // which Choices dispatches after its own update.
-    document.getElementById('ca-store-select').addEventListener('change', function () {
-        document.getElementById('site-form').submit();
-    });
-    </script>
 @endsection

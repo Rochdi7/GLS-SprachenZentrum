@@ -196,7 +196,9 @@ class StatsController extends BaseCrmController
     public function caAnnuel(Request $request): View
     {
         $year    = (int) ($request->query('year', Carbon::now('Africa/Casablanca')->year));
-        $storeId = $request->filled('store_id') ? (int) $request->query('store_id') : $this->currentStrStoreId();
+        $storeId = $request->has('store_id')
+            ? ($request->query('store_id') !== '' ? (int) $request->query('store_id') : null)
+            : $this->currentStrStoreId();
 
         $months = [];
         for ($m = 1; $m <= 12; $m++) {
