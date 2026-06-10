@@ -345,8 +345,8 @@ Route::prefix('backoffice')
                 Route::post('/', [UserController::class, 'store'])->middleware('permission:users.create')->name('store');
                 Route::get('/{user}', fn ($user) => redirect()->route('backoffice.users.edit', $user))->middleware('permission:users.edit')->name('show');
                 Route::get('/{user}/edit', [UserController::class, 'edit'])->middleware('permission:users.edit')->name('edit');
-                Route::put('/{user}', [UserController::class, 'update'])->middleware('permission:users.edit')->name('update');
-                Route::delete('/{user}', [UserController::class, 'destroy'])->middleware('permission:users.delete')->name('destroy');
+                Route::post('/{user}/update', [UserController::class, 'update'])->middleware('permission:users.edit')->name('update');
+                Route::post('/{user}/delete', [UserController::class, 'destroy'])->middleware('permission:users.delete')->name('destroy');
             });
 
         /*

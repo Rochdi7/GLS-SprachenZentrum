@@ -34,7 +34,6 @@
             novalidate
         >
             @csrf
-            @method('PUT')
 
             <div id="user-form-card" class="card animate__animated animate__rollIn">
 

@@ -99,7 +99,7 @@
                         @if($user->id !== auth()->id())
                             <form action="{{ route('backoffice.users.destroy', $user->id) }}" method="POST"
                                 class="d-inline-block">
-                                @csrf @method('DELETE')
+                                @csrf
                                 <button type="submit" class="avtar avtar-xs btn-link-secondary border-0 bg-transparent p-0"
                                     onclick="return confirm('Supprimer cet utilisateur ?')" title="Supprimer"
                                     aria-label="Supprimer">
