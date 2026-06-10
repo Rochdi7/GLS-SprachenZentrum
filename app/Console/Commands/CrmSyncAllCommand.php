@@ -112,11 +112,6 @@ class CrmSyncAllCommand extends Command
             '--all',
             'Compute student churn/risk scores from local DB — no API calls',
         ],
-        'expenses_sync'    => [
-            'crm:sync-expenses',
-            '--all --months=10 --delay=500',
-            'Mirror CRM expenses to local site_expenses (10 months rolling window)',
-        ],
         'daily_report'     => [
             'crm:daily-report',
             '',
