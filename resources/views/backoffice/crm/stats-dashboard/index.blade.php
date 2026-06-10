@@ -302,8 +302,10 @@
 <script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
 <script>
 'use strict';
-document.addEventListener('DOMContentLoaded', function () {
+(function () {
     setTimeout(function () {
+
+        if (typeof ApexCharts === 'undefined') return;
 
         // Brand palette — one distinct color per center (max 7)
         const COLORS = ['#4680ff','#1cc88a','#ffc107','#dc3545','#0dcaf0','#6f42c1','#fd7e14'];
