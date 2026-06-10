@@ -323,7 +323,7 @@
                     <form method="GET" action="{{ route('backoffice.level_followups.index') }}" class="row g-3 align-items-end mb-4">
                         <div class="col-md-4 col-lg-3">
                             <label class="form-label">Centre</label>
-                            <select name="center" class="form-select">
+                            <select name="center" id="filter-center" class="form-select">
                                 <option value="">Tous les centres</option>
                                 @foreach($sites as $site)
                                     <option value="{{ $site->id }}" @selected((string) request('center') === (string) $site->id)>{{ $site->name }}</option>
@@ -332,10 +332,14 @@
                         </div>
                         <div class="col-md-4 col-lg-3">
                             <label class="form-label">Prof</label>
-                            <select name="teacher" class="form-select">
+                            <select name="teacher" id="filter-teacher" class="form-select">
                                 <option value="">Tous les profs</option>
                                 @foreach($teachers as $teacher)
-                                    <option value="{{ $teacher->id }}" @selected((string) request('teacher') === (string) $teacher->id)>{{ $teacher->name }}</option>
+                                    <option
+                                        value="{{ $teacher->id }}"
+                                        data-sites="{{ implode(',', $teacherSiteMap[$teacher->id] ?? []) }}"
+                                        @selected((string) request('teacher') === (string) $teacher->id)
+                                    >{{ $teacher->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -344,6 +348,34 @@
                             <a href="{{ route('backoffice.level_followups.index') }}" class="btn btn-light-secondary">Reset</a>
                         </div>
                     </form>
+                    <script>
+                    (function () {
+                        const centerSel  = document.getElementById('filter-center');
+                        const teacherSel = document.getElementById('filter-teacher');
+                        const allOptions = Array.from(teacherSel.querySelectorAll('option[data-sites]'));
+
+                        function filterTeachers() {
+                            const centerId = centerSel.value;
+                            const currentVal = teacherSel.value;
+                            allOptions.forEach(opt => {
+                                const sites = opt.dataset.sites ? opt.dataset.sites.split(',') : [];
+                                const visible = !centerId || sites.includes(centerId);
+                                opt.hidden = !visible;
+                                opt.disabled = !visible;
+                            });
+                            // Reset selection if current teacher not in new centre
+                            if (currentVal) {
+                                const selected = teacherSel.querySelector(`option[value="${currentVal}"]`);
+                                if (selected && selected.hidden) {
+                                    teacherSel.value = '';
+                                }
+                            }
+                        }
+
+                        centerSel.addEventListener('change', filterTeachers);
+                        filterTeachers(); // apply on page load (when centre pre-selected from query string)
+                    })();
+                    </script>
                 </div>
             </div>
 

@@ -63,11 +63,19 @@ class LevelFollowupController extends Controller
         }
         $sites = $sitesQuery->get();
 
-        $teachersQuery = Teacher::query()->orderBy('name');
+        // Load teachers with their site IDs (via groups) so JS can filter by centre
+        $teachersQuery = Teacher::query()
+            ->with(['groups' => fn ($q) => $q->select('id', 'teacher_id', 'site_id')->distinct()])
+            ->orderBy('name');
         if (!$isSuperAdmin) {
             $teachersQuery->whereHas('groups', fn ($q) => $q->whereIn('site_id', $accessibleSiteIds));
         }
         $teachers = $teachersQuery->get();
+
+        // Map: teacher_id => [site_id, ...] for JS-side filtering
+        $teacherSiteMap = $teachers->mapWithKeys(fn ($t) => [
+            $t->id => $t->groups->pluck('site_id')->unique()->values()->all(),
+        ]);
 
         $rows = $followups
             ->groupBy('group_id')
@@ -118,6 +126,7 @@ class LevelFollowupController extends Controller
             'levelFollowupsByGroup' => $followups->groupBy('group_id'),
             'sites' => $sites,
             'teachers' => $teachers,
+            'teacherSiteMap' => $teacherSiteMap,
             'now' => $now,
         ]);
     }
