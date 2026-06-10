@@ -54,57 +54,66 @@
     </div>
 </form>
 
-{{-- ── Table ── --}}
+{{-- ── Centre ranking ── --}}
+@php
+    $rankColors = ['#4680ff','#1cc88a','#ffc107','#dc3545','#0dcaf0','#6f42c1','#fd7e14'];
+    $rankIcons  = ['ph-trophy','ph-medal','ph-star','ph-circle','ph-circle','ph-circle','ph-circle'];
+@endphp
 <div class="card">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-sm table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Date</th>
-                        <th>Centre</th>
-                        <th>Type</th>
-                        <th>Description</th>
-                        <th class="text-end">Montant</th>
-                        <th>Référence</th>
-                        <th>Opérateur</th>
-                        <th>Méthode paiement</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($expenses as $expense)
-                        <tr>
-                            <td class="text-nowrap">
-                                {{ $expense->expense_date?->format('d/m/Y') ?? '—' }}
-                            </td>
-                            <td>{{ $expense->site?->name ?? '—' }}</td>
-                            <td>
-                                <span class="badge bg-light text-dark border">
-                                    {{ $expense->getTypeLabel() }}
-                                </span>
-                            </td>
-                            <td>{{ $expense->label }}</td>
-                            <td class="text-end text-nowrap fw-semibold">
-                                {{ number_format($expense->amount, 2, ',', ' ') }} DH
-                            </td>
-                            <td class="text-muted small">{{ $expense->reference ?? '—' }}</td>
-                            <td class="small">{{ $expense->operator_name ?? '—' }}</td>
-                            <td class="small">{{ $expense->payment_method ?? '—' }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="text-center text-muted py-4">Aucune dépense trouvée.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+    <div class="card-header py-2 d-flex align-items-center justify-content-between">
+        <h6 class="mb-0">
+            <i class="ph-duotone ph-ranking text-primary me-1"></i>
+            Classement des centres par dépenses totales
+            @if ($selectedMonth)
+                <span class="badge bg-light text-muted border ms-2 fw-normal" style="font-size:.75rem;">
+                    {{ \Carbon\Carbon::parse($selectedMonth)->translatedFormat('F Y') }}
+                </span>
+            @endif
+        </h6>
+        <span class="text-muted small">{{ $centerSummary->count() }} centres</span>
     </div>
-    @if ($expenses->hasPages())
-        <div class="card-footer">
-            {{ $expenses->links() }}
+    <div class="card-body py-3">
+        @forelse ($centerSummary as $i => $row)
+        @php
+            $pct   = $maxTotal > 0 ? round(($row->total / $maxTotal) * 100) : 0;
+            $color = $rankColors[$i] ?? '#adb5bd';
+            $isTop = $i === 0;
+        @endphp
+        <div class="mb-3 {{ !$loop->last ? 'pb-3 border-bottom' : '' }}">
+            <div class="d-flex align-items-center justify-content-between mb-1">
+                <div class="d-flex align-items-center gap-2">
+                    {{-- Rank badge --}}
+                    <span class="fw-bold text-white rounded-circle d-inline-flex align-items-center justify-content-center"
+                          style="width:28px;height:28px;font-size:.75rem;background:{{ $color }};flex-shrink:0;">
+                        {{ $i + 1 }}
+                    </span>
+                    <span class="fw-semibold {{ $isTop ? 'fs-6' : '' }}">{{ $row->site_name }}</span>
+                    @if ($isTop)
+                        <span class="badge ms-1" style="background:{{ $color }};font-size:.65rem;">
+                            <i class="ph ph-trophy-fill"></i> 1er
+                        </span>
+                    @endif
+                </div>
+                <div class="text-end">
+                    <div class="fw-bold" style="color:{{ $color }};">
+                        {{ number_format($row->total, 2, ',', ' ') }} DH
+                    </div>
+                    <div class="text-muted" style="font-size:.72rem;">
+                        {{ number_format($row->count, 0, ',', ' ') }} dépenses
+                    </div>
+                </div>
+            </div>
+            <div class="progress" style="height:6px;border-radius:4px;">
+                <div class="progress-bar" role="progressbar"
+                     style="width:{{ $pct }}%;background:{{ $color }};"
+                     aria-valuenow="{{ $pct }}" aria-valuemin="0" aria-valuemax="100">
+                </div>
+            </div>
         </div>
-    @endif
+        @empty
+            <p class="text-muted text-center mb-0">Aucune donnée.</p>
+        @endforelse
+    </div>
 </div>
 
 {{-- Data island for chart --}}

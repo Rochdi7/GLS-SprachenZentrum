@@ -60,13 +60,29 @@ class CrmExpensesController extends BaseCrmController
             ];
         }
 
+        // Per-center totals ranked by total spend (all time, or filtered by month)
+        $summaryQuery = SiteExpense::where('crm_source', 'wimschool')
+            ->join('sites', 'sites.id', '=', 'site_expenses.site_id')
+            ->selectRaw('sites.name as site_name, COUNT(*) as count, SUM(amount) as total')
+            ->groupBy('sites.name')
+            ->orderByDesc('total');
+
+        if ($month) {
+            $summaryQuery->where('month', $month . '-01');
+        }
+
+        $centerSummary = $summaryQuery->get();
+        $maxTotal      = $centerSummary->max('total') ?: 1;
+
         return $this->view('backoffice.crm.expenses.index', [
-            'expenses'     => $expenses,
-            'sites'        => $sites,
-            'selectedSite' => $siteId,
-            'selectedMonth'=> $month,
-            'chartMonths'  => $chartMonths->toArray(),
-            'chartSeries'  => $chartSeries,
+            'expenses'      => $expenses,
+            'sites'         => $sites,
+            'selectedSite'  => $siteId,
+            'selectedMonth' => $month,
+            'chartMonths'   => $chartMonths->toArray(),
+            'chartSeries'   => $chartSeries,
+            'centerSummary' => $centerSummary,
+            'maxTotal'      => $maxTotal,
         ]);
     }
 }

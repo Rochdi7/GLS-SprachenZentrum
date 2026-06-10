@@ -89,6 +89,9 @@ Route::prefix('crm')
         Route::get('/statistiques/comparaison',          [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'comparaison'])->name('statistiques.comparaison');
         Route::get('/statistiques/comparaison/data',     [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'comparaisonData'])->name('statistiques.comparaison.data');
 
+        // Résumé annuel CA — chiffre d'affaire, collecté, reste à payer, dépenses
+        Route::get('/statistiques/ca-annuel',            [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'caAnnuel'])->name('statistiques.ca-annuel');
+
         // Agent / Call-Center dashboard.
         Route::prefix('agent')->name('agent.')->controller(\App\Http\Controllers\Backoffice\Crm\AgentDashboardController::class)->group(function () {
             Route::get('/',                    'index')->name('index');

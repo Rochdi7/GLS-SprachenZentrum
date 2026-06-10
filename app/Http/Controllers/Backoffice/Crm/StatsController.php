@@ -193,6 +193,86 @@ class StatsController extends BaseCrmController
         ]);
     }
 
+    public function caAnnuel(Request $request): View
+    {
+        $year    = (int) ($request->query('year', Carbon::now('Africa/Casablanca')->year));
+        $storeId = $request->filled('store_id') ? (int) $request->query('store_id') : $this->currentStrStoreId();
+
+        $months = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $months[] = sprintf('%04d-%02d', $year, $m);
+        }
+
+        $storeFilter = $storeId ? "AND crm_store_id = {$storeId}" : '';
+
+        // CA = total_price from collections WHERE status != 10, grouped by due_date month
+        $caRows = DB::select("
+            SELECT DATE_FORMAT(due_date,'%Y-%m') as m, SUM(total_price) as total
+            FROM crm_collection_rows
+            WHERE registration_status_id <> 10
+              AND YEAR(due_date) = ?
+              {$storeFilter}
+            GROUP BY m
+        ", [$year]);
+        $caByMonth = collect($caRows)->pluck('total', 'm')->map(fn($v) => (float) $v)->toArray();
+
+        // Collecté = sum of payments (effective_date in year)
+        $collecteRows = DB::select("
+            SELECT DATE_FORMAT(effective_date,'%Y-%m') as m, SUM(amount) as total
+            FROM crm_payment_snapshots s1
+            WHERE YEAR(effective_date) = ?
+              AND payment_type_id = 1
+              {$storeFilter}
+              AND snapshot_date = (
+                  SELECT MAX(s2.snapshot_date) FROM crm_payment_snapshots s2
+                  WHERE s2.crm_payment_id = s1.crm_payment_id
+              )
+            GROUP BY m
+        ", [$year]);
+        $collecteByMonth = collect($collecteRows)->pluck('total', 'm')->map(fn($v) => (float) $v)->toArray();
+
+        // Dépenses from local warehouse
+        $depRows = DB::table('site_expenses')
+            ->where('crm_source', 'wimschool')
+            ->whereYear('month', $year)
+            ->when($storeId, function ($q) use ($storeId) {
+                $q->whereIn('site_id', DB::table('sites')->where('crm_store_id', $storeId)->pluck('id'));
+            })
+            ->selectRaw("DATE_FORMAT(month,'%Y-%m') as m, SUM(amount) as total")
+            ->groupBy('m')
+            ->pluck('total', 'm')
+            ->map(fn($v) => (float) $v)
+            ->toArray();
+
+        // Build 12-month arrays
+        $seriesCA       = [];
+        $seriesCollecte = [];
+        $seriesReste    = [];
+        $seriesDepenses = [];
+
+        foreach ($months as $m) {
+            $ca       = $caByMonth[$m]       ?? 0;
+            $collecte = $collecteByMonth[$m] ?? 0;
+            $seriesCA[]       = round($ca);
+            $seriesCollecte[] = round($collecte);
+            $seriesReste[]    = round(max(0, $ca - $collecte));
+            $seriesDepenses[] = round($depRows[$m] ?? 0);
+        }
+
+        $sites = Site::whereNotNull('crm_store_id')->orderBy('name')->get(['id', 'name', 'crm_store_id']);
+
+        return $this->view('backoffice.crm.stats-dashboard.ca-annuel', [
+            'year'            => $year,
+            'months'          => $months,
+            'seriesCA'        => $seriesCA,
+            'seriesCollecte'  => $seriesCollecte,
+            'seriesReste'     => $seriesReste,
+            'seriesDepenses'  => $seriesDepenses,
+            'sites'           => $sites,
+            'storeId'         => $storeId,
+        ]);
+    }
+
     public function refresh(Request $request): RedirectResponse
     {
         // Bust stats cache only — never run sync commands inside HTTP requests
