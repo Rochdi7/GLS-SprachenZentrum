@@ -486,12 +486,12 @@
             </li>
 
             {{-- Dépenses CRM --}}
-            <li class="pc-item {{ $crmExpensesOpen ? 'active' : '' }}">
+            {{-- <li class="pc-item {{ $crmExpensesOpen ? 'active' : '' }}">
                 <a href="{{ route('backoffice.crm.expenses.index') }}"
                     class="pc-link {{ $crmExpensesOpen ? 'active' : '' }}">
                     <span class="pc-mtext">Dépenses</span>
                 </a>
-            </li>
+            </li> --}}
 
             {{-- Recouvrement --}}
             <li class="pc-item {{ $crmCollectionsOpen ? 'active' : '' }}">
@@ -524,12 +524,12 @@
                         </a>
                     </li> --}}
                     {{-- CA Annuel --}}
-                    <li class="pc-item {{ $crmCaAnnuelOpen ? 'active' : '' }}">
+                    {{-- <li class="pc-item {{ $crmCaAnnuelOpen ? 'active' : '' }}">
                         <a href="{{ route('backoffice.crm.statistiques.ca-annuel') }}"
                             class="pc-link {{ $crmCaAnnuelOpen ? 'active' : '' }}">
                             <span class="pc-mtext">CA Annuel</span>
                         </a>
-                    </li>
+                    </li> --}}
                     <li class="pc-item {{ request()->routeIs('backoffice.crm.group-evolution') ? 'active' : '' }}">
                         <a href="{{ route('backoffice.crm.group-evolution') }}"
                             class="pc-link {{ request()->routeIs('backoffice.crm.group-evolution') ? 'active' : '' }}">
