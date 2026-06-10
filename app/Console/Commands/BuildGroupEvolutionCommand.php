@@ -86,10 +86,7 @@ class BuildGroupEvolutionCommand extends Command
     private function computeForStore(int $storeId, string $rangeStart, string $rangeEnd): int
     {
         // Load classes from the local mirror — zero API calls
-        $classes = CrmClass::where('site_id', $storeId)
-            ->whereNotNull('class_id')
-            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.STATUS_NAME')) = 'En formation'")
-            ->get();
+toub
 
         if ($classes->isEmpty()) {
             $this->line("   No classes found for store #{$storeId}");
@@ -103,17 +100,19 @@ class BuildGroupEvolutionCommand extends Command
         // changement = Archive
         // crm_classes.class_id = API field CLASS_ID (e.g. 9505)
         // crm_registrations.crm_class_id = API field ID (e.g. 8995)
-        // Must key the start-month map by raw_data.ID to match registrations.
-        $classStartMonths = [];   // [raw ID => 'YYYY-MM']
-        $classColIdByRawId = [];  // [raw ID => class_id column] for snapshot upsert
+        // Key by raw_data.ID (= LEVEL_SESSION_ID in registrations = crm_registrations.crm_class_id).
+        // crm_registrations.crm_class_id = LEVEL_SESSION_ID ?? CLASS_ID, and LEVEL_SESSION_ID
+        // equals raw_data.ID on the class record (e.g. 9363), NOT the CLASS_ID column (e.g. 9948).
+        $classStartMonths = [];   // [raw_data.ID => 'YYYY-MM']
+        $rawIdByClassId   = [];   // [CLASS_ID => raw_data.ID] for upsert lookup
         foreach ($classes as $class) {
             $raw   = $class->raw_data ?? [];
             $rawId = isset($raw['ID']) ? (int) $raw['ID'] : null;
             if ($rawId === null) continue;
-            $classStartMonths[$rawId]  = isset($raw['START_DATE'])
+            $classStartMonths[$rawId] = isset($raw['START_DATE'])
                 ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
                 : null;
-            $classColIdByRawId[$rawId] = (int) $class->class_id;
+            $rawIdByClassId[(int) $class->class_id] = $rawId;
         }
 
         $registrations = CrmRegistration::where('crm_store_id', $storeId)
@@ -189,15 +188,15 @@ class BuildGroupEvolutionCommand extends Command
         $upserts = [];
 
         foreach ($classes as $class) {
-            $cid     = (int) $class->class_id;   // CLASS_ID — used for upsert key
+            $cid     = (int) $class->class_id;
             $raw     = $class->raw_data ?? [];
-            $rawId   = isset($raw['ID']) ? (int) $raw['ID'] : null; // ID — matches crm_registrations.crm_class_id
+            $rawId   = $rawIdByClassId[$cid] ?? null;
             $startYm = $rawId !== null ? ($classStartMonths[$rawId] ?? null) : null;
 
-            $debuts      = $rawId !== null ? count($debutsByGroup[$rawId]      ?? []) : 0;
-            $ajouts      = $rawId !== null ? count($ajoutsByGroup[$rawId]      ?? []) : 0;
-            $quittants   = $rawId !== null ? count($quittantsByGroup[$rawId]   ?? []) : 0;
-            $changements = $rawId !== null ? count($changementsByGroup[$rawId] ?? []) : 0;
+            $debuts      = count($debutsByGroup[$rawId]      ?? []);
+            $ajouts      = count($ajoutsByGroup[$rawId]      ?? []);
+            $quittants   = count($quittantsByGroup[$rawId]   ?? []);
+            $changements = count($changementsByGroup[$rawId] ?? []);
 
             // Parse ISO datetime from API (e.g. "2026-04-23T23:00:00.000Z") → plain date
             $classStartDate = isset($raw['START_DATE'])
