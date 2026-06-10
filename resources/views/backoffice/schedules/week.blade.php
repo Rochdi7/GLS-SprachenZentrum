@@ -127,6 +127,12 @@
                                     <td class="fw-medium">
                                         {{ $day['label'] }}
                                         <input type="hidden" name="days[{{ $i }}][date]" value="{{ $day['key'] }}">
+                                        @if($i === 0)
+                                            <br>
+                                            <button type="button" id="applyAllBtn" class="btn btn-outline-primary btn-sm mt-1 py-0 px-2" style="font-size: 0.7rem; white-space: nowrap;">
+                                                <i class="ph-duotone ph-copy me-1"></i>Appliquer à tous
+                                            </button>
+                                        @endif
                                     </td>
                                     <td>
                                         <input type="time" name="days[{{ $i }}][start_time]" class="form-control form-control-sm" data-field="start"
@@ -240,6 +246,29 @@
             });
 
             recalcAll();
+
+            // ===== Apply first row to all rows =====
+            const applyAllBtn = document.getElementById('applyAllBtn');
+            if (applyAllBtn) {
+                applyAllBtn.addEventListener('click', function () {
+                    const rows = document.querySelectorAll('[data-row]');
+                    const first = rows[0];
+                    const srcStart  = first.querySelector('[data-field="start"]').value;
+                    const srcEnd    = first.querySelector('[data-field="end"]').value;
+                    const srcBStart = first.querySelector('[data-field="bstart"]').value;
+                    const srcBEnd   = first.querySelector('[data-field="bend"]').value;
+
+                    rows.forEach((row, idx) => {
+                        if (idx === 0) return;
+                        row.querySelector('[data-field="start"]').value  = srcStart;
+                        row.querySelector('[data-field="end"]').value    = srcEnd;
+                        row.querySelector('[data-field="bstart"]').value = srcBStart;
+                        row.querySelector('[data-field="bend"]').value   = srcBEnd;
+                    });
+
+                    recalcAll();
+                });
+            }
         });
     </script>
 @endsection
