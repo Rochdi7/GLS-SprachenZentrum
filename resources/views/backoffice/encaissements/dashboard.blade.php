@@ -309,91 +309,13 @@
 @endsection
 
 @section('scripts')
-<script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // ── Revenue Evolution Chart (Area) ──
-    const monthlyData = @json($monthlyEvolution);
-    if (monthlyData.length > 0) {
-        new ApexCharts(document.querySelector("#revenueChart"), {
-            chart: { type: 'area', height: 320, toolbar: { show: false } },
-            series: [
-                { name: 'Recettes', data: monthlyData.map(m => m.revenue) },
-                { name: 'Dépenses', data: monthlyData.map(m => m.expenses) },
-            ],
-            xaxis: { categories: monthlyData.map(m => m.month_label) },
-            yaxis: {
-                labels: { formatter: v => (v >= 1000 ? (v/1000).toFixed(0) + 'k' : v) + ' DH' }
-            },
-            colors: ['#4680FF', '#dc2626'],
-            fill: { type: 'gradient', gradient: { opacityFrom: 0.4, opacityTo: 0.1 } },
-            stroke: { curve: 'smooth', width: 2 },
-            dataLabels: { enabled: false },
-            tooltip: {
-                y: { formatter: v => new Intl.NumberFormat('fr-FR').format(v) + ' DH' }
-            },
-        }).render();
-    }
-
-    // ── Payment Method Pie Chart ──
-    const byMethod = @json($data['by_method']);
-    const methodLabels = { especes: 'Espèces', tpe: 'TPE', virement: 'Virement', cheque: 'Chèque' };
-    const methodColors = { especes: '#2ca87f', tpe: '#4680FF', virement: '#e58a00', cheque: '#dc2626' };
-    const pieLabels = [];
-    const pieSeries = [];
-    const pieColors = [];
-    Object.keys(methodLabels).forEach(k => {
-        if (byMethod[k]) {
-            pieLabels.push(methodLabels[k]);
-            pieSeries.push(parseFloat(byMethod[k].total));
-            pieColors.push(methodColors[k]);
-        }
-    });
-    if (pieSeries.length > 0) {
-        new ApexCharts(document.querySelector("#methodPieChart"), {
-            chart: { type: 'donut', height: 320 },
-            series: pieSeries,
-            labels: pieLabels,
-            colors: pieColors,
-            legend: { position: 'bottom' },
-            tooltip: {
-                y: { formatter: v => new Intl.NumberFormat('fr-FR').format(v) + ' DH' }
-            },
-            plotOptions: {
-                pie: { donut: { size: '55%', labels: {
-                    show: true,
-                    total: { show: true, label: 'Total', formatter: w => {
-                        const t = w.globals.seriesTotals.reduce((a,b) => a+b, 0);
-                        return new Intl.NumberFormat('fr-FR').format(t) + ' DH';
-                    }}
-                }}}
-            }
-        }).render();
-    }
-
-    // ── Stacked Method Evolution Chart ──
-    const methodEvo = @json($methodEvolution);
-    if (methodEvo.length > 0) {
-        new ApexCharts(document.querySelector("#methodStackedChart"), {
-            chart: { type: 'bar', height: 300, stacked: true, toolbar: { show: false } },
-            series: [
-                { name: 'Espèces', data: methodEvo.map(m => m.especes) },
-                { name: 'TPE', data: methodEvo.map(m => m.tpe) },
-                { name: 'Virement', data: methodEvo.map(m => m.virement) },
-                { name: 'Chèque', data: methodEvo.map(m => m.cheque) },
-            ],
-            xaxis: { categories: methodEvo.map(m => m.month) },
-            yaxis: {
-                labels: { formatter: v => (v >= 1000 ? (v/1000).toFixed(0) + 'k' : v) }
-            },
-            colors: ['#2ca87f', '#4680FF', '#e58a00', '#dc2626'],
-            dataLabels: { enabled: false },
-            tooltip: {
-                y: { formatter: v => new Intl.NumberFormat('fr-FR').format(v) + ' DH' }
-            },
-            plotOptions: { bar: { borderRadius: 4 } },
-        }).render();
-    }
-});
+<script type="application/json" id="encaissements-dashboard-data">
+{
+    "monthlyEvolution": @json($monthlyEvolution),
+    "byMethod": @json($data['by_method']),
+    "methodEvolution": @json($methodEvolution)
+}
 </script>
+<script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
+<script src="{{ URL::asset('assets/js/backoffice/encaissements-dashboard.js') }}"></script>
 @endsection

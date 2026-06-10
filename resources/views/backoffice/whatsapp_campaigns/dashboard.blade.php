@@ -246,54 +246,13 @@
 @endsection
 
 @section('scripts')
-<script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
-<script>
-(function(){
-    if (typeof ApexCharts === 'undefined') return;
-
-    const daily = @json($dailySeries);
-    const categories = daily.map(d => d.date.slice(5)); // MM-DD
-    const sent      = daily.map(d => d.sent);
-    const failed    = daily.map(d => d.failed);
-    const campaigns = daily.map(d => d.campaigns);
-
-    new ApexCharts(document.getElementById('wa-daily-chart'), {
-        chart: { type: 'area', height: 320, toolbar: { show: false } },
-        series: [
-            { name: 'Envoyés', data: sent },
-            { name: 'Échecs',  data: failed },
-            { name: 'Campagnes créées', data: campaigns },
-        ],
-        colors: ['#16a34a', '#ef4444', '#0369a1'],
-        stroke: { curve: 'smooth', width: 2.5 },
-        fill: { type: 'gradient', gradient: { opacityFrom: 0.35, opacityTo: 0.05 } },
-        dataLabels: { enabled: false },
-        xaxis: { categories },
-        legend: { position: 'top' },
-        grid: { borderColor: '#e5e7eb' },
-    }).render();
-
-    const statusData = @json($statusCounts);
-    new ApexCharts(document.getElementById('wa-status-chart'), {
-        chart: { type: 'donut', height: 280 },
-        series: [
-            statusData.queued, statusData.running, statusData.paused,
-            statusData.completed, statusData.stopped
-        ],
-        labels: ['En file', 'En cours', 'Pause', 'Terminées', 'Arrêtées'],
-        colors: ['#6b7280', '#0369a1', '#f59e0b', '#16a34a', '#111827'],
-        legend: { position: 'bottom' },
-        plotOptions: {
-            pie: {
-                donut: {
-                    labels: {
-                        show: true,
-                        total: { show: true, label: 'Total', formatter: () => {{ $totals['campaigns'] }} }
-                    }
-                }
-            }
-        },
-    }).render();
-})();
+<script type="application/json" id="whatsapp-dashboard-data">
+{
+    "dailySeries":    @json($dailySeries),
+    "statusCounts":   @json($statusCounts),
+    "totalCampaigns": {{ $totals['campaigns'] }}
+}
 </script>
+<script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
+<script src="{{ URL::asset('assets/js/backoffice/whatsapp-dashboard.js') }}"></script>
 @endsection

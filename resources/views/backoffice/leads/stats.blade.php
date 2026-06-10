@@ -201,68 +201,12 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            if (typeof ApexCharts === 'undefined') return;
-
-            // Monthly bar chart
-            var monthlyData = @json($monthlyStats);
-            var barEl = document.getElementById('leads-monthly-chart');
-            if (barEl) {
-                new ApexCharts(barEl, {
-                    chart: { type: 'bar', height: 380, toolbar: { show: true } },
-                    series: [
-                        { name: 'Inscriptions', data: monthlyData.map(m => m.inscriptions), color: '#2ca87f' },
-                        { name: 'Consultations', data: monthlyData.map(m => m.consultations), color: '#3ec9d6' },
-                        { name: 'Applications', data: monthlyData.map(m => m.applications), color: '#e58a00' },
-                    ],
-                    xaxis: { categories: monthlyData.map(m => m.label) },
-                    yaxis: { title: { text: 'Nombre de Leads' }, forceNiceScale: true, min: 0 },
-                    plotOptions: { bar: { columnWidth: '50%', borderRadius: 4 } },
-                    dataLabels: { enabled: true, style: { fontSize: '11px' } },
-                    legend: { position: 'top' },
-                    tooltip: { shared: true, intersect: false },
-                    responsive: [{
-                        breakpoint: 768,
-                        options: {
-                            plotOptions: { bar: { columnWidth: '70%' } },
-                            dataLabels: { enabled: false },
-                            legend: { position: 'bottom' },
-                        }
-                    }],
-                }).render();
-            }
-
-            // Centre donut chart
-            var centreData = @json($centreStats);
-            var donutEl = document.getElementById('leads-centre-chart');
-            if (donutEl) {
-                var labels = centreData.map(c => c.name);
-                var values = centreData.map(c => c.total);
-                new ApexCharts(donutEl, {
-                    chart: { type: 'donut', height: 350 },
-                    series: values,
-                    labels: labels,
-                    colors: ['#2ca87f', '#3ec9d6', '#e58a00', '#dc2626', '#7c3aed', '#0ea5e9', '#f59e0b', '#10b981'],
-                    legend: { position: 'bottom' },
-                    plotOptions: {
-                        pie: {
-                            donut: {
-                                size: '55%',
-                                labels: {
-                                    show: true,
-                                    total: { show: true, label: 'Total', fontSize: '16px' },
-                                },
-                            },
-                        },
-                    },
-                    responsive: [{
-                        breakpoint: 768,
-                        options: { chart: { height: 300 } }
-                    }],
-                }).render();
-            }
-        });
-    </script>
+<script type="application/json" id="leads-stats-data">
+{
+    "monthlyStats": @json($monthlyStats),
+    "centreStats":  @json($centreStats)
+}
+</script>
+<script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
+<script src="{{ URL::asset('assets/js/backoffice/leads-stats.js') }}"></script>
 @endsection
