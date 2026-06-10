@@ -122,7 +122,7 @@
 
 @section('scripts')
     <script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/js/backoffice/crm-ca-annuel.js') }}"></script>
+    <script src="{{ URL::asset('assets/js/backoffice/crm-ca-annuel.js') }}?v=2"></script>
     <script>
     // Choices.js wraps the native select — listen on the underlying element via 'change'
     // which Choices dispatches after its own update.
