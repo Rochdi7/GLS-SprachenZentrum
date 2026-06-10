@@ -672,6 +672,5 @@
 
 })();
 
-})();
 </script>
 @endsection
