@@ -85,6 +85,7 @@ Route::prefix('crm')
         Route::get('/statistiques',                      [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'index'])->name('statistiques');
         Route::post('/statistiques/refresh',             [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'refresh'])->name('statistiques.refresh');
         Route::get('/statistiques/encaissement-range',   [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'encaissementRange'])->name('statistiques.encaissement-range');
+        Route::get('/statistiques/ca-range',              [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'caRange'])->name('statistiques.ca-range');
         Route::get('/statistiques/comparaison',          [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'comparaison'])->name('statistiques.comparaison');
         Route::get('/statistiques/comparaison/data',     [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'comparaisonData'])->name('statistiques.comparaison.data');
 

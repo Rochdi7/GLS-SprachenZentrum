@@ -296,6 +296,87 @@
 </div>
 
 
+{{-- ── Chiffre d'affaires par période (due_date range, status ≠ 10) ──── --}}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h5 class="mb-0">
+                    <i class="ph-duotone ph-currency-circle-dollar me-2 text-success"></i>
+                    Chiffre d'affaires par période — par centre
+                </h5>
+                <small class="text-muted">Inscriptions actives (hors statut annulé)</small>
+            </div>
+            <div class="card-body">
+
+                <div class="row g-3 mb-4 align-items-end">
+                    <div class="col-auto">
+                        <label class="form-label fw-semibold mb-1">
+                            <i class="ph-duotone ph-calendar-blank me-1 text-success"></i>
+                            Date de début (échéance)
+                        </label>
+                        <input type="date" id="ca-start-date" class="form-control" style="min-width:170px">
+                    </div>
+                    <div class="col-auto">
+                        <label class="form-label fw-semibold mb-1">
+                            <i class="ph-duotone ph-calendar-blank me-1 text-success"></i>
+                            Date de fin (échéance)
+                        </label>
+                        <input type="date" id="ca-end-date" class="form-control" style="min-width:170px">
+                    </div>
+                    <div class="col-auto">
+                        <button id="ca-range-btn" class="btn btn-success" type="button">
+                            <i class="ph-duotone ph-magnifying-glass me-1"></i>
+                            Calculer CA
+                        </button>
+                    </div>
+                    <div class="col-auto d-flex gap-2 flex-wrap">
+                        <button class="btn btn-sm btn-outline-secondary ca-preset" data-preset="today">Aujourd'hui</button>
+                        <button class="btn btn-sm btn-outline-secondary ca-preset" data-preset="7d">7 jours</button>
+                        <button class="btn btn-sm btn-outline-secondary ca-preset" data-preset="30d">30 jours</button>
+                        <button class="btn btn-sm btn-outline-secondary ca-preset" data-preset="month">Ce mois</button>
+                        <button class="btn btn-sm btn-outline-secondary ca-preset" data-preset="year">Cette année</button>
+                    </div>
+                </div>
+
+                <div id="ca-loading" class="text-center py-4 d-none">
+                    <div class="spinner-border text-success" role="status"></div>
+                    <p class="text-muted mt-2 mb-0 small">Calcul en cours…</p>
+                </div>
+                <div id="ca-error" class="alert alert-danger d-none"></div>
+
+                <div id="ca-results" class="d-none">
+                    <div class="row g-3 mb-4" id="ca-kpis"></div>
+                    <div class="mb-4">
+                        <div id="ca-chart" style="min-height:320px"></div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Centre</th>
+                                    <th class="text-end">CA (DH)</th>
+                                    <th class="text-end">Nb échéances</th>
+                                    <th style="width:30%">Part</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ca-tbody"></tbody>
+                            <tfoot id="ca-tfoot" class="table-secondary fw-semibold"></tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="ca-empty" class="text-center py-5 text-muted d-none">
+                    <i class="ph-duotone ph-chart-bar" style="font-size:2.5rem"></i>
+                    <p class="mt-2 mb-0">Aucune donnée sur cette période.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
@@ -664,6 +745,204 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function showError(msg) {
         const el = document.getElementById('enc-range-error');
+        el.textContent = msg;
+        el.classList.remove('d-none');
+    }
+
+})();
+
+// ── Chiffre d'affaires range ──────────────────────────────────────────
+(function () {
+    'use strict';
+
+    const ENDPOINT = '{{ route("backoffice.crm.statistiques.ca-range") }}';
+    const COLORS   = ['#1cc88a','#4680ff','#ffc107','#dc3545','#0dcaf0','#6f42c1','#fd7e14'];
+
+    let caChart = null;
+
+    function fmtDH(v) {
+        if (v >= 1_000_000) return (v / 1_000_000).toFixed(2).replace(/\.?0+$/, '') + ' M DH';
+        if (v >= 1_000)     return (v / 1_000).toFixed(1).replace('.0', '') + ' k DH';
+        return v.toLocaleString('fr-MA') + ' DH';
+    }
+
+    function fullDH(v) {
+        return new Intl.NumberFormat('fr-MA', { minimumFractionDigits: 2 }).format(v) + ' DH';
+    }
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function toIso(d) { return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+
+    document.querySelectorAll('.ca-preset').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const today = new Date();
+            let s, e;
+            switch (this.dataset.preset) {
+                case 'today': s = e = today; break;
+                case '7d':    s = new Date(today); s.setDate(today.getDate() - 6); e = today; break;
+                case '30d':   s = new Date(today); s.setDate(today.getDate() - 29); e = today; break;
+                case 'month': s = new Date(today.getFullYear(), today.getMonth(), 1); e = today; break;
+                case 'year':  s = new Date(today.getFullYear(), 0, 1); e = today; break;
+            }
+            document.getElementById('ca-start-date').value = toIso(s);
+            document.getElementById('ca-end-date').value   = toIso(e);
+            document.querySelectorAll('.ca-preset').forEach(b => {
+                b.classList.remove('active', 'btn-success');
+                b.classList.add('btn-outline-secondary');
+            });
+            this.classList.remove('btn-outline-secondary');
+            this.classList.add('active', 'btn-success');
+            fetchCA();
+        });
+    });
+
+    document.getElementById('ca-range-btn').addEventListener('click', fetchCA);
+
+    function fetchCA() {
+        const start = document.getElementById('ca-start-date').value;
+        const end   = document.getElementById('ca-end-date').value;
+        if (!start || !end) { showError('Veuillez choisir une date de début et de fin.'); return; }
+        if (start > end)    { showError('La date de début doit être ≤ la date de fin.'); return; }
+
+        setLoading(true);
+        clearResults();
+
+        const params = new URLSearchParams({ startDate: start, endDate: end });
+        @if ($storeId)
+        params.set('strStoreId', '{{ $storeId }}');
+        @endif
+
+        fetch(`${ENDPOINT}?${params}`, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(r => r.json())
+            .then(json => {
+                setLoading(false);
+                if (json.error) { showError(json.error); return; }
+                if (!json.data || json.data.length === 0) {
+                    document.getElementById('ca-empty').classList.remove('d-none');
+                    return;
+                }
+                renderResults(json);
+            })
+            .catch(err => { setLoading(false); showError('Erreur réseau : ' + err.message); });
+    }
+
+    function renderResults(json) {
+        const { data, grand_total, grand_nb, start_date, end_date } = json;
+
+        // KPI cards
+        document.getElementById('ca-kpis').innerHTML = `
+            <div class="col-6 col-lg-3">
+                <div class="card border-success border-2 h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted small mb-1"><i class="ph-duotone ph-currency-circle-dollar me-1 text-success"></i>CA total</div>
+                        <div class="fw-bold fs-5 text-success">${fullDH(grand_total)}</div>
+                        <div class="text-muted" style="font-size:.75rem">${start_date} → ${end_date}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="card border-primary border-2 h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted small mb-1"><i class="ph-duotone ph-receipt me-1 text-primary"></i>Nb échéances</div>
+                        <div class="fw-bold fs-5 text-primary">${grand_nb.toLocaleString('fr-MA')}</div>
+                        <div class="text-muted" style="font-size:.75rem">inscriptions actives</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="card border-info border-2 h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted small mb-1"><i class="ph-duotone ph-buildings me-1 text-info"></i>Centres</div>
+                        <div class="fw-bold fs-5 text-info">${data.length}</div>
+                        <div class="text-muted" style="font-size:.75rem">avec CA</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="card border-warning border-2 h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted small mb-1"><i class="ph-duotone ph-chart-pie me-1 text-warning"></i>Moy. / échéance</div>
+                        <div class="fw-bold fs-5 text-warning">${grand_nb > 0 ? fullDH(grand_total / grand_nb) : '—'}</div>
+                        <div class="text-muted" style="font-size:.75rem">montant moyen</div>
+                    </div>
+                </div>
+            </div>`;
+
+        // Chart
+        if (caChart) { caChart.destroy(); caChart = null; }
+        caChart = new ApexCharts(document.getElementById('ca-chart'), {
+            chart: { type: 'bar', height: 300, toolbar: { show: false }, fontFamily: 'inherit' },
+            series: [{ name: 'CA (DH)', data: data.map(r => Math.round(r.ca)) }],
+            colors: COLORS,
+            plotOptions: {
+                bar: { distributed: true, borderRadius: 6, columnWidth: '55%', dataLabels: { position: 'top' } },
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: fmtDH,
+                offsetY: -22,
+                style: { fontSize: '11px', colors: ['#374151'] },
+            },
+            grid: { borderColor: '#f0f0f0', strokeDashArray: 4 },
+            xaxis: {
+                categories: data.map(r => r.store_name.replace(/^GLS\s*/i, '')),
+                axisBorder: { show: false }, axisTicks: { show: false },
+                labels: { style: { fontSize: '12px', fontWeight: 600 } },
+            },
+            yaxis: { labels: { formatter: fmtDH, style: { fontSize: '11px' } } },
+            legend: { show: false },
+            tooltip: { y: { formatter: v => new Intl.NumberFormat('fr-MA', { minimumFractionDigits: 2 }).format(v) + ' DH' } },
+        });
+        caChart.render();
+
+        // Table
+        const tbody = document.getElementById('ca-tbody');
+        const tfoot = document.getElementById('ca-tfoot');
+        tbody.innerHTML = '';
+
+        data.forEach((r, i) => {
+            const pct   = grand_total > 0 ? (r.ca / grand_total * 100).toFixed(1) : 0;
+            const color = COLORS[i % COLORS.length];
+            tbody.innerHTML += `
+                <tr>
+                    <td class="text-muted">${i + 1}</td>
+                    <td><span class="badge" style="background:${color}20;color:${color};font-size:.8rem">${r.store_name}</span></td>
+                    <td class="text-end fw-semibold text-success">${new Intl.NumberFormat('fr-MA', {minimumFractionDigits:2}).format(r.ca)} DH</td>
+                    <td class="text-end">${r.nb.toLocaleString('fr-MA')}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="progress flex-grow-1" style="height:8px">
+                                <div class="progress-bar" style="width:${pct}%;background:${color}"></div>
+                            </div>
+                            <small class="text-muted">${pct}%</small>
+                        </div>
+                    </td>
+                </tr>`;
+        });
+
+        tfoot.innerHTML = `
+            <tr>
+                <td colspan="2">Total</td>
+                <td class="text-end">${new Intl.NumberFormat('fr-MA', {minimumFractionDigits:2}).format(grand_total)} DH</td>
+                <td class="text-end">${grand_nb.toLocaleString('fr-MA')}</td>
+                <td></td>
+            </tr>`;
+
+        document.getElementById('ca-results').classList.remove('d-none');
+    }
+
+    function setLoading(on) { document.getElementById('ca-loading').classList.toggle('d-none', !on); }
+
+    function clearResults() {
+        ['ca-results','ca-empty','ca-error'].forEach(id => document.getElementById(id).classList.add('d-none'));
+        document.getElementById('ca-kpis').innerHTML  = '';
+        document.getElementById('ca-tbody').innerHTML = '';
+        document.getElementById('ca-tfoot').innerHTML = '';
+        if (caChart) { caChart.destroy(); caChart = null; }
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('ca-error');
         el.textContent = msg;
         el.classList.remove('d-none');
     }
