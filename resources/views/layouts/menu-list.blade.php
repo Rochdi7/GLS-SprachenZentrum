@@ -48,6 +48,9 @@
     $crmStatsDashOpen    = request()->routeIs('backoffice.crm.statistiques') && !request()->routeIs('backoffice.crm.statistiques.comparaison*');
     $crmStatsCompOpen    = request()->routeIs('backoffice.crm.statistiques.comparaison*');
     $crmPresenceSuiviOpen = request()->routeIs('backoffice.crm.presence-suivi');
+
+    $financesOpen =
+        request()->routeIs('backoffice.encaissements.*');
 @endphp
 
 <li class="pc-item pc-caption">
@@ -326,6 +329,61 @@
         </ul>
     </li>
 @endcanany
+
+{{-- Finances / Encaissements --}}
+@can('encaissements.view')
+    <li class="pc-item pc-hasmenu {{ $financesOpen ? 'pc-trigger' : '' }}">
+        <a href="#!" class="pc-link">
+            <span class="pc-micon"><i class="ph-duotone ph-currency-circle-dollar"></i></span>
+            <span class="pc-mtext">Finances</span>
+            <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
+        </a>
+        <ul class="pc-submenu">
+            <li class="pc-item {{ request()->routeIs('backoffice.encaissements.dashboard') ? 'active' : '' }}">
+                <a href="{{ route('backoffice.encaissements.dashboard') }}"
+                    class="pc-link {{ request()->routeIs('backoffice.encaissements.dashboard') ? 'active' : '' }}">
+                    <span class="pc-mtext">Dashboard</span>
+                </a>
+            </li>
+            <li class="pc-item {{ request()->routeIs('backoffice.encaissements.index') ? 'active' : '' }}">
+                <a href="{{ route('backoffice.encaissements.index') }}"
+                    class="pc-link {{ request()->routeIs('backoffice.encaissements.index') ? 'active' : '' }}">
+                    <span class="pc-mtext">Encaissements</span>
+                </a>
+            </li>
+            <li class="pc-item {{ request()->routeIs('backoffice.encaissements.expenses.*') ? 'active' : '' }}">
+                <a href="{{ route('backoffice.encaissements.expenses.index') }}"
+                    class="pc-link {{ request()->routeIs('backoffice.encaissements.expenses.*') ? 'active' : '' }}">
+                    <span class="pc-mtext">Dépenses</span>
+                </a>
+            </li>
+            <li class="pc-item {{ request()->routeIs('backoffice.encaissements.rentabilite') ? 'active' : '' }}">
+                <a href="{{ route('backoffice.encaissements.rentabilite') }}"
+                    class="pc-link {{ request()->routeIs('backoffice.encaissements.rentabilite') ? 'active' : '' }}">
+                    <span class="pc-mtext">Rentabilité</span>
+                </a>
+            </li>
+            <li class="pc-item {{ request()->routeIs('backoffice.encaissements.operators') ? 'active' : '' }}">
+                <a href="{{ route('backoffice.encaissements.operators') }}"
+                    class="pc-link {{ request()->routeIs('backoffice.encaissements.operators') ? 'active' : '' }}">
+                    <span class="pc-mtext">Opérateurs</span>
+                </a>
+            </li>
+            <li class="pc-item {{ request()->routeIs('backoffice.encaissements.primes.*') ? 'active' : '' }}">
+                <a href="{{ route('backoffice.encaissements.primes.index') }}"
+                    class="pc-link {{ request()->routeIs('backoffice.encaissements.primes.*') ? 'active' : '' }}">
+                    <span class="pc-mtext">Primes</span>
+                </a>
+            </li>
+            <li class="pc-item {{ request()->routeIs('backoffice.encaissements.imports.*') ? 'active' : '' }}">
+                <a href="{{ route('backoffice.encaissements.imports.index') }}"
+                    class="pc-link {{ request()->routeIs('backoffice.encaissements.imports.*') ? 'active' : '' }}">
+                    <span class="pc-mtext">Imports</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+@endcan
 
 {{-- CRM (API) — separate menu section --}}
 @can('crm.view')

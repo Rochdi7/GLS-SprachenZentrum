@@ -171,53 +171,45 @@ class SyncCrmExpensesCommand extends Command
         $upserts = [];
 
         foreach ($rows as $row) {
-            $crmId = (string) ($row['ID'] ?? $row['id'] ?? '');
+            $crmId = (string) ($row['ID'] ?? '');
             if ($crmId === '') continue;
 
-            // Parse expense date — may be ISO datetime or date string
-            $expenseDateRaw = $row['EXPENSE_DATE'] ?? $row['expense_date'] ?? $row['DATE'] ?? $row['date'] ?? null;
-            $expenseDate    = null;
-            $month          = null;
-
-            if ($expenseDateRaw) {
+            // DATE arrives as UTC ISO datetime — convert to Casablanca local date
+            $expenseDate = null;
+            $month       = null;
+            $rawDate     = $row['DATE'] ?? null;
+            if ($rawDate) {
                 try {
-                    $parsed      = Carbon::parse($expenseDateRaw)->setTimezone('Africa/Casablanca');
+                    $parsed      = Carbon::parse($rawDate)->setTimezone('Africa/Casablanca');
                     $expenseDate = $parsed->toDateString();
                     $month       = $parsed->startOfMonth()->toDateString();
                 } catch (\Throwable) {}
             }
-
-            // Fallback: use MONTH field if present
-            if (!$month) {
-                $rawMonth = $row['MONTH'] ?? $row['month'] ?? null;
-                if ($rawMonth) {
-                    try {
-                        $month = Carbon::parse($rawMonth)->startOfMonth()->toDateString();
-                    } catch (\Throwable) {}
-                }
-            }
-
             if (!$month) {
                 $month = now('Africa/Casablanca')->startOfMonth()->toDateString();
             }
 
-            // Normalise expense type
-            $rawType = $row['TYPE'] ?? $row['type'] ?? $row['CATEGORY'] ?? $row['category'] ?? 'autre';
-            $type    = SiteExpense::normalizeType((string) $rawType);
+            // EXPENSE_TYPE_NAME → our normalised type key
+            $rawType = (string) ($row['EXPENSE_TYPE_NAME'] ?? 'autre');
+            $type    = SiteExpense::normalizeType($rawType);
 
             $upserts[] = [
                 'crm_expense_id'  => $crmId,
                 'crm_source'      => 'wimschool',
                 'site_id'         => $localSiteId,
                 'type'            => $type,
-                'label'           => $row['LABEL'] ?? $row['label'] ?? $row['DESCRIPTION'] ?? $row['description'] ?? $rawType,
-                'amount'          => (float) ($row['AMOUNT'] ?? $row['amount'] ?? 0),
+                'label'           => (string) ($row['DESCRIPTION'] ?? $rawType),
+                'amount'          => (float) ($row['TOTAL_AMOUNT'] ?? 0),
                 'month'           => $month,
                 'expense_date'    => $expenseDate,
-                'reference'       => $row['REFERENCE'] ?? $row['reference'] ?? null,
-                'payment_method'  => $row['PAYMENT_METHOD'] ?? $row['payment_method'] ?? null,
-                'operator_name'   => $row['OPERATOR'] ?? $row['operator'] ?? $row['CREATED_BY'] ?? null,
-                'notes'           => $row['NOTES'] ?? $row['notes'] ?? $row['COMMENT'] ?? $row['comment'] ?? null,
+                'reference'       => $row['REFERENCE'] ?? null,
+                'payment_method'  => $row['PAYMENT_METHOD_ID'] !== null
+                                        ? (string) $row['PAYMENT_METHOD_ID']
+                                        : null,
+                'operator_name'   => $row['USER_FULLNAME_CREATION'] ?? null,
+                'notes'           => ($row['INVOICE_REFERENCE'] ?? '') !== ''
+                                        ? (string) $row['INVOICE_REFERENCE']
+                                        : null,
                 'created_at'      => $now,
                 'updated_at'      => $now,
             ];
