@@ -3,11 +3,14 @@
 namespace App\Services\Crm;
 
 use App\Services\Crm\Resources\Attendance;
+use App\Services\Crm\Resources\Employees;
 use App\Services\Crm\Resources\EmployeeSalaries;
+use App\Services\Crm\Resources\Expenses;
 use App\Services\Crm\Resources\Groups;
 use App\Services\Crm\Resources\Lov;
 use App\Services\Crm\Resources\Payments;
 use App\Services\Crm\Resources\Registrations;
+use App\Services\Crm\Resources\Salaries;
 use App\Services\Crm\Resources\Students;
 use App\Services\Crm\Resources\SubscriptionServices;
 
@@ -64,6 +67,21 @@ class Crm
     public function employeeSalaries(): EmployeeSalaries
     {
         return $this->resources[EmployeeSalaries::class] ??= new EmployeeSalaries($this->client);
+    }
+
+    public function expenses(): Expenses
+    {
+        return $this->resources[Expenses::class] ??= new Expenses($this->client);
+    }
+
+    public function employees(): Employees
+    {
+        return $this->resources[Employees::class] ??= new Employees($this->client);
+    }
+
+    public function salaries(): Salaries
+    {
+        return $this->resources[Salaries::class] ??= new Salaries($this->client);
     }
 
     public function attendance(): Attendance

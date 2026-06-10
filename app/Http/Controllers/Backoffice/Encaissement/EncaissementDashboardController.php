@@ -52,13 +52,15 @@ class EncaissementDashboardController extends Controller
 
         // Chart data
         $monthlyEvolution = $this->analytics->getMonthlyEvolution($sid, 12);
-        $methodEvolution = $this->analytics->getMethodEvolution($sid, 6);
+        $methodEvolution  = $this->analytics->getMethodEvolution($sid, 6);
+        $annualSummary    = $this->analytics->getAnnualSummary($sid, (int) $year);
 
         // Backward-compat for existing view bits that still read $month
         $month = $period;
 
         return view('backoffice.encaissements.dashboard', compact(
-            'data', 'sites', 'month', 'year', 'monthNum', 'siteId', 'monthlyEvolution', 'methodEvolution'
+            'data', 'sites', 'month', 'year', 'monthNum', 'siteId',
+            'monthlyEvolution', 'methodEvolution', 'annualSummary'
         ));
     }
 

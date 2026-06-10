@@ -45,6 +45,7 @@ class SiteExpense extends Model
         'site_id', 'type', 'label', 'amount', 'month', 'notes',
         'reference', 'expense_date', 'payment_method', 'operator_name',
         'order_number', 'expense_import_id',
+        'crm_expense_id', 'crm_source',
     ];
 
     protected $casts = [

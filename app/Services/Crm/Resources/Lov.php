@@ -122,6 +122,19 @@ class Lov extends Resource
         ], fn ($v) => $v !== null));
     }
 
+    /**
+     * GET /api/external/v1/lov/expense-types — non-paginated reference list
+     *
+     * Returns all expense type definitions. Used to map CRM expense type IDs
+     * to human-readable labels and to our local SiteExpense::TYPE_MAP.
+     */
+    public function expenseTypes(int $limit = 100): array
+    {
+        return $this->client->get('/api/external/v1/lov/expense-types', [
+            'limit' => $limit,
+        ]);
+    }
+
     /** GET /api/external/v1/lov/categories */
     public function categories(int $limit = 100): array
     {

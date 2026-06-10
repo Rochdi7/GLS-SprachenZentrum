@@ -3,6 +3,7 @@
 namespace App\Services\Encaissement;
 
 use App\Models\Encaissement;
+use App\Models\Site;
 use App\Models\SiteExpense;
 use App\Models\Prime;
 use App\Models\PresencePaymentSummary;
@@ -255,6 +256,102 @@ class EncaissementAnalyticsService
                 'tpe' => round($byMethod['tpe'] ?? 0, 2),
                 'virement' => round($byMethod['virement'] ?? 0, 2),
                 'cheque' => round($byMethod['cheque'] ?? 0, 2),
+            ];
+        }
+
+        return $results;
+    }
+
+    /**
+     * Annual summary for the multi-series area chart.
+     *
+     * Returns one row per calendar month in $year with five series:
+     *   - chiffre_affaire : total invoiced (sum of total_price from crm_collection_rows by due_date)
+     *   - collecte        : payments actually received (crm_payment_snapshots latest by effective_date)
+     *   - reste_a_payer   : outstanding balance (chiffre_affaire - collecte)
+     *   - depenses        : local expenses (site_expenses by month)
+     *   - encaissements   : cash counter receipts (encaissements by collected_at)
+     *
+     * @param  int|null  $siteId  Filter to one centre; null = all centres
+     * @param  int       $year    Calendar year (defaults to current year)
+     */
+    public function getAnnualSummary(?int $siteId = null, int $year = 0): array
+    {
+        if ($year <= 0) {
+            $year = (int) now('Africa/Casablanca')->format('Y');
+        }
+
+        $yearStart = Carbon::create($year, 1, 1)->startOfYear();
+        $yearEnd   = Carbon::create($year, 12, 31)->endOfYear();
+
+        // ── Encaissements (cash receipts) ────────────────────────────────────
+        $encQ = Encaissement::whereBetween('collected_at', [$yearStart, $yearEnd])
+            ->select(DB::raw('YEAR(collected_at) as y, MONTH(collected_at) as m, SUM(amount) as total'))
+            ->groupBy(DB::raw('YEAR(collected_at), MONTH(collected_at)'));
+        if ($siteId) $encQ->where('site_id', $siteId);
+
+        $encByMonth = $encQ->get()->keyBy(fn ($r) => sprintf('%04d-%02d', $r->y, $r->m));
+
+        // ── Site Expenses ────────────────────────────────────────────────────
+        $expQ = SiteExpense::whereBetween('month', [
+                $yearStart->toDateString(),
+                $yearEnd->toDateString(),
+            ])
+            ->select(DB::raw('YEAR(month) as y, MONTH(month) as m, SUM(amount) as total'))
+            ->groupBy(DB::raw('YEAR(month), MONTH(month)'));
+        if ($siteId) $expQ->where('site_id', $siteId);
+
+        $expByMonth = $expQ->get()->keyBy(fn ($r) => sprintf('%04d-%02d', $r->y, $r->m));
+
+        // Collecté is derived from CA rows: collecte = total_price - rest_amount
+        // We compute it from caByMonth below — no separate query needed.
+
+        // ── Chiffre d'affaire & Reste à payer: crm_collection_rows ──────────
+        // Conditions per business rules:
+        //   - REGISTRATION_STATUS_ID <> 10 (exclude cancelled registrations)
+        //   - DUE_DATE within the year range
+        $caQ = DB::table('crm_collection_rows')
+            ->whereBetween('due_date', [$yearStart->toDateString(), $yearEnd->toDateString()])
+            ->whereNotNull('total_price')
+            ->where(function ($q) {
+                $q->whereNull('registration_status_id')
+                  ->orWhere('registration_status_id', '<>', 10);
+            })
+            ->select(
+                DB::raw('YEAR(due_date) as y'),
+                DB::raw('MONTH(due_date) as m'),
+                DB::raw('SUM(total_price) as total'),
+                DB::raw('SUM(COALESCE(rest_amount, 0)) as reste'),
+            )
+            ->groupBy(DB::raw('YEAR(due_date), MONTH(due_date)'));
+
+        if ($siteId) {
+            $storeIds = Site::where('id', $siteId)->pluck('crm_store_id')->filter()->values()->toArray();
+            if (!empty($storeIds)) {
+                $caQ->whereIn('crm_store_id', $storeIds);
+            }
+        }
+
+        $caByMonth = collect($caQ->get())->keyBy(fn ($r) => sprintf('%04d-%02d', $r->y, $r->m));
+
+        // ── Build 12-month result array ──────────────────────────────────────
+        $results = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $key = sprintf('%04d-%02d', $year, $m);
+
+            $ca          = (float) ($caByMonth[$key]->total ?? 0);
+            $resteAPayer = (float) ($caByMonth[$key]->reste ?? 0);
+            // Collecté = total invoiced - outstanding balance
+            $collecte    = max(0, $ca - $resteAPayer);
+
+            $results[] = [
+                'month'           => $key,
+                'month_label'     => sprintf('%02d/%04d', $m, $year),
+                'chiffre_affaire' => round($ca, 2),
+                'collecte'        => round($collecte, 2),
+                'reste_a_payer'   => round($resteAPayer, 2),
+                'depenses'        => round((float) ($expByMonth[$key]->total ?? 0), 2),
+                'encaissements'   => round((float) ($encByMonth[$key]->total ?? 0), 2),
             ];
         }
 
