@@ -46,9 +46,6 @@
         </select>
     </div>
     <div class="col-auto">
-        <input type="month" name="month" value="{{ $selectedMonth }}" class="form-control form-control-sm">
-    </div>
-    <div class="col-auto">
         <button class="btn btn-sm btn-primary">Filtrer</button>
         <a href="{{ route('backoffice.crm.expenses.index') }}" class="btn btn-sm btn-outline-secondary">Réinitialiser</a>
     </div>
@@ -64,11 +61,6 @@
         <h6 class="mb-0">
             <i class="ph-duotone ph-ranking text-primary me-1"></i>
             Classement des centres par dépenses totales
-            @if ($selectedMonth)
-                <span class="badge bg-light text-muted border ms-2 fw-normal" style="font-size:.75rem;">
-                    {{ \Carbon\Carbon::parse($selectedMonth)->translatedFormat('F Y') }}
-                </span>
-            @endif
         </h6>
         <span class="text-muted small">{{ $centerSummary->count() }} centres</span>
     </div>

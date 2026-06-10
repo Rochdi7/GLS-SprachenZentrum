@@ -205,17 +205,6 @@ class StatsController extends BaseCrmController
 
         $storeFilter = $storeId ? "AND crm_store_id = {$storeId}" : '';
 
-        // CA = total_price from collections WHERE status != 10, grouped by due_date month
-        $caRows = DB::select("
-            SELECT DATE_FORMAT(due_date,'%Y-%m') as m, SUM(total_price) as total
-            FROM crm_collection_rows
-            WHERE registration_status_id <> 10
-              AND YEAR(due_date) = ?
-              {$storeFilter}
-            GROUP BY m
-        ", [$year]);
-        $caByMonth = collect($caRows)->pluck('total', 'm')->map(fn($v) => (float) $v)->toArray();
-
         // Collecté = sum of payments (effective_date in year)
         $collecteRows = DB::select("
             SELECT DATE_FORMAT(effective_date,'%Y-%m') as m, SUM(amount) as total
@@ -230,6 +219,17 @@ class StatsController extends BaseCrmController
             GROUP BY m
         ", [$year]);
         $collecteByMonth = collect($collecteRows)->pluck('total', 'm')->map(fn($v) => (float) $v)->toArray();
+
+        // Reste à payer = outstanding balance from collection rows (active receivables by due_date)
+        $resteRows = DB::select("
+            SELECT DATE_FORMAT(due_date,'%Y-%m') as m, SUM(rest_amount) as total
+            FROM crm_collection_rows
+            WHERE registration_status_id <> 10
+              AND YEAR(due_date) = ?
+              {$storeFilter}
+            GROUP BY m
+        ", [$year]);
+        $resteByMonth = collect($resteRows)->pluck('total', 'm')->map(fn($v) => (float) $v)->toArray();
 
         // Encaissements = payments grouped by date_creation (cash recorded timestamp)
         $encRows = DB::select("
@@ -267,11 +267,11 @@ class StatsController extends BaseCrmController
         $seriesEncaissements = [];
 
         foreach ($months as $m) {
-            $ca       = $caByMonth[$m]  ?? 0;
             $collecte = $collecteByMonth[$m] ?? 0;
-            $seriesCA[]            = round($ca);
+            $reste    = $resteByMonth[$m]    ?? 0;
+            $seriesCA[]            = round($collecte + $reste);
             $seriesCollecte[]      = round($collecte);
-            $seriesReste[]         = round(max(0, $ca - $collecte));
+            $seriesReste[]         = round($reste);
             $seriesDepenses[]      = round($depRows[$m] ?? 0);
             $seriesEncaissements[] = round($encByMonth[$m] ?? 0);
         }
