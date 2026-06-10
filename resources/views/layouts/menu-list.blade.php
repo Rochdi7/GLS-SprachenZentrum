@@ -44,6 +44,7 @@
         request()->routeIs('backoffice.crm.stats') ||
         request()->routeIs('backoffice.crm.duplicates') ||
         request()->routeIs('backoffice.crm.insights.*');
+    $crmExpensesOpen     = request()->routeIs('backoffice.crm.expenses.*');
     $crmCollectionsOpen  = request()->routeIs('backoffice.crm.collections.*');
     $crmStatsDashOpen    = request()->routeIs('backoffice.crm.statistiques') && !request()->routeIs('backoffice.crm.statistiques.comparaison*');
     $crmStatsCompOpen    = request()->routeIs('backoffice.crm.statistiques.comparaison*');
@@ -480,6 +481,14 @@
             <li class="pc-item {{ request()->routeIs('backoffice.payroll.crm.*') ? 'active' : '' }}">
                 <a href="{{ route('backoffice.payroll.crm.legacy.dashboard') }}" class="pc-link">
                     <span class="pc-mtext">Paiement Profs</span>
+                </a>
+            </li>
+
+            {{-- Dépenses CRM --}}
+            <li class="pc-item {{ $crmExpensesOpen ? 'active' : '' }}">
+                <a href="{{ route('backoffice.crm.expenses.index') }}"
+                    class="pc-link {{ $crmExpensesOpen ? 'active' : '' }}">
+                    <span class="pc-mtext">Dépenses</span>
                 </a>
             </li>
 

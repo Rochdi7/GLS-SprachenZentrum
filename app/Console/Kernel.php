@@ -27,6 +27,15 @@ class Kernel extends ConsoleKernel
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/crm-sync-all.log'));
 
+        // ── One-time backfill — expenses from 2025-09-01 to today ───────────
+        // Remove after 2026-06-15 once confirmed synced.
+        $schedule->command('crm:sync-expenses --all --from=2025-09-01')
+            ->dailyAt('02:00')
+            ->timezone('Africa/Casablanca')
+            ->withoutOverlapping(120)
+            ->when(fn () => now('Africa/Casablanca')->lt(\Carbon\Carbon::parse('2026-06-15', 'Africa/Casablanca')))
+            ->appendOutputTo(storage_path('logs/crm-expenses-backfill.log'));
+
         // ── Monthly re-snapshot — 5th of each month at 03:00 ────────────────
         // Re-fetches last 3 months to catch retroactive CRM entries (payments
         // entered weeks after their effective_date — common in Wimschool CRM).

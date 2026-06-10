@@ -112,6 +112,11 @@ class CrmSyncAllCommand extends Command
             '--all',
             'Compute student churn/risk scores from local DB — no API calls',
         ],
+        'expenses_sync'    => [
+            'crm:sync-expenses',
+            '--all --delay=500',
+            'Sync expenses from CRM API into site_expenses (crm_source=wimschool)',
+        ],
         'daily_report'     => [
             'crm:daily-report',
             '',

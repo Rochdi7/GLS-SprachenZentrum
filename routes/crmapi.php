@@ -100,6 +100,9 @@ Route::prefix('crm')
             Route::get('/student-card',        'studentCard')->name('student-card');
         });
 
+        // CRM Expenses — local warehouse (site_expenses where crm_source=wimschool).
+        Route::get('/expenses', [\App\Http\Controllers\Backoffice\Crm\CrmExpensesController::class, 'index'])->name('expenses.index');
+
         // Daily CEO Reports (Module 1).
         Route::prefix('reports')->name('reports.')->group(function () {
             Route::get('/',          [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'index'])->name('index');

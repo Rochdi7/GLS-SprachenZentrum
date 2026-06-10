@@ -4,6 +4,7 @@ namespace App\Services\Crm;
 
 use App\Services\Crm\Resources\Attendance;
 use App\Services\Crm\Resources\EmployeeSalaries;
+use App\Services\Crm\Resources\Expenses;
 use App\Services\Crm\Resources\Groups;
 use App\Services\Crm\Resources\Lov;
 use App\Services\Crm\Resources\Payments;
@@ -69,6 +70,11 @@ class Crm
     public function attendance(): Attendance
     {
         return $this->resources[Attendance::class] ??= new Attendance($this->client);
+    }
+
+    public function expenses(): Expenses
+    {
+        return $this->resources[Expenses::class] ??= new Expenses($this->client);
     }
 
     public function client(): WimschoolClient
