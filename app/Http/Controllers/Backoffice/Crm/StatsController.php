@@ -110,54 +110,6 @@ class StatsController extends BaseCrmController
         ]);
     }
 
-    /**
-     * CA = SUM(total_price) from crm_collection_rows
-     * Conditions: registration_status_id != 10, due_date in range.
-     */
-    public function caRange(Request $request): \Illuminate\Http\JsonResponse
-    {
-        $startDate = $request->query('startDate');
-        $endDate   = $request->query('endDate');
-        $storeId   = $request->query('strStoreId') ? (int) $request->query('strStoreId') : null;
-
-        if (!$startDate || !$endDate) {
-            return response()->json(['error' => 'startDate et endDate sont requis.'], 422);
-        }
-
-        try {
-            Carbon::parse($startDate);
-            Carbon::parse($endDate);
-        } catch (\Throwable) {
-            return response()->json(['error' => 'Dates invalides.'], 422);
-        }
-
-        $rows = CrmCollectionRow::query()
-            ->where('registration_status_id', '!=', 10)
-            ->whereBetween('due_date', [$startDate, $endDate])
-            ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
-            ->selectRaw('crm_store_id, store_name, SUM(total_price) as ca, COUNT(*) as nb')
-            ->groupBy('crm_store_id', 'store_name')
-            ->orderByDesc('ca')
-            ->get();
-
-        $sites = Site::whereNotNull('crm_store_id')->pluck('name', 'crm_store_id');
-
-        $data = $rows->map(fn ($r) => [
-            'store_id'   => (int) $r->crm_store_id,
-            'store_name' => $sites[$r->crm_store_id] ?? $r->store_name ?? 'Store #' . $r->crm_store_id,
-            'ca'         => (float) $r->ca,
-            'nb'         => (int) $r->nb,
-        ])->values()->toArray();
-
-        return response()->json([
-            'data'        => $data,
-            'grand_total' => array_sum(array_column($data, 'ca')),
-            'grand_nb'    => array_sum(array_column($data, 'nb')),
-            'start_date'  => $startDate,
-            'end_date'    => $endDate,
-        ]);
-    }
-
     public function comparaison(): View
     {
         $sites = Site::whereNotNull('crm_store_id')->orderBy('name')->get(['id', 'name', 'crm_store_id']);

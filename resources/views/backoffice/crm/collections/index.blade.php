@@ -6,7 +6,6 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ URL::asset('build/css/plugins/style.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <style>
         .kpi-card .card-body { padding: 1.25rem 1rem; }
         .kpi-card h3 { font-size: 1.6rem; font-weight: 700; margin: 0; }
@@ -164,16 +163,39 @@
     </div>
 
     {{-- ================================================================== --}}
-    {{-- CHARTS ROW: Perf by center bar                                        --}}
+    {{-- CA PAR MOIS — graphe dynamique avec date picker                        --}}
     {{-- ================================================================== --}}
     <div class="row g-3 mb-4">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="ph-duotone ph-chart-bar me-2"></i>Encaissement ce mois vs. reste à recouvrer</h5>
+                <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <h5 class="mb-0">
+                        <i class="ph-duotone ph-currency-circle-dollar me-2 text-success"></i>
+                        Chiffre d'affaires par période
+                        <small class="text-muted fw-normal ms-1">(échéances, statut actif)</small>
+                    </h5>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <input type="date" id="ca-start" class="form-control form-control-sm" style="width:150px">
+                        <span class="text-muted small">→</span>
+                        <input type="date" id="ca-end" class="form-control form-control-sm" style="width:150px">
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-secondary ca-preset active" data-preset="2m">2 mois</button>
+                            <button class="btn btn-sm btn-outline-secondary ca-preset" data-preset="6m">6 mois</button>
+                            <button class="btn btn-sm btn-outline-secondary ca-preset" data-preset="year">Cette année</button>
+                        </div>
+                        <button id="ca-fetch-btn" class="btn btn-sm btn-success">
+                            <i class="ph-duotone ph-magnifying-glass me-1"></i>Afficher
+                        </button>
+                    </div>
                 </div>
-                <div class="card-body d-flex align-items-center" style="min-height:260px">
-                    <canvas id="centerBarChart" style="max-height:260px;width:100%"></canvas>
+                <div class="card-body">
+                    <div id="ca-loading" class="text-center py-4 d-none">
+                        <div class="spinner-border text-success" role="status"></div>
+                        <p class="text-muted mt-2 mb-0 small">Calcul en cours…</p>
+                    </div>
+                    <div id="ca-error" class="alert alert-danger d-none mb-0"></div>
+                    <div id="ca-chart-wrap" style="min-height:340px"></div>
+                    <div id="ca-total-row" class="d-none mt-3 d-flex flex-wrap gap-3 justify-content-center" id="ca-kpi-row"></div>
                 </div>
             </div>
         </div>
@@ -255,79 +277,12 @@
     @endif
 
     {{-- ================================================================== --}}
-    {{-- TABLES ROW: Top Debtors + Upcoming Dues                              --}}
+    {{-- TABLES ROW: Upcoming Dues                                             --}}
     {{-- ================================================================== --}}
     <div class="row g-3 mb-4">
 
-        {{-- Top Debtors --}}
-        <div class="col-xl-7 col-12">
-            <div class="card table-card h-100">
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <h5 class="mb-0">
-                        <i class="ph-duotone ph-users me-2"></i>
-                        Top débiteurs
-                        <span class="badge bg-light-danger text-danger ms-2" id="debtorsBadge">{{ count($topDebtors) }}</span>
-                    </h5>
-                    <input type="text" id="debtorsSearch" class="form-control form-control-sm ms-2" style="max-width:180px" placeholder="Rechercher…">
-                </div>
-                <div class="card-body p-0">
-                    @if (empty($topDebtors))
-                        <p class="text-muted text-center py-4 mb-0">Aucune donnée disponible.</p>
-                    @else
-                        <div class="table-responsive">
-                            <table class="table table-hover table-sm align-middle mb-0" id="debtorsTable">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width:36px">#</th>
-                                        <th>Etudiant</th>
-                                        <th style="width:120px">Centre</th>
-                                        <th class="text-end" style="width:120px">Montant dû</th>
-                                        <th class="text-end" style="width:70px">Retard</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="debtorsTbody">
-                                    @foreach ($topDebtors as $i => $debtor)
-                                        <tr>
-                                            <td class="text-muted">{{ $i + 1 }}</td>
-                                            <td>
-                                                <div class="fw-semibold">{{ $debtor['student_name'] }}</div>
-                                                <small class="text-muted">#{{ $debtor['student_id'] }}</small>
-                                            </td>
-                                            <td><span class="badge bg-light-primary text-primary">{{ $debtor['store_name'] }}</span></td>
-                                            <td class="text-end fw-semibold text-danger">
-                                                {{ number_format($debtor['total_owed'], 0, ',', ' ') }} DH
-                                            </td>
-                                            <td class="text-end">
-                                                @php
-                                                    $bc = $debtor['overdue_days'] > 90 ? 'bg-dark'
-                                                        : ($debtor['overdue_days'] > 60 ? 'bg-danger'
-                                                        : ($debtor['overdue_days'] > 30 ? 'bg-warning text-dark'
-                                                        : ($debtor['overdue_days'] > 0  ? 'bg-secondary' : 'bg-light-success text-success')));
-                                                @endphp
-                                                <span class="badge {{ $bc }}">
-                                                    {{ $debtor['overdue_days'] > 0 ? $debtor['overdue_days'].' j' : 'À jour' }}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="tbl-pagination" id="debtorsPagination">
-                            <span class="page-info" id="debtorsInfo"></span>
-                            <div class="btn-group">
-                                <button class="btn btn-outline-secondary" id="debtorsPrev"><i class="ti ti-chevron-left"></i></button>
-                                <span class="btn btn-outline-secondary disabled" id="debtorsPages" style="pointer-events:none;min-width:80px;text-align:center;font-size:.78rem"></span>
-                                <button class="btn btn-outline-secondary" id="debtorsNext"><i class="ti ti-chevron-right"></i></button>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-
         {{-- Upcoming Dues --}}
-        <div class="col-xl-5 col-12">
+        <div class="col-12">
             <div class="card table-card h-100">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="mb-0">
@@ -442,173 +397,276 @@
 </div>
 
 @section('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const toastEl = document.getElementById('liveToast');
-            if (toastEl) new bootstrap.Toast(toastEl).show();
+<script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toastEl = document.getElementById('liveToast');
+    if (toastEl) new bootstrap.Toast(toastEl).show();
 
-            const drillUrl  = '{{ route("backoffice.crm.collections.drill") }}';
-            const storeId   = '{{ $strStoreId ?? "" }}';
-            let allRows     = [];
+    // ── Drill-down modal ──────────────────────────────────────────────────
+    const drillUrl = '{{ route("backoffice.crm.collections.drill") }}';
+    const storeId  = '{{ $strStoreId ?? "" }}';
+    let allRows    = [];
 
-            document.querySelectorAll('.drill-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const type  = this.dataset.type;
-                    const label = this.dataset.label;
-
-                    document.getElementById('drillModalTitle').textContent = label;
-                    document.getElementById('drillModalCount').textContent = '';
-                    document.getElementById('drillModalTotal').textContent = '';
-                    document.getElementById('drillLoading').classList.remove('d-none');
-                    document.getElementById('drillContent').classList.add('d-none');
-                    document.getElementById('drillEmpty').classList.add('d-none');
-                    document.getElementById('drillSearch').value = '';
-
-                    new bootstrap.Modal(document.getElementById('drillModal')).show();
-
-                    const params = new URLSearchParams({ type });
-                    if (storeId) params.set('strStoreId', storeId);
-
-                    fetch(drillUrl + '?' + params)
-                        .then(r => r.json())
-                        .then(data => {
-                            allRows = data.rows;
-                            document.getElementById('drillLoading').classList.add('d-none');
-                            document.getElementById('drillModalCount').textContent = data.count + ' dossier(s)';
-                            document.getElementById('drillModalTotal').textContent = new Intl.NumberFormat('fr-MA').format(data.total) + ' DH';
-
-                            if (data.count === 0) {
-                                document.getElementById('drillEmpty').classList.remove('d-none');
-                            } else {
-                                document.getElementById('drillContent').classList.remove('d-none');
-                                renderRows(allRows);
-                            }
-                        });
-                });
-            });
-
-            // ── Table pagination helper ────────────────────────────────────────
-            function initTablePagination(tbodyId, searchId, prevId, nextId, pagesId, infoId, pageSize) {
-                const tbody  = document.getElementById(tbodyId);
-                if (!tbody) return;
-                const allRows = Array.from(tbody.querySelectorAll('tr'));
-                let filtered  = allRows;
-                let page      = 1;
-
-                function pages() { return Math.max(1, Math.ceil(filtered.length / pageSize)); }
-
-                function render() {
-                    const start = (page - 1) * pageSize;
-                    allRows.forEach(r => r.style.display = 'none');
-                    filtered.slice(start, start + pageSize).forEach(r => r.style.display = '');
-                    document.getElementById(pagesId).textContent = `Page ${page} / ${pages()}`;
-                    document.getElementById(infoId).textContent  = `${filtered.length} résultat(s)`;
-                    document.getElementById(prevId).disabled = page === 1;
-                    document.getElementById(nextId).disabled = page === pages();
-                }
-
-                document.getElementById(prevId).addEventListener('click', () => { if (page > 1) { page--; render(); } });
-                document.getElementById(nextId).addEventListener('click', () => { if (page < pages()) { page++; render(); } });
-
-                document.getElementById(searchId).addEventListener('input', function () {
-                    const q = this.value.toLowerCase();
-                    filtered = allRows.filter(r => r.textContent.toLowerCase().includes(q));
-                    page = 1;
-                    render();
-                });
-
-                render();
-            }
-
-            initTablePagination('debtorsTbody', 'debtorsSearch', 'debtorsPrev', 'debtorsNext', 'debtorsPages', 'debtorsInfo', 10);
-            initTablePagination('duesTbody',    'duesSearch',    'duesPrev',    'duesNext',    'duesPages',    'duesInfo',    10);
-            // ──────────────────────────────────────────────────────────────────
-
-            // ── Recovery bar chart (collected vs outstanding per center) ───────
-            @php
-                $barLabels     = [];
-                $barCollected  = [];
-                $barOutstanding = [];
-                foreach (($recoveryByCenter ?? []) as $center) {
-                    $barLabels[]      = $center['store_name'];
-                    $barCollected[]   = round($center['collected_month'], 2);
-                    $barOutstanding[] = round($center['outstanding'], 2);
-                }
-            @endphp
-            const barCtx = document.getElementById('centerBarChart');
-            if (barCtx && {{ count($recoveryByCenter ?? []) }} > 0) {
-                new Chart(barCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: @json($barLabels),
-                        datasets: [
-                            {
-                                label: 'Encaissé ce mois',
-                                data: @json($barCollected),
-                                backgroundColor: 'rgba(25,135,84,0.75)',
-                                borderRadius: 4,
-                            },
-                            {
-                                label: 'Restant dû',
-                                data: @json($barOutstanding),
-                                backgroundColor: 'rgba(220,53,69,0.55)',
-                                borderRadius: 4,
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { position: 'top', labels: { font: { size: 11 } } },
-                            tooltip: {
-                                callbacks: {
-                                    label: ctx => ' ' + ctx.dataset.label + ': ' + new Intl.NumberFormat('fr-MA').format(ctx.parsed.y) + ' DH'
-                                }
-                            }
-                        },
-                        scales: {
-                            x: { ticks: { font: { size: 10 } } },
-                            y: {
-                                ticks: {
-                                    callback: v => (v >= 1000 ? (v/1000).toFixed(0)+'k' : v) + ' DH',
-                                    font: { size: 10 }
-                                }
-                            }
-                        }
+    document.querySelectorAll('.drill-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const type  = this.dataset.type;
+            const label = this.dataset.label;
+            document.getElementById('drillModalTitle').textContent = label;
+            document.getElementById('drillModalCount').textContent = '';
+            document.getElementById('drillModalTotal').textContent = '';
+            document.getElementById('drillLoading').classList.remove('d-none');
+            document.getElementById('drillContent').classList.add('d-none');
+            document.getElementById('drillEmpty').classList.add('d-none');
+            document.getElementById('drillSearch').value = '';
+            new bootstrap.Modal(document.getElementById('drillModal')).show();
+            const params = new URLSearchParams({ type });
+            if (storeId) params.set('strStoreId', storeId);
+            fetch(drillUrl + '?' + params)
+                .then(r => r.json())
+                .then(data => {
+                    allRows = data.rows;
+                    document.getElementById('drillLoading').classList.add('d-none');
+                    document.getElementById('drillModalCount').textContent = data.count + ' dossier(s)';
+                    document.getElementById('drillModalTotal').textContent = new Intl.NumberFormat('fr-MA').format(data.total) + ' DH';
+                    if (data.count === 0) {
+                        document.getElementById('drillEmpty').classList.remove('d-none');
+                    } else {
+                        document.getElementById('drillContent').classList.remove('d-none');
+                        renderDrillRows(allRows);
                     }
                 });
-            }
-
-            document.getElementById('drillSearch').addEventListener('input', function () {
-                const q = this.value.toLowerCase();
-                renderRows(allRows.filter(r =>
-                    (r.student_name || '').toLowerCase().includes(q) ||
-                    (r.store_name   || '').toLowerCase().includes(q)
-                ));
-            });
-
-            function renderRows(rows) {
-                const tbody = document.getElementById('drillTbody');
-                tbody.innerHTML = rows.map((r, i) => {
-                    const overdueClass = r.overdue_days > 90 ? 'bg-dark'
-                        : r.overdue_days > 60 ? 'bg-danger'
-                        : r.overdue_days > 30 ? 'bg-warning text-dark'
-                        : r.overdue_days > 0  ? 'bg-secondary'
-                        : 'bg-light-success text-success';
-                    const overdueLabel = r.overdue_days > 0 ? r.overdue_days + ' j' : 'À jour';
-                    const dueDate = r.due_date
-                        ? new Date(r.due_date).toLocaleDateString('fr-MA', {day:'2-digit',month:'2-digit',year:'numeric'})
-                        : '—';
-                    return `<tr>
-                        <td class="text-muted">${i+1}</td>
-                        <td><strong>${r.student_name}</strong><br><small class="text-muted">#${r.student_id}</small></td>
-                        <td><span class="badge bg-light-primary">${r.store_name}</span></td>
-                        <td><small>${dueDate}</small></td>
-                        <td><span class="badge ${overdueClass}">${overdueLabel}</span></td>
-                        <td class="text-end fw-semibold text-danger">${new Intl.NumberFormat('fr-MA').format(r.amount)} DH</td>
-                    </tr>`;
-                }).join('');
-            }
         });
-    </script>
+    });
+
+    document.getElementById('drillSearch').addEventListener('input', function () {
+        const q = this.value.toLowerCase();
+        renderDrillRows(allRows.filter(r =>
+            (r.student_name || '').toLowerCase().includes(q) ||
+            (r.store_name   || '').toLowerCase().includes(q)
+        ));
+    });
+
+    function renderDrillRows(rows) {
+        const tbody = document.getElementById('drillTbody');
+        tbody.innerHTML = rows.map((r, i) => {
+            const overdueClass = r.overdue_days > 90 ? 'bg-dark'
+                : r.overdue_days > 60 ? 'bg-danger'
+                : r.overdue_days > 30 ? 'bg-warning text-dark'
+                : r.overdue_days > 0  ? 'bg-secondary'
+                : 'bg-light-success text-success';
+            const overdueLabel = r.overdue_days > 0 ? r.overdue_days + ' j' : 'À jour';
+            const dueDate = r.due_date
+                ? new Date(r.due_date).toLocaleDateString('fr-MA', {day:'2-digit',month:'2-digit',year:'numeric'})
+                : '—';
+            return `<tr>
+                <td class="text-muted">${i+1}</td>
+                <td><strong>${r.student_name}</strong><br><small class="text-muted">#${r.student_id}</small></td>
+                <td><span class="badge bg-light-primary">${r.store_name}</span></td>
+                <td><small>${dueDate}</small></td>
+                <td><span class="badge ${overdueClass}">${overdueLabel}</span></td>
+                <td class="text-end fw-semibold text-danger">${new Intl.NumberFormat('fr-MA').format(r.amount)} DH</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // ── Pagination: Upcoming Dues ─────────────────────────────────────────
+    (function () {
+        const tbody   = document.getElementById('duesTbody');
+        if (!tbody) return;
+        const allRows = Array.from(tbody.querySelectorAll('tr'));
+        let filtered  = allRows;
+        let page      = 1;
+        const size    = 10;
+
+        function pages() { return Math.max(1, Math.ceil(filtered.length / size)); }
+        function render() {
+            const start = (page - 1) * size;
+            allRows.forEach(r => r.style.display = 'none');
+            filtered.slice(start, start + size).forEach(r => r.style.display = '');
+            document.getElementById('duesPages').textContent = `Page ${page} / ${pages()}`;
+            document.getElementById('duesInfo').textContent  = `${filtered.length} résultat(s)`;
+            document.getElementById('duesPrev').disabled = page === 1;
+            document.getElementById('duesNext').disabled = page === pages();
+        }
+        document.getElementById('duesPrev').addEventListener('click', () => { if (page > 1) { page--; render(); } });
+        document.getElementById('duesNext').addEventListener('click', () => { if (page < pages()) { page++; render(); } });
+        document.getElementById('duesSearch').addEventListener('input', function () {
+            const q = this.value.toLowerCase();
+            filtered = allRows.filter(r => r.textContent.toLowerCase().includes(q));
+            page = 1; render();
+        });
+        render();
+    })();
+
+    // ── CA Chart ─────────────────────────────────────────────────────────
+    (function () {
+        const ENDPOINT = '{{ route("backoffice.crm.collections.ca-data") }}';
+        const COLORS   = ['#1cc88a','#4680ff','#ffc107','#dc3545','#0dcaf0','#6f42c1','#fd7e14'];
+
+        let caChart = null;
+
+        function pad(n) { return String(n).padStart(2, '0'); }
+        function toIso(d) { return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+
+        function fmtDH(v) {
+            if (v >= 1_000_000) return (v / 1_000_000).toFixed(1).replace('.0','') + ' M';
+            if (v >= 1_000)     return (v / 1_000).toFixed(0) + ' k';
+            return v > 0 ? String(v) : '';
+        }
+        function fullDH(v) {
+            return new Intl.NumberFormat('fr-MA', { minimumFractionDigits: 2 }).format(v) + ' DH';
+        }
+        function monthLabel(p) {
+            if (/^\d{4}-\d{2}$/.test(p)) {
+                const [y, m] = p.split('-');
+                return new Date(y, m - 1).toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' });
+            }
+            return p;
+        }
+
+        // Default: first day of last month → last day of this month
+        function applyPreset(preset) {
+            const today = new Date();
+            let s, e;
+            switch (preset) {
+                case '2m':
+                    s = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    e = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    break;
+                case '6m':
+                    s = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+                    e = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    break;
+                case 'year':
+                    s = new Date(today.getFullYear(), 0, 1);
+                    e = new Date(today.getFullYear(), 11, 31);
+                    break;
+            }
+            document.getElementById('ca-start').value = toIso(s);
+            document.getElementById('ca-end').value   = toIso(e);
+        }
+
+        // Set default preset on load
+        applyPreset('2m');
+
+        document.querySelectorAll('.ca-preset').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.ca-preset').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                applyPreset(this.dataset.preset);
+                fetchCA();
+            });
+        });
+
+        document.getElementById('ca-fetch-btn').addEventListener('click', fetchCA);
+
+        function fetchCA() {
+            const start = document.getElementById('ca-start').value;
+            const end   = document.getElementById('ca-end').value;
+            if (!start || !end) return;
+
+            document.getElementById('ca-loading').classList.remove('d-none');
+            document.getElementById('ca-error').classList.add('d-none');
+            document.getElementById('ca-chart-wrap').style.opacity = '0.3';
+            document.getElementById('ca-total-row').classList.add('d-none');
+
+            const params = new URLSearchParams({ startDate: start, endDate: end, groupBy: 'month' });
+            if (storeId) params.set('strStoreId', storeId);
+
+            fetch(`${ENDPOINT}?${params}`, { headers: { 'Accept': 'application/json' } })
+                .then(r => r.json())
+                .then(json => {
+                    document.getElementById('ca-loading').classList.add('d-none');
+                    document.getElementById('ca-chart-wrap').style.opacity = '1';
+                    if (json.error) {
+                        document.getElementById('ca-error').textContent = json.error;
+                        document.getElementById('ca-error').classList.remove('d-none');
+                        return;
+                    }
+                    renderCA(json);
+                })
+                .catch(err => {
+                    document.getElementById('ca-loading').classList.add('d-none');
+                    document.getElementById('ca-chart-wrap').style.opacity = '1';
+                    document.getElementById('ca-error').textContent = 'Erreur réseau : ' + err.message;
+                    document.getElementById('ca-error').classList.remove('d-none');
+                });
+        }
+
+        function renderCA(json) {
+            const { periods, datasets, grand_total } = json;
+
+            if (caChart) { caChart.destroy(); caChart = null; }
+
+            const series = datasets.map((ds, i) => ({
+                name: ds.store_name,
+                data: ds.data,
+            }));
+
+            caChart = new ApexCharts(document.getElementById('ca-chart-wrap'), {
+                chart: {
+                    type: 'bar',
+                    height: 340,
+                    toolbar: { show: false },
+                    fontFamily: 'inherit',
+                },
+                series,
+                colors: COLORS,
+                plotOptions: {
+                    bar: {
+                        columnWidth: '60%',
+                        borderRadius: 3,
+                    },
+                },
+                dataLabels: { enabled: false },
+                stroke: { show: true, width: 1, colors: ['transparent'] },
+                grid: { borderColor: '#f0f0f0', strokeDashArray: 4 },
+                xaxis: {
+                    categories: periods.map(monthLabel),
+                    axisBorder: { show: false },
+                    axisTicks: { show: false },
+                    labels: { style: { fontSize: '12px', fontWeight: 600 } },
+                },
+                yaxis: {
+                    labels: {
+                        formatter: v => fmtDH(v) + ' DH',
+                        style: { fontSize: '11px' },
+                    },
+                },
+                legend: {
+                    position: 'bottom',
+                    fontSize: '12px',
+                    markers: { width: 10, height: 10, radius: 50 },
+                },
+                tooltip: {
+                    shared: true,
+                    intersect: false,
+                    y: { formatter: fullDH },
+                },
+            });
+            caChart.render();
+
+            // KPI total row
+            const kpiRow = document.getElementById('ca-total-row');
+            kpiRow.innerHTML = datasets.map((ds, i) => {
+                const color = COLORS[i % COLORS.length];
+                return `<div class="d-flex align-items-center gap-2 px-3 py-2 rounded" style="background:${color}15;border:1px solid ${color}40">
+                    <span style="width:10px;height:10px;border-radius:50%;background:${color};display:inline-block"></span>
+                    <span class="fw-semibold" style="color:${color}">${ds.store_name}</span>
+                    <span class="text-muted small">→</span>
+                    <span class="fw-bold">${fullDH(ds.total)}</span>
+                </div>`;
+            }).join('') + `<div class="d-flex align-items-center gap-2 px-3 py-2 rounded bg-light">
+                <span class="fw-bold">Total :</span>
+                <span class="fw-bold text-success">${fullDH(grand_total)}</span>
+            </div>`;
+            kpiRow.classList.remove('d-none');
+        }
+
+        // Auto-load on page ready
+        fetchCA();
+    })();
+});
+</script>
 @endsection

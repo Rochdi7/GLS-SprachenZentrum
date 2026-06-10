@@ -125,6 +125,58 @@ class CollectionsController extends BaseCrmController
     }
 
     /**
+     * AJAX: CA par mois grouped by center.
+     * CA = SUM(total_price) where registration_status_id != 10 and due_date in range.
+     * ?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&strStoreId=N&groupBy=month|day
+     */
+    public function caData(Request $request): JsonResponse
+    {
+        $startDate = $request->query('startDate') ?: Carbon::today()->startOfMonth()->toDateString();
+        $endDate   = $request->query('endDate')   ?: Carbon::today()->toDateString();
+        $storeId   = $request->query('strStoreId') ? (int) $request->query('strStoreId') : $this->currentStrStoreId();
+        $groupBy   = $request->query('groupBy', 'month'); // month | day
+
+        $dateFmt = $groupBy === 'day'
+            ? "DATE_FORMAT(due_date,'%Y-%m-%d')"
+            : "DATE_FORMAT(due_date,'%Y-%m')";
+
+        $rows = CrmCollectionRow::query()
+            ->where('registration_status_id', '!=', 10)
+            ->whereBetween('due_date', [$startDate, $endDate])
+            ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
+            ->selectRaw("crm_store_id, store_name, {$dateFmt} AS period, SUM(total_price) AS ca, COUNT(*) AS nb")
+            ->groupBy('crm_store_id', 'store_name', 'period')
+            ->orderBy('period')
+            ->get();
+
+        $periods  = $rows->pluck('period')->unique()->sort()->values()->toArray();
+        $stores   = $rows->groupBy('crm_store_id');
+        $datasets = [];
+
+        foreach ($stores as $sid => $sRows) {
+            $pivot = $sRows->pluck('ca', 'period')->map(fn ($v) => (float) $v)->toArray();
+            $datasets[] = [
+                'store_id'   => (int) $sid,
+                'store_name' => $sRows->first()->store_name ?? 'Store #' . $sid,
+                'data'       => array_map(fn ($p) => round($pivot[$p] ?? 0, 2), $periods),
+                'total'      => (float) $sRows->sum('ca'),
+                'nb'         => (int) $sRows->sum('nb'),
+            ];
+        }
+
+        usort($datasets, fn ($a, $b) => $b['total'] <=> $a['total']);
+
+        return response()->json([
+            'periods'     => $periods,
+            'datasets'    => $datasets,
+            'grand_total' => array_sum(array_column($datasets, 'total')),
+            'start_date'  => $startDate,
+            'end_date'    => $endDate,
+            'group_by'    => $groupBy,
+        ]);
+    }
+
+    /**
      * Bust all collections cache keys and redirect back to the dashboard.
      */
     public function refresh(Request $request): RedirectResponse

@@ -170,7 +170,13 @@ class BuildGroupEvolutionCommand extends Command
             $months   = $payMonthsByStudent->get($sid, []);
             $firstForClass = collect($months)->first(fn ($m) => $m >= $regYm);
 
-            if (!$firstForClass) continue; // unpaid — not counted in debut or ajout
+            if (!$firstForClass) {
+                // No payment yet but Active → count as Début if enrolled at/before group start month
+                if ($status === 'Active' && $regYm <= $classYm) {
+                    $debutsByGroup[$cid][$sid] = true;
+                }
+                continue;
+            }
 
             if ($firstForClass <= $classYm) {
                 $debutsByGroup[$cid][$sid] = true;

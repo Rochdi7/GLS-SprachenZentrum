@@ -238,9 +238,11 @@ class CrmInsightsController extends BaseCrmController
             $firstForClass = collect($months)->first(fn ($m) => $m >= $regYm);
 
             $paymentBucket = match(true) {
-                !$classStartYm || !$firstForClass      => 'unpaid',
-                $firstForClass <= $classStartYm        => 'debut',
-                default                                => 'ajout',
+                !$classStartYm                                           => 'unpaid',
+                !$firstForClass && $r->status === 'Active' && $regYm <= $classStartYm => 'debut',
+                !$firstForClass                                          => 'unpaid',
+                $firstForClass <= $classStartYm                         => 'debut',
+                default                                                  => 'ajout',
             };
 
             return [
