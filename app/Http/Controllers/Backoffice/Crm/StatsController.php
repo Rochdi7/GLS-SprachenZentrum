@@ -231,6 +231,21 @@ class StatsController extends BaseCrmController
         ", [$year]);
         $collecteByMonth = collect($collecteRows)->pluck('total', 'm')->map(fn($v) => (float) $v)->toArray();
 
+        // Encaissements = payments grouped by date_creation_date (cash recorded date)
+        $encRows = DB::select("
+            SELECT DATE_FORMAT(date_creation_date,'%Y-%m') as m, SUM(amount) as total
+            FROM crm_payment_snapshots s1
+            WHERE YEAR(date_creation_date) = ?
+              AND payment_type_id = 1
+              {$storeFilter}
+              AND snapshot_date = (
+                  SELECT MAX(s2.snapshot_date) FROM crm_payment_snapshots s2
+                  WHERE s2.crm_payment_id = s1.crm_payment_id
+              )
+            GROUP BY m
+        ", [$year]);
+        $encByMonth = collect($encRows)->pluck('total', 'm')->map(fn($v) => (float) $v)->toArray();
+
         // Dépenses from local warehouse
         $depRows = DB::table('site_expenses')
             ->where('crm_source', 'wimschool')
@@ -245,31 +260,34 @@ class StatsController extends BaseCrmController
             ->toArray();
 
         // Build 12-month arrays
-        $seriesCA       = [];
-        $seriesCollecte = [];
-        $seriesReste    = [];
-        $seriesDepenses = [];
+        $seriesCA            = [];
+        $seriesCollecte      = [];
+        $seriesReste         = [];
+        $seriesDepenses      = [];
+        $seriesEncaissements = [];
 
         foreach ($months as $m) {
-            $ca       = $caByMonth[$m]       ?? 0;
+            $ca       = $caByMonth[$m]  ?? 0;
             $collecte = $collecteByMonth[$m] ?? 0;
-            $seriesCA[]       = round($ca);
-            $seriesCollecte[] = round($collecte);
-            $seriesReste[]    = round(max(0, $ca - $collecte));
-            $seriesDepenses[] = round($depRows[$m] ?? 0);
+            $seriesCA[]            = round($ca);
+            $seriesCollecte[]      = round($collecte);
+            $seriesReste[]         = round(max(0, $ca - $collecte));
+            $seriesDepenses[]      = round($depRows[$m] ?? 0);
+            $seriesEncaissements[] = round($encByMonth[$m] ?? 0);
         }
 
         $sites = Site::whereNotNull('crm_store_id')->orderBy('name')->get(['id', 'name', 'crm_store_id']);
 
         return $this->view('backoffice.crm.stats-dashboard.ca-annuel', [
-            'year'            => $year,
-            'months'          => $months,
-            'seriesCA'        => $seriesCA,
-            'seriesCollecte'  => $seriesCollecte,
-            'seriesReste'     => $seriesReste,
-            'seriesDepenses'  => $seriesDepenses,
-            'sites'           => $sites,
-            'storeId'         => $storeId,
+            'year'                => $year,
+            'months'              => $months,
+            'seriesCA'            => $seriesCA,
+            'seriesCollecte'      => $seriesCollecte,
+            'seriesReste'         => $seriesReste,
+            'seriesDepenses'      => $seriesDepenses,
+            'seriesEncaissements' => $seriesEncaissements,
+            'sites'               => $sites,
+            'storeId'             => $storeId,
         ]);
     }
 

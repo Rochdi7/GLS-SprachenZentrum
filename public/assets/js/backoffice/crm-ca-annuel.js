@@ -26,12 +26,13 @@
             fontFamily: 'inherit',
         },
         series: [
-            { name: 'CA',               data: d.seriesCA },
-            { name: 'Collecté',         data: d.seriesCollecte },
-            { name: 'Reste à payer',    data: d.seriesReste },
-            { name: 'Dépenses',         data: d.seriesDepenses },
+            { name: 'Chiffre d\'affaire', data: d.seriesCA },
+            { name: 'Collecté',           data: d.seriesCollecte },
+            { name: 'Reste à payer',      data: d.seriesReste },
+            { name: 'Dépenses',           data: d.seriesDepenses },
+            { name: 'Encaissements',      data: d.seriesEncaissements },
         ],
-        colors: ['#4680ff', '#1cc88a', '#ffc107', '#dc3545'],
+        colors: ['#4680ff', '#1cc88a', '#ffc107', '#dc3545', '#6f42c1'],
         stroke: { curve: 'smooth', width: 2 },
         fill: {
             type: 'gradient',
