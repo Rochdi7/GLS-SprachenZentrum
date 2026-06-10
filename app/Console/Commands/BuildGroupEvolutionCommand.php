@@ -52,14 +52,13 @@ class BuildGroupEvolutionCommand extends Command
     public function handle(): int
     {
         $rangeStart = Carbon::today('Africa/Casablanca')->startOfYear()->toDateString();
-        $rangeEnd   = Carbon::today('Africa/Casablanca')->toDateString();
+        $rangeEnd = Carbon::today('Africa/Casablanca')->toDateString();
 
         $this->info("Building group evolution snapshots ({$rangeStart} → {$rangeEnd})");
 
-        $sites = Site::whereNotNull('crm_store_id')->where('crm_store_id', '>', 0)
-            ->when(!$this->option('all'), fn ($q) =>
-                $q->whereIn('crm_store_id', array_map('intval', $this->option('store')))
-            )
+        $sites = Site::whereNotNull('crm_store_id')
+            ->where('crm_store_id', '>', 0)
+            ->when(!$this->option('all'), fn($q) => $q->whereIn('crm_store_id', array_map('intval', $this->option('store'))))
             ->get(['crm_store_id', 'name']);
 
         if ($sites->isEmpty()) {
@@ -86,7 +85,10 @@ class BuildGroupEvolutionCommand extends Command
     private function computeForStore(int $storeId, string $rangeStart, string $rangeEnd): int
     {
         // Load classes from the local mirror — zero API calls
-toub
+        $classes = CrmClass::where('site_id', $storeId)
+            ->whereNotNull('class_id')
+            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.STATUS_NAME')) IN ('En formation', 'En Préparation')")
+            ->get();
 
         if ($classes->isEmpty()) {
             $this->line("   No classes found for store #{$storeId}");
@@ -103,22 +105,21 @@ toub
         // Key by raw_data.ID (= LEVEL_SESSION_ID in registrations = crm_registrations.crm_class_id).
         // crm_registrations.crm_class_id = LEVEL_SESSION_ID ?? CLASS_ID, and LEVEL_SESSION_ID
         // equals raw_data.ID on the class record (e.g. 9363), NOT the CLASS_ID column (e.g. 9948).
-        $classStartMonths = [];   // [raw_data.ID => 'YYYY-MM']
-        $rawIdByClassId   = [];   // [CLASS_ID => raw_data.ID] for upsert lookup
+        $classStartMonths = []; // [raw_data.ID => 'YYYY-MM']
+        $rawIdByClassId = []; // [CLASS_ID => raw_data.ID] for upsert lookup
         foreach ($classes as $class) {
-            $raw   = $class->raw_data ?? [];
+            $raw = $class->raw_data ?? [];
             $rawId = isset($raw['ID']) ? (int) $raw['ID'] : null;
-            if ($rawId === null) continue;
-            $classStartMonths[$rawId] = isset($raw['START_DATE'])
-                ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
-                : null;
+            if ($rawId === null) {
+                continue;
+            }
+            $classStartMonths[$rawId] = isset($raw['START_DATE']) ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m') : null;
             $rawIdByClassId[(int) $class->class_id] = $rawId;
         }
 
-        $registrations = CrmRegistration::where('crm_store_id', $storeId)
-            ->get(['crm_student_id', 'crm_class_id', 'status', 'raw_data']);
+        $registrations = CrmRegistration::where('crm_store_id', $storeId)->get(['crm_student_id', 'crm_class_id', 'status', 'raw_data']);
 
-        $this->line("   " . $registrations->count() . " registrations loaded from local DB");
+        $this->line('   ' . $registrations->count() . ' registrations loaded from local DB');
 
         // ── All non-inscription monthly payment months per student (store-wide) ──
         // crm_payment_snapshots has no class_id, so we fetch all months per student
@@ -134,22 +135,22 @@ toub
             ->selectRaw('student_id, DATE_FORMAT(effective_date, "%Y-%m") as pay_month')
             ->distinct()
             ->get()
-            ->groupBy('student_id')  // [student_id => Collection<{pay_month}>]
-            ->map(fn ($rows) => $rows->pluck('pay_month')->sort()->values()->all());
+            ->groupBy('student_id') // [student_id => Collection<{pay_month}>]
+            ->map(fn($rows) => $rows->pluck('pay_month')->sort()->values()->all());
 
-        $this->line("   " . $payMonthsByStudent->count() . " students with payment records");
+        $this->line('   ' . $payMonthsByStudent->count() . ' students with payment records');
 
-        $debutsByGroup      = [];
-        $ajoutsByGroup      = [];
-        $quittantsByGroup   = [];
+        $debutsByGroup = [];
+        $ajoutsByGroup = [];
+        $quittantsByGroup = [];
         $changementsByGroup = [];
 
         foreach ($registrations as $reg) {
-            $sid      = (int) $reg->crm_student_id;
-            $cid      = (int) $reg->crm_class_id;
-            $status   = $reg->status;
-            $classYm  = $classStartMonths[$cid] ?? null;
-            $raw      = is_array($reg->raw_data) ? $reg->raw_data : json_decode($reg->raw_data, true);
+            $sid = (int) $reg->crm_student_id;
+            $cid = (int) $reg->crm_class_id;
+            $status = $reg->status;
+            $classYm = $classStartMonths[$cid] ?? null;
+            $raw = is_array($reg->raw_data) ? $reg->raw_data : json_decode($reg->raw_data, true);
 
             // Status buckets are independent of payment timing.
             if ($status === 'Annulé') {
@@ -158,16 +159,16 @@ toub
                 $changementsByGroup[$cid][$sid] = true;
             }
 
-            if (!$classYm) continue;
+            if (!$classYm) {
+                continue;
+            }
 
             // Registration START_DATE = when the student joined this specific class.
             // First payment for THIS class = earliest month >= registration start date.
             // This avoids attributing payments made for prior groups to this class.
-            $regYm    = isset($raw['START_DATE'])
-                ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
-                : $classYm;
-            $months   = $payMonthsByStudent->get($sid, []);
-            $firstForClass = collect($months)->first(fn ($m) => $m >= $regYm);
+            $regYm = isset($raw['START_DATE']) ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m') : $classYm;
+            $months = $payMonthsByStudent->get($sid, []);
+            $firstForClass = collect($months)->first(fn($m) => $m >= $regYm);
 
             if (!$firstForClass) {
                 // No payment yet but Active → count as Début if enrolled at/before group start month
@@ -184,61 +185,48 @@ toub
             }
         }
 
-        $now     = now();
+        $now = now();
         $upserts = [];
 
         foreach ($classes as $class) {
-            $cid     = (int) $class->class_id;
-            $raw     = $class->raw_data ?? [];
-            $rawId   = $rawIdByClassId[$cid] ?? null;
-            $startYm = $rawId !== null ? ($classStartMonths[$rawId] ?? null) : null;
+            $cid = (int) $class->class_id;
+            $raw = $class->raw_data ?? [];
+            $rawId = $rawIdByClassId[$cid] ?? null;
+            $startYm = $rawId !== null ? $classStartMonths[$rawId] ?? null : null;
 
-            $debuts      = count($debutsByGroup[$rawId]      ?? []);
-            $ajouts      = count($ajoutsByGroup[$rawId]      ?? []);
-            $quittants   = count($quittantsByGroup[$rawId]   ?? []);
+            $debuts = count($debutsByGroup[$rawId] ?? []);
+            $ajouts = count($ajoutsByGroup[$rawId] ?? []);
+            $quittants = count($quittantsByGroup[$rawId] ?? []);
             $changements = count($changementsByGroup[$rawId] ?? []);
 
             // Parse ISO datetime from API (e.g. "2026-04-23T23:00:00.000Z") → plain date
-            $classStartDate = isset($raw['START_DATE'])
-                ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->toDateString()
-                : null;
-            $classEndDate = isset($raw['END_DATE'])
-                ? Carbon::parse($raw['END_DATE'])->setTimezone('Africa/Casablanca')->toDateString()
-                : null;
+            $classStartDate = isset($raw['START_DATE']) ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->toDateString() : null;
+            $classEndDate = isset($raw['END_DATE']) ? Carbon::parse($raw['END_DATE'])->setTimezone('Africa/Casablanca')->toDateString() : null;
 
             $upserts[] = [
-                'crm_store_id'      => $storeId,
-                'class_id'          => $cid,
-                'class_name'        => $class->name ?? "#{$cid}",
-                'class_start_date'  => $classStartDate,
-                'class_end_date'    => $classEndDate,
+                'crm_store_id' => $storeId,
+                'class_id' => $cid,
+                'class_name' => $class->name ?? "#{$cid}",
+                'class_start_date' => $classStartDate,
+                'class_end_date' => $classEndDate,
                 'class_start_month' => $startYm,
-                'debuts'           => $debuts,
-                'ajouts'           => $ajouts,
-                'quittants'        => $quittants,
-                'changements'      => $changements,
-                'actifs'           => (int) ($raw['CLASS_COUNT_STUDENTS_ACTIVE'] ?? 0),
-                'range_start'      => $rangeStart,
-                'range_end'        => $rangeEnd,
-                'computed_at'      => $now,
-                'created_at'       => $now,
-                'updated_at'       => $now,
+                'debuts' => $debuts,
+                'ajouts' => $ajouts,
+                'quittants' => $quittants,
+                'changements' => $changements,
+                'actifs' => (int) ($raw['CLASS_COUNT_STUDENTS_ACTIVE'] ?? 0),
+                'range_start' => $rangeStart,
+                'range_end' => $rangeEnd,
+                'computed_at' => $now,
+                'created_at' => $now,
+                'updated_at' => $now,
             ];
         }
 
         foreach (array_chunk($upserts, 100) as $chunk) {
-            CrmGroupEvolutionSnapshot::upsert(
-                $chunk,
-                ['crm_store_id', 'class_id', 'range_start', 'range_end'],
-                [
-                    'class_name', 'class_start_date', 'class_end_date', 'class_start_month',
-                    'debuts', 'ajouts', 'quittants', 'changements', 'actifs',
-                    'computed_at', 'updated_at',
-                ]
-            );
+            CrmGroupEvolutionSnapshot::upsert($chunk, ['crm_store_id', 'class_id', 'range_start', 'range_end'], ['class_name', 'class_start_date', 'class_end_date', 'class_start_month', 'debuts', 'ajouts', 'quittants', 'changements', 'actifs', 'computed_at', 'updated_at']);
         }
 
         return count($upserts);
     }
-
 }
