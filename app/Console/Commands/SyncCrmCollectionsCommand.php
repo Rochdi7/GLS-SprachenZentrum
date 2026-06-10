@@ -15,6 +15,8 @@ class SyncCrmCollectionsCommand extends Command
     protected $signature = 'crm:sync-collections
         {--store=* : Store IDs to sync (omit for all)}
         {--all : Sync all stores}
+        {--from= : Start date filter for DUE_DATE (yyyy-mm-dd)}
+        {--to= : End date filter for DUE_DATE (yyyy-mm-dd)}
         {--delay=400 : Delay between pages in ms}';
 
     protected $description = 'Safely sync CRM payment-collection (receivables) to local DB';
@@ -50,6 +52,8 @@ class SyncCrmCollectionsCommand extends Command
         $all      = $this->option('all');
         $storeIds = $this->option('store');
         $delayMs  = max(100, (int) $this->option('delay'));
+        $fromDate = $this->option('from') ?: null;
+        $toDate   = $this->option('to')   ?: null;
 
         if (!$all && empty($storeIds)) {
             $this->error('Specify --all or --store=ID');
@@ -78,7 +82,7 @@ class SyncCrmCollectionsCommand extends Command
                 : $this->crm;
 
             try {
-                $synced = $this->syncStore($crm, $storeId, $site->name, $delayMs);
+                $synced = $this->syncStore($crm, $storeId, $site->name, $delayMs, $fromDate, $toDate);
                 $totalSynced += $synced;
                 $this->info("[STORE #{$storeId}] Done — {$synced} collection rows synced");
             } catch (\Throwable $e) {
@@ -91,7 +95,7 @@ class SyncCrmCollectionsCommand extends Command
         return self::SUCCESS;
     }
 
-    private function syncStore(Crm $crm, int $storeId, string $storeName, int $delayMs): int
+    private function syncStore(Crm $crm, int $storeId, string $storeName, int $delayMs, ?string $fromDate = null, ?string $toDate = null): int
     {
         $page      = 0;
         $synced    = 0;
@@ -101,7 +105,7 @@ class SyncCrmCollectionsCommand extends Command
         while ($hasMore) {
             $this->line("[STORE #{$storeId}] Fetching page {$page}...");
 
-            $response = $this->fetchWithBackoff($crm, $storeId, $page);
+            $response = $this->fetchWithBackoff($crm, $storeId, $page, $fromDate, $toDate);
             $rows     = $response['data'] ?? [];
 
             $this->line("[STORE #{$storeId}] Page {$page} — " . count($rows) . " rows");
@@ -179,7 +183,7 @@ class SyncCrmCollectionsCommand extends Command
         return $synced;
     }
 
-    private function fetchWithBackoff(Crm $crm, int $storeId, int $page): array
+    private function fetchWithBackoff(Crm $crm, int $storeId, int $page, ?string $fromDate = null, ?string $toDate = null): array
     {
         foreach (self::BACKOFF as $attempt => $waitSec) {
             try {
@@ -188,6 +192,8 @@ class SyncCrmCollectionsCommand extends Command
                     size: self::PAGE_SIZE,
                     includeTotal: false,
                     strStoreId: $storeId,
+                    dueDateStartDate: $fromDate,
+                    dueDateEndDate: $toDate,
                 );
             } catch (\Throwable $e) {
                 $is429 = str_contains($e->getMessage(), '429')
@@ -208,6 +214,8 @@ class SyncCrmCollectionsCommand extends Command
             size: self::PAGE_SIZE,
             includeTotal: false,
             strStoreId: $storeId,
+            startDate: $fromDate,
+            endDate: $toDate,
         );
     }
 }

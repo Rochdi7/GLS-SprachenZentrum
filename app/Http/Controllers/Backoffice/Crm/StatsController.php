@@ -231,11 +231,11 @@ class StatsController extends BaseCrmController
         ", [$year]);
         $collecteByMonth = collect($collecteRows)->pluck('total', 'm')->map(fn($v) => (float) $v)->toArray();
 
-        // Encaissements = payments grouped by date_creation_date (cash recorded date)
+        // Encaissements = payments grouped by date_creation (cash recorded timestamp)
         $encRows = DB::select("
-            SELECT DATE_FORMAT(date_creation_date,'%Y-%m') as m, SUM(amount) as total
+            SELECT DATE_FORMAT(date_creation,'%Y-%m') as m, SUM(amount) as total
             FROM crm_payment_snapshots s1
-            WHERE YEAR(date_creation_date) = ?
+            WHERE YEAR(date_creation) = ?
               AND payment_type_id = 1
               {$storeFilter}
               AND snapshot_date = (
