@@ -105,65 +105,6 @@ class EncaissementDashboardController extends Controller
     }
 
     /**
-     * CA par groupe et par jour — source: CRM API snapshots.
-     */
-    public function caGroupes(Request $request)
-    {
-        $sites  = $this->accessibleSites();
-        $siteId = $this->resolveRequestedSiteId(
-            $request->filled('site_id') ? (int) $request->site_id : null
-        );
-
-        if (!$this->userSeesAllSites() && $siteId === null) {
-            $allowed = auth()->user()->accessibleSiteIds();
-            $siteId = $allowed[0] ?? null;
-        }
-
-        // Available months — only months that have Réglement data via the joined query
-        $availableMonths = \Illuminate\Support\Facades\DB::table('crm_payment_snapshots as p')
-            ->join('crm_registrations as r', 'r.crm_id', '=', 'p.registration_id')
-            ->join('crm_classes as c', 'c.crm_id', '=', 'r.crm_class_id')
-            ->where('p.payment_type_id', 1)
-            ->whereNotNull('c.name')
-            ->where('c.name', '!=', '')
-            ->whereNotNull('p.effective_date')
-            ->selectRaw("DATE_FORMAT(p.effective_date, '%Y-%m') as month")
-            ->groupBy('month')
-            ->orderByDesc('month')
-            ->limit(24)
-            ->pluck('month')
-            ->toArray();
-
-        // Default to most recent month that actually has Réglement data
-        $defaultMonth = $availableMonths[0] ?? now()->format('Y-m');
-
-        $month = $request->get('month') ?: $defaultMonth;
-        if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $month)
-            && !preg_match('/^\d{4}$/', $month)) {
-            $month = $defaultMonth;
-        }
-
-        $rows = $this->analytics->getCaParGroupeParJour($siteId, $month);
-
-        $byGroup = [];
-        $allDays = [];
-        foreach ($rows as $row) {
-            $byGroup[$row->group_name][$row->day] = [
-                'total' => (float) $row->total,
-                'count' => (int)   $row->count,
-            ];
-            $allDays[$row->day] = true;
-        }
-        ksort($byGroup);
-        ksort($allDays);
-        $allDays = array_keys($allDays);
-
-        return view('backoffice.encaissements.ca-groupes', compact(
-            'sites', 'month', 'siteId', 'byGroup', 'allDays', 'availableMonths'
-        ));
-    }
-
-    /**
      * Operator performance page.
      */
     public function operators(Request $request)

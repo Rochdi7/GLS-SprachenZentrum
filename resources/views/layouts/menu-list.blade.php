@@ -454,8 +454,7 @@
                     $crmStatsDashOpen ||
                     $crmStatsCompOpen ||
                     $crmStatsOpen ||
-                    request()->routeIs('backoffice.crm.reports.*') ||
-                    request()->routeIs('backoffice.encaissements.ca-groupes');
+                    request()->routeIs('backoffice.crm.reports.*');
             @endphp
             <li class="pc-item pc-hasmenu {{ $crmAllStatsOpen ? 'pc-trigger' : '' }}">
                 <a href="#!" class="pc-link">
@@ -486,12 +485,6 @@
                         <a href="{{ route('backoffice.crm.group-evolution') }}"
                             class="pc-link {{ request()->routeIs('backoffice.crm.group-evolution') ? 'active' : '' }}">
                             <span class="pc-mtext">Évolution par groupe</span>
-                        </a>
-                    </li>
-                    <li class="pc-item {{ request()->routeIs('backoffice.encaissements.ca-groupes') ? 'active' : '' }}">
-                        <a href="{{ route('backoffice.encaissements.ca-groupes') }}"
-                            class="pc-link {{ request()->routeIs('backoffice.encaissements.ca-groupes') ? 'active' : '' }}">
-                            <span class="pc-mtext">CA par Groupe</span>
                         </a>
                     </li>
                     {{-- <li class="pc-item {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">

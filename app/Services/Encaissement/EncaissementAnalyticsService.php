@@ -262,46 +262,6 @@ class EncaissementAnalyticsService
     }
 
     /**
-     * CA per group and per collection day using the CRM API snapshot data.
-     * Joins crm_payment_snapshots → crm_registrations → crm_classes to resolve group name.
-     * Only counts Réglement payments (payment_type_id = 1).
-     */
-    public function getCaParGroupeParJour(?int $siteId, string $month): \Illuminate\Support\Collection
-    {
-        if (preg_match('/^\d{4}$/', $month)) {
-            $start = Carbon::parse($month . '-01-01')->startOfYear();
-            $end   = $start->copy()->endOfYear();
-        } else {
-            $start = Carbon::parse($month . '-01')->startOfMonth();
-            $end   = $start->copy()->endOfMonth();
-        }
-
-        $query = DB::table('crm_payment_snapshots as p')
-            ->join('crm_registrations as r', 'r.crm_id', '=', 'p.registration_id')
-            ->join('crm_classes as c', 'c.crm_id', '=', 'r.crm_class_id')
-            ->whereBetween('p.effective_date', [$start->toDateString(), $end->toDateString()])
-            ->where('p.payment_type_id', 1) // Réglement only
-            ->whereNotNull('c.name')
-            ->where('c.name', '!=', '');
-
-        if ($siteId) {
-            $query->where('c.site_id', $siteId);
-        }
-
-        return $query
-            ->select(
-                'c.name as group_name',
-                DB::raw('DATE(p.effective_date) as day'),
-                DB::raw('SUM(p.amount) as total'),
-                DB::raw('COUNT(*) as count')
-            )
-            ->groupBy('c.name', DB::raw('DATE(p.effective_date)'))
-            ->orderBy('c.name')
-            ->orderBy('day')
-            ->get();
-    }
-
-    /**
      * Operator performance ranking for a period.
      */
     public function getOperatorPerformance(?int $siteId, string $month): array
