@@ -117,9 +117,13 @@
                                 <p class="mb-0 text-muted me-1">Téléphone</p>
                                 <p class="mb-0">{{ $user->phone ?? 'Non fourni' }}</p>
                             </div>
-                            <div class="d-inline-flex align-items-center justify-content-between w-100">
+                            <div class="d-inline-flex align-items-center justify-content-between w-100 mb-3">
                                 <p class="mb-0 text-muted me-1">Localisation</p>
                                 <p class="mb-0">{{ $user->location ?? 'Non fourni' }}</p>
+                            </div>
+                            <div class="d-inline-flex align-items-center justify-content-between w-100">
+                                <p class="mb-0 text-muted me-1">Dernière connexion</p>
+                                <p class="mb-0">{{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Jamais' }}</p>
                             </div>
                         </div>
                     </div>
@@ -190,9 +194,21 @@
                                                 </div>
                                             </div>
                                         </li>
-                                        <li class="list-group-item px-0 pb-0">
+                                        <li class="list-group-item px-0">
                                             <p class="mb-1 text-muted">Adresse</p>
                                             <p class="mb-0">{{ $user->address ?? 'Non fourni' }}</p>
+                                        </li>
+                                        <li class="list-group-item px-0 pb-0">
+                                            <p class="mb-1 text-muted">Dernière connexion</p>
+                                            <p class="mb-0">
+                                                @if($user->last_login_at)
+                                                    <span title="{{ $user->last_login_at->format('d/m/Y H:i') }}">
+                                                        {{ $user->last_login_at->diffForHumans() }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-muted">Jamais connecté</span>
+                                                @endif
+                                            </p>
                                         </li>
                                     </ul>
                                 </div>

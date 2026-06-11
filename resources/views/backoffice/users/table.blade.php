@@ -9,6 +9,7 @@
                 <th>Centre</th>
                 <th>Poste</th>
                 <th>Statut</th>
+                <th>Dernière connexion</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -85,6 +86,16 @@
                     </td>
 
                     <td>
+                        @if($user->last_login_at)
+                            <span class="text-muted small" title="{{ $user->last_login_at->format('d/m/Y H:i') }}">
+                                {{ $user->last_login_at->diffForHumans() }}
+                            </span>
+                        @else
+                            <span class="text-muted">—</span>
+                        @endif
+                    </td>
+
+                    <td>
 
                         {{-- EDIT --}}
                         @can('users.edit')
@@ -114,7 +125,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="text-center text-muted">Aucun utilisateur trouvé.</td>
+                    <td colspan="9" class="text-center text-muted">Aucun utilisateur trouvé.</td>
                 </tr>
             @endforelse
         </tbody>
