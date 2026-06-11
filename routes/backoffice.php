@@ -637,6 +637,10 @@ Route::prefix('backoffice')
                             ->middleware('permission:encaissements.delete')->name('destroy');
                     });
 
+                // Analytics — CA par groupe et par jour
+                Route::get('/ca-groupes', [EncaissementDashboardController::class, 'caGroupes'])
+                    ->middleware('permission:encaissements.view')->name('ca-groupes');
+
                 // CRUD Encaissements (wildcard routes MUST be last to avoid catching /expenses, /primes, etc.)
                 Route::get('/', [EncaissementController::class, 'index'])
                     ->middleware('permission:encaissements.view')->name('index');

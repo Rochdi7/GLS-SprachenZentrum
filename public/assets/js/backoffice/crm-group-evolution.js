@@ -35,58 +35,69 @@
     renderHtmlBars(groups);
 
     function renderApex(groups) {
-        const categories = groups.map(g => g.name.length > 20 ? g.name.slice(0, 20) + '…' : g.name);
+        const categories = groups.map(g => g.name.length > 18 ? g.name.slice(0, 18) + '…' : g.name);
         const series = SERIES.map(s => ({
             name: s.label,
             data: groups.map(g => g[s.key] || 0),
-            color: s.color,
         }));
+
+        // For large datasets use horizontal bars so group names are readable
+        const horizontal = groups.length > 15;
+        const chartHeight = horizontal ? Math.max(400, groups.length * 28) : 400;
+
+        if (horizontal) {
+            wrap.style.overflowY = 'auto';
+            wrap.style.maxHeight = '600px';
+        }
 
         new ApexCharts(wrap, {
             chart: {
                 type: 'bar',
-                height: 400,
-                toolbar: { show: false },
-                animations: { enabled: true, speed: 400 },
+                height: chartHeight,
+                toolbar: { show: true, tools: { download: true, selection: false, zoom: false, zoomin: false, zoomout: false, pan: false, reset: false } },
+                animations: { enabled: false },
+                fontFamily: 'inherit',
             },
             series,
-            xaxis: {
-                categories,
-                labels: {
-                    rotate: -40,
-                    rotateAlways: groups.length > 5,
-                    trim: true,
-                    style: { fontSize: '11px', colors: '#6c757d' },
-                },
-            },
-            yaxis: {
-                labels: { style: { fontSize: '11px', colors: '#6c757d' } },
-            },
+            colors: SERIES.map(s => s.color),
             plotOptions: {
                 bar: {
-                    horizontal: false,
-                    columnWidth: groups.length <= 3 ? '40%' : groups.length <= 6 ? '60%' : '80%',
-                    borderRadius: 3,
-                    dataLabels: { position: 'top' },
+                    horizontal,
+                    barHeight: horizontal ? '70%' : undefined,
+                    columnWidth: horizontal ? undefined : (groups.length <= 3 ? '40%' : groups.length <= 10 ? '60%' : '85%'),
+                    borderRadius: 2,
                 },
             },
-            dataLabels: {
-                enabled: groups.length <= 6,
-                offsetY: -18,
-                style: { fontSize: '9px', colors: ['#374151'], fontWeight: 600 },
-                formatter: v => v === 0 ? '' : v,
+            dataLabels: { enabled: false },
+            stroke: { show: true, width: 1, colors: ['transparent'] },
+            xaxis: horizontal
+                ? {
+                    categories,
+                    labels: { style: { fontSize: '11px', colors: '#374151' }, maxWidth: 180 },
+                }
+                : {
+                    categories,
+                    labels: {
+                        rotate: -45,
+                        rotateAlways: true,
+                        trim: true,
+                        style: { fontSize: '10px', colors: '#6c757d' },
+                    },
+                    tickPlacement: 'on',
+                },
+            yaxis: { labels: { style: { fontSize: '11px', colors: '#6c757d' } } },
+            legend: {
+                show: true,
+                position: 'top',
+                fontSize: '12px',
+                markers: { width: 10, height: 10, radius: 50 },
             },
-            legend: { show: false }, // legend already rendered in Blade
             tooltip: {
                 shared: true,
                 intersect: false,
                 y: { formatter: v => v + ' élève(s)' },
             },
-            grid: {
-                borderColor: '#eef0f3',
-                strokeDashArray: 3,
-            },
-            colors: SERIES.map(s => s.color),
+            grid: { borderColor: '#eef0f3', strokeDashArray: 3 },
         }).render();
     }
 

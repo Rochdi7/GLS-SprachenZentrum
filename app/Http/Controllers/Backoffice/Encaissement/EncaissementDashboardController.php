@@ -105,6 +105,47 @@ class EncaissementDashboardController extends Controller
     }
 
     /**
+     * CA par groupe et par jour.
+     */
+    public function caGroupes(Request $request)
+    {
+        $month = $request->get('month') ?: now()->format('Y-m');
+        if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $month)
+            && !preg_match('/^\d{4}$/', $month)) {
+            $month = now()->format('Y-m');
+        }
+
+        $siteId = $this->resolveRequestedSiteId(
+            $request->filled('site_id') ? (int) $request->site_id : null
+        );
+        $sites = $this->accessibleSites();
+
+        if (!$this->userSeesAllSites() && $siteId === null) {
+            $allowed = auth()->user()->accessibleSiteIds();
+            $siteId = $allowed[0] ?? null;
+        }
+
+        $rows = $this->analytics->getCaParGroupeParJour($siteId, $month);
+
+        $byGroup = [];
+        $allDays  = [];
+        foreach ($rows as $row) {
+            $byGroup[$row->group_name][$row->day] = [
+                'total' => (float) $row->total,
+                'count' => (int)   $row->count,
+            ];
+            $allDays[$row->day] = true;
+        }
+        ksort($byGroup);
+        ksort($allDays);
+        $allDays = array_keys($allDays);
+
+        return view('backoffice.encaissements.ca-groupes', compact(
+            'sites', 'month', 'siteId', 'byGroup', 'allDays'
+        ));
+    }
+
+    /**
      * Operator performance page.
      */
     public function operators(Request $request)

@@ -371,6 +371,12 @@
                     <span class="pc-mtext">Opérateurs</span>
                 </a>
             </li>
+            <li class="pc-item {{ request()->routeIs('backoffice.encaissements.ca-groupes') ? 'active' : '' }}">
+                <a href="{{ route('backoffice.encaissements.ca-groupes') }}"
+                    class="pc-link {{ request()->routeIs('backoffice.encaissements.ca-groupes') ? 'active' : '' }}">
+                    <span class="pc-mtext">CA par Groupe</span>
+                </a>
+            </li>
             <li class="pc-item {{ request()->routeIs('backoffice.encaissements.primes.*') ? 'active' : '' }}">
                 <a href="{{ route('backoffice.encaissements.primes.index') }}"
                     class="pc-link {{ request()->routeIs('backoffice.encaissements.primes.*') ? 'active' : '' }}">

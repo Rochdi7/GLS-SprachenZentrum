@@ -262,6 +262,41 @@ class EncaissementAnalyticsService
     }
 
     /**
+     * CA per group and per collection day for a given period and optional site.
+     * Returns a collection of rows: group_name, day (DATE), total (SUM), count (COUNT).
+     */
+    public function getCaParGroupeParJour(?int $siteId, string $month): \Illuminate\Support\Collection
+    {
+        if (preg_match('/^\d{4}$/', $month)) {
+            $start = Carbon::parse($month . '-01-01')->startOfYear();
+            $end   = $start->copy()->endOfYear();
+        } else {
+            $start = Carbon::parse($month . '-01')->startOfMonth();
+            $end   = $start->copy()->endOfMonth();
+        }
+
+        $query = Encaissement::whereBetween('collected_at', [$start, $end])
+            ->whereNotNull('group_name')
+            ->where('group_name', '!=', '');
+
+        if ($siteId) {
+            $query->where('site_id', $siteId);
+        }
+
+        return $query
+            ->select(
+                'group_name',
+                DB::raw('DATE(collected_at) as day'),
+                DB::raw('SUM(amount) as total'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->groupBy('group_name', DB::raw('DATE(collected_at)'))
+            ->orderBy('group_name')
+            ->orderBy('day')
+            ->get();
+    }
+
+    /**
      * Operator performance ranking for a period.
      */
     public function getOperatorPerformance(?int $siteId, string $month): array

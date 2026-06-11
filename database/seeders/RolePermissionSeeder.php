@@ -43,6 +43,7 @@ class RolePermissionSeeder extends Seeder
             'newsletter_subscribers' => ['view', 'delete'],
             'crm'              => ['view', 'create', 'edit', 'delete'],
             'crm_prof_payment' => ['view', 'create', 'edit', 'delete'],
+            'encaissements'    => ['view', 'create', 'edit', 'delete'],
         ];
 
         // Create all permissions
@@ -59,7 +60,6 @@ class RolePermissionSeeder extends Seeder
         Permission::where('name', 'like', 'employees.%')->delete();
         Permission::where('name', 'like', 'payroll.%')->delete();
         Permission::where('name', 'like', 'presence.%')->delete();
-        Permission::where('name', 'like', 'encaissements.%')->delete();
         Permission::where('name', 'like', 'whatsapp_campaigns.%')->delete();
 
         /*
@@ -119,6 +119,9 @@ class RolePermissionSeeder extends Seeder
 
             // CRM — view access
             'crm.view',
+
+            // Encaissements — view access
+            'encaissements.view',
         ];
         $reception->syncPermissions($receptionPermissions);
     }
