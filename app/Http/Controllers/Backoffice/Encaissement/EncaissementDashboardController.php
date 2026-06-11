@@ -119,17 +119,22 @@ class EncaissementDashboardController extends Controller
             $siteId = $allowed[0] ?? null;
         }
 
-        // Available months from CRM snapshot data (last 24 months max)
-        $availableMonths = \Illuminate\Support\Facades\DB::table('crm_payment_snapshots')
-            ->selectRaw("DATE_FORMAT(effective_date, '%Y-%m') as month")
-            ->whereNotNull('effective_date')
+        // Available months — only months that have Réglement data via the joined query
+        $availableMonths = \Illuminate\Support\Facades\DB::table('crm_payment_snapshots as p')
+            ->join('crm_registrations as r', 'r.crm_id', '=', 'p.registration_id')
+            ->join('crm_classes as c', 'c.crm_id', '=', 'r.crm_class_id')
+            ->where('p.payment_type_id', 1)
+            ->whereNotNull('c.name')
+            ->where('c.name', '!=', '')
+            ->whereNotNull('p.effective_date')
+            ->selectRaw("DATE_FORMAT(p.effective_date, '%Y-%m') as month")
             ->groupBy('month')
             ->orderByDesc('month')
             ->limit(24)
             ->pluck('month')
             ->toArray();
 
-        // Default to most recent month that has data
+        // Default to most recent month that actually has Réglement data
         $defaultMonth = $availableMonths[0] ?? now()->format('Y-m');
 
         $month = $request->get('month') ?: $defaultMonth;
