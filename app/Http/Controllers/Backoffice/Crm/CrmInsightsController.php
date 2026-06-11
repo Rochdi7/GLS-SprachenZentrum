@@ -261,7 +261,7 @@ class CrmInsightsController extends BaseCrmController
         });
 
         return response()->json([
-            'rows'           => $rows,
+            'rows'           => $rows->values(),
             'count'          => $rows->count(),
             'class_start_ym' => $classStartYm,
         ]);

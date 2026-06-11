@@ -47,6 +47,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'is_active',
         'staff_notes',
         'email_verified_at',
+        'last_login_at',
     ];
 
     protected $hidden = [
@@ -59,6 +60,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'password'          => 'hashed',
         'hired_at'          => 'date',
         'is_active'         => 'boolean',
+        'last_login_at'     => 'datetime',
     ];
 
     // ── Staff relations ──────────────────────────────────────────

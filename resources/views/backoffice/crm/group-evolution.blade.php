@@ -377,7 +377,9 @@
             document.getElementById('geDrillSubtitle')?.remove();
             document.getElementById('geDrillLoading').classList.remove('d-none');
             document.getElementById('geDrillContent').classList.add('d-none');
-            document.getElementById('geDrillEmpty').classList.add('d-none');
+            const emptyEl = document.getElementById('geDrillEmpty');
+            emptyEl.innerHTML = '<i class="ph-duotone ph-info fs-1"></i><p class="mt-2">Aucun étudiant trouvé pour ce groupe.</p>';
+            emptyEl.classList.add('d-none');
             document.getElementById('geDrillSearch').value = '';
             activeBucket = '';
             activeStatus = '';
@@ -387,10 +389,15 @@
 
             new bootstrap.Modal(document.getElementById('geDrillModal')).show();
 
-            fetch(drillUrl + '?classId=' + classId)
-                .then(r => r.json())
+            fetch(drillUrl + '?classId=' + classId, {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(r => {
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.json();
+                })
                 .then(data => {
-                    allRows = data.rows;
+                    allRows = Array.isArray(data.rows) ? data.rows : [];
                     document.getElementById('geDrillLoading').classList.add('d-none');
 
                     // Show class start month as subtitle
@@ -402,13 +409,18 @@
                         document.getElementById('geDrillTitle').after(sub);
                     }
 
-                    if (data.count === 0) {
+                    if (allRows.length === 0) {
                         document.getElementById('geDrillCount').textContent = '0 étudiant(s)';
                         document.getElementById('geDrillEmpty').classList.remove('d-none');
                     } else {
                         document.getElementById('geDrillContent').classList.remove('d-none');
                         applyFilters();
                     }
+                })
+                .catch(err => {
+                    document.getElementById('geDrillLoading').classList.add('d-none');
+                    emptyEl.innerHTML = '<i class="ph-duotone ph-warning fs-1 text-danger"></i><p class="mt-2 text-danger">Erreur chargement: ' + err.message + '</p>';
+                    emptyEl.classList.remove('d-none');
                 });
         });
     });
