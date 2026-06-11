@@ -363,7 +363,7 @@
 <script>
 (function initGroupEvolutionDrill() {
     const drillUrl  = '{{ route("backoffice.crm.group-evolution.drill") }}';
-    const drillModal = new bootstrap.Modal(document.getElementById('geDrillModal'));
+    let drillModal   = null;
     let allRows      = [];
     let activeBucket = '';
     let activeStatus = '';
@@ -388,6 +388,7 @@
             const allTab = document.querySelector('.ge-bucket-tab[data-bucket=""][data-status=""]');
             if (allTab) { allTab.classList.add('active', 'btn-primary'); }
 
+            if (!drillModal) drillModal = new bootstrap.Modal(document.getElementById('geDrillModal'));
             drillModal.show();
 
             fetch(drillUrl + '?classId=' + classId, {
