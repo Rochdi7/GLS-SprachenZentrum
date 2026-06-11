@@ -123,28 +123,22 @@ class StatsController extends BaseCrmController
         $storeFilter = $storeId ? "AND crm_store_id = {$storeId}" : '';
 
         $rows = DB::select("
-            SELECT crm_store_id,
+            SELECT crm_store_id, store_name,
                    SUM(rest_amount) as total_reste,
-                   SUM(amount)      as total_ca,
+                   SUM(total_price) as total_ca,
                    COUNT(*)         as cnt
-            FROM crm_payment_snapshots s1
+            FROM crm_collection_rows
             WHERE due_date BETWEEN ? AND ?
               AND rest_amount > 0
+              AND registration_status_id != 10
               {$storeFilter}
-              AND snapshot_date = (
-                  SELECT MAX(s2.snapshot_date)
-                  FROM crm_payment_snapshots s2
-                  WHERE s2.crm_payment_id = s1.crm_payment_id
-              )
-            GROUP BY crm_store_id
+            GROUP BY crm_store_id, store_name
             ORDER BY total_reste DESC
         ", [$startDate, $endDate]);
 
-        $sites = Site::whereNotNull('crm_store_id')->pluck('name', 'crm_store_id');
-
         $data = collect($rows)->map(fn ($r) => [
             'store_id'    => (int) $r->crm_store_id,
-            'store_name'  => $sites[$r->crm_store_id] ?? 'Store #' . $r->crm_store_id,
+            'store_name'  => $r->store_name ?? 'Store #' . $r->crm_store_id,
             'total_reste' => (float) $r->total_reste,
             'total_ca'    => (float) $r->total_ca,
             'cnt'         => (int) $r->cnt,
