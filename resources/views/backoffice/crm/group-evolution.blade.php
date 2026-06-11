@@ -127,39 +127,6 @@
         </div>
     @else
 
-        {{-- Chart card --}}
-        <div class="card mb-3 shadow-sm">
-            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <h5 class="mb-0">
-                    <i class="ph-duotone ph-chart-bar me-2 text-primary"></i>
-                    Évolution par groupe
-                    <small class="text-muted fw-normal ms-1">({{ count($groups) }} groupes)</small>
-                </h5>
-                <div class="d-flex gap-3 flex-wrap">
-                    @foreach([['#6f42c1','Début'],['#28a745','Ajouts'],['#dc3545','Quittant'],['#fd7e14','Changement'],['#2196f3','Actifs']] as [$color, $label])
-                        <span class="d-flex align-items-center gap-1 small">
-                            <span style="width:10px;height:10px;border-radius:50%;background:{{ $color }};display:inline-block"></span>
-                            {{ $label }}
-                        </span>
-                    @endforeach
-                </div>
-            </div>
-            <div class="card-body p-3">
-                <div id="groupEvolutionChart" style="min-height:360px"></div>
-            </div>
-        </div>
-
-        <script type="application/json" id="crm-group-evolution-data">
-        {{ json_encode(array_values(array_map(fn($g) => [
-            'name'        => $g['name'],
-            'debuts'      => $g['debuts']      ?? 0,
-            'ajouts'      => $g['ajouts']      ?? 0,
-            'quittants'   => $g['quittants']   ?? 0,
-            'changements' => $g['changements'] ?? 0,
-            'actifs'      => $g['actifs']      ?? 0,
-        ], $groups))) }}
-        </script>
-
         <div class="row g-3">
             {{-- Detail table card --}}
             <div class="col-12">
