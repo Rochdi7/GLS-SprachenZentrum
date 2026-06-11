@@ -262,8 +262,9 @@ class EncaissementAnalyticsService
     }
 
     /**
-     * CA per group and per collection day for a given period and optional site.
-     * Returns a collection of rows: group_name, day (DATE), total (SUM), count (COUNT).
+     * CA per group and per collection day using the CRM API snapshot data.
+     * Joins crm_payment_snapshots → crm_registrations → crm_classes to resolve group name.
+     * Only counts Réglement payments (payment_type_id = 1).
      */
     public function getCaParGroupeParJour(?int $siteId, string $month): \Illuminate\Support\Collection
     {
@@ -275,23 +276,27 @@ class EncaissementAnalyticsService
             $end   = $start->copy()->endOfMonth();
         }
 
-        $query = Encaissement::whereBetween('collected_at', [$start, $end])
-            ->whereNotNull('group_name')
-            ->where('group_name', '!=', '');
+        $query = DB::table('crm_payment_snapshots as p')
+            ->join('crm_registrations as r', 'r.crm_id', '=', 'p.registration_id')
+            ->join('crm_classes as c', 'c.crm_id', '=', 'r.crm_class_id')
+            ->whereBetween('p.effective_date', [$start->toDateString(), $end->toDateString()])
+            ->where('p.payment_type_id', 1) // Réglement only
+            ->whereNotNull('c.name')
+            ->where('c.name', '!=', '');
 
         if ($siteId) {
-            $query->where('site_id', $siteId);
+            $query->where('c.site_id', $siteId);
         }
 
         return $query
             ->select(
-                'group_name',
-                DB::raw('DATE(collected_at) as day'),
-                DB::raw('SUM(amount) as total'),
+                'c.name as group_name',
+                DB::raw('DATE(p.effective_date) as day'),
+                DB::raw('SUM(p.amount) as total'),
                 DB::raw('COUNT(*) as count')
             )
-            ->groupBy('group_name', DB::raw('DATE(collected_at)'))
-            ->orderBy('group_name')
+            ->groupBy('c.name', DB::raw('DATE(p.effective_date)'))
+            ->orderBy('c.name')
             ->orderBy('day')
             ->get();
     }

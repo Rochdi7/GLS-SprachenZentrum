@@ -105,30 +105,43 @@ class EncaissementDashboardController extends Controller
     }
 
     /**
-     * CA par groupe et par jour.
+     * CA par groupe et par jour — source: CRM API snapshots.
      */
     public function caGroupes(Request $request)
     {
-        $month = $request->get('month') ?: now()->format('Y-m');
-        if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $month)
-            && !preg_match('/^\d{4}$/', $month)) {
-            $month = now()->format('Y-m');
-        }
-
+        $sites  = $this->accessibleSites();
         $siteId = $this->resolveRequestedSiteId(
             $request->filled('site_id') ? (int) $request->site_id : null
         );
-        $sites = $this->accessibleSites();
 
         if (!$this->userSeesAllSites() && $siteId === null) {
             $allowed = auth()->user()->accessibleSiteIds();
             $siteId = $allowed[0] ?? null;
         }
 
+        // Available months from CRM snapshot data (last 24 months max)
+        $availableMonths = \Illuminate\Support\Facades\DB::table('crm_payment_snapshots')
+            ->selectRaw("DATE_FORMAT(effective_date, '%Y-%m') as month")
+            ->whereNotNull('effective_date')
+            ->groupBy('month')
+            ->orderByDesc('month')
+            ->limit(24)
+            ->pluck('month')
+            ->toArray();
+
+        // Default to most recent month that has data
+        $defaultMonth = $availableMonths[0] ?? now()->format('Y-m');
+
+        $month = $request->get('month') ?: $defaultMonth;
+        if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $month)
+            && !preg_match('/^\d{4}$/', $month)) {
+            $month = $defaultMonth;
+        }
+
         $rows = $this->analytics->getCaParGroupeParJour($siteId, $month);
 
         $byGroup = [];
-        $allDays  = [];
+        $allDays = [];
         foreach ($rows as $row) {
             $byGroup[$row->group_name][$row->day] = [
                 'total' => (float) $row->total,
@@ -141,7 +154,7 @@ class EncaissementDashboardController extends Controller
         $allDays = array_keys($allDays);
 
         return view('backoffice.encaissements.ca-groupes', compact(
-            'sites', 'month', 'siteId', 'byGroup', 'allDays'
+            'sites', 'month', 'siteId', 'byGroup', 'allDays', 'availableMonths'
         ));
     }
 

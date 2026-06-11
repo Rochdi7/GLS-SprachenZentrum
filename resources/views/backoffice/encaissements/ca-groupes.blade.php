@@ -49,8 +49,16 @@
             @endif
 
             <div class="col-12 col-sm-3">
-                <input type="month" name="month" class="form-control"
-                       value="{{ $month }}" onchange="this.form.submit()">
+                <select name="month" class="form-select" onchange="this.form.submit()">
+                    @foreach($availableMonths as $m)
+                        @php
+                            $label = \Carbon\Carbon::parse($m . '-01')->translatedFormat('F Y');
+                        @endphp
+                        <option value="{{ $m }}" {{ $month === $m ? 'selected' : '' }}>
+                            {{ $label }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             @if(request()->hasAny(['site_id', 'month']))
