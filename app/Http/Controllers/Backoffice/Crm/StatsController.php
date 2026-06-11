@@ -110,6 +110,57 @@ class StatsController extends BaseCrmController
         ]);
     }
 
+    public function recouvrementRange(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $startDate = $request->query('startDate');
+        $endDate   = $request->query('endDate');
+        $storeId   = $request->query('strStoreId') ? (int) $request->query('strStoreId') : null;
+
+        if (!$startDate || !$endDate) {
+            return response()->json(['error' => 'startDate et endDate sont requis.'], 422);
+        }
+
+        $storeFilter = $storeId ? "AND crm_store_id = {$storeId}" : '';
+
+        $rows = DB::select("
+            SELECT crm_store_id,
+                   SUM(rest_amount) as total_reste,
+                   SUM(amount)      as total_ca,
+                   COUNT(*)         as cnt
+            FROM crm_payment_snapshots s1
+            WHERE due_date BETWEEN ? AND ?
+              AND rest_amount > 0
+              {$storeFilter}
+              AND snapshot_date = (
+                  SELECT MAX(s2.snapshot_date)
+                  FROM crm_payment_snapshots s2
+                  WHERE s2.crm_payment_id = s1.crm_payment_id
+              )
+            GROUP BY crm_store_id
+            ORDER BY total_reste DESC
+        ", [$startDate, $endDate]);
+
+        $sites = Site::whereNotNull('crm_store_id')->pluck('name', 'crm_store_id');
+
+        $data = collect($rows)->map(fn ($r) => [
+            'store_id'    => (int) $r->crm_store_id,
+            'store_name'  => $sites[$r->crm_store_id] ?? 'Store #' . $r->crm_store_id,
+            'total_reste' => (float) $r->total_reste,
+            'total_ca'    => (float) $r->total_ca,
+            'cnt'         => (int) $r->cnt,
+        ])->values()->toArray();
+
+        return response()->json([
+            'data'         => $data,
+            'grand_reste'  => array_sum(array_column($data, 'total_reste')),
+            'grand_ca'     => array_sum(array_column($data, 'total_ca')),
+            'grand_cnt'    => array_sum(array_column($data, 'cnt')),
+            'start_date'   => $startDate,
+            'end_date'     => $endDate,
+            'snapshot'     => CrmPaymentSnapshot::max('snapshot_date'),
+        ]);
+    }
+
     public function comparaison(): View
     {
         $sites = Site::whereNotNull('crm_store_id')->orderBy('name')->get(['id', 'name', 'crm_store_id']);

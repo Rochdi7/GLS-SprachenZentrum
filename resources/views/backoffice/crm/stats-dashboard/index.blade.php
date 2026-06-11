@@ -204,16 +204,17 @@
     </div>
 </div>
 
-{{-- ── Encaissement par période (date range checker) ───────────────── --}}
+{{-- ── Recouvrement par période (date range) ───────────────────────── --}}
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <h5 class="mb-0">
-                    <i class="ph-duotone ph-calendar-check me-2 text-primary"></i>
-                    Encaissement par période — par centre
+                    <i class="ph-duotone ph-warning-circle me-2 text-warning"></i>
+                    Chiffre d'affaires par période
+                    <small class="text-muted fw-normal">(échéances, statut actif)</small>
                 </h5>
-                <small class="text-muted" id="enc-range-snapshot"></small>
+                <small class="text-muted" id="rec-range-snapshot"></small>
             </div>
             <div class="card-body">
 
@@ -221,48 +222,48 @@
                 <div class="row g-3 mb-4 align-items-end">
                     <div class="col-auto">
                         <label class="form-label fw-semibold mb-1">
-                            <i class="ph-duotone ph-calendar-blank me-1 text-primary"></i>
+                            <i class="ph-duotone ph-calendar-blank me-1 text-warning"></i>
                             Date de début
                         </label>
-                        <input type="date" id="enc-start-date" class="form-control" style="min-width:170px">
+                        <input type="date" id="rec-start-date" class="form-control" style="min-width:170px">
                     </div>
                     <div class="col-auto">
                         <label class="form-label fw-semibold mb-1">
-                            <i class="ph-duotone ph-calendar-blank me-1 text-primary"></i>
+                            <i class="ph-duotone ph-calendar-blank me-1 text-warning"></i>
                             Date de fin
                         </label>
-                        <input type="date" id="enc-end-date" class="form-control" style="min-width:170px">
+                        <input type="date" id="rec-end-date" class="form-control" style="min-width:170px">
                     </div>
                     <div class="col-auto">
-                        <button id="enc-range-btn" class="btn btn-primary" type="button">
+                        <button id="rec-range-btn" class="btn btn-warning text-white" type="button">
                             <i class="ph-duotone ph-magnifying-glass me-1"></i>
-                            Vérifier
+                            Afficher
                         </button>
                     </div>
                     <div class="col-auto d-flex gap-2 flex-wrap">
-                        <button class="btn btn-sm btn-outline-secondary enc-preset" data-preset="today">Aujourd'hui</button>
-                        <button class="btn btn-sm btn-outline-secondary enc-preset" data-preset="7d">7 jours</button>
-                        <button class="btn btn-sm btn-outline-secondary enc-preset" data-preset="30d">30 jours</button>
-                        <button class="btn btn-sm btn-outline-secondary enc-preset" data-preset="month">Ce mois</button>
+                        <button class="btn btn-sm btn-outline-secondary rec-preset" data-preset="today">Aujourd'hui</button>
+                        <button class="btn btn-sm btn-outline-secondary rec-preset" data-preset="7d">7 jours</button>
+                        <button class="btn btn-sm btn-outline-secondary rec-preset" data-preset="30d">30 jours</button>
+                        <button class="btn btn-sm btn-outline-secondary rec-preset" data-preset="month">Ce mois</button>
                     </div>
                 </div>
 
-                {{-- Loading + error state --}}
-                <div id="enc-range-loading" class="text-center py-4 d-none">
-                    <div class="spinner-border text-primary" role="status"></div>
+                {{-- Loading + error --}}
+                <div id="rec-range-loading" class="text-center py-4 d-none">
+                    <div class="spinner-border text-warning" role="status"></div>
                     <p class="text-muted mt-2 mb-0 small">Chargement…</p>
                 </div>
-                <div id="enc-range-error" class="alert alert-danger d-none"></div>
+                <div id="rec-range-error" class="alert alert-danger d-none"></div>
 
                 {{-- Results --}}
-                <div id="enc-range-results" class="d-none">
+                <div id="rec-range-results" class="d-none">
 
                     {{-- KPI row --}}
-                    <div class="row g-3 mb-4" id="enc-range-kpis"></div>
+                    <div class="row g-3 mb-4" id="rec-range-kpis"></div>
 
                     {{-- Chart --}}
                     <div class="mb-4">
-                        <div id="enc-range-chart" style="min-height:320px"></div>
+                        <div id="rec-range-chart" style="min-height:320px"></div>
                     </div>
 
                     {{-- Table --}}
@@ -272,22 +273,23 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Centre</th>
-                                    <th class="text-end">Encaissé (DH)</th>
-                                    <th class="text-end">Nb paiements</th>
-                                    <th style="width:30%">Part</th>
+                                    <th class="text-end">Reste à payer (DH)</th>
+                                    <th class="text-end">CA total (DH)</th>
+                                    <th class="text-end">Nb éch.</th>
+                                    <th style="width:25%">Part</th>
                                 </tr>
                             </thead>
-                            <tbody id="enc-range-tbody"></tbody>
-                            <tfoot id="enc-range-tfoot" class="table-secondary fw-semibold"></tfoot>
+                            <tbody id="rec-range-tbody"></tbody>
+                            <tfoot id="rec-range-tfoot" class="table-secondary fw-semibold"></tfoot>
                         </table>
                     </div>
 
                 </div>
 
                 {{-- Empty state --}}
-                <div id="enc-range-empty" class="text-center py-5 text-muted d-none">
-                    <i class="ph-duotone ph-chart-bar" style="font-size:2.5rem"></i>
-                    <p class="mt-2 mb-0">Aucun encaissement sur cette période.</p>
+                <div id="rec-range-empty" class="text-center py-5 text-muted d-none">
+                    <i class="ph-duotone ph-check-circle text-success" style="font-size:2.5rem"></i>
+                    <p class="mt-2 mb-0">Aucun impayé sur cette période.</p>
                 </div>
 
             </div>
@@ -434,6 +436,7 @@
 <script type="application/json" id="crm-stats-dashboard-config">
 {
     "encRangeEndpoint": "{{ route('backoffice.crm.statistiques.encaissement-range') }}",
+    "recRangeEndpoint": "{{ route('backoffice.crm.statistiques.recouvrement-range') }}",
     "storeId": "{{ $storeId ?? '' }}"
 }
 </script>
