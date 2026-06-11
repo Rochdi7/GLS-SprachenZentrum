@@ -8,6 +8,10 @@
     const COLORS = ['#4680ff','#1cc88a','#ffc107','#dc3545','#0dcaf0','#6f42c1','#fd7e14'];
     let encChart = null;
     let recChart = null;
+    const recForm = document.getElementById('rec-range-form');
+    const recButton = document.getElementById('rec-range-btn');
+    const recButtonLabel = recButton?.querySelector('.rec-range-btn-label');
+    const recResults = document.getElementById('rec-range-results');
 
     function fmtDH(v) {
         if (v >= 1e6) return (v / 1e6).toFixed(2).replace(/\.?0+$/, '') + ' M DH';
@@ -124,10 +128,18 @@
             });
             this.classList.remove('btn-outline-secondary');
             this.classList.add('active', 'btn-warning');
-            fetchRec();
+            fetchRec({ manual: true });
         });
     });
-    document.getElementById('rec-range-btn')?.addEventListener('click', fetchRec);
+    recForm?.addEventListener('submit', function (event) {
+        event.preventDefault();
+        fetchRec({ manual: true });
+    });
+    if (!recForm) {
+        recButton?.addEventListener('click', function () {
+            fetchRec({ manual: true });
+        });
+    }
 
     // Auto-load current month on page load
     (function autoLoad() {
@@ -135,16 +147,18 @@
         const s = new Date(today.getFullYear(), today.getMonth(), 1);
         document.getElementById('rec-start-date').value = toIso(s);
         document.getElementById('rec-end-date').value   = toIso(today);
-        fetchRec();
+        fetchRec({ manual: false });
     })();
 
-    function fetchRec() {
+    function fetchRec(options = {}) {
+        const { manual = false } = options;
         const start = document.getElementById('rec-start-date').value;
         const end   = document.getElementById('rec-end-date').value;
         if (!start || !end) { setState('rec', 'error', 'Veuillez choisir une date de début et de fin.'); return; }
         if (start > end)    { setState('rec', 'error', 'La date de début doit être ≤ la date de fin.'); return; }
 
         setState('rec', 'loading');
+        setRecButtonLoading(true);
 
         const params = new URLSearchParams({ startDate: start, endDate: end });
         if (storeId) params.set('strStoreId', storeId);
@@ -156,6 +170,9 @@
                 if (json.error)               { setState('rec', 'error', json.error); return; }
                 if (!json.data?.length)        { setState('rec', 'empty'); return; }
                 renderRec(json);
+                if (manual) {
+                    recResults?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             })
             .catch(err => { setState('rec', 'error', 'Erreur réseau : ' + err.message); });
     }

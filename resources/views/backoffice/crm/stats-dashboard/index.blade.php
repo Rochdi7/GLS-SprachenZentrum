@@ -219,7 +219,7 @@
             <div class="card-body">
 
                 {{-- Date inputs --}}
-                <div class="row g-3 mb-4 align-items-end">
+                <form id="rec-range-form" class="row g-3 mb-4 align-items-end">
                     <div class="col-auto">
                         <label class="form-label fw-semibold mb-1">
                             <i class="ph-duotone ph-calendar-blank me-1 text-warning"></i>
@@ -235,18 +235,18 @@
                         <input type="date" id="rec-end-date" class="form-control" style="min-width:170px">
                     </div>
                     <div class="col-auto">
-                        <button id="rec-range-btn" class="btn btn-warning text-white" type="button">
+                        <button id="rec-range-btn" class="btn btn-warning text-white" type="submit">
                             <i class="ph-duotone ph-magnifying-glass me-1"></i>
-                            Afficher
+                            <span class="rec-range-btn-label">Afficher</span>
                         </button>
                     </div>
                     <div class="col-auto d-flex gap-2 flex-wrap">
-                        <button class="btn btn-sm btn-outline-secondary rec-preset" data-preset="today">Aujourd'hui</button>
-                        <button class="btn btn-sm btn-outline-secondary rec-preset" data-preset="7d">7 jours</button>
-                        <button class="btn btn-sm btn-outline-secondary rec-preset" data-preset="30d">30 jours</button>
-                        <button class="btn btn-sm btn-outline-secondary rec-preset" data-preset="month">Ce mois</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary rec-preset" data-preset="today">Aujourd'hui</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary rec-preset" data-preset="7d">7 jours</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary rec-preset" data-preset="30d">30 jours</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary rec-preset" data-preset="month">Ce mois</button>
                     </div>
-                </div>
+                </form>
 
                 {{-- Loading + error --}}
                 <div id="rec-range-loading" class="text-center py-4 d-none">
