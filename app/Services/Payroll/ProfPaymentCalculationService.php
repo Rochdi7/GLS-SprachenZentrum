@@ -36,13 +36,13 @@ class ProfPaymentCalculationService
         $import->load('students.records');
 
         // Build the canonical 4-week buckets for this import period
-        $weekMap = $this->buildWeekMap($import->date_start, $import->date_end);
+        $weekMap = $this->buildWeekMap($import, $threshold);
 
         foreach ($import->students as $student) {
             // Group present dates by ISO week
             $presentByIsoWeek = $student->records
                 ->where('status', 'present')
-                ->groupBy(fn ($r) => Carbon::parse($r->date)->isoWeek());
+                ->groupBy(fn ($r) => Carbon::parse($r->date)->isoFormat('GGGG-WW'));
 
             // Per-bucket counts, with each ISO week capped at 5 working days
             // (Mon-Fri only — the school doesn't operate weekends, so a week
@@ -136,32 +136,55 @@ class ProfPaymentCalculationService
     }
 
     /**
-     * Map the ISO week numbers spanned by date_start..date_end onto buckets 1..4.
-     * Only ISO weeks that contain at least one Mon-Fri working day within the range
-     * are counted — a partial first/last week that starts on a weekend is skipped
-     * so it doesn't consume a bucket slot and leave SEM 1 empty.
-     * Extra ISO weeks (when month spans 5+) are merged into bucket 4.
+     * Map ISO weeks (keyed "GGGG-WW") onto buckets 1..4, based on the days
+     * that actually have attendance records — not the raw calendar.
+     *
+     * A week with fewer course days than the threshold can never qualify on
+     * its own (e.g. a holiday week reduced to a single Monday), so instead of
+     * consuming one of the 4 SEM slots and making it unwinnable, it shares a
+     * bucket with the following week. Extra weeks beyond 4 buckets are merged
+     * into bucket 4, and a trailing bucket too short to qualify is merged
+     * into the previous one.
      */
-    private function buildWeekMap($dateStart, $dateEnd): array
+    private function buildWeekMap(PresenceImport $import, int $threshold): array
     {
-        $start = Carbon::parse($dateStart);
-        $end = Carbon::parse($dateEnd);
+        // Distinct course dates = every date that has at least one record
+        // (present or absent), chronologically ordered
+        $courseDates = $import->students
+            ->flatMap(fn ($s) => $s->records->pluck('date'))
+            ->map(fn ($d) => Carbon::parse($d))
+            ->unique(fn ($d) => $d->toDateString())
+            ->sortBy(fn ($d) => $d->getTimestamp())
+            ->values();
 
-        // Collect only ISO weeks that have ≥1 Mon-Fri day within range
-        $weeks = collect();
-        $cursor = $start->copy();
-        while ($cursor->lte($end)) {
-            if ($cursor->isWeekday()) {
-                $weeks->push($cursor->isoWeek());
-            }
-            $cursor->addDay();
+        // Course-day count per ISO week, in chronological order
+        $dayCounts = [];
+        foreach ($courseDates as $d) {
+            $key = $d->isoFormat('GGGG-WW');
+            $dayCounts[$key] = ($dayCounts[$key] ?? 0) + 1;
         }
-        $weekNumbers = $weeks->unique()->values()->all();
 
         $map = [];
-        foreach ($weekNumbers as $idx => $isoWeek) {
-            $bucket = min($idx + 1, 4); // 5th+ week merges into bucket 4
-            $map[$isoWeek] = $bucket;
+        $bucket = 0;
+        $openDays = 0; // course days accumulated in the current bucket
+        foreach ($dayCounts as $key => $count) {
+            // Open a new bucket only once the current one has enough course
+            // days to be qualifiable; otherwise this week joins it.
+            if ($bucket === 0 || ($openDays >= $threshold && $bucket < 4)) {
+                $bucket++;
+                $openDays = 0;
+            }
+            $map[$key] = $bucket;
+            $openDays += $count;
+        }
+
+        // A trailing bucket too short to ever qualify merges into the previous one
+        if ($bucket > 1 && $openDays < $threshold) {
+            foreach ($map as $key => $b) {
+                if ($b === $bucket) {
+                    $map[$key] = $bucket - 1;
+                }
+            }
         }
 
         return $map;
