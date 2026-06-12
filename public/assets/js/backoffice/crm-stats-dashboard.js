@@ -124,9 +124,9 @@
             document.getElementById('rec-end-date').value   = toIso(e);
             document.querySelectorAll('.rec-preset').forEach(b => {
                 b.classList.remove('active', 'btn-warning');
-                b.classList.add('btn-outline-secondary');
+                b.classList.add('btn-outline-dark');
             });
-            this.classList.remove('btn-outline-secondary');
+            this.classList.remove('btn-outline-dark');
             this.classList.add('active', 'btn-warning');
             fetchRec({ manual: true });
         });
