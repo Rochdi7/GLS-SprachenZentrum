@@ -47,7 +47,7 @@
             </form>
         @endif
         <a href="{{ route('backoffice.crm.statistiques', array_merge(request()->query())) }}"
-           class="btn btn-sm btn-outline-secondary">
+           class="btn btn-sm btn-outline-dark">
             <i class="ph-duotone ph-arrows-clockwise"></i>
         </a>
         @include('backoffice.crm.partials._sync_badge')
@@ -241,10 +241,10 @@
                         </button>
                     </div>
                     <div class="col-auto d-flex gap-2 flex-wrap">
-                        <button type="button" class="btn btn-sm btn-outline-secondary rec-preset" data-preset="today">Aujourd'hui</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary rec-preset" data-preset="7d">7 jours</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary rec-preset" data-preset="30d">30 jours</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary rec-preset" data-preset="month">Ce mois</button>
+                        <button type="button" class="btn btn-sm btn-outline-dark rec-preset" data-preset="today">Aujourd'hui</button>
+                        <button type="button" class="btn btn-sm btn-outline-dark rec-preset" data-preset="7d">7 jours</button>
+                        <button type="button" class="btn btn-sm btn-outline-dark rec-preset" data-preset="30d">30 jours</button>
+                        <button type="button" class="btn btn-sm btn-outline-dark rec-preset" data-preset="month">Ce mois</button>
                     </div>
                 </form>
 

@@ -259,6 +259,9 @@
     function setState(prefix, state, msg) {
         ['loading','error','results','empty'].forEach(s =>
             document.getElementById(`${prefix}-range-${s}`)?.classList.add('d-none'));
+        if (prefix === 'rec' && state !== 'loading') {
+            setRecButtonLoading(false);
+        }
         if (prefix === 'rec') {
             if (recChart) { recChart.destroy(); recChart = null; }
             document.getElementById('rec-range-kpis').innerHTML  = '';
@@ -278,6 +281,15 @@
             el.classList.remove('d-none');
         } else if (state === 'empty') {
             document.getElementById(`${prefix}-range-empty`).classList.remove('d-none');
+        }
+    }
+
+    function setRecButtonLoading(isLoading) {
+        if (!recButton) return;
+        recButton.disabled = isLoading;
+        recButton.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+        if (recButtonLabel) {
+            recButtonLabel.textContent = isLoading ? 'Chargement...' : 'Afficher';
         }
     }
 })();
