@@ -94,7 +94,7 @@
             </div>
         </section>
 
-        @if (\Illuminate\Support\Facades\Lang::has('home.pathways.items') && count(__('home.pathways.items')) > 0)
+        @if (app()->getLocale() !== 'de' && \Illuminate\Support\Facades\Lang::has('home.pathways.items') && count(__('home.pathways.items')) > 0)
             <section class="py-5 bg-light" aria-labelledby="home-pathways-title">
                 <div class="container">
                     <h2 id="home-pathways-title" class="text-center fw-bold mb-4 reveal delay-1">
