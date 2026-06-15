@@ -28,27 +28,6 @@ return [
         'button' => 'Deutschkurse entdecken',
     ],
 
-    'pathways' => [
-        'title' => 'Ihr Weg mit Deutsch – von Marokko nach Deutschland',
-        'items' => [
-            [
-                'title' => 'Goethe-Zertifikat vorbereiten',
-                'text' => 'Gezielte Vorbereitung auf Goethe A1–B2 mit erprobten Methoden und Prüfungssimulationen in unserem Sprachzentrum.',
-                'link_text' => 'Goethe-Vorbereitung',
-            ],
-            [
-                'title' => 'Studium & Ausbildung in Deutschland',
-                'text' => 'Beratung zu Studienkolleg, Hochschulzugang und den Sprachvoraussetzungen für Ihre Bewerbung.',
-                'link_text' => 'Studienweg planen',
-            ],
-            [
-                'title' => 'Visum & offizielle Nachweise',
-                'text' => 'Unterstützung bei anerkannten Zertifikaten und Dokumenten für Visum-, Studien- und Arbeitsanträge.',
-                'link_text' => 'Zertifikate & Nachweise',
-            ],
-        ],
-    ],
-
     'site_heading' => [
         'rabat'      => 'Deutschkurs Rabat – Campus GLS',
         'kenitra'    => 'Sprachzentrum Kénitra – GLS',
