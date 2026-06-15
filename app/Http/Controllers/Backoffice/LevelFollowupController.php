@@ -120,8 +120,18 @@ class LevelFollowupController extends Controller
                 && Carbon::parse($f->due_date)->lte($now);
         });
 
+        $perPage = 5;
+        $page = (int) $request->get('page', 1);
+        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $rows->forPage($page, $perPage),
+            $rows->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
         return view('backoffice.level_followups.index', [
-            'followups' => $rows,
+            'followups' => $paginated,
             'dueFollowups' => $dueRows,
             'levelFollowupsByGroup' => $followups->groupBy('group_id'),
             'sites' => $sites,

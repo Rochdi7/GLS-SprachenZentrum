@@ -297,6 +297,66 @@
     </div>
 </div>
 
+{{-- ── Classement encaissement par période ─────────────────────────── --}}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h5 class="mb-0">
+                    <i class="ph-duotone ph-trophy me-2 text-primary"></i>
+                    Classement encaissement par période
+                    <small class="text-muted fw-normal">(paiements enregistrés)</small>
+                </h5>
+                <small class="text-muted" id="enc-rank-snapshot"></small>
+            </div>
+            <div class="card-body">
+                {{-- Loading + error --}}
+                <div id="enc-rank-loading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="text-muted mt-2 mb-0 small">Chargement…</p>
+                </div>
+                <div id="enc-rank-error" class="alert alert-danger d-none"></div>
+
+                {{-- Results --}}
+                <div id="enc-rank-results" class="d-none">
+                    {{-- KPI row --}}
+                    <div class="row g-3 mb-4" id="enc-rank-kpis"></div>
+
+                    {{-- Chart + table side by side on large screens --}}
+                    <div class="row g-3 align-items-start">
+                        <div class="col-xl-7">
+                            <div id="enc-rank-chart" style="min-height:300px"></div>
+                        </div>
+                        <div class="col-xl-5">
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width:42px">#</th>
+                                            <th>Centre</th>
+                                            <th class="text-end">Encaissé</th>
+                                            <th class="text-end">Nb</th>
+                                            <th style="width:28%">Part</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="enc-rank-tbody"></tbody>
+                                    <tfoot id="enc-rank-tfoot" class="table-secondary fw-semibold"></tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Empty state --}}
+                <div id="enc-rank-empty" class="text-center py-5 text-muted d-none">
+                    <i class="ph-duotone ph-currency-dollar-simple text-muted" style="font-size:2.5rem"></i>
+                    <p class="mt-2 mb-0">Aucun encaissement sur cette période.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @endsection
 

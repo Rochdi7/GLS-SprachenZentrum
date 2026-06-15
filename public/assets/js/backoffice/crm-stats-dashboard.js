@@ -6,8 +6,10 @@
     const { encRangeEndpoint, recRangeEndpoint, storeId } = JSON.parse(d.textContent);
 
     const COLORS = ['#4680ff','#1cc88a','#ffc107','#dc3545','#0dcaf0','#6f42c1','#fd7e14'];
+    const MEDALS = ['🥇','🥈','🥉'];
     let encChart = null;
     let recChart = null;
+    let encRankChart = null;
     const recForm = document.getElementById('rec-range-form');
     const recButton = document.getElementById('rec-range-btn');
     const recButtonLabel = recButton?.querySelector('.rec-range-btn-label');
@@ -129,11 +131,13 @@
             this.classList.remove('btn-outline-dark');
             this.classList.add('active', 'btn-warning');
             fetchRec({ manual: true });
+            fetchEncRank();
         });
     });
     recForm?.addEventListener('submit', function (event) {
         event.preventDefault();
         fetchRec({ manual: true });
+        fetchEncRank();
     });
     if (!recForm) {
         recButton?.addEventListener('click', function () {
@@ -148,6 +152,7 @@
         document.getElementById('rec-start-date').value = toIso(s);
         document.getElementById('rec-end-date').value   = toIso(today);
         fetchRec({ manual: false });
+        fetchEncRank();
     })();
 
     function fetchRec(options = {}) {
@@ -253,6 +258,130 @@
 
         document.getElementById('rec-range-snapshot').textContent = json.snapshot ? 'Snapshot : ' + json.snapshot : '';
         document.getElementById('rec-range-results').classList.remove('d-none');
+    }
+
+    // ── Encaissement ranking (shares rec-range dates) ──────────────────
+    function fetchEncRank() {
+        const start = document.getElementById('rec-start-date').value;
+        const end   = document.getElementById('rec-end-date').value;
+        if (!start || !end) return;
+
+        setEncRankState('loading');
+        const params = new URLSearchParams({ startDate: start, endDate: end });
+        if (storeId) params.set('strStoreId', storeId);
+
+        fetch(`${encRangeEndpoint}?${params}`, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            .then(json => {
+                if (json.error || !json.data?.length) { setEncRankState(json.error ? 'error' : 'empty', json.error); return; }
+                renderEncRank(json);
+            })
+            .catch(err => setEncRankState('error', 'Erreur réseau : ' + err.message));
+    }
+
+    function renderEncRank(json) {
+        const { data, grand_total, grand_nb } = json;
+
+        // KPIs
+        document.getElementById('enc-rank-kpis').innerHTML = `
+            <div class="col-sm-6 col-xl-3">
+                <div class="card border-start border-primary border-3 h-100"><div class="card-body py-3">
+                    <div class="text-muted small mb-1">Total encaissé</div>
+                    <div class="fw-bold fs-5 text-primary">${fullDH(grand_total)}</div>
+                </div></div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card border-start border-success border-3 h-100"><div class="card-body py-3">
+                    <div class="text-muted small mb-1">Nb paiements</div>
+                    <div class="fw-bold fs-5 text-success">${grand_nb.toLocaleString('fr-MA')}</div>
+                </div></div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card border-start border-info border-3 h-100"><div class="card-body py-3">
+                    <div class="text-muted small mb-1">Moy. par centre</div>
+                    <div class="fw-bold fs-5 text-info">${data.length ? fullDH(grand_total / data.length) : '—'}</div>
+                </div></div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card border-start border-warning border-3 h-100"><div class="card-body py-3">
+                    <div class="text-muted small mb-1">Leader</div>
+                    <div class="fw-bold fs-6 text-warning text-truncate">${data[0]?.store_name ?? '—'}</div>
+                </div></div>
+            </div>`;
+
+        // Horizontal bar chart — sorted desc so #1 is on top
+        const sorted = [...data].sort((a, b) => b.total - a.total);
+        if (encRankChart) { encRankChart.destroy(); encRankChart = null; }
+        encRankChart = new ApexCharts(document.getElementById('enc-rank-chart'), {
+            chart: { type: 'bar', height: Math.max(200, sorted.length * 52 + 60), toolbar: { show: false }, fontFamily: 'inherit' },
+            series: [{ name: 'Encaissé', data: sorted.map(r => +r.total.toFixed(2)) }],
+            colors: sorted.map((_, i) => COLORS[i % COLORS.length]),
+            plotOptions: { bar: { horizontal: true, distributed: true, borderRadius: 5, barHeight: '55%',
+                dataLabels: { position: 'right' } } },
+            dataLabels: {
+                enabled: true,
+                formatter: v => fmtDH(v),
+                style: { fontSize: '11px', fontWeight: 600, colors: ['#333'] },
+                offsetX: 6,
+            },
+            xaxis: {
+                categories: sorted.map((r, i) => (MEDALS[i] ?? (i + 1) + '.') + ' ' + r.store_name),
+                labels: { formatter: fmtDH, style: { fontSize: '11px' } },
+                axisBorder: { show: false }, axisTicks: { show: false },
+            },
+            yaxis: { labels: { style: { fontSize: '12px', fontWeight: 600 }, maxWidth: 180 } },
+            legend: { show: false },
+            grid: { borderColor: '#f0f0f0', strokeDashArray: 3 },
+            tooltip: { y: { formatter: v => fullDH(v) } },
+        });
+        encRankChart.render();
+
+        // Ranking table
+        document.getElementById('enc-rank-tbody').innerHTML = sorted.map((r, i) => {
+            const pct   = grand_total > 0 ? (r.total / grand_total * 100).toFixed(1) : 0;
+            const color = COLORS[i % COLORS.length];
+            const medal = MEDALS[i] ?? (i + 1);
+            return `<tr>
+                <td class="text-center fw-bold" style="font-size:1.05rem">${medal}</td>
+                <td><span class="badge" style="background:${color}20;color:${color};font-size:.82rem">${r.store_name}</span></td>
+                <td class="text-end fw-semibold text-primary">${fullDH(r.total)}</td>
+                <td class="text-end text-muted">${r.nb.toLocaleString('fr-MA')}</td>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="progress flex-grow-1" style="height:7px">
+                            <div class="progress-bar" style="width:${pct}%;background:${color}"></div>
+                        </div>
+                        <small class="text-muted" style="min-width:36px;text-align:right">${pct}%</small>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+        document.getElementById('enc-rank-tfoot').innerHTML = `<tr>
+            <td colspan="2">Total</td>
+            <td class="text-end">${fullDH(grand_total)}</td>
+            <td class="text-end">${grand_nb.toLocaleString('fr-MA')}</td>
+            <td></td>
+        </tr>`;
+
+        document.getElementById('enc-rank-snapshot').textContent = json.snapshot ? 'Snapshot : ' + json.snapshot : '';
+        setEncRankState('results');
+    }
+
+    function setEncRankState(state, msg) {
+        ['loading','error','results','empty'].forEach(s =>
+            document.getElementById(`enc-rank-${s}`)?.classList.add('d-none'));
+        if (state === 'results') {
+            document.getElementById('enc-rank-results').classList.remove('d-none');
+        } else if (state === 'loading') {
+            document.getElementById('enc-rank-loading').classList.remove('d-none');
+        } else if (state === 'error') {
+            const el = document.getElementById('enc-rank-error');
+            el.textContent = msg || 'Erreur inconnue.';
+            el.classList.remove('d-none');
+        } else if (state === 'empty') {
+            document.getElementById('enc-rank-empty').classList.remove('d-none');
+        }
+        if (state !== 'results' && encRankChart) { encRankChart.destroy(); encRankChart = null; }
     }
 
     // ── State helpers ──────────────────────────────────────────────────
