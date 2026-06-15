@@ -258,69 +258,83 @@
     }
 
     // ── Encaissement ranking — own date controls ───────────────────────
-    const encRankForm       = document.getElementById('enc-rank-form');
-    const encRankBtn        = document.getElementById('enc-rank-btn');
-    const encRankBtnLabel   = encRankBtn?.querySelector('.enc-rank-btn-label');
+    var encRankBusy = false;
 
-    document.querySelectorAll('.enc-rank-preset').forEach(btn => {
+    function setEncRankDates(preset) {
+        var today = new Date(), s, e = today;
+        if (preset === 'today')  { s = today; }
+        else if (preset === '7d')  { s = new Date(today); s.setDate(today.getDate() - 6); }
+        else if (preset === '30d') { s = new Date(today); s.setDate(today.getDate() - 29); }
+        else                       { s = new Date(today.getFullYear(), today.getMonth(), 1); }
+        document.getElementById('enc-rank-start-date').value = toIso(s);
+        document.getElementById('enc-rank-end-date').value   = toIso(e);
+    }
+
+    document.querySelectorAll('.enc-rank-preset').forEach(function(btn) {
         btn.addEventListener('click', function () {
-            const today = new Date();
-            let s, e;
-            switch (this.dataset.preset) {
-                case 'today': s = e = today; break;
-                case '7d':    s = new Date(today); s.setDate(today.getDate() - 6); e = today; break;
-                case '30d':   s = new Date(today); s.setDate(today.getDate() - 29); e = today; break;
-                case 'month': s = new Date(today.getFullYear(), today.getMonth(), 1); e = today; break;
-            }
-            document.getElementById('enc-rank-start-date').value = toIso(s);
-            document.getElementById('enc-rank-end-date').value   = toIso(e);
-            document.querySelectorAll('.enc-rank-preset').forEach(b => {
+            setEncRankDates(this.dataset.preset);
+            document.querySelectorAll('.enc-rank-preset').forEach(function(b) {
                 b.classList.remove('active', 'btn-primary');
                 b.classList.add('btn-outline-dark');
             });
             this.classList.remove('btn-outline-dark');
             this.classList.add('active', 'btn-primary');
-            fetchEncRank();
+            doFetchEncRank();
         });
     });
 
-    encRankForm?.addEventListener('submit', function (e) {
-        e.preventDefault();
-        fetchEncRank();
-    });
+    var encRankFormEl = document.getElementById('enc-rank-form');
+    if (encRankFormEl) {
+        encRankFormEl.addEventListener('submit', function(ev) {
+            ev.preventDefault();
+            doFetchEncRank();
+        });
+    }
 
-    // Auto-load current month on page load
-    (function autoLoadEncRank() {
-        const today = new Date();
-        const s = new Date(today.getFullYear(), today.getMonth(), 1);
-        document.getElementById('enc-rank-start-date').value = toIso(s);
-        document.getElementById('enc-rank-end-date').value   = toIso(today);
-        fetchEncRank();
-    })();
-
-    function fetchEncRank() {
-        const start = document.getElementById('enc-rank-start-date').value;
-        const end   = document.getElementById('enc-rank-end-date').value;
+    function doFetchEncRank() {
+        if (encRankBusy) return;
+        var start = document.getElementById('enc-rank-start-date').value;
+        var end   = document.getElementById('enc-rank-end-date').value;
         if (!start || !end) { setEncRankState('error', 'Veuillez choisir une date de début et de fin.'); return; }
         if (start > end)    { setEncRankState('error', 'La date de début doit être ≤ la date de fin.'); return; }
 
+        encRankBusy = true;
         setEncRankState('loading');
-        if (encRankBtn) { encRankBtn.disabled = true; if (encRankBtnLabel) encRankBtnLabel.textContent = 'Chargement...'; }
-        function resetEncRankBtn() {
-            if (encRankBtn) { encRankBtn.disabled = false; if (encRankBtnLabel) encRankBtnLabel.textContent = 'Afficher'; }
-        }
-        const params = new URLSearchParams({ startDate: start, endDate: end });
+
+        var btn = document.getElementById('enc-rank-btn');
+        var lbl = btn ? btn.querySelector('.enc-rank-btn-label') : null;
+        if (btn) { btn.disabled = true; }
+        if (lbl) { lbl.textContent = 'Chargement...'; }
+
+        var params = new URLSearchParams({ startDate: start, endDate: end });
         if (storeId) params.set('strStoreId', storeId);
 
-        fetch(`${encRangeEndpoint}?${params}`, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-            .then(json => {
-                resetEncRankBtn();
-                if (json.error || !json.data?.length) { setEncRankState(json.error ? 'error' : 'empty', json.error); return; }
-                renderEncRank(json);
-            })
-            .catch(err => { resetEncRankBtn(); setEncRankState('error', 'Erreur réseau : ' + err.message); });
+        fetch(encRangeEndpoint + '?' + params.toString(), {
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(function(r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+        })
+        .then(function(json) {
+            encRankBusy = false;
+            if (btn) { btn.disabled = false; }
+            if (lbl) { lbl.textContent = 'Afficher'; }
+            if (json.error) { setEncRankState('error', json.error); return; }
+            if (!json.data || !json.data.length) { setEncRankState('empty'); return; }
+            renderEncRank(json);
+        })
+        .catch(function(err) {
+            encRankBusy = false;
+            if (btn) { btn.disabled = false; }
+            if (lbl) { lbl.textContent = 'Afficher'; }
+            setEncRankState('error', 'Erreur réseau : ' + err.message);
+        });
     }
+
+    // Auto-load current month
+    setEncRankDates('month');
+    doFetchEncRank();
 
     function renderEncRank(json) {
         const { data, grand_total, grand_nb } = json;
