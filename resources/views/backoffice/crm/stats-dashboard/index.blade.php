@@ -532,5 +532,5 @@
     "storeId": "{{ $storeId ?? '' }}"
 }
 </script>
-<script src="{{ URL::asset('assets/js/backoffice/crm-stats-dashboard.js') }}"></script>
+<script src="{{ URL::asset('assets/js/backoffice/crm-stats-dashboard.js') }}?v={{ @filemtime(public_path('assets/js/backoffice/crm-stats-dashboard.js')) ?: '1' }}"></script>
 @endsection
