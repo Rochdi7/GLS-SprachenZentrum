@@ -433,12 +433,12 @@
             </li>
 
             {{-- Dépenses CRM --}}
-            {{-- <li class="pc-item {{ $crmExpensesOpen ? 'active' : '' }}">
+            <li class="pc-item {{ $crmExpensesOpen ? 'active' : '' }}">
                 <a href="{{ route('backoffice.crm.expenses.index') }}"
                     class="pc-link {{ $crmExpensesOpen ? 'active' : '' }}">
                     <span class="pc-mtext">Dépenses</span>
                 </a>
-            </li> --}}
+            </li>
 
             {{-- Recouvrement --}}
             <li class="pc-item {{ $crmCollectionsOpen ? 'active' : '' }}">

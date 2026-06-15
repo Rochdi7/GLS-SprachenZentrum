@@ -47,6 +47,14 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping(240)
             ->appendOutputTo(storage_path('logs/crm-snapshot-monthly.log'));
 
+        // ── Weekly CEO report — every Friday at 06:00 Casablanca ────────────
+        // Covers Mon–Sun of the just-ended week (anchor = Thursday = last day in week).
+        $schedule->command('crm:weekly-report')
+            ->weeklyOn(5, '06:00')  // 5 = Friday
+            ->timezone('Africa/Casablanca')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/crm-weekly-report.log'));
+
         // ── Step 2 — :20 — Daily report (after sync finishes) ────────────────
         $schedule->command('crm:daily-report')
             ->cron('20 */2 * * *')

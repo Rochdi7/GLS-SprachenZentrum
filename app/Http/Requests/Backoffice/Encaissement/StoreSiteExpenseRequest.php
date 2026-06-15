@@ -15,7 +15,7 @@ class StoreSiteExpenseRequest extends FormRequest
     {
         return [
             'site_id' => 'required|exists:sites,id',
-            'type'    => 'required|in:loyer,electricite,eau,internet,fournitures,salaire,autre',
+            'type'    => 'required|in:' . implode(',', array_keys(\App\Models\SiteExpense::TYPES)),
             'label'   => 'required|string|max:255',
             'amount'  => 'required|numeric|min:0.01',
             'month'   => 'required|date',

@@ -44,7 +44,7 @@
                                 <label class="form-label">Type <span class="text-danger">*</span></label>
                                 <select name="type" class="form-select" required>
                                     <option value="">-- Choisir --</option>
-                                    @foreach(['loyer' => 'Loyer', 'electricite' => 'Électricité', 'eau' => 'Eau', 'internet' => 'Internet', 'fournitures' => 'Fournitures', 'salaire' => 'Salaire', 'autre' => 'Autre'] as $val => $label)
+                                    @foreach(\App\Models\SiteExpense::TYPES as $val => $label)
                                         <option value="{{ $val }}" {{ old('type') == $val ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>

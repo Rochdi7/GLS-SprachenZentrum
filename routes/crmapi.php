@@ -107,13 +107,14 @@ Route::prefix('crm')
         // CRM Expenses — local warehouse (site_expenses where crm_source=wimschool).
         Route::get('/expenses', [\App\Http\Controllers\Backoffice\Crm\CrmExpensesController::class, 'index'])->name('expenses.index');
 
-        // Daily CEO Reports (Module 1).
+        // Daily + Weekly CEO Reports.
         Route::prefix('reports')->name('reports.')->group(function () {
-            Route::get('/',          [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'index'])->name('index');
-            Route::post('/generate', [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'generate'])->name('generate');
-            Route::get('/{date}',    [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'show'])->name('show')
+            Route::get('/',                    [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'index'])->name('index');
+            Route::post('/generate',           [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'generate'])->name('generate');
+            Route::post('/generate-weekly',    [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'generateWeekly'])->name('generate-weekly');
+            Route::get('/{date}',              [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'show'])->name('show')
                 ->where('date', '\d{4}-\d{2}-\d{2}');
-            Route::post('/{date}/resend', [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'resend'])->name('resend')
+            Route::post('/{date}/resend',      [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'resend'])->name('resend')
                 ->where('date', '\d{4}-\d{2}-\d{2}');
         });
     });

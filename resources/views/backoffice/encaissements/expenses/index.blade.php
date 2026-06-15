@@ -41,7 +41,7 @@
                 <div class="col-12 col-sm">
                     <select name="type" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="">Tous les types</option>
-                        @foreach(['loyer' => 'Loyer', 'electricite' => 'Électricité', 'eau' => 'Eau', 'internet' => 'Internet', 'fournitures' => 'Fournitures', 'salaire' => 'Salaire', 'autre' => 'Autre'] as $key => $label)
+                        @foreach(\App\Models\SiteExpense::TYPES as $key => $label)
                             <option value="{{ $key }}" {{ request('type') === $key ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     </select>
@@ -95,7 +95,7 @@
                                 <td>{{ $expense->site->name ?? '—' }}</td>
                                 <td>
                                     <span class="badge bg-light-secondary">
-                                        {{ ['loyer' => 'Loyer', 'electricite' => 'Électricité', 'eau' => 'Eau', 'internet' => 'Internet', 'fournitures' => 'Fournitures', 'salaire' => 'Salaire', 'autre' => 'Autre'][$expense->type] ?? $expense->type }}
+                                        {{ \App\Models\SiteExpense::TYPES[$expense->type] ?? $expense->type }}
                                     </span>
                                 </td>
                                 <td>{{ $expense->label }}</td>
