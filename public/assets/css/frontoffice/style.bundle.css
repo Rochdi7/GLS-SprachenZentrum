@@ -3203,7 +3203,8 @@ text-wrap: balance;
 }
 
 .hh-muted {
-    opacity: .6;
+    color: #ffffff;
+    opacity: .92;
 }
 
 .hh-yellow {
