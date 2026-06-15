@@ -481,6 +481,18 @@
                             <span class="pc-mtext">CA Annuel</span>
                         </a>
                     </li> --}}
+                    <li class="pc-item {{ request()->routeIs('backoffice.crm.statistiques.resume-annuel') ? 'active' : '' }}">
+                        <a href="{{ route('backoffice.crm.statistiques.resume-annuel') }}"
+                            class="pc-link {{ request()->routeIs('backoffice.crm.statistiques.resume-annuel') ? 'active' : '' }}">
+                            <span class="pc-mtext">Résumé annuel (primes)</span>
+                        </a>
+                    </li>
+                    <li class="pc-item {{ request()->routeIs('backoffice.crm.statistiques.professeurs') ? 'active' : '' }}">
+                        <a href="{{ route('backoffice.crm.statistiques.professeurs') }}"
+                            class="pc-link {{ request()->routeIs('backoffice.crm.statistiques.professeurs') ? 'active' : '' }}">
+                            <span class="pc-mtext">Performance professeurs</span>
+                        </a>
+                    </li>
                     <li class="pc-item {{ request()->routeIs('backoffice.crm.group-evolution') ? 'active' : '' }}">
                         <a href="{{ route('backoffice.crm.group-evolution') }}"
                             class="pc-link {{ request()->routeIs('backoffice.crm.group-evolution') ? 'active' : '' }}">

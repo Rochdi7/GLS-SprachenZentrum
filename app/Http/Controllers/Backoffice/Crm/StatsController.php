@@ -338,6 +338,369 @@ class StatsController extends BaseCrmController
         ]);
     }
 
+    // =========================================================================
+    // RÉSUMÉ ANNUEL — best center performance for primes (date range scan)
+    // =========================================================================
+
+    public function resumeAnnuel(Request $request): View
+    {
+        $sites        = Site::whereNotNull('crm_store_id')->orderBy('name')->get(['id', 'name', 'crm_store_id']);
+        $snapshotDate = CrmPaymentSnapshot::max('snapshot_date');
+
+        return $this->view('backoffice.crm.stats-dashboard.resume-annuel', [
+            'sites'        => $sites,
+            'snapshotDate' => $snapshotDate,
+            'storeId'      => $this->currentStrStoreId(),
+        ]);
+    }
+
+    /**
+     * Scan the whole payment + collection + registration data over an arbitrary
+     * date range and rank every center on three axes (encaissé, reste à payer,
+     * inscriptions) plus a weighted composite "performance" score used to crown
+     * the best center for primes.
+     */
+    public function resumeAnnuelData(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $startDate = $request->query('startDate');
+        $endDate   = $request->query('endDate');
+
+        if (!$startDate || !$endDate) {
+            return response()->json(['error' => 'startDate et endDate sont requis.'], 422);
+        }
+
+        try {
+            Carbon::parse($startDate);
+            Carbon::parse($endDate);
+        } catch (\Throwable) {
+            return response()->json(['error' => 'Dates invalides.'], 422);
+        }
+
+        // ── Encaissé per center (payments recorded in range) ─────────────────
+        // date_creation = timestamp the cash was recorded (date_creation_date is
+        // unpopulated in this DB). Dedup to the latest snapshot per payment id.
+        $encRows = DB::select("
+            SELECT crm_store_id, SUM(amount) as total, COUNT(*) as nb
+            FROM crm_payment_snapshots s1
+            WHERE date_creation BETWEEN ? AND ?
+              AND payment_type_id = 1
+              AND snapshot_date = (
+                  SELECT MAX(s2.snapshot_date) FROM crm_payment_snapshots s2
+                  WHERE s2.crm_payment_id = s1.crm_payment_id
+              )
+            GROUP BY crm_store_id
+        ", [$startDate, $endDate]);
+        $encaisse = [];
+        foreach ($encRows as $r) {
+            $encaisse[(int) $r->crm_store_id] = ['total' => (float) $r->total, 'nb' => (int) $r->nb];
+        }
+
+        // ── Reste à payer per center (active receivables due in range) ───────
+        $resteRows = DB::select("
+            SELECT crm_store_id,
+                   SUM(rest_amount) as reste,
+                   SUM(total_price) as ca,
+                   COUNT(*) as cnt
+            FROM crm_collection_rows
+            WHERE due_date BETWEEN ? AND ?
+              AND registration_status_id <> 10
+            GROUP BY crm_store_id
+        ", [$startDate, $endDate]);
+        $reste = [];
+        foreach ($resteRows as $r) {
+            $reste[(int) $r->crm_store_id] = [
+                'reste' => (float) $r->reste,
+                'ca'    => (float) $r->ca,
+                'cnt'   => (int) $r->cnt,
+            ];
+        }
+
+        // ── Inscriptions per center (registrations created in range) ─────────
+        $regRows = DB::table('crm_registrations')
+            ->whereBetween('date_creation', [$startDate, $endDate])
+            ->whereNotNull('date_creation')
+            ->selectRaw('crm_store_id, COUNT(*) as cnt')
+            ->groupBy('crm_store_id')
+            ->get();
+        $inscriptions = [];
+        foreach ($regRows as $r) {
+            $inscriptions[(int) $r->crm_store_id] = (int) $r->cnt;
+        }
+
+        $sites = Site::whereNotNull('crm_store_id')->pluck('name', 'crm_store_id');
+
+        // Union of all store ids that have any data in the range
+        $storeIds = collect(array_keys($encaisse))
+            ->merge(array_keys($reste))
+            ->merge(array_keys($inscriptions))
+            ->unique()
+            ->values();
+
+        $rows = $storeIds->map(function ($sid) use ($encaisse, $reste, $inscriptions, $sites) {
+            $enc       = $encaisse[$sid]['total'] ?? 0.0;
+            $encNb     = $encaisse[$sid]['nb'] ?? 0;
+            $resteVal  = $reste[$sid]['reste'] ?? 0.0;
+            $ca        = $reste[$sid]['ca'] ?? 0.0;
+            $insc      = $inscriptions[$sid] ?? 0;
+            // Recovery rate = collected / (collected + outstanding). Higher = better
+            // (encaissé beaucoup, peu de reste à payer).
+            $base      = $enc + $resteVal;
+            $recovery  = $base > 0 ? round($enc / $base * 100, 1) : null;
+
+            return [
+                'store_id'      => (int) $sid,
+                'store_name'    => $sites[$sid] ?? 'Store #' . $sid,
+                'encaisse'      => round($enc),
+                'encaisse_nb'   => $encNb,
+                'reste'         => round($resteVal),
+                'ca'            => round($ca),
+                'inscriptions'  => $insc,
+                'recovery_rate' => $recovery,
+            ];
+        })->values();
+
+        // ── Composite performance score (0–100) ──────────────────────────────
+        // Normalise each metric across centers, then weight:
+        //   encaissé 40% · recouvrement (recovery rate) 35% · inscriptions 25%.
+        // "Most money recovered AND little reste à payer" => high recovery + high encaissé.
+        $maxEnc  = max($rows->max('encaisse') ?: 1, 1);
+        $maxInsc = max($rows->max('inscriptions') ?: 1, 1);
+
+        $rows = $rows->map(function ($row) use ($maxEnc, $maxInsc) {
+            $encScore  = $row['encaisse'] / $maxEnc * 100;
+            $recScore  = $row['recovery_rate'] ?? 0; // already 0–100
+            $inscScore = $row['inscriptions'] / $maxInsc * 100;
+            $row['score'] = round($encScore * 0.40 + $recScore * 0.35 + $inscScore * 0.25, 1);
+            return $row;
+        })->values()->toArray();
+
+        // Sorted views for the three category rankings
+        $byEncaisse     = collect($rows)->sortByDesc('encaisse')->values()->toArray();
+        $byInscriptions = collect($rows)->sortByDesc('inscriptions')->values()->toArray();
+        // Best recouvrement = highest recovery rate (least reste relative to collected)
+        $byRecouvrement = collect($rows)->sortByDesc(fn ($r) => $r['recovery_rate'] ?? -1)->values()->toArray();
+        $byScore        = collect($rows)->sortByDesc('score')->values()->toArray();
+
+        return response()->json([
+            'rows'             => $rows,
+            'by_encaisse'      => $byEncaisse,
+            'by_inscriptions'  => $byInscriptions,
+            'by_recouvrement'  => $byRecouvrement,
+            'by_score'         => $byScore,
+            'winner'           => $byScore[0] ?? null,
+            'grand'            => [
+                'encaisse'     => array_sum(array_column($rows, 'encaisse')),
+                'reste'        => array_sum(array_column($rows, 'reste')),
+                'inscriptions' => array_sum(array_column($rows, 'inscriptions')),
+            ],
+            'start_date'       => $startDate,
+            'end_date'         => $endDate,
+            'snapshot'         => CrmPaymentSnapshot::max('snapshot_date'),
+        ]);
+    }
+
+    // =========================================================================
+    // PERFORMANCE PROFESSEURS — top teachers, students at start vs lost
+    // =========================================================================
+
+    public function teacherPerformance(Request $request): View
+    {
+        $sites        = Site::whereNotNull('crm_store_id')->orderBy('name')->get(['id', 'name', 'crm_store_id']);
+        $snapshotDate = CrmPaymentSnapshot::max('snapshot_date');
+
+        return $this->view('backoffice.crm.stats-dashboard.teacher-performance', [
+            'sites'        => $sites,
+            'snapshotDate' => $snapshotDate,
+            'storeId'      => $this->currentStrStoreId(),
+        ]);
+    }
+
+    /**
+     * Per-teacher evolution over an arbitrary date range. Reuses the same
+     * payment-based début / ajout / quittant logic as crm:build-group-evolution,
+     * but scoped live to the requested range and aggregated by teacher
+     * (resolved from crm_classes.raw_data EMPLOYEE_TEACHER_FULL_NAME).
+     *
+     *   debuts    — students whose first paid month for the class is at/before
+     *               the class start month (founding students)
+     *   ajouts    — students whose first paid month is after class start
+     *   quittants — registrations with status "Annulé" (definitive departures)
+     *   actifs    — CLASS_COUNT_STUDENTS_ACTIVE summed across the teacher's classes
+     */
+    public function teacherPerformanceData(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $startDate = $request->query('startDate');
+        $endDate   = $request->query('endDate');
+        $storeId   = $request->query('strStoreId') ? (int) $request->query('strStoreId') : null;
+
+        if (!$startDate || !$endDate) {
+            return response()->json(['error' => 'startDate et endDate sont requis.'], 422);
+        }
+
+        try {
+            $startYm = Carbon::parse($startDate)->format('Y-m');
+            $endYm   = Carbon::parse($endDate)->format('Y-m');
+        } catch (\Throwable) {
+            return response()->json(['error' => 'Dates invalides.'], 422);
+        }
+
+        $cacheKey = 'crm.teacher_perf:' . ($storeId ?: 'all') . ":{$startDate}:{$endDate}";
+
+        $payload = Cache::remember($cacheKey, 1800, function () use ($storeId, $startDate, $endDate, $startYm, $endYm) {
+            return $this->computeTeacherPerformance($storeId, $startDate, $endDate, $startYm, $endYm);
+        });
+
+        return response()->json($payload + ['snapshot' => CrmPaymentSnapshot::max('snapshot_date')]);
+    }
+
+    private function computeTeacherPerformance(?int $storeId, string $startDate, string $endDate, string $startYm, string $endYm): array
+    {
+        // Classes in formation/préparation, optionally scoped to a center.
+        $classes = \App\Models\CrmClass::query()
+            ->whereNotNull('class_id')
+            ->when($storeId, fn ($q) => $q->where('site_id', $storeId))
+            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.STATUS_NAME')) IN ('En formation', 'En Préparation')")
+            ->get();
+
+        if ($classes->isEmpty()) {
+            return ['teachers' => [], 'totals' => ['debuts' => 0, 'ajouts' => 0, 'quittants' => 0, 'actifs' => 0, 'teachers' => 0, 'classes' => 0], 'start_date' => $startDate, 'end_date' => $endDate];
+        }
+
+        // Map raw_data.ID (= registration crm_class_id) → teacher + class meta.
+        $classMeta = []; // [rawId => ['teacher_id','teacher_name','site_id','start_ym','actifs','name']]
+        $rawIds    = [];
+        foreach ($classes as $class) {
+            $raw   = $class->raw_data ?? [];
+            $rawId = isset($raw['ID']) ? (int) $raw['ID'] : null;
+            if ($rawId === null) {
+                continue;
+            }
+            $rawIds[] = $rawId;
+            $classMeta[$rawId] = [
+                'teacher_id'   => isset($raw['EMPLOYEE_TEACHER_ID']) ? (int) $raw['EMPLOYEE_TEACHER_ID'] : 0,
+                'teacher_name' => trim($raw['EMPLOYEE_TEACHER_FULL_NAME'] ?? '') ?: 'Non assigné',
+                'site_id'      => (int) ($class->site_id ?? 0),
+                'start_ym'     => isset($raw['START_DATE']) ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m') : null,
+                'actifs'       => (int) ($raw['CLASS_COUNT_STUDENTS_ACTIVE'] ?? 0),
+                'name'         => $class->name ?? "#{$rawId}",
+            ];
+        }
+
+        // Registrations for those classes (only the classes we kept).
+        $registrations = \App\Models\CrmRegistration::query()
+            ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
+            ->whereIn('crm_class_id', $rawIds)
+            ->get(['crm_student_id', 'crm_class_id', 'status', 'raw_data']);
+
+        // First non-inscription paid month per student, within the range.
+        $studentIds = $registrations->pluck('crm_student_id')->unique()->values()->all();
+        $payMonthsByStudent = collect();
+        if (!empty($studentIds)) {
+            $payMonthsByStudent = DB::table('crm_payment_snapshots')
+                ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
+                ->whereIn('student_id', $studentIds)
+                ->whereBetween('effective_date', [$startDate, $endDate])
+                ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(payload, '$.ITEMS_NAME')) NOT LIKE '%inscription%'")
+                ->selectRaw('student_id, DATE_FORMAT(effective_date, "%Y-%m") as pay_month')
+                ->distinct()
+                ->get()
+                ->groupBy('student_id')
+                ->map(fn ($r) => $r->pluck('pay_month')->sort()->values()->all());
+        }
+
+        // Aggregate per teacher.
+        $teachers = []; // [teacher_id => bucket]
+        foreach ($registrations as $reg) {
+            $cid  = (int) $reg->crm_class_id;
+            $meta = $classMeta[$cid] ?? null;
+            if (!$meta) {
+                continue;
+            }
+            $tid = $meta['teacher_id'];
+            if (!isset($teachers[$tid])) {
+                $teachers[$tid] = [
+                    'teacher_id'   => $tid,
+                    'teacher_name' => $meta['teacher_name'],
+                    'debuts'       => 0,
+                    'ajouts'       => 0,
+                    'quittants'    => 0,
+                    'classes'      => [],
+                ];
+            }
+            $teachers[$tid]['classes'][$cid] = true;
+
+            $sid    = (int) $reg->crm_student_id;
+            $status = $reg->status;
+            $raw    = is_array($reg->raw_data) ? $reg->raw_data : json_decode($reg->raw_data, true);
+
+            // Quittant = définitive departure (status Annulé) within the range.
+            if ($status === 'Annulé') {
+                $teachers[$tid]['quittants']++;
+            }
+
+            $classYm = $meta['start_ym'];
+            if (!$classYm) {
+                continue;
+            }
+            $regYm  = isset($raw['START_DATE']) ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m') : $classYm;
+            $months = $payMonthsByStudent->get($sid, []);
+            $firstForClass = collect($months)->first(fn ($m) => $m >= $regYm);
+
+            if (!$firstForClass) {
+                if ($status === 'Active' && $regYm <= $classYm && $classYm >= $startYm && $classYm <= $endYm) {
+                    $teachers[$tid]['debuts']++;
+                }
+                continue;
+            }
+            if ($firstForClass <= $classYm) {
+                $teachers[$tid]['debuts']++;
+            } else {
+                $teachers[$tid]['ajouts']++;
+            }
+        }
+
+        // Sum actifs per teacher across their classes.
+        $actifsByTeacher = [];
+        foreach ($classMeta as $meta) {
+            $actifsByTeacher[$meta['teacher_id']] = ($actifsByTeacher[$meta['teacher_id']] ?? 0) + $meta['actifs'];
+        }
+
+        $result = collect($teachers)->map(function ($t) use ($actifsByTeacher) {
+            $debuts    = $t['debuts'];
+            $ajouts    = $t['ajouts'];
+            $quittants = $t['quittants'];
+            $actifs    = $actifsByTeacher[$t['teacher_id']] ?? 0;
+            $entrants  = $debuts + $ajouts; // total students brought in
+            // Retention = kept / entered. Higher = fewer losses relative to intake.
+            $retention = $entrants > 0 ? round(max(0, $entrants - $quittants) / $entrants * 100, 1) : null;
+
+            return [
+                'teacher_id'   => $t['teacher_id'],
+                'teacher_name' => $t['teacher_name'],
+                'debuts'       => $debuts,
+                'ajouts'       => $ajouts,
+                'quittants'    => $quittants,
+                'actifs'       => $actifs,
+                'classes'      => count($t['classes']),
+                'retention'    => $retention,
+            ];
+        })->values()->sortByDesc('actifs')->values()->toArray();
+
+        return [
+            'teachers'   => $result,
+            'totals'     => [
+                'debuts'    => array_sum(array_column($result, 'debuts')),
+                'ajouts'    => array_sum(array_column($result, 'ajouts')),
+                'quittants' => array_sum(array_column($result, 'quittants')),
+                'actifs'    => array_sum(array_column($result, 'actifs')),
+                'teachers'  => count($result),
+                'classes'   => count($classMeta),
+            ],
+            'start_date' => $startDate,
+            'end_date'   => $endDate,
+        ];
+    }
+
     public function refresh(Request $request): RedirectResponse
     {
         // Bust stats cache only — never run sync commands inside HTTP requests
