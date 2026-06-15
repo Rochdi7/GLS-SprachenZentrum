@@ -1,10 +1,17 @@
 <header class="site-header">
     <div class="nav-wrap container-xxl d-flex justify-content-between align-items-center py-3 px-3">
-        <a href="{{ route('front.home') }}" class="brand" style="display:inline-flex;align-items:center;">
+        @php
+            $brandAria = \Illuminate\Support\Facades\Lang::has('header.home_aria')
+                ? __('header.home_aria')
+                : 'GLS Sprachenzentrum — ' . (\Illuminate\Support\Facades\Lang::has('header.home') ? __('header.home') : 'Accueil');
+        @endphp
+        <a href="{{ route('front.home') }}" class="brand" style="display:inline-flex;align-items:center;"
+            aria-label="{{ $brandAria }}">
 
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="250" height="50"
                 zoomAndPan="magnify" viewBox="0 0 900 149.999998" height="200" preserveAspectRatio="xMidYMid meet"
-                version="1.0">
+                version="1.0" role="img" aria-label="GLS Sprachenzentrum">
+                <title>GLS Sprachenzentrum</title>
                 <defs>
                     <g />
                     <clipPath id="53e4df815d">

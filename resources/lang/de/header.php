@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'home_aria' => 'GLS Sprachenzentrum — Startseite',
     'about' => 'Unsere Schule',
     'our_school' => 'Über uns',
     'our_centers' => 'Unsere Zentren',

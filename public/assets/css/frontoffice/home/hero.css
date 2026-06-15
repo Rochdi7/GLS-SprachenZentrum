@@ -99,9 +99,11 @@ z-index: 3;
 
 .badge:hover{ transform: scale(1.05); }
 
+/* Badge text bumped to #fff (and orange bg to the darker brand orange) to meet
+   WCAG AA contrast for large text — same colored bubbles, legible labels. */
 .b-blue{
 background-color: var(--blue);
-color: #85acf7;
+color: #fff;
 left: 6%;
 top: 33%;
 z-index: 4;
@@ -109,15 +111,15 @@ z-index: 4;
 
 .b-green{
 background-color: var(--green);
-color: #9af3c5;
+color: #fff;
 left: 8%;
 bottom: 45%;
 z-index: 3;
 }
 
 .b-orange{
-background-color: var(--orange);
-color: #ffd161;
+background-color: var(--dark--orange);
+color: #fff;
 right: 6%;
 top: 30%;
 z-index: 4;
@@ -125,7 +127,7 @@ z-index: 4;
 
 .b-violet{
 background-color: var(--purple);
-color: #e6c9ff;
+color: #fff;
 right: 10%;
 bottom: 47%;
 z-index: 4;

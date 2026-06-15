@@ -20,11 +20,7 @@
                 {{-- Video 1 — Master BWL --}}
                 <div class="gls-mv-card gls-mv-card--blue reveal delay-1">
                     <div class="gls-mv-video reveal delay-2">
-                        <iframe
-                            src="https://player.vimeo.com/video/1173822209?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
-                            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
-                            title="Master BWL in Deutschland"></iframe>
+                        @include('frontoffice.partials.video-facade', ['id' => '1173822209', 'title' => 'Master BWL in Deutschland'])
                     </div>
                     <div class="gls-mv-label reveal delay-3">
                         <span class="gls-mv-dot"></span>
@@ -35,11 +31,7 @@
                 {{-- Video 2 — Deutsche Sprache --}}
                 <div class="gls-mv-card gls-mv-card--orange reveal delay-2">
                     <div class="gls-mv-video reveal delay-3">
-                        <iframe
-                            src="https://player.vimeo.com/video/1172166445?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
-                            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
-                            title="Deutsche Sprache"></iframe>
+                        @include('frontoffice.partials.video-facade', ['id' => '1172166445', 'title' => 'Deutsche Sprache'])
                     </div>
                     <div class="gls-mv-label reveal delay-1">
                         <span class="gls-mv-dot"></span>
@@ -50,11 +42,7 @@
                 {{-- Video 3 — Arbeit --}}
                 <div class="gls-mv-card gls-mv-card--green reveal delay-3">
                     <div class="gls-mv-video reveal delay-1">
-                        <iframe
-                            src="https://player.vimeo.com/video/1172167791?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
-                            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
-                            title="Arbeit"></iframe>
+                        @include('frontoffice.partials.video-facade', ['id' => '1172167791', 'title' => 'Arbeit'])
                     </div>
                     <div class="gls-mv-label reveal delay-2">
                         <span class="gls-mv-dot"></span>
@@ -65,11 +53,7 @@
                 {{-- Video 4 — GLS Témoignage PLAN C --}}
                 <div class="gls-mv-card gls-mv-card--purple reveal delay-1">
                     <div class="gls-mv-video reveal delay-2">
-                        <iframe
-                            src="https://player.vimeo.com/video/1173823269?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
-                            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
-                            title="GLS Témoignage PLAN C"></iframe>
+                        @include('frontoffice.partials.video-facade', ['id' => '1173823269', 'title' => 'GLS Témoignage PLAN C'])
                     </div>
                     <div class="gls-mv-label reveal delay-3">
                         <span class="gls-mv-dot"></span>
@@ -80,11 +64,7 @@
                 {{-- Video 5 — Ausbildung --}}
                 <div class="gls-mv-card gls-mv-card--yellow reveal delay-2">
                     <div class="gls-mv-video reveal delay-3">
-                        <iframe
-                            src="https://player.vimeo.com/video/1173821770?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
-                            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
-                            title="Ausbildung"></iframe>
+                        @include('frontoffice.partials.video-facade', ['id' => '1173821770', 'title' => 'Ausbildung'])
                     </div>
                     <div class="gls-mv-label reveal delay-1">
                         <span class="gls-mv-dot"></span>
@@ -95,11 +75,7 @@
                 {{-- Video 6 — Final HQ --}}
                 <div class="gls-mv-card gls-mv-card--blue reveal delay-3">
                     <div class="gls-mv-video reveal delay-1">
-                        <iframe
-                            src="https://player.vimeo.com/video/1172171254?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
-                            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
-                            title="Final HQ"></iframe>
+                        @include('frontoffice.partials.video-facade', ['id' => '1172171254', 'title' => 'Final HQ'])
                     </div>
                     <div class="gls-mv-label reveal delay-2">
                         <span class="gls-mv-dot"></span>
@@ -110,11 +86,7 @@
                 {{-- Video 7 — Koch Ausbildung Vertrag --}}
                 <div class="gls-mv-card gls-mv-card--orange reveal delay-1">
                     <div class="gls-mv-video reveal delay-2">
-                        <iframe
-                            src="https://player.vimeo.com/video/1172166709?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
-                            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
-                            title="Koch Ausbildung Vertrag"></iframe>
+                        @include('frontoffice.partials.video-facade', ['id' => '1172166709', 'title' => 'Koch Ausbildung Vertrag'])
                     </div>
                     <div class="gls-mv-label reveal delay-3">
                         <span class="gls-mv-dot"></span>
@@ -125,11 +97,7 @@
                 {{-- Video 8 — FC Marokko Herne --}}
                 <div class="gls-mv-card gls-mv-card--green reveal delay-2">
                     <div class="gls-mv-video reveal delay-3">
-                        <iframe
-                            src="https://player.vimeo.com/video/1172167181?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
-                            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
-                            title="FC Marokko Herne in Deutschland"></iframe>
+                        @include('frontoffice.partials.video-facade', ['id' => '1172167181', 'title' => 'FC Marokko Herne in Deutschland'])
                     </div>
                     <div class="gls-mv-label reveal delay-1">
                         <span class="gls-mv-dot"></span>
@@ -151,4 +119,6 @@
 </section>
 
 <link rel="stylesheet" href="{{ asset('assets/css/marketing-videos.css') }}?v={{ filemtime(public_path('assets/css/marketing-videos.css')) }}">
+<link rel="stylesheet" href="{{ asset('assets/css/video-facade.css') }}?v={{ @filemtime(public_path('assets/css/video-facade.css')) ?: '1' }}">
 <script defer src="{{ asset('assets/js/marketing-videos.js') }}?v={{ filemtime(public_path('assets/js/marketing-videos.js')) }}"></script>
+<script defer src="{{ asset('assets/js/video-facade.js') }}?v={{ @filemtime(public_path('assets/js/video-facade.js')) ?: '1' }}"></script>

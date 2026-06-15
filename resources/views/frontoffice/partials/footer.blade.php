@@ -9,7 +9,7 @@
                 </p>
             </div>
             <div class="col-12 col-md-5 order-1 order-md-2 footer-intro-logo text-center {{ app()->getLocale() == 'ar' ? 'text-md-start' : 'text-md-end' }}">
-                <img src="{{ asset('assets/images/logo/gls-blanc.webp') }}" alt="GLS Sprachenzentrum Logo">
+                <img src="{{ asset('assets/images/logo/gls-blanc.webp') }}" alt="GLS Sprachenzentrum Logo" loading="lazy" decoding="async" width="220" height="60">
             </div>
         </div>
 
@@ -232,27 +232,9 @@
         </div>
     </div>
 
-    <script src="{{ asset('assets/js/newsletter.js') }}"></script>
-    <!--Start of Tawk.to Script-->
-    <script type="text/javascript">
-        var Tawk_API = Tawk_API || {},
-            Tawk_LoadStart = new Date();
-        Tawk_API.customStyle = {
-            visibility: {
-                desktop: { position: 'br', xOffset: 24, yOffset: 90 },
-                mobile:  { position: 'br', xOffset: 15, yOffset: 90 }
-            }
-        };
-        (function() {
-            var s1 = document.createElement("script"),
-                s0 = document.getElementsByTagName("script")[0];
-            s1.async = true;
-            s1.src = 'https://embed.tawk.to/69af4ebd7d962c1c35e7812e/1jjacn54k';
-            s1.charset = 'UTF-8';
-            s1.setAttribute('crossorigin', '*');
-            s0.parentNode.insertBefore(s1, s0);
-        })();
-    </script>
-    <!--End of Tawk.to Script-->
+    <script src="{{ asset('assets/js/newsletter.js') }}" defer></script>
+    {{-- Tawk.to live chat is loaded by assets/js/consent-loader.js ONLY after the visitor
+         accepts cookies (then after a short idle delay). The previous inline embed loaded
+         on every page view and used crossorigin='*', which threw a CORS console error. --}}
 
 </footer>

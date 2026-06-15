@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'home_aria' => 'GLS Sprachenzentrum — الصفحة الرئيسية',
     'about' => 'مدرستنا',
     'our_school' => 'من نحن',
     'our_centers' => 'مراكزنا',

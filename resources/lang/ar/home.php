@@ -36,6 +36,20 @@ return [
         'description' => 'هدفنا هو مرافقة طلابنا عبر تجربة لغوية غامرة ومحفزة.',
         'button' => 'عرض الدورات',
     ],
+
+    'site_image_alt' => [
+        'rabat' => 'دورة اللغة الألمانية في الرباط – GLS Sprachenzentrum',
+        'kenitra' => 'دورة اللغة الألمانية في القنيطرة – GLS Sprachenzentrum',
+        'marrakech' => 'دورة اللغة الألمانية في مراكش – GLS Sprachenzentrum',
+        'sale' => 'دورة اللغة الألمانية في سلا – GLS Sprachenzentrum',
+        'casablanca' => 'دورة اللغة الألمانية في الدار البيضاء – GLS Sprachenzentrum',
+        'agadir' => 'دورة اللغة الألمانية في أكادير – GLS Sprachenzentrum',
+    ],
+
+    'video_facade' => [
+        'play_aria' => 'تشغيل الفيديو: :title',
+    ],
+
     'reviews' => [
         'title' => 'انضم إلى أفضل مدرسة لتعلم الألمانية في المغرب',
         'rating_line' => '4.9 / 5 (+677 تقييم)',
@@ -218,7 +232,7 @@ return [
             'description' => 'التكلفة لا يجب أن تمنعك من تعلم الألمانية! انضم إلى دورتنا الكاملة A1 بعد الظهر على أساس "ادفع ما تريد". الأماكن محدودة، سجّل شخصياً في حرمنا.',
             'start_date' => 'ابتداءً من 2 ديسمبر (مدة 4 أسابيع).',
             'button_directions' => 'الحصول على الاتجاهات',
-            'button_learn_more' => 'اعرف المزيد',
+            'button_learn_more' => 'تابعونا على إنستغرام',
         ],
         'card_a1' => [
             'title' => 'دورات <span class="hh-yellow">A1</span> جديدة قريباً!',

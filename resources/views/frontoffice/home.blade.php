@@ -24,10 +24,10 @@
 
 @push('head')
     <link rel="preload" as="image" href="{{ asset('assets/images/IMG_4399.avif') }}" fetchpriority="high">
+    {{-- Leaflet (map) is loaded lazily when the map scrolls into view — see the map
+         section script below. Only preconnect here; do NOT load the CSS/JS eagerly. --}}
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://basemaps.cartocdn.com" crossorigin>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 @endpush
 
 @section('content')
@@ -68,7 +68,7 @@
                     <div class="text-center mb-4 reveal delay-3">
                         <img src="{{ asset('assets/images/logo/gls-round.avif') }}"
                             alt="{{ \Illuminate\Support\Facades\Lang::has('home.intro.logo_alt') ? __('home.intro.logo_alt') : 'GLS Sprachenzentrum Logo' }}"
-                            class="intro-logo reveal delay-1">
+                            class="intro-logo reveal delay-1" loading="lazy" decoding="async" width="120" height="120">
 
                         <p class="text-primary fw-medium small mb-0 letter-spacing-1 reveal delay-2">
                             {{ __('home.intro.tagline') }}
@@ -109,8 +109,8 @@
                                     @php
                                         $pathwayRoutes = [
                                             route('front.exams.goethe'),
-                                            route('front.studienkollegs.index'),
-                                            route('front.certificates.check'),
+                                            route('front.studienkollegs'),
+                                            route('front.certificate.check'),
                                         ];
                                         $pathwayRoute = $pathwayRoutes[$index] ?? route('front.faq');
                                     @endphp
@@ -141,7 +141,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <a href="{{ route('front.sites.show', 'gls-rabat') }}" class="site-card small"
                     aria-label="{{ __('home.site_heading.rabat') }}">
                     <div class="site-video-wrapper">
-                        <img src="{{ asset('assets/images/sites/rabat.avif') }}" alt="{{ __('home.site_image_alt.rabat', [], false) ?: 'GLS Rabat' }}" class="site-image" loading="lazy" decoding="async">
+                        <img src="{{ asset('assets/images/sites/rabat.avif') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.rabat') ? __('home.site_image_alt.rabat') : 'GLS Rabat' }}" class="site-image" loading="lazy" decoding="async" width="600" height="450">
                     </div>
 
                     <div class="site-overlay">
@@ -153,7 +153,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <a href="{{ route('front.sites.show', 'gls-kenitra') }}" class="site-card small"
                     aria-label="{{ __('home.site_heading.kenitra') }}">
                     <div class="site-video-wrapper">
-                        <img src="{{ asset('assets/images/sites/kenitra.jpg') }}" alt="{{ __('home.site_image_alt.kenitra', [], false) ?: 'GLS Kénitra' }}" class="site-image" loading="lazy" decoding="async">
+                        <img src="{{ asset('assets/images/sites/kenitra.jpg') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.kenitra') ? __('home.site_image_alt.kenitra') : 'GLS Kénitra' }}" class="site-image" loading="lazy" decoding="async" width="600" height="450">
                     </div>
 
                     <div class="site-overlay">
@@ -165,8 +165,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <a href="{{ route('front.sites.show', 'gls-marrakech') }}" class="site-card wide"
                     aria-label="{{ __('home.site_heading.marrakech') }}">
                     <div class="site-video-wrapper">
-                        <img src="{{ asset('assets/images/sites/marrakech.webp') }}" alt="{{ __('home.site_image_alt.marrakech', [], false) ?: 'GLS Marrakech' }}"
-                            class="site-image" loading="lazy" decoding="async">
+                        <img src="{{ asset('assets/images/sites/marrakech.webp') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.marrakech') ? __('home.site_image_alt.marrakech') : 'GLS Marrakech' }}"
+                            class="site-image" loading="lazy" decoding="async" width="1200" height="450">
                     </div>
 
                     <div class="site-overlay">
@@ -178,7 +178,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <a href="{{ route('front.sites.show', 'gls-sale') }}" class="site-card wide"
                     aria-label="{{ __('home.site_heading.sale') }}">
                     <div class="site-video-wrapper">
-                        <img src="{{ asset('assets/images/sites/sale.avif') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.sale') ? __('home.site_image_alt.sale') : 'GLS Salé' }}" class="site-image" loading="lazy" decoding="async">
+                        <img src="{{ asset('assets/images/sites/sale.avif') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.sale') ? __('home.site_image_alt.sale') : 'GLS Salé' }}" class="site-image" loading="lazy" decoding="async" width="1200" height="450">
                     </div>
 
                     <div class="site-overlay">
@@ -190,7 +190,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <a href="{{ route('front.sites.show', 'gls-agadir') }}" class="site-card small"
                     aria-label="{{ __('home.site_heading.agadir') }}">
                     <div class="site-video-wrapper">
-                        <img src="{{ asset('assets/images/sites/agadir.avif') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.agadir') ? __('home.site_image_alt.agadir') : 'GLS Agadir' }}" class="site-image" loading="lazy" decoding="async">
+                        <img src="{{ asset('assets/images/sites/agadir.avif') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.agadir') ? __('home.site_image_alt.agadir') : 'GLS Agadir' }}" class="site-image" loading="lazy" decoding="async" width="600" height="450">
                     </div>
 
                     <div class="site-overlay">
@@ -203,7 +203,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     aria-label="{{ __('home.site_heading.casablanca') }}">
                     <div class="site-video-wrapper">
                         <img src="{{ asset('assets/images/sites/casablanca.avif') }}" alt="{{ \Illuminate\Support\Facades\Lang::has('home.site_image_alt.casablanca') ? __('home.site_image_alt.casablanca') : 'GLS Casablanca' }}"
-                            class="site-image" loading="lazy" decoding="async">
+                            class="site-image" loading="lazy" decoding="async" width="600" height="450">
                     </div>
 
                     <div class="site-overlay">
@@ -309,8 +309,8 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     </div>
 
                     <div class="hh-block-30 reveal delay-1">
-                        <img src="{{ asset('assets/images/IMG_4399.avif') }}" loading="lazy"
-                            alt="{{ __('home.highlights.big_card.title') }}">
+                        <img src="{{ asset('assets/images/IMG_4399.avif') }}" loading="lazy" decoding="async"
+                            width="1200" height="800" alt="{{ strip_tags(__('home.highlights.big_card.title')) }}">
                     </div>
                 </div>
 
@@ -887,11 +887,11 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
                 {{-- VIDEO BLOCK --}}
                 <div class="about-video reveal delay-1">
-                    <iframe src="https://www.youtube.com/embed/wPYANoRURpU?si=p__Fgz2v7VuF_ubl"
-                        title="9onsol’s Talks – GLS Morocco Podcast"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
-                        class="reveal delay-2"></iframe>
+                    @include('frontoffice.partials.video-facade', [
+                        'id' => 'wPYANoRURpU',
+                        'provider' => 'youtube',
+                        'title' => '9onsol’s Talks – GLS Morocco Podcast',
+                    ])
                 </div>
 
             </div>
@@ -1041,13 +1041,43 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 </div>
 
                 <script>
-                    (function initGlsMap() {
-                        if (typeof L === 'undefined') {
-                            return setTimeout(initGlsMap, 80);
+                    (function () {
+                        const mapEl = document.getElementById('glsCentresMap');
+                        if (!mapEl) return;
+
+                        // ── Lazy-load Leaflet (CSS+JS) only when the map scrolls into view ──
+                        const LEAFLET_CSS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+                        const LEAFLET_JS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+
+                        function loadLeaflet(cb) {
+                            if (window.L) {
+                                cb();
+                                return;
+                            }
+                            if (!document.querySelector('link[data-leaflet]')) {
+                                const link = document.createElement('link');
+                                link.rel = 'stylesheet';
+                                link.href = LEAFLET_CSS;
+                                link.setAttribute('data-leaflet', '1');
+                                document.head.appendChild(link);
+                            }
+                            let s = document.querySelector('script[data-leaflet]');
+                            if (s) {
+                                s.addEventListener('load', cb, { once: true });
+                                return;
+                            }
+                            s = document.createElement('script');
+                            s.src = LEAFLET_JS;
+                            s.setAttribute('data-leaflet', '1');
+                            s.async = true;
+                            s.addEventListener('load', cb, { once: true });
+                            document.body.appendChild(s);
                         }
-                        if (!document.getElementById('glsCentresMap')) return;
-                        if (document.getElementById('glsCentresMap').dataset.ready === '1') return;
-                        document.getElementById('glsCentresMap').dataset.ready = '1';
+
+                        function initGlsMap() {
+                            if (typeof L === 'undefined') return;
+                            if (mapEl.dataset.ready === '1') return;
+                            mapEl.dataset.ready = '1';
 
                         const centres = [{
                                 name: 'GLS Rabat',
@@ -1149,6 +1179,26 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                         // Force size recompute (in case container measured 0 at init)
                         setTimeout(() => map.invalidateSize(), 200);
                         window.addEventListener('resize', () => map.invalidateSize());
+                        }
+
+                        // Trigger load+init when the map enters the viewport.
+                        function trigger() {
+                            loadLeaflet(initGlsMap);
+                        }
+                        if ('IntersectionObserver' in window) {
+                            const io = new IntersectionObserver((entries, obs) => {
+                                entries.forEach(e => {
+                                    if (e.isIntersecting) {
+                                        obs.disconnect();
+                                        trigger();
+                                    }
+                                });
+                            }, { rootMargin: '200px 0px' });
+                            io.observe(mapEl);
+                        } else {
+                            // No IO support → load on first interaction or after load.
+                            window.addEventListener('load', trigger, { once: true });
+                        }
                     })();
                 </script>
 

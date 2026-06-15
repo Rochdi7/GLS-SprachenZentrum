@@ -20,11 +20,7 @@
                     {{-- Testimonial 1 — Yassine Safine --}}
                     <div class="gls-tmv-card gls-tmv-card--blue reveal delay-1">
                         <div class="gls-tmv-video reveal delay-2">
-                            <iframe
-                                src="https://player.vimeo.com/video/1172183039?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
-                                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
-                                title="Von GLS nach Deutschland — Yassine Safine Geschichte"></iframe>
+                            @include('frontoffice.partials.video-facade', ['id' => '1172183039', 'title' => 'Von GLS nach Deutschland — Yassine Safine Geschichte'])
                         </div>
                         <div class="gls-tmv-label reveal delay-3">
                             <span class="gls-tmv-dot"></span>
@@ -35,11 +31,7 @@
                     {{-- Testimonial 2 — Mohamed Amine --}}
                     <div class="gls-tmv-card gls-tmv-card--orange reveal delay-2">
                         <div class="gls-tmv-video reveal delay-3">
-                            <iframe
-                                src="https://player.vimeo.com/video/1172183086?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
-                                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
-                                title="Von GLS nach Deutschland — Mohamed Amine Geschichte"></iframe>
+                            @include('frontoffice.partials.video-facade', ['id' => '1172183086', 'title' => 'Von GLS nach Deutschland — Mohamed Amine Geschichte'])
                         </div>
                         <div class="gls-tmv-label reveal delay-1">
                             <span class="gls-tmv-dot"></span>
@@ -50,11 +42,7 @@
                     {{-- Testimonial 3 — Oumaima --}}
                     <div class="gls-tmv-card gls-tmv-card--green reveal delay-3">
                         <div class="gls-tmv-video reveal delay-1">
-                            <iframe
-                                src="https://player.vimeo.com/video/1172182987?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
-                                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
-                                title="Von GLS nach Deutschland — Oumaima Geschichte"></iframe>
+                            @include('frontoffice.partials.video-facade', ['id' => '1172182987', 'title' => 'Von GLS nach Deutschland — Oumaima Geschichte'])
                         </div>
                         <div class="gls-tmv-label reveal delay-2">
                             <span class="gls-tmv-dot"></span>
@@ -65,11 +53,7 @@
                     {{-- Testimonial 4 — Wiam --}}
                     <div class="gls-tmv-card gls-tmv-card--purple reveal delay-1">
                         <div class="gls-tmv-video reveal delay-2">
-                            <iframe
-                                src="https://player.vimeo.com/video/1172182943?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
-                                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"
-                                title="Von GLS nach Deutschland — Wiam Geschichte"></iframe>
+                            @include('frontoffice.partials.video-facade', ['id' => '1172182943', 'title' => 'Von GLS nach Deutschland — Wiam Geschichte'])
                         </div>
                         <div class="gls-tmv-label reveal delay-3">
                             <span class="gls-tmv-dot"></span>
@@ -91,4 +75,6 @@
 </section>
 
 <link rel="stylesheet" href="{{ asset('assets/css/marketing-videos-testimonials.css') }}?v={{ filemtime(public_path('assets/css/marketing-videos-testimonials.css')) }}">
+<link rel="stylesheet" href="{{ asset('assets/css/video-facade.css') }}?v={{ @filemtime(public_path('assets/css/video-facade.css')) ?: '1' }}">
 <script defer src="{{ asset('assets/js/marketing-videos-testimonials.js') }}?v={{ filemtime(public_path('assets/js/marketing-videos-testimonials.js')) }}"></script>
+<script defer src="{{ asset('assets/js/video-facade.js') }}?v={{ @filemtime(public_path('assets/js/video-facade.js')) ?: '1' }}"></script>

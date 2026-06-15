@@ -67,7 +67,9 @@
 }
 
 .subtitle {
-    color: var(--light--blue);
+    /* Darkened from --light--blue (#3577f4, ~4.1:1) to --blue (#1c45db, ~7:1) for
+       stronger WCAG contrast on light backgrounds. Same brand blue family. */
+    color: var(--blue);
     text-wrap: balance;
     font-size: 1.5rem;
     font-weight: 500;

@@ -16,52 +16,78 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/images/favicon/apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ asset('assets/images/favicon/site.webmanifest') }}">
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Preconnect to required origins (faster fetch of deferred CSS / fonts) -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdn.jotfor.ms" crossorigin>
 
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/footer.css') }}">
+    {{-- Critical above-the-fold CSS (inlined) so header + hero LCP paint immediately --}}
+    @include('frontoffice.partials.critical-css')
 
-    <!-- GLS FORM CSS (NEW) -->
-    <link rel="stylesheet" href="{{ asset('assets/css/gls-form.css') }}">
+    {{-- Preload the primary "Now" weight used by the hero LCP title to avoid late FOUT swap --}}
+    <link rel="preload" as="font" type="font/otf" href="{{ asset('assets/fonts/Now-Medium.otf') }}" crossorigin>
 
+    @php
+        // Flattened, single-file stylesheet (built by scripts/build-frontoffice-css.php).
+        // Falls back to the @import-based style.css if the bundle has not been generated.
+        $cssBundlePath = public_path('assets/css/frontoffice/style.bundle.css');
+        $cssMain = is_file($cssBundlePath)
+            ? 'assets/css/frontoffice/style.bundle.css'
+            : 'assets/css/frontoffice/style.css';
+        $cssMainVer = @filemtime(public_path($cssMain)) ?: '1';
+    @endphp
+
+    {{-- Non-critical CSS: load without blocking render (print-swap pattern + noscript fallback) --}}
+    <link rel="stylesheet" media="print" onload="this.media='all'"
+        href="{{ asset($cssMain) }}?v={{ $cssMainVer }}">
+    <link rel="stylesheet" media="print" onload="this.media='all'"
+        href="{{ asset('assets/css/frontoffice/footer.css') }}">
+    <link rel="stylesheet" media="print" onload="this.media='all'"
+        href="{{ asset('assets/css/gls-form.css') }}">
+    <link rel="stylesheet" media="print" onload="this.media='all'"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" media="print" onload="this.media='all'"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     @if (app()->getLocale() == 'ar')
-        <link rel="stylesheet" href="{{ asset('assets/css/rtl.css') }}">
+        <link rel="stylesheet" media="print" onload="this.media='all'"
+            href="{{ asset('assets/css/rtl.css') }}">
     @endif
+    <link rel="stylesheet" media="print" onload="this.media='all'"
+        href="{{ asset('assets/css/frontoffice/att-form-fields.css') }}?v={{ @filemtime(public_path('assets/css/frontoffice/att-form-fields.css')) ?: '1' }}">
+    <link rel="stylesheet" media="print" onload="this.media='all'"
+        href="{{ asset('assets/css/frontoffice/att-form-loading.css') }}?v={{ @filemtime(public_path('assets/css/frontoffice/att-form-loading.css')) ?: '1' }}">
+
+    <noscript>
+        <link rel="stylesheet" href="{{ asset($cssMain) }}?v={{ $cssMainVer }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/footer.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/gls-form.css') }}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+        @if (app()->getLocale() == 'ar')
+            <link rel="stylesheet" href="{{ asset('assets/css/rtl.css') }}">
+        @endif
+    </noscript>
 
     @stack('styles')
-    <link rel="stylesheet"
-        href="{{ asset('assets/css/frontoffice/att-form-fields.css') }}?v={{ @filemtime(public_path('assets/css/frontoffice/att-form-fields.css')) ?: '1' }}">
-    <link rel="stylesheet"
-        href="{{ asset('assets/css/frontoffice/att-form-loading.css') }}?v={{ @filemtime(public_path('assets/css/frontoffice/att-form-loading.css')) ?: '1' }}">
-    <!-- Meta Pixel Code -->
+
+    {{-- Tracking config (consumed by consent-loader.js). Scripts load ONLY after cookie consent. --}}
     <script>
-        ! function(f, b, e, v, n, t, s) {
-            if (f.fbq) return;
-            n = f.fbq = function() {
-                n.callMethod ?
-                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-            };
-            if (!f._fbq) f._fbq = n;
-            n.push = n;
-            n.loaded = !0;
-            n.version = '2.0';
-            n.queue = [];
-            t = b.createElement(e);
-            t.async = !0;
-            t.src = v;
-            s = b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t, s)
-        }(window, document, 'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '407443676615251');
-        fbq('track', 'PageView');
+        window.GLS_TRACKING = {
+            pixelId: '407443676615251',
+            gtagId: 'AW-17817493313',
+            ahrefsKey: 'vKoc9I4c7spqw+TRXsjGtw',
+            tawkSrc: 'https://embed.tawk.to/69af4ebd7d962c1c35e7812e/1jjacn54k',
+            tawkDelay: 10000,
+            tawkStyle: {
+                visibility: {
+                    desktop: { position: 'br', xOffset: 24, yOffset: 90 },
+                    mobile: { position: 'br', xOffset: 15, yOffset: 90 }
+                }
+            }
+        };
     </script>
-    <noscript><img height="1" width="1" style="display:none"
-            src="https://www.facebook.com/tr?id=407443676615251&ev=PageView&noscript=1" /></noscript>
-    <!-- End Meta Pixel Code -->
+    <script src="{{ asset('assets/js/consent-loader.js') }}?v={{ @filemtime(public_path('assets/js/consent-loader.js')) ?: '1' }}" defer></script>
+    {{-- The no-JS Meta Pixel <noscript> fallback was removed: it would fire without
+         consent (can't be gated without JS), conflicting with the consent-only policy. --}}
     @stack('head')
 </head>
 
@@ -89,12 +115,12 @@
         </div>
     </div>
 
-    <!-- Bootstrap Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Bundle (deferred; ordered before scripts that depend on it) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 
-    <script src="{{ asset('assets/js/header.js') }}"></script>
-    <script src="{{ asset('assets/js/reveal.js') }}"></script>
-    <script src="{{ asset('assets/js/autoscroller.js') }}"></script>
+    <script src="{{ asset('assets/js/header.js') }}" defer></script>
+    <script src="{{ asset('assets/js/reveal.js') }}" defer></script>
+    <script src="{{ asset('assets/js/autoscroller.js') }}" defer></script>
     <!-- GLS FORM JS (NEW) -->
     <script src="{{ asset('assets/js/gls-form.js') }}" defer></script>
 
@@ -131,18 +157,8 @@
 
     @include('frontoffice.templates.consultation-form')
 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17817493313"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-
-        gtag('config', 'AW-17817493313');
-    </script>
-    <script src="https://analytics.ahrefs.com/analytics.js" data-key="vKoc9I4c7spqw+TRXsjGtw" async></script>
+    {{-- Tracking (Google Ads/GTM, Ahrefs, Meta Pixel, Tawk.to) is loaded by
+         assets/js/consent-loader.js ONLY after the visitor accepts cookies. --}}
 
     {{-- Disable Inspect/DevTools (Production Only) - temporarily commented out --}}
     

@@ -45,11 +45,16 @@ document.addEventListener('DOMContentLoaded', function () {
     accept?.addEventListener('click', function () {
         localStorage.setItem(STORAGE_KEY, 'accepted');
         hideBanner();
+        // Load tracking/marketing scripts now that consent is granted.
+        if (typeof window.glsConsentGranted === 'function') {
+            window.glsConsentGranted();
+        }
     });
 
     reject?.addEventListener('click', function () {
         localStorage.setItem(STORAGE_KEY, 'rejected');
         hideBanner();
+        // No tracking is loaded on reject.
     });
 
     openLinks.forEach(link => {

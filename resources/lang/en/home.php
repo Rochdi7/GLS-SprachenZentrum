@@ -35,6 +35,19 @@ return [
         'description' => 'Our goal is to support our students through an immersive and motivating language experience.',
         'button' => 'View our courses',
     ],
+
+    'site_image_alt' => [
+        'rabat' => 'German course in Rabat – GLS Sprachenzentrum',
+        'kenitra' => 'German course in Kénitra – GLS Sprachenzentrum',
+        'marrakech' => 'German course in Marrakech – GLS Sprachenzentrum',
+        'sale' => 'German course in Salé – GLS Sprachenzentrum',
+        'casablanca' => 'German course in Casablanca – GLS Sprachenzentrum',
+        'agadir' => 'German course in Agadir – GLS Sprachenzentrum',
+    ],
+
+    'video_facade' => [
+        'play_aria' => 'Play video: :title',
+    ],
     'reviews' => [
         'title' => 'Join Morocco\'s highest-rated German school',
         'rating_line' => '4.9 / 5 (+677 reviews)',
@@ -215,7 +228,7 @@ return [
             'description' => 'Cost shouldn\'t stop you from learning German! Join our full A1 afternoon course on a pay-what-you-want basis. Limited availability, sign up in person in our campus.',
             'start_date' => 'Starting December 2nd (4 Week Duration).',
             'button_directions' => 'Get Directions',
-            'button_learn_more' => 'Learn More',
+            'button_learn_more' => 'Follow us on Instagram',
         ],
         'card_a1' => [
             'title' => 'New <span class="hh-yellow">A1 Courses</span> Starting&nbsp;Soon!',

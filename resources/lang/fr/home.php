@@ -36,6 +36,20 @@ return [
         'description' => 'Notre objectif est d’accompagner nos étudiants à travers une expérience linguistique immersive et motivante.',
         'button' => 'Voir nos cours',
     ],
+
+    'site_image_alt' => [
+        'rabat' => 'Cours d’allemand à Rabat – GLS Sprachenzentrum',
+        'kenitra' => 'Cours d’allemand à Kénitra – GLS Sprachenzentrum',
+        'marrakech' => 'Cours d’allemand à Marrakech – GLS Sprachenzentrum',
+        'sale' => 'Cours d’allemand à Salé – GLS Sprachenzentrum',
+        'casablanca' => 'Cours d’allemand à Casablanca – GLS Sprachenzentrum',
+        'agadir' => 'Cours d’allemand à Agadir – GLS Sprachenzentrum',
+    ],
+
+    'video_facade' => [
+        'play_aria' => 'Lire la vidéo : :title',
+    ],
+
     'reviews' => [
         'title' => 'Rejoignez l’école d’allemand la mieux notée au Maroc',
         'rating_line' => '4.9 / 5 (+677 avis)',
@@ -218,7 +232,7 @@ return [
             'description' => 'Le coût ne devrait pas vous arrêter d\'apprendre l\'allemand ! Rejoignez notre cours complet A1 l\'après-midi sur la base du "payez ce que vous voulez". Places limitées, inscrivez-vous en personne dans notre campus.',
             'start_date' => 'À partir du 2 décembre (durée 4 semaines).',
             'button_directions' => 'Obtenir les directions',
-            'button_learn_more' => 'En savoir plus',
+            'button_learn_more' => 'Suivez-nous sur Instagram',
         ],
         'card_a1' => [
             'title' => 'Nouveaux cours <span class="hh-yellow">A1</span> bientôt disponibles !',

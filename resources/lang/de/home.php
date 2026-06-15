@@ -67,6 +67,10 @@ return [
         'agadir' => 'Deutschkurs Agadir – GLS Sprachzentrum',
     ],
 
+    'video_facade' => [
+        'play_aria' => 'Video abspielen: :title',
+    ],
+
     'faq_schema' => [
         [
             'question' => 'Wo kann ich in Marokko Deutsch lernen?',
@@ -266,7 +270,7 @@ return [
             'description' => 'Die Kosten sollten Sie nicht vom Deutschlernen abhalten! Treten Sie unserem vollständigen A1-Nachmittagskurs auf Pay-What-You-Want-Basis bei. Begrenzte Plätze, registrieren Sie sich persönlich in unserem Campus.',
             'start_date' => 'Ab 2. Dezember (Dauer 4 Wochen).',
             'button_directions' => 'Richtungen',
-            'button_learn_more' => 'A1-Angebot entdecken',
+            'button_learn_more' => 'Auf Instagram folgen',
         ],
         'card_a1' => [
             'title' => 'Neue <span class="hh-yellow">A1-Kurse</span> bald verfügbar!',
