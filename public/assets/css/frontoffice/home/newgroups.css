@@ -47,6 +47,16 @@
 /* ===== TEXT ===== */
 .hh-title {
     color: #ffffff;
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+}
+
+/* Large featured-card title (kept bigger than the standard card title) */
+.hh-title-big {
+    font-size: 3rem;
+    line-height: 1.05;
 }
 
 .hh-text {
@@ -80,6 +90,14 @@
 
     .hh-section-title {
         font-size: 3rem;
+    }
+
+    .hh-title {
+        font-size: 1.85rem;
+    }
+
+    .hh-title-big {
+        font-size: 2.25rem;
     }
 
     .hh-row {
