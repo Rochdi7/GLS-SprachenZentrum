@@ -310,7 +310,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
                     <div class="hh-block-30 reveal delay-1">
                         <img src="{{ asset('assets/images/IMG_4399.avif') }}" loading="lazy" decoding="async"
-                            width="1200" height="800" alt="{{ strip_tags(__('home.highlights.big_card.title')) }}">
+                            width="1440" height="1080" alt="{{ strip_tags(__('home.highlights.big_card.title')) }}">
                     </div>
                 </div>
 
@@ -1036,7 +1036,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <div class="gls-map-wrap reveal delay-3"
                     style="position:relative;border-radius:22px;overflow:hidden;border:1px solid #e6e2c5;background:#fffee8;box-shadow:0 18px 44px rgba(0,0,0,.08);width:100%;max-width:100%;aspect-ratio:4/5;min-height:520px;">
                     <div id="glsCentresMap" style="position:absolute;inset:0;width:100%;height:100%;"
-                        aria-label="GLS Sprachenzentrum centres au Maroc"></div>
+                        role="application" aria-label="GLS Sprachenzentrum centres au Maroc"></div>
                     <ul class="gls-map-legend" id="glsMapLegend"></ul>
                 </div>
 

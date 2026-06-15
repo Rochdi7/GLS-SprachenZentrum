@@ -6,6 +6,6 @@ return [
 
     'accept' => 'Accept',
     'reject' => 'Reject',
-    'settings' => 'Learn more',
+    'settings' => 'Privacy policy',
 
 ];
