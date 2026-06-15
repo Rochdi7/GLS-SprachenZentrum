@@ -76,6 +76,32 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/wimschool-sync.log'));
 
+        // ── Step 5 — :45 — Stats dashboard self-heal ────────────────────────
+        // Runs after sync-all (:00) finishes. Two jobs:
+        //   1. Guarded backfill: only touches crm_payment_snapshots when the
+        //      normalized date_creation_date column still has NULLs — so on a
+        //      healthy DB it does nothing (no 135k-row scan). This is what was
+        //      breaking "Classement encaissement par période" in production.
+        //   2. cache:clear so the stats dashboard (10-min cache) never serves
+        //      numbers older than the last sync.
+        $schedule->call(function () {
+            $nulls = \Illuminate\Support\Facades\DB::table('crm_payment_snapshots')
+                ->whereNull('date_creation_date')
+                ->whereNotNull('raw_data')
+                ->exists();
+
+            if ($nulls) {
+                \Illuminate\Support\Facades\Artisan::call('crm:backfill-columns');
+            }
+
+            \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        })
+            ->name('stats-dashboard-self-heal')
+            ->cron('45 */2 * * *')
+            ->timezone('Africa/Casablanca')
+            ->withoutOverlapping()
+            ->appendOutputTo(storage_path('logs/stats-self-heal.log'));
+
         // ── Deep resync every 2h — pulls 3 months of history so that any data
         //    modified in Wimschool during the day (absences entered by reception,
         //    payment corrections, inscription updates) is reflected well before
