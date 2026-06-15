@@ -310,8 +310,39 @@
                 <small class="text-muted" id="enc-rank-snapshot"></small>
             </div>
             <div class="card-body">
+
+                {{-- Date inputs --}}
+                <form id="enc-rank-form" class="row g-3 mb-4 align-items-end">
+                    <div class="col-auto">
+                        <label class="form-label fw-semibold mb-1">
+                            <i class="ph-duotone ph-calendar-blank me-1 text-primary"></i>
+                            Date de début
+                        </label>
+                        <input type="date" id="enc-rank-start-date" class="form-control" style="min-width:170px">
+                    </div>
+                    <div class="col-auto">
+                        <label class="form-label fw-semibold mb-1">
+                            <i class="ph-duotone ph-calendar-blank me-1 text-primary"></i>
+                            Date de fin
+                        </label>
+                        <input type="date" id="enc-rank-end-date" class="form-control" style="min-width:170px">
+                    </div>
+                    <div class="col-auto">
+                        <button id="enc-rank-btn" class="btn btn-primary" type="submit">
+                            <i class="ph-duotone ph-magnifying-glass me-1"></i>
+                            <span class="enc-rank-btn-label">Afficher</span>
+                        </button>
+                    </div>
+                    <div class="col-auto d-flex gap-2 flex-wrap">
+                        <button type="button" class="btn btn-sm btn-outline-dark enc-rank-preset" data-preset="today">Aujourd'hui</button>
+                        <button type="button" class="btn btn-sm btn-outline-dark enc-rank-preset" data-preset="7d">7 jours</button>
+                        <button type="button" class="btn btn-sm btn-outline-dark enc-rank-preset" data-preset="30d">30 jours</button>
+                        <button type="button" class="btn btn-sm btn-outline-dark enc-rank-preset" data-preset="month">Ce mois</button>
+                    </div>
+                </form>
+
                 {{-- Loading + error --}}
-                <div id="enc-rank-loading" class="text-center py-4">
+                <div id="enc-rank-loading" class="text-center py-4 d-none">
                     <div class="spinner-border text-primary" role="status"></div>
                     <p class="text-muted mt-2 mb-0 small">Chargement…</p>
                 </div>
@@ -352,6 +383,7 @@
                     <i class="ph-duotone ph-currency-dollar-simple text-muted" style="font-size:2.5rem"></i>
                     <p class="mt-2 mb-0">Aucun encaissement sur cette période.</p>
                 </div>
+
             </div>
         </div>
     </div>

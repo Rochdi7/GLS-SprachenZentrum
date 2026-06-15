@@ -131,13 +131,11 @@
             this.classList.remove('btn-outline-dark');
             this.classList.add('active', 'btn-warning');
             fetchRec({ manual: true });
-            fetchEncRank();
         });
     });
     recForm?.addEventListener('submit', function (event) {
         event.preventDefault();
         fetchRec({ manual: true });
-        fetchEncRank();
     });
     if (!recForm) {
         recButton?.addEventListener('click', function () {
@@ -152,7 +150,6 @@
         document.getElementById('rec-start-date').value = toIso(s);
         document.getElementById('rec-end-date').value   = toIso(today);
         fetchRec({ manual: false });
-        fetchEncRank();
     })();
 
     function fetchRec(options = {}) {
@@ -260,23 +257,69 @@
         document.getElementById('rec-range-results').classList.remove('d-none');
     }
 
-    // ── Encaissement ranking (shares rec-range dates) ──────────────────
+    // ── Encaissement ranking — own date controls ───────────────────────
+    const encRankForm       = document.getElementById('enc-rank-form');
+    const encRankBtn        = document.getElementById('enc-rank-btn');
+    const encRankBtnLabel   = encRankBtn?.querySelector('.enc-rank-btn-label');
+
+    document.querySelectorAll('.enc-rank-preset').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const today = new Date();
+            let s, e;
+            switch (this.dataset.preset) {
+                case 'today': s = e = today; break;
+                case '7d':    s = new Date(today); s.setDate(today.getDate() - 6); e = today; break;
+                case '30d':   s = new Date(today); s.setDate(today.getDate() - 29); e = today; break;
+                case 'month': s = new Date(today.getFullYear(), today.getMonth(), 1); e = today; break;
+            }
+            document.getElementById('enc-rank-start-date').value = toIso(s);
+            document.getElementById('enc-rank-end-date').value   = toIso(e);
+            document.querySelectorAll('.enc-rank-preset').forEach(b => {
+                b.classList.remove('active', 'btn-primary');
+                b.classList.add('btn-outline-dark');
+            });
+            this.classList.remove('btn-outline-dark');
+            this.classList.add('active', 'btn-primary');
+            fetchEncRank();
+        });
+    });
+
+    encRankForm?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        fetchEncRank();
+    });
+
+    // Auto-load current month on page load
+    (function autoLoadEncRank() {
+        const today = new Date();
+        const s = new Date(today.getFullYear(), today.getMonth(), 1);
+        document.getElementById('enc-rank-start-date').value = toIso(s);
+        document.getElementById('enc-rank-end-date').value   = toIso(today);
+        fetchEncRank();
+    })();
+
     function fetchEncRank() {
-        const start = document.getElementById('rec-start-date').value;
-        const end   = document.getElementById('rec-end-date').value;
-        if (!start || !end) return;
+        const start = document.getElementById('enc-rank-start-date').value;
+        const end   = document.getElementById('enc-rank-end-date').value;
+        if (!start || !end) { setEncRankState('error', 'Veuillez choisir une date de début et de fin.'); return; }
+        if (start > end)    { setEncRankState('error', 'La date de début doit être ≤ la date de fin.'); return; }
 
         setEncRankState('loading');
+        if (encRankBtn) { encRankBtn.disabled = true; if (encRankBtnLabel) encRankBtnLabel.textContent = 'Chargement...'; }
+        function resetEncRankBtn() {
+            if (encRankBtn) { encRankBtn.disabled = false; if (encRankBtnLabel) encRankBtnLabel.textContent = 'Afficher'; }
+        }
         const params = new URLSearchParams({ startDate: start, endDate: end });
         if (storeId) params.set('strStoreId', storeId);
 
         fetch(`${encRangeEndpoint}?${params}`, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
             .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
             .then(json => {
+                resetEncRankBtn();
                 if (json.error || !json.data?.length) { setEncRankState(json.error ? 'error' : 'empty', json.error); return; }
                 renderEncRank(json);
             })
-            .catch(err => setEncRankState('error', 'Erreur réseau : ' + err.message));
+            .catch(err => { resetEncRankBtn(); setEncRankState('error', 'Erreur réseau : ' + err.message); });
     }
 
     function renderEncRank(json) {
