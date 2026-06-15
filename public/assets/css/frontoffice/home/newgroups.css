@@ -44,9 +44,12 @@
     background-color: var(--dark--blue);
 }
 
-/* ===== TEXT ===== */
+/* ===== TEXT =====
+   Force full white + opacity:1 so the .reveal animation (opacity:0 until JS adds
+   .visible) can never leave these strings rendering as faded grey on the cards. */
 .hh-title {
-    color: #ffffff;
+    color: #ffffff !important;
+    opacity: 1 !important;
     font-size: 2.25rem;
     font-weight: 700;
     line-height: 1.1;
@@ -60,16 +63,17 @@
 }
 
 .hh-text {
-    color: #ffffff;
+    color: #ffffff !important;
+    opacity: 1 !important;
 }
 
 .hh-text strong {
-    color: #ffffff;
+    color: #ffffff !important;
 }
 
 .hh-muted {
-    color: #ffffff;
-    opacity: .92;
+    color: #ffffff !important;
+    opacity: 1 !important;
 }
 
 .hh-yellow {
