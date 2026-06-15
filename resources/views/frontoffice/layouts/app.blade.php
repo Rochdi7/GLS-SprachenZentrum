@@ -36,35 +36,27 @@
         $cssMainVer = @filemtime(public_path($cssMain)) ?: '1';
     @endphp
 
-    {{-- Non-critical CSS: load without blocking render (print-swap pattern + noscript fallback) --}}
-    <link rel="stylesheet" media="print" onload="this.media='all'"
-        href="{{ asset($cssMain) }}?v={{ $cssMainVer }}">
-    <link rel="stylesheet" media="print" onload="this.media='all'"
-        href="{{ asset('assets/css/frontoffice/footer.css') }}">
-    <link rel="stylesheet" media="print" onload="this.media='all'"
-        href="{{ asset('assets/css/gls-form.css') }}">
-    <link rel="stylesheet" media="print" onload="this.media='all'"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    {{-- Core site CSS + Bootstrap: loaded as normal (blocking) stylesheets. The main
+         stylesheet is a single flattened bundle, so one blocking request has NO @import
+         waterfall — the design always renders, regardless of host/JS quirks. --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset($cssMain) }}?v={{ $cssMainVer }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/footer.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/gls-form.css') }}">
+    @if (app()->getLocale() == 'ar')
+        <link rel="stylesheet" href="{{ asset('assets/css/rtl.css') }}">
+    @endif
+
+    {{-- Truly optional / below-the-fold CSS: deferred via print-swap with a <noscript>
+         fallback. Bootstrap-Icons + attestation-form styles are not needed for first paint. --}}
     <link rel="stylesheet" media="print" onload="this.media='all'"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    @if (app()->getLocale() == 'ar')
-        <link rel="stylesheet" media="print" onload="this.media='all'"
-            href="{{ asset('assets/css/rtl.css') }}">
-    @endif
     <link rel="stylesheet" media="print" onload="this.media='all'"
         href="{{ asset('assets/css/frontoffice/att-form-fields.css') }}?v={{ @filemtime(public_path('assets/css/frontoffice/att-form-fields.css')) ?: '1' }}">
     <link rel="stylesheet" media="print" onload="this.media='all'"
         href="{{ asset('assets/css/frontoffice/att-form-loading.css') }}?v={{ @filemtime(public_path('assets/css/frontoffice/att-form-loading.css')) ?: '1' }}">
-
     <noscript>
-        <link rel="stylesheet" href="{{ asset($cssMain) }}?v={{ $cssMainVer }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/footer.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/gls-form.css') }}">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-        @if (app()->getLocale() == 'ar')
-            <link rel="stylesheet" href="{{ asset('assets/css/rtl.css') }}">
-        @endif
     </noscript>
 
     @stack('styles')
