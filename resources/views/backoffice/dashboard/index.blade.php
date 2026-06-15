@@ -367,37 +367,71 @@ THIRD ROW (MODULES GLS)
 {{-- =========================
 SUIVI NIVEAU (Rappels profs)
 ========================= --}}
+@php
+    $snTotal = $levelFollowupsDue->count();
+    $snRows  = $levelFollowupsDue->take(5);
+@endphp
+<style>
+    .sn-card .sn-pill {
+        display:inline-flex;align-items:center;justify-content:center;
+        width:30px;height:30px;border-radius:50%;font-size:.7rem;font-weight:700;
+        border:2px solid transparent;
+    }
+    .sn-pill--done    { background:#e6faf0;color:#09b10f;border-color:#09b10f; }
+    .sn-pill--current { background:#eaf3ff;color:#2f7ed8;border-color:#2f7ed8; }
+    .sn-pill--pending { background:#f5f7fa;color:#a0a9b8;border-color:#d0d5de; }
+    .sn-pill--inactive{ background:#f9f9f9;color:#ccc;border-color:#e8e8e8; }
+    .sn-card .sn-bar { height:5px;border-radius:999px;background:#e9ecf1;overflow:hidden;margin-top:5px; }
+    .sn-card .sn-bar__fill { height:100%;border-radius:999px;background:#09b10f; }
+    .sn-card table td { padding:13px 12px;border-bottom:1px solid #f1f4f9;vertical-align:middle; }
+    .sn-card table thead th { padding:10px 12px;font-size:.7rem;font-weight:700;text-transform:uppercase;
+        letter-spacing:.05em;color:#8a93a8;border-bottom:2px solid #eef2f7;background:#fafbfc; }
+    .sn-card table tr:last-child td { border-bottom:none; }
+    .sn-due { display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;
+        font-size:.74rem;font-weight:600;background:#fff0f0;color:#c0392b; }
+    .sn-complete-toggle { cursor:pointer; }
+    .sn-notes-row textarea { font-size:.82rem; }
+</style>
 <div class="row mt-3">
     <div class="col-12">
-        <div class="card" id="suivi-niveau">
-            <div class="card-header d-flex align-items-center justify-content-between">
-                <h5 class="mb-0">Suivi niveau (rappels profs)</h5>
-                <span class="badge bg-light-primary">{{ $levelFollowupsDue->count() }} rappel(s) dû(s)</span>
+        <div class="card sn-card" id="suivi-niveau">
+            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <h5 class="mb-0">Suivi niveau <small class="text-muted fw-normal">(rappels profs)</small></h5>
+                <div class="d-flex align-items-center gap-2">
+                    @if($snTotal)
+                        <span class="badge bg-danger">{{ $snTotal }} rappel(s) dû(s)</span>
+                    @endif
+                    <a href="{{ route('backoffice.level_followups.index') }}" class="btn btn-sm btn-light-primary">
+                        Voir tout <i class="ti ti-arrow-right ms-1"></i>
+                    </a>
+                </div>
             </div>
 
-            <div class="card-body">
-                @if($levelFollowupsDue->isEmpty())
-                    <div class="alert alert-info mb-0">
+            <div class="card-body p-0">
+                @if($snRows->isEmpty())
+                    <p class="text-muted p-4 mb-0">
+                        <i class="ti ti-circle-check text-success me-1"></i>
                         Aucun rappel de suivi niveau pour aujourd'hui.
-                    </div>
+                    </p>
                 @else
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle">
+                        <table class="table mb-0">
                             <thead>
                                 <tr>
-                                    <th>Groupe</th>
-                                    <th>Prof</th>
+                                    <th>Groupe · Prof</th>
                                     <th>Niveaux</th>
+                                    <th>Progression</th>
                                     <th>Échéance</th>
                                     <th class="text-end">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($levelFollowupsDue as $followup)
+                                @foreach($snRows as $followup)
                                     @php
                                         $order = ['A1', 'A2', 'B1', 'B2'];
                                         $startLevel = $followup->group?->level;
                                         $startIndex = is_string($startLevel) ? array_search($startLevel, $order, true) : 0;
+                                        $startIndex = ($startIndex === false) ? 0 : $startIndex;
                                         $allForGroup = $levelFollowupsByGroup[$followup->group_id] ?? collect();
                                         $doneLevels = $allForGroup->where('status', 'done')->pluck('level')->all();
 
@@ -412,55 +446,59 @@ SUIVI NIVEAU (Rappels profs)
                                         $totalSteps = max(1, count(array_slice($order, $startIndex)));
                                         $doneSteps = max(0, ($lastDoneIndex - $startIndex + 1));
                                         $percent = (int) round(($doneSteps / $totalSteps) * 100);
-
                                     @endphp
 
                                     <tr>
-                                        <td class="fw-semibold">{{ $followup->group?->name }}</td>
-                                        <td>{{ $followup->group?->teacher?->name ?? '-' }}</td>
-                                        <td style="min-width:260px;">
-                                            <div class="d-flex flex-column gap-2">
-                                                <div class="progress" style="height:6px;">
-                                                    <div class="progress-bar bg-success" role="progressbar"
-                                                        style="width: {{ $percent }}%;">
-                                                    </div>
-                                                </div>
-
-                                                <div class="d-flex align-items-center gap-2">
-                                                    @foreach($order as $idx => $lvl)
-                                                        @php
-                                                            $inactive = $idx < $startIndex;
-                                                            $isDone = (!$inactive && $idx <= $lastDoneIndex);
-                                                            $circleClass = $inactive
-                                                                ? 'bg-light-secondary'
-                                                                : ($isDone ? 'bg-light-success' : 'bg-light-warning');
-                                                        @endphp
-                                                        <span class="avtar rounded-circle {{ $circleClass }}"
-                                                            style="min-width:44px;text-align:center;">
-                                                            {{ $lvl }}
-                                                        </span>
-                                                    @endforeach
-                                                </div>
-
-                                                <div class="text-muted text-sm">
-                                                    Niveau actuel : <strong>{{ $followup->level }}</strong>
-                                                </div>
+                                        <td>
+                                            <div class="fw-semibold" style="color:#243042">{{ $followup->group?->name ?? '—' }}</div>
+                                            <div class="text-muted" style="font-size:.82rem">
+                                                <i class="ti ti-user f-12 me-1"></i>{{ $followup->group?->teacher?->name ?? '—' }}
                                             </div>
                                         </td>
                                         <td>
-                                            {{ \Carbon\Carbon::parse($followup->due_date)->format('d/m/Y') }}
+                                            <div class="d-flex gap-1">
+                                                @foreach($order as $idx => $lvl)
+                                                    @php
+                                                        $inactive = $idx < $startIndex;
+                                                        $isDone    = (!$inactive && $idx <= $lastDoneIndex);
+                                                        $isCurrent = (!$inactive && $idx === $lastDoneIndex + 1);
+                                                        $state = $inactive ? 'inactive' : ($isDone ? 'done' : ($isCurrent ? 'current' : 'pending'));
+                                                    @endphp
+                                                    <span class="sn-pill sn-pill--{{ $state }}">{{ $lvl }}</span>
+                                                @endforeach
+                                            </div>
+                                            <div class="text-muted mt-1" style="font-size:.75rem">
+                                                Actuel : <strong>{{ $followup->level }}</strong>
+                                            </div>
                                         </td>
-                                        <td class="text-end">
-                                            <form method="POST"
-                                                action="{{ route('backoffice.level_followups.complete', $followup) }}">
+                                        <td style="min-width:110px">
+                                            <div style="font-size:.8rem;font-weight:700;color:#243042">{{ $percent }}%</div>
+                                            <div class="sn-bar"><div class="sn-bar__fill" style="width:{{ $percent }}%"></div></div>
+                                        </td>
+                                        <td>
+                                            <span class="sn-due">
+                                                <i class="ti ti-calendar-event f-13"></i>
+                                                {{ \Carbon\Carbon::parse($followup->due_date)->format('d/m/Y') }}
+                                            </span>
+                                        </td>
+                                        <td class="text-end" style="min-width:170px">
+                                            <form method="POST" action="{{ route('backoffice.level_followups.complete', $followup) }}">
                                                 @csrf
-                                                <textarea name="done_notes"
-                                                    class="form-control form-control-sm"
-                                                    rows="2"
-                                                    placeholder="Notes (facultatif)"></textarea>
-                                                <button type="submit" class="btn btn-success btn-sm mt-2">
-                                                    Marquer terminé
-                                                </button>
+                                                <div class="sn-notes-row d-none mb-2" id="sn-notes-{{ $followup->id }}">
+                                                    <textarea name="done_notes" class="form-control form-control-sm"
+                                                              rows="2" placeholder="Notes (facultatif)"></textarea>
+                                                </div>
+                                                <div class="d-flex align-items-center justify-content-end gap-1">
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-light-secondary sn-complete-toggle"
+                                                            data-target="sn-notes-{{ $followup->id }}"
+                                                            title="Ajouter une note">
+                                                        <i class="ti ti-note"></i>
+                                                    </button>
+                                                    <button type="submit" class="btn btn-sm btn-success">
+                                                        <i class="ti ti-check me-1"></i>Terminé
+                                                    </button>
+                                                </div>
                                             </form>
                                         </td>
                                     </tr>
@@ -468,11 +506,28 @@ SUIVI NIVEAU (Rappels profs)
                             </tbody>
                         </table>
                     </div>
+
+                    @if($snTotal > 5)
+                        <div class="text-center border-top py-2">
+                            <a href="{{ route('backoffice.level_followups.index') }}" class="text-decoration-none">
+                                + {{ $snTotal - 5 }} autre(s) rappel(s) — voir tout
+                            </a>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.querySelectorAll('.sn-complete-toggle').forEach(function (b) {
+    b.addEventListener('click', function () {
+        var el = document.getElementById(this.dataset.target);
+        if (el) el.classList.toggle('d-none');
+    });
+});
+</script>
 
 <hr id="suivi-niveau-separator">
 
