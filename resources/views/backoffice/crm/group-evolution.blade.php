@@ -234,6 +234,45 @@
             </div>
         </div>
 
+        {{-- ── Performance par professeur (même snapshot, regroupé par prof) ── --}}
+        <div class="card mt-3 shadow-sm" id="gePerfProf">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                    <h5 class="ge-card-title mb-0" style="color:#28a745;">
+                        <i class="ph-duotone ph-chalkboard-teacher me-1"></i>PERFORMANCE PAR PROFESSEUR
+                    </h5>
+                    <small class="text-muted">Mêmes chiffres que ci-dessus, regroupés par professeur</small>
+                </div>
+                <div id="gePerfLoading" class="text-center py-4">
+                    <div class="spinner-border text-success" role="status"></div>
+                    <p class="text-muted small mt-2 mb-0">Calcul par professeur…</p>
+                </div>
+                <div id="gePerfEmpty" class="text-center py-4 text-muted d-none">
+                    <i class="ph-duotone ph-info fs-3"></i>
+                    <p class="mt-2 mb-0">Aucune donnée professeur sur cette période.</p>
+                </div>
+                <div id="gePerfContent" class="d-none">
+                    <div class="table-responsive" style="max-height:460px;">
+                        <table class="table table-sm ge-table align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Professeur</th>
+                                    <th class="text-center">Classes</th>
+                                    <th class="text-center" style="color:#6f42c1;">Début</th>
+                                    <th class="text-center text-success">Ajouts</th>
+                                    <th class="text-center text-danger">Perdus</th>
+                                    <th class="text-center text-primary">Actifs</th>
+                                    <th class="text-center" style="color:#0dcaf0;">Rétention</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gePerfTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {{-- Diagnostics (hidden unless ?debug=1) — surface API shape issues
              so we can tell at a glance why all counts are zero. --}}
         @if(request()->boolean('debug') && !empty($report['diag']))
@@ -487,6 +526,46 @@
             </tr>`;
         }).join('');
     }
+})();
+
+// ── Performance par professeur (rolls up the same evolution snapshot) ──────
+(function initTeacherPerf() {
+    const wrap = document.getElementById('gePerfProf');
+    if (!wrap) return;
+    const endpoint = '{{ route("backoffice.crm.statistiques.professeurs.data") }}';
+    const params = new URLSearchParams({
+        startDate: '{{ $startDate }}',
+        endDate:   '{{ $endDate }}',
+    });
+    @if($crmCurrentStore)
+        params.set('strStoreId', '{{ (int) $crmCurrentStore }}');
+    @endif
+
+    const MEDALS = ['🥇', '🥈', '🥉'];
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const show = id => document.getElementById(id).classList.remove('d-none');
+    const hide = id => document.getElementById(id).classList.add('d-none');
+
+    fetch(endpoint + '?' + params, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(r => r.json())
+        .then(json => {
+            hide('gePerfLoading');
+            const teachers = json.teachers || [];
+            if (!teachers.length) { show('gePerfEmpty'); return; }
+            show('gePerfContent');
+            document.getElementById('gePerfTbody').innerHTML = teachers.map((t, i) => `
+                <tr>
+                    <td class="text-center text-muted">${i < 3 ? MEDALS[i] : (i + 1)}</td>
+                    <td><strong>${esc(t.teacher_name)}</strong></td>
+                    <td class="text-center">${t.classes}</td>
+                    <td class="text-center" style="color:#6f42c1;font-weight:600;">${t.debuts}</td>
+                    <td class="text-center text-success">${t.ajouts}</td>
+                    <td class="text-center text-danger fw-semibold">${t.quittants}</td>
+                    <td class="text-center text-primary">${t.actifs}</td>
+                    <td class="text-center" style="color:#0dcaf0;">${t.retention !== null ? t.retention + '%' : '—'}</td>
+                </tr>`).join('');
+        })
+        .catch(() => { hide('gePerfLoading'); show('gePerfEmpty'); });
 })();
 </script>
 @endsection

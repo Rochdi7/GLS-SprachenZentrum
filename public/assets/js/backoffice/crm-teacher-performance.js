@@ -65,6 +65,19 @@
     function render(json) {
         const teachers = json.teachers;
 
+        // Honest coverage note: the source snapshot is a YTD aggregate rebuilt
+        // every 2h, so its real end date can trail the requested end by a few days.
+        const cov = document.getElementById('tp-coverage');
+        if (cov) {
+            const reqEnd = document.getElementById('tp-end-date').value;
+            if (json.coverage && json.coverage.end && json.coverage.end < reqEnd) {
+                cov.querySelector('span').textContent = `Données calculées jusqu'au ${json.coverage.end} (dernier snapshot). Mise à jour automatique toutes les 2h.`;
+                cov.classList.remove('d-none');
+            } else {
+                cov.classList.add('d-none');
+            }
+        }
+
         // Top teacher = most active students kept (actifs), tie-break débuts.
         const top = [...teachers].sort((a, b) => (b.actifs - a.actifs) || (b.debuts - a.debuts))[0];
         document.getElementById('tp-top').innerHTML = top ? `

@@ -79,6 +79,10 @@
 {{-- ── Results ────────────────────────────────────────────────────── --}}
 <div id="tp-results" class="d-none">
 
+    <div id="tp-coverage" class="alert alert-info py-2 px-3 small d-none">
+        <i class="ph-duotone ph-info me-1"></i><span></span>
+    </div>
+
     {{-- Top teacher banner --}}
     <div class="card top-card mb-4">
         <div class="card-body d-flex align-items-center gap-3 flex-wrap" id="tp-top"></div>

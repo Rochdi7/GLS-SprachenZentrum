@@ -516,16 +516,14 @@ class StatsController extends BaseCrmController
     }
 
     /**
-     * Per-teacher evolution over an arbitrary date range. Reuses the same
-     * payment-based début / ajout / quittant logic as crm:build-group-evolution,
-     * but scoped live to the requested range and aggregated by teacher
-     * (resolved from crm_classes.raw_data EMPLOYEE_TEACHER_FULL_NAME).
+     * Per-teacher evolution aggregated from the SAME precomputed group-evolution
+     * snapshot the "Évolution par groupe" page reads — so débuts / ajouts /
+     * quittants / actifs are the EXACT same numbers, just rolled up by teacher.
      *
-     *   debuts    — students whose first paid month for the class is at/before
-     *               the class start month (founding students)
-     *   ajouts    — students whose first paid month is after class start
-     *   quittants — registrations with status "Annulé" (definitive departures)
-     *   actifs    — CLASS_COUNT_STUDENTS_ACTIVE summed across the teacher's classes
+     * The snapshot (crm_group_evolution_snapshot) is keyed by class_id; we join
+     * back to crm_classes to attach the teacher (EMPLOYEE_TEACHER_FULL_NAME) and
+     * store. This guarantees every center's teachers appear and the débuts match
+     * the group page exactly. Rebuilt by crm:build-group-evolution (every 2h sync).
      */
     public function teacherPerformanceData(Request $request): \Illuminate\Http\JsonResponse
     {
@@ -538,152 +536,100 @@ class StatsController extends BaseCrmController
         }
 
         try {
-            $startYm = Carbon::parse($startDate)->format('Y-m');
-            $endYm   = Carbon::parse($endDate)->format('Y-m');
+            Carbon::parse($startDate);
+            Carbon::parse($endDate);
         } catch (\Throwable) {
             return response()->json(['error' => 'Dates invalides.'], 422);
         }
 
         $cacheKey = 'crm.teacher_perf:' . ($storeId ?: 'all') . ":{$startDate}:{$endDate}";
 
-        $payload = Cache::remember($cacheKey, 1800, function () use ($storeId, $startDate, $endDate, $startYm, $endYm) {
-            return $this->computeTeacherPerformance($storeId, $startDate, $endDate, $startYm, $endYm);
+        $payload = Cache::remember($cacheKey, 1800, function () use ($storeId, $startDate, $endDate) {
+            return $this->computeTeacherPerformance($storeId, $startDate, $endDate);
         });
 
         return response()->json($payload + ['snapshot' => CrmPaymentSnapshot::max('snapshot_date')]);
     }
 
-    private function computeTeacherPerformance(?int $storeId, string $startDate, string $endDate, string $startYm, string $endYm): array
+    /**
+     * Roll up the group-evolution snapshot by teacher.
+     *
+     * Mirrors GroupEvolutionService::build(): take the most-recently computed
+     * snapshot row per class within the requested window, then aggregate by the
+     * teacher attached to that class.
+     */
+    private function computeTeacherPerformance(?int $storeId, string $startDate, string $endDate): array
     {
-        // Classes in formation/préparation, optionally scoped to a center.
-        $classes = \App\Models\CrmClass::query()
-            ->whereNotNull('class_id')
-            ->when($storeId, fn ($q) => $q->where('site_id', $storeId))
-            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.STATUS_NAME')) IN ('En formation', 'En Préparation')")
-            ->get();
+        // The group-evolution snapshot is always computed as a full year-to-date
+        // window (Jan 1 → build date). We accept any snapshot whose stored range
+        // overlaps the requested window — that way a request ending "today" still
+        // reads the freshest snapshot even though its range_end is the last build
+        // date (a few days earlier). Dedup to the most-recently computed row/class.
+        $rows = \App\Models\CrmGroupEvolutionSnapshot::query()
+            ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
+            ->where('range_start', '<=', $endDate)   // snapshot begins before window ends
+            ->where('range_end', '>=', $startDate)    // snapshot ends after window begins
+            ->orderByDesc('computed_at')
+            ->get()
+            ->unique('class_id');
 
-        if ($classes->isEmpty()) {
-            return ['teachers' => [], 'totals' => ['debuts' => 0, 'ajouts' => 0, 'quittants' => 0, 'actifs' => 0, 'teachers' => 0, 'classes' => 0], 'start_date' => $startDate, 'end_date' => $endDate];
-        }
-
-        // Map raw_data.ID (= registration crm_class_id) → teacher + class meta.
-        $classMeta = []; // [rawId => ['teacher_id','teacher_name','site_id','start_ym','actifs','name']]
-        $rawIds    = [];
-        foreach ($classes as $class) {
-            $raw   = $class->raw_data ?? [];
-            $rawId = isset($raw['ID']) ? (int) $raw['ID'] : null;
-            if ($rawId === null) {
-                continue;
-            }
-            $rawIds[] = $rawId;
-            $classMeta[$rawId] = [
-                'teacher_id'   => isset($raw['EMPLOYEE_TEACHER_ID']) ? (int) $raw['EMPLOYEE_TEACHER_ID'] : 0,
-                'teacher_name' => trim($raw['EMPLOYEE_TEACHER_FULL_NAME'] ?? '') ?: 'Non assigné',
-                'site_id'      => (int) ($class->site_id ?? 0),
-                'start_ym'     => isset($raw['START_DATE']) ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m') : null,
-                'actifs'       => (int) ($raw['CLASS_COUNT_STUDENTS_ACTIVE'] ?? 0),
-                'name'         => $class->name ?? "#{$rawId}",
+        if ($rows->isEmpty()) {
+            return [
+                'teachers'   => [],
+                'totals'     => ['debuts' => 0, 'ajouts' => 0, 'quittants' => 0, 'actifs' => 0, 'teachers' => 0, 'classes' => 0],
+                'start_date' => $startDate,
+                'end_date'   => $endDate,
+                'note'       => 'Aucun snapshot ne couvre cette période. Lancez: php artisan crm:build-group-evolution --all',
             ];
         }
 
-        // Registrations for those classes (only the classes we kept).
-        $registrations = \App\Models\CrmRegistration::query()
-            ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
-            ->whereIn('crm_class_id', $rawIds)
-            ->get(['crm_student_id', 'crm_class_id', 'status', 'raw_data']);
+        // The snapshot is a YTD aggregate, so its real coverage is whatever range
+        // the build command stored — surface it so the UI can be honest about it.
+        $coverage = [
+            'start' => optional($rows->min('range_start'))->toDateString() ?? $startDate,
+            'end'   => optional($rows->max('range_end'))->toDateString() ?? $endDate,
+        ];
 
-        // First non-inscription paid month per student, within the range.
-        $studentIds = $registrations->pluck('crm_student_id')->unique()->values()->all();
-        $payMonthsByStudent = collect();
-        if (!empty($studentIds)) {
-            $payMonthsByStudent = DB::table('crm_payment_snapshots')
-                ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
-                ->whereIn('student_id', $studentIds)
-                ->whereBetween('effective_date', [$startDate, $endDate])
-                ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(payload, '$.ITEMS_NAME')) NOT LIKE '%inscription%'")
-                ->selectRaw('student_id, DATE_FORMAT(effective_date, "%Y-%m") as pay_month')
-                ->distinct()
-                ->get()
-                ->groupBy('student_id')
-                ->map(fn ($r) => $r->pluck('pay_month')->sort()->values()->all());
-        }
+        // Attach teacher to each class via crm_classes (class_id → raw_data teacher).
+        $classIds = $rows->pluck('class_id')->unique()->values()->all();
+        $teacherByClass = \App\Models\CrmClass::whereIn('class_id', $classIds)
+            ->get(['class_id', 'raw_data'])
+            ->mapWithKeys(function ($c) {
+                $raw = is_array($c->raw_data) ? $c->raw_data : json_decode($c->raw_data, true);
+                return [(int) $c->class_id => [
+                    'id'   => isset($raw['EMPLOYEE_TEACHER_ID']) ? (int) $raw['EMPLOYEE_TEACHER_ID'] : 0,
+                    'name' => trim($raw['EMPLOYEE_TEACHER_FULL_NAME'] ?? '') ?: 'Non assigné',
+                ]];
+            });
 
-        // Aggregate per teacher.
-        $teachers = []; // [teacher_id => bucket]
-        foreach ($registrations as $reg) {
-            $cid  = (int) $reg->crm_class_id;
-            $meta = $classMeta[$cid] ?? null;
-            if (!$meta) {
-                continue;
-            }
-            $tid = $meta['teacher_id'];
-            if (!isset($teachers[$tid])) {
-                $teachers[$tid] = [
-                    'teacher_id'   => $tid,
-                    'teacher_name' => $meta['teacher_name'],
+        $teachers = []; // [teacher_key => bucket]
+        foreach ($rows as $r) {
+            $t   = $teacherByClass[(int) $r->class_id] ?? ['id' => 0, 'name' => 'Non assigné'];
+            $key = $t['id'] ?: ('name:' . $t['name']); // fall back to name when id missing
+
+            if (!isset($teachers[$key])) {
+                $teachers[$key] = [
+                    'teacher_id'   => $t['id'],
+                    'teacher_name' => $t['name'],
                     'debuts'       => 0,
                     'ajouts'       => 0,
                     'quittants'    => 0,
-                    'classes'      => [],
+                    'actifs'       => 0,
+                    'classes'      => 0,
                 ];
             }
-            $teachers[$tid]['classes'][$cid] = true;
-
-            $sid    = (int) $reg->crm_student_id;
-            $status = $reg->status;
-            $raw    = is_array($reg->raw_data) ? $reg->raw_data : json_decode($reg->raw_data, true);
-
-            // Quittant = définitive departure (status Annulé) within the range.
-            if ($status === 'Annulé') {
-                $teachers[$tid]['quittants']++;
-            }
-
-            $classYm = $meta['start_ym'];
-            if (!$classYm) {
-                continue;
-            }
-            $regYm  = isset($raw['START_DATE']) ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m') : $classYm;
-            $months = $payMonthsByStudent->get($sid, []);
-            $firstForClass = collect($months)->first(fn ($m) => $m >= $regYm);
-
-            if (!$firstForClass) {
-                if ($status === 'Active' && $regYm <= $classYm && $classYm >= $startYm && $classYm <= $endYm) {
-                    $teachers[$tid]['debuts']++;
-                }
-                continue;
-            }
-            if ($firstForClass <= $classYm) {
-                $teachers[$tid]['debuts']++;
-            } else {
-                $teachers[$tid]['ajouts']++;
-            }
+            $teachers[$key]['debuts']    += (int) $r->debuts;
+            $teachers[$key]['ajouts']    += (int) $r->ajouts;
+            $teachers[$key]['quittants'] += (int) $r->quittants;
+            $teachers[$key]['actifs']    += (int) $r->actifs;
+            $teachers[$key]['classes']   += 1;
         }
 
-        // Sum actifs per teacher across their classes.
-        $actifsByTeacher = [];
-        foreach ($classMeta as $meta) {
-            $actifsByTeacher[$meta['teacher_id']] = ($actifsByTeacher[$meta['teacher_id']] ?? 0) + $meta['actifs'];
-        }
-
-        $result = collect($teachers)->map(function ($t) use ($actifsByTeacher) {
-            $debuts    = $t['debuts'];
-            $ajouts    = $t['ajouts'];
-            $quittants = $t['quittants'];
-            $actifs    = $actifsByTeacher[$t['teacher_id']] ?? 0;
-            $entrants  = $debuts + $ajouts; // total students brought in
+        $result = collect($teachers)->map(function ($t) {
+            $entrants  = $t['debuts'] + $t['ajouts']; // total students brought in
             // Retention = kept / entered. Higher = fewer losses relative to intake.
-            $retention = $entrants > 0 ? round(max(0, $entrants - $quittants) / $entrants * 100, 1) : null;
-
-            return [
-                'teacher_id'   => $t['teacher_id'],
-                'teacher_name' => $t['teacher_name'],
-                'debuts'       => $debuts,
-                'ajouts'       => $ajouts,
-                'quittants'    => $quittants,
-                'actifs'       => $actifs,
-                'classes'      => count($t['classes']),
-                'retention'    => $retention,
-            ];
+            $retention = $entrants > 0 ? round(max(0, $entrants - $t['quittants']) / $entrants * 100, 1) : null;
+            return $t + ['retention' => $retention];
         })->values()->sortByDesc('actifs')->values()->toArray();
 
         return [
@@ -694,10 +640,11 @@ class StatsController extends BaseCrmController
                 'quittants' => array_sum(array_column($result, 'quittants')),
                 'actifs'    => array_sum(array_column($result, 'actifs')),
                 'teachers'  => count($result),
-                'classes'   => count($classMeta),
+                'classes'   => $rows->count(),
             ],
             'start_date' => $startDate,
             'end_date'   => $endDate,
+            'coverage'   => $coverage,
         ];
     }
 
