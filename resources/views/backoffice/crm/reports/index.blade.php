@@ -60,55 +60,44 @@
             <div class="card h-100">
                 <div class="card-body">
                     <h6 class="text-muted mb-1">Dernier hebdo</h6>
-                    <h3 class="mb-0">{{ $weeklyReports->first()?->week_label ?? '—' }}</h3>
+                    <h3 class="mb-0 fs-6">{{ $weeklyReports->first()?->week_label ?? '—' }}</h3>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Date filter + generate actions --}}
+    {{-- Date filter (standalone form — NO nested forms) --}}
     <div class="card mb-3">
         <div class="card-body py-3">
-            <form method="GET" class="row g-2 align-items-end">
-                <input type="hidden" name="tab" value="{{ $tab }}">
-                <div class="col-12 col-sm-auto">
-                    <label class="form-label fw-semibold mb-0">
+            <div class="d-flex flex-wrap align-items-end gap-2">
+                {{-- Filter form --}}
+                <form method="GET" class="d-flex flex-wrap gap-2 align-items-end flex-grow-1">
+                    <input type="hidden" name="tab" value="{{ $tab }}">
+                    <label class="form-label fw-semibold mb-0 me-1">
                         <i class="ph-duotone ph-funnel me-1"></i> Période
                     </label>
-                </div>
-                <div class="col-12 col-sm">
-                    <input type="date" name="from" class="form-control form-control-sm" value="{{ $fromDate }}" placeholder="Du">
-                </div>
-                <div class="col-12 col-sm">
-                    <input type="date" name="to" class="form-control form-control-sm" value="{{ $toDate }}" placeholder="Au">
-                </div>
-                <div class="col-auto">
+                    <input type="date" name="from" class="form-control form-control-sm" style="width:145px" value="{{ $fromDate }}" placeholder="Du">
+                    <input type="date" name="to"   class="form-control form-control-sm" style="width:145px" value="{{ $toDate }}"   placeholder="Au">
                     <button type="submit" class="btn btn-outline-primary btn-sm">
                         <i class="ph-duotone ph-magnifying-glass me-1"></i> Filtrer
                     </button>
-                </div>
-                @if($fromDate || $toDate)
-                    <div class="col-auto">
+                    @if($fromDate || $toDate)
                         <a href="{{ route('backoffice.crm.reports.index', ['tab' => $tab]) }}" class="btn btn-outline-secondary btn-sm">
                             <i class="ph-duotone ph-x me-1"></i> Reset
                         </a>
-                    </div>
-                @endif
-                <div class="col-12 col-sm-auto ms-sm-auto d-flex gap-2">
-                    <form method="POST" action="{{ route('backoffice.crm.reports.generate') }}" class="d-inline">
-                        @csrf
-                        <button type="submit" class="btn btn-success btn-sm">
-                            <i class="ph-duotone ph-arrows-clockwise me-1"></i> Générer quotidien
-                        </button>
-                    </form>
-                    <form method="POST" action="{{ route('backoffice.crm.reports.generate-weekly') }}" class="d-inline">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-success btn-sm">
-                            <i class="ph-duotone ph-calendar-check me-1"></i> Générer hebdo
-                        </button>
-                    </form>
+                    @endif
+                </form>
+
+                {{-- Generate buttons — separate, NOT inside the filter form --}}
+                <div class="d-flex gap-2 ms-auto">
+                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalDaily">
+                        <i class="ph-duotone ph-arrows-clockwise me-1"></i> Générer quotidien
+                    </button>
+                    <button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalWeekly">
+                        <i class="ph-duotone ph-calendar-check me-1"></i> Générer hebdo
+                    </button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -145,6 +134,7 @@
                                 <th class="text-end">Étudiants à risque</th>
                                 <th class="text-end">Créances</th>
                                 <th>Meilleur centre</th>
+                                <th>Email</th>
                                 <th>Généré le</th>
                                 <th class="text-end">Actions</th>
                             </tr>
@@ -201,11 +191,22 @@
                                         @endif
                                     </td>
                                     <td>
+                                        @if($report->email_sent_at)
+                                            <span class="badge bg-light-success text-success" title="Envoyé le {{ $report->email_sent_at->format('d/m/Y H:i') }}">
+                                                <i class="ph-duotone ph-check-circle me-1"></i>Envoyé
+                                            </span>
+                                        @else
+                                            <span class="badge bg-light-warning text-warning">
+                                                <i class="ph-duotone ph-warning-circle me-1"></i>Non envoyé
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td>
                                         <small class="text-muted">
                                             {{ $report->generated_at?->format('d/m/Y H:i') ?? '—' }}
                                         </small>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end text-nowrap">
                                         <a href="{{ route('backoffice.crm.reports.show', ['date' => $report->report_date->toDateString()]) }}"
                                            class="btn btn-sm btn-outline-primary" title="Voir">
                                             <i class="ph-duotone ph-eye"></i>
@@ -214,13 +215,13 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center text-muted py-5">
+                                    <td colspan="9" class="text-center text-muted py-5">
                                         <i class="ph-duotone ph-chart-bar" style="font-size:2rem"></i>
                                         <br>Aucun rapport quotidien.
-                                        <form method="POST" action="{{ route('backoffice.crm.reports.generate') }}" class="d-inline mt-2">
-                                            @csrf
-                                            <button type="submit" class="btn btn-success btn-sm mt-2">Générer maintenant</button>
-                                        </form>
+                                        <br>
+                                        <button type="button" class="btn btn-success btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modalDaily">
+                                            Générer maintenant
+                                        </button>
                                     </td>
                                 </tr>
                             @endforelse
@@ -247,21 +248,18 @@
                         <tbody>
                             @forelse($weeklyReports as $wr)
                                 @php
-                                    $ranking = $wr->centers_ranking ?? [];
+                                    $ranking   = $wr->centers_ranking ?? [];
                                     $breakdown = $wr->daily_breakdown ?? [];
-                                    $weekRevenue = (float) $wr->total_revenue;
                                 @endphp
                                 <tr>
-                                    <td>
-                                        <strong>{{ $wr->week_label }}</strong>
-                                    </td>
+                                    <td><strong>{{ $wr->week_label }}</strong></td>
                                     <td class="text-nowrap">
                                         <small class="text-muted">
                                             {{ $wr->week_start->format('d/m') }} → {{ $wr->week_end->format('d/m/Y') }}
                                         </small>
                                     </td>
                                     <td class="text-end fw-bold text-success">
-                                        {{ number_format($weekRevenue, 0, ',', ' ') }} MAD
+                                        {{ number_format((float) $wr->total_revenue, 0, ',', ' ') }} MAD
                                     </td>
                                     <td class="text-end">
                                         <span class="badge bg-light-primary">{{ $wr->new_registrations }}</span>
@@ -285,12 +283,9 @@
                                         @endforeach
                                     </td>
                                     <td>
-                                        <small class="text-muted">
-                                            {{ $wr->generated_at?->format('d/m/Y H:i') ?? '—' }}
-                                        </small>
+                                        <small class="text-muted">{{ $wr->generated_at?->format('d/m/Y H:i') ?? '—' }}</small>
                                     </td>
                                 </tr>
-                                {{-- Day-by-day breakdown (collapsed) --}}
                                 @if(!empty($breakdown))
                                     <tr class="table-light" style="font-size:.82rem">
                                         <td colspan="7" class="py-2 ps-4">
@@ -312,10 +307,9 @@
                                         <i class="ph-duotone ph-calendar-blank" style="font-size:2rem"></i>
                                         <br>Aucun rapport hebdomadaire.
                                         <br>
-                                        <form method="POST" action="{{ route('backoffice.crm.reports.generate-weekly') }}" class="d-inline mt-2">
-                                            @csrf
-                                            <button type="submit" class="btn btn-success btn-sm mt-2">Générer la semaine passée</button>
-                                        </form>
+                                        <button type="button" class="btn btn-success btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modalWeekly">
+                                            Générer la semaine passée
+                                        </button>
                                     </td>
                                 </tr>
                             @endforelse
@@ -324,6 +318,76 @@
                 </div>
             @endif
 
+        </div>
+    </div>
+
+    {{-- ══ MODAL — Générer rapport quotidien ══ --}}
+    <div class="modal fade" id="modalDaily" tabindex="-1" aria-labelledby="modalDailyLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('backoffice.crm.reports.generate') }}">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalDailyLabel">
+                            <i class="ph-duotone ph-sun text-success me-2"></i>Générer rapport quotidien
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted mb-3">Choisissez la date du rapport. Par défaut, le rapport est généré pour <strong>hier</strong>.</p>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Date du rapport</label>
+                            <input type="date" name="date" class="form-control"
+                                   value="{{ now('Africa/Casablanca')->subDay()->toDateString() }}"
+                                   max="{{ now('Africa/Casablanca')->toDateString() }}">
+                            <div class="form-text">Laissez vide pour hier automatiquement.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="ph-duotone ph-arrows-clockwise me-1"></i> Générer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- ══ MODAL — Générer rapport hebdomadaire ══ --}}
+    <div class="modal fade" id="modalWeekly" tabindex="-1" aria-labelledby="modalWeeklyLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('backoffice.crm.reports.generate-weekly') }}">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalWeeklyLabel">
+                            <i class="ph-duotone ph-calendar-check text-success me-2"></i>Générer rapport hebdomadaire
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted mb-3">Choisissez n'importe quelle date dans la semaine souhaitée. Le rapport couvre <strong>lundi → dimanche</strong> de cette semaine.</p>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Une date dans la semaine</label>
+                            <input type="date" name="date" class="form-control"
+                                   value="{{ now('Africa/Casablanca')->subWeek()->toDateString() }}"
+                                   max="{{ now('Africa/Casablanca')->toDateString() }}">
+                            <div class="form-text">Par défaut : la semaine passée.</div>
+                        </div>
+                        <div class="alert alert-info py-2 mb-0" style="font-size:.85rem">
+                            <i class="ph-duotone ph-info me-1"></i>
+                            Le rapport hebdo est aussi généré <strong>automatiquement chaque vendredi à 06h00</strong>.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="ph-duotone ph-calendar-check me-1"></i> Générer
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 

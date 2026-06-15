@@ -159,9 +159,15 @@
                         <dt class="col-sm-5">Envoi email</dt>
                         <dd class="col-sm-7">
                             @if ($report->email_sent_at)
-                                <span class="badge bg-success">Envoyé {{ $report->email_sent_at->format('H:i') }}</span>
+                                <span class="badge bg-success">
+                                    <i class="ph-duotone ph-check-circle me-1"></i>
+                                    Envoyé le {{ $report->email_sent_at->format('d/m/Y à H:i') }}
+                                </span>
                             @else
-                                <span class="badge bg-secondary">Non envoyé</span>
+                                <span class="badge bg-warning text-dark">
+                                    <i class="ph-duotone ph-warning-circle me-1"></i>
+                                    Email non envoyé
+                                </span>
                             @endif
                         </dd>
                     </dl>
@@ -250,38 +256,49 @@
 
     {{-- Actions --}}
     <div class="row">
-        <div class="col-12 d-flex justify-content-end align-items-center gap-2 flex-wrap">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
 
-            {{-- Email status + resend --}}
-            @if ($report->email_sent_at)
-                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2" style="font-size:.8rem">
-                    <i class="ph-duotone ph-check-circle me-1"></i>
-                    Envoyé le {{ $report->email_sent_at->format('d/m/Y à H:i') }}
-                </span>
-            @else
-                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2" style="font-size:.8rem">
-                    <i class="ph-duotone ph-warning-circle me-1"></i>
-                    Email non envoyé
-                </span>
-            @endif
+                    {{-- Email status badge --}}
+                    <div>
+                        @if ($report->email_sent_at)
+                            <span class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded bg-success bg-opacity-10 border border-success border-opacity-25 text-success" style="font-size:.88rem">
+                                <i class="ph-duotone ph-check-circle fs-5"></i>
+                                <span>Rapport envoyé par email le <strong>{{ $report->email_sent_at->format('d/m/Y à H:i') }}</strong></span>
+                            </span>
+                        @else
+                            <span class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning" style="font-size:.88rem">
+                                <i class="ph-duotone ph-warning-circle fs-5"></i>
+                                <span>Email non envoyé</span>
+                            </span>
+                        @endif
+                    </div>
 
-            <form method="POST" action="{{ route('backoffice.crm.reports.resend', ['date' => $report->report_date->toDateString()]) }}" class="d-inline"
-                  onsubmit="return confirm('{{ $report->email_sent_at ? 'Email déjà envoyé le ' . $report->email_sent_at->format('d/m/Y à H:i') . '. Renvoyer quand même ?' : 'Envoyer le rapport par email ?' }}')">
-                @csrf
-                <button type="submit" class="btn btn-sm {{ $report->email_sent_at ? 'btn-outline-warning' : 'btn-warning' }}">
-                    <i class="ph-duotone ph-paper-plane-tilt me-1"></i>
-                    {{ $report->email_sent_at ? 'Renvoyer' : 'Envoyer par email' }}
-                </button>
-            </form>
+                    {{-- Action buttons --}}
+                    <div class="d-flex gap-2 flex-wrap">
+                        {{-- Send / Resend email --}}
+                        <form method="POST"
+                              action="{{ route('backoffice.crm.reports.resend', ['date' => $report->report_date->toDateString()]) }}"
+                              onsubmit="return confirm('{{ $report->email_sent_at ? 'Déjà envoyé le ' . $report->email_sent_at->format('d/m/Y à H:i') . '. Renvoyer quand même ?' : 'Envoyer ce rapport par email ?' }}')">
+                            @csrf
+                            <button type="submit" class="btn {{ $report->email_sent_at ? 'btn-outline-success' : 'btn-success' }}">
+                                <i class="ph-duotone ph-paper-plane-tilt me-1"></i>
+                                {{ $report->email_sent_at ? 'Renvoyer l\'email' : 'Envoyer par email' }}
+                            </button>
+                        </form>
 
-            <form method="POST" action="{{ route('backoffice.crm.reports.generate') }}" class="d-inline">
-                @csrf
-                <input type="hidden" name="date" value="{{ $report->report_date->toDateString() }}">
-                <button type="submit" class="btn btn-outline-secondary btn-sm">
-                    <i class="ph-duotone ph-arrows-clockwise me-1"></i> Regénérer
-                </button>
-            </form>
-
+                        {{-- Regenerate --}}
+                        <form method="POST" action="{{ route('backoffice.crm.reports.generate') }}">
+                            @csrf
+                            <input type="hidden" name="date" value="{{ $report->report_date->toDateString() }}">
+                            <button type="submit" class="btn btn-outline-secondary">
+                                <i class="ph-duotone ph-arrows-clockwise me-1"></i> Regénérer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

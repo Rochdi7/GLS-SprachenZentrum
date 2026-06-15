@@ -125,7 +125,8 @@
 
 {{-- ── Type breakdown ── --}}
 @php
-    $typeColors = ['#4680ff','#1cc88a','#ffc107','#dc3545','#0dcaf0','#6f42c1','#fd7e14','#20c997','#e83e8c','#6c757d','#17a2b8'];
+    $typeColors  = ['#4680ff','#1cc88a','#ffc107','#dc3545','#0dcaf0','#6f42c1','#fd7e14','#20c997','#e83e8c','#6c757d','#17a2b8'];
+    $typeTotalSum = array_sum(array_column($typeBreakdown, 'total')) ?: 1;
 @endphp
 <div class="card mt-4">
     <div class="card-header py-2 d-flex align-items-center justify-content-between">
@@ -138,13 +139,16 @@
     <div class="card-body py-3">
         @forelse ($typeBreakdown as $i => $row)
             @php
-                $pct   = $maxTypeTotal > 0 ? round(($row['total'] / $maxTypeTotal) * 100) : 0;
-                $color = $typeColors[$i] ?? '#adb5bd';
+                // Use share-of-total so every bar is proportionally visible
+                $sharePct = round(($row['total'] / $typeTotalSum) * 100, 1);
+                // Minimum 2% width so tiny slices still show a visible bar
+                $barPct   = max($sharePct, $row['total'] > 0 ? 2 : 0);
+                $color    = $typeColors[$i] ?? '#adb5bd';
             @endphp
             <div class="mb-3 {{ !$loop->last ? 'pb-3 border-bottom' : '' }}">
                 <div class="d-flex align-items-center justify-content-between mb-1">
                     <div class="d-flex align-items-center gap-2">
-                        <span class="rounded d-inline-flex align-items-center justify-content-center"
+                        <span class="rounded-circle d-inline-flex"
                               style="width:10px;height:10px;background:{{ $color }};flex-shrink:0;"></span>
                         <span class="fw-semibold">{{ $row['label'] }}</span>
                         <a href="{{ route('backoffice.crm.expenses.index', array_merge(request()->only('site_id','month'), ['type' => $row['key']])) }}"
@@ -157,14 +161,14 @@
                             {{ number_format($row['total'], 2, ',', ' ') }} DH
                         </div>
                         <div class="text-muted" style="font-size:.72rem;">
-                            {{ number_format($row['count'], 0, ',', ' ') }} entrées
+                            {{ $sharePct }}% &middot; {{ number_format($row['count'], 0, ',', ' ') }} entrées
                         </div>
                     </div>
                 </div>
-                <div class="progress" style="height:5px;border-radius:4px;">
+                <div class="progress" style="height:6px;border-radius:4px;">
                     <div class="progress-bar" role="progressbar"
-                         style="width:{{ $pct }}%;background:{{ $color }};"
-                         aria-valuenow="{{ $pct }}" aria-valuemin="0" aria-valuemax="100">
+                         style="width:{{ $barPct }}%;background:{{ $color }};"
+                         aria-valuenow="{{ $barPct }}" aria-valuemin="0" aria-valuemax="100">
                     </div>
                 </div>
             </div>

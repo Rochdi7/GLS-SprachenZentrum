@@ -93,13 +93,23 @@ class DailyReportController extends BaseCrmController
 
     public function resend(string $date): RedirectResponse
     {
-        $report = CrmDailyReport::where('report_date', $date)->firstOrFail();
+        $report    = CrmDailyReport::where('report_date', $date)->firstOrFail();
+        $recipient = config('reports.ceo_email', 'rochdi.karouali1234@gmail.com');
 
-        SendDailyReportJob::dispatch($report);
+        try {
+            \Illuminate\Support\Facades\Mail::to($recipient)
+                ->send(new \App\Mail\Reports\DailyCeoReportMail($report));
+
+            $report->update(['email_sent_at' => now()]);
+        } catch (\Throwable $e) {
+            return redirect()
+                ->route('backoffice.crm.reports.show', ['date' => $date])
+                ->with('error', 'Échec envoi email : ' . $e->getMessage());
+        }
 
         return redirect()
             ->route('backoffice.crm.reports.show', ['date' => $date])
-            ->with('success', 'Rapport renvoyé par email pour le ' . $report->report_date->format('d/m/Y') . '.');
+            ->with('success', 'Rapport envoyé par email pour le ' . $report->report_date->format('d/m/Y') . '.');
     }
 
     /**
