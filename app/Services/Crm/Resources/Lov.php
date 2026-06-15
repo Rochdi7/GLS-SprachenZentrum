@@ -130,6 +130,14 @@ class Lov extends Resource
         ]);
     }
 
+    /** GET /api/external/v1/lov/expense-types */
+    public function expenseTypes(int $limit = 100): array
+    {
+        return $this->client->get('/api/external/v1/lov/expense-types', [
+            'limit' => $limit,
+        ]);
+    }
+
     /**
      * GET /api/external/v1/lov/banks
      *

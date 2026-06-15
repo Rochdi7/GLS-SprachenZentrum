@@ -487,12 +487,12 @@
                             <span class="pc-mtext">Évolution par groupe</span>
                         </a>
                     </li>
-                    {{-- <li class="pc-item {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">
+                    <li class="pc-item {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">
                         <a href="{{ route('backoffice.crm.reports.index') }}"
                             class="pc-link {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">
                             <span class="pc-mtext">Rapports CEO</span>
                         </a>
-                    </li> --}}
+                    </li>
                 </ul>
             </li>
         </ul>

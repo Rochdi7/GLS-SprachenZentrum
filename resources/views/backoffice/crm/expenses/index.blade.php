@@ -34,9 +34,9 @@
 </div>
 
 {{-- ── Filters ── --}}
-<form method="GET" action="{{ route('backoffice.crm.expenses.index') }}" class="row g-2 mb-3">
+<form method="GET" action="{{ route('backoffice.crm.expenses.index') }}" class="row g-2 mb-3 align-items-end">
     <div class="col-auto">
-        <select name="site_id" class="form-select form-select-sm" style="width:200px">
+        <select name="site_id" class="form-select form-select-sm" style="width:180px">
             <option value="">— Tous les centres —</option>
             @foreach ($sites as $site)
                 <option value="{{ $site->id }}" {{ $selectedSite == $site->id ? 'selected' : '' }}>
@@ -46,8 +46,23 @@
         </select>
     </div>
     <div class="col-auto">
-        <button class="btn btn-sm btn-primary">Filtrer</button>
-        <a href="{{ route('backoffice.crm.expenses.index') }}" class="btn btn-sm btn-outline-secondary">Réinitialiser</a>
+        <select name="type" class="form-select form-select-sm" style="width:200px">
+            <option value="">— Tous les types —</option>
+            @foreach(\App\Models\SiteExpense::TYPES as $key => $label)
+                <option value="{{ $key }}" {{ $selectedType === $key ? 'selected' : '' }}>{{ $label }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-auto">
+        <input type="month" name="month" class="form-control form-control-sm" value="{{ $selectedMonth }}" style="width:140px">
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-sm btn-primary">
+            <i class="ph-duotone ph-funnel me-1"></i> Filtrer
+        </button>
+        <a href="{{ route('backoffice.crm.expenses.index') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="ph-duotone ph-x me-1"></i> Reset
+        </a>
     </div>
 </form>
 
@@ -108,6 +123,70 @@
     </div>
 </div>
 
+{{-- ── Type breakdown ── --}}
+@php
+    $typeColors = ['#4680ff','#1cc88a','#ffc107','#dc3545','#0dcaf0','#6f42c1','#fd7e14','#20c997','#e83e8c','#6c757d','#17a2b8'];
+@endphp
+<div class="card mt-4">
+    <div class="card-header py-2 d-flex align-items-center justify-content-between">
+        <h6 class="mb-0">
+            <i class="ph-duotone ph-tag text-warning me-1"></i>
+            Dépenses par type
+        </h6>
+        <span class="text-muted small">{{ count($typeBreakdown) }} types</span>
+    </div>
+    <div class="card-body py-3">
+        @forelse ($typeBreakdown as $i => $row)
+            @php
+                $pct   = $maxTypeTotal > 0 ? round(($row['total'] / $maxTypeTotal) * 100) : 0;
+                $color = $typeColors[$i] ?? '#adb5bd';
+            @endphp
+            <div class="mb-3 {{ !$loop->last ? 'pb-3 border-bottom' : '' }}">
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="rounded d-inline-flex align-items-center justify-content-center"
+                              style="width:10px;height:10px;background:{{ $color }};flex-shrink:0;"></span>
+                        <span class="fw-semibold">{{ $row['label'] }}</span>
+                        <a href="{{ route('backoffice.crm.expenses.index', array_merge(request()->only('site_id','month'), ['type' => $row['key']])) }}"
+                           class="badge bg-light-secondary text-secondary ms-1" style="font-size:.7rem; text-decoration:none;">
+                            filtrer
+                        </a>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold" style="color:{{ $color }};">
+                            {{ number_format($row['total'], 2, ',', ' ') }} DH
+                        </div>
+                        <div class="text-muted" style="font-size:.72rem;">
+                            {{ number_format($row['count'], 0, ',', ' ') }} entrées
+                        </div>
+                    </div>
+                </div>
+                <div class="progress" style="height:5px;border-radius:4px;">
+                    <div class="progress-bar" role="progressbar"
+                         style="width:{{ $pct }}%;background:{{ $color }};"
+                         aria-valuenow="{{ $pct }}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+            </div>
+        @empty
+            <p class="text-muted text-center mb-0">Aucune donnée.</p>
+        @endforelse
+
+        {{-- Donut chart --}}
+        @if(count($typeBreakdown) > 0)
+            <hr>
+            <div id="crm-expenses-type-chart" style="min-height:260px;" class="mt-2"></div>
+            <script type="application/json" id="crm-expenses-type-data">
+            {!! json_encode([
+                'labels' => array_column($typeBreakdown, 'label'),
+                'series' => array_column($typeBreakdown, 'total'),
+                'colors' => array_slice($typeColors, 0, count($typeBreakdown)),
+            ]) !!}
+            </script>
+        @endif
+    </div>
+</div>
+
 {{-- Data island for chart --}}
 <script type="application/json" id="crm-expenses-chart-data">
 {!! json_encode([
@@ -121,4 +200,26 @@
 @section('scripts')
     <script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
     <script src="{{ URL::asset('assets/js/backoffice/crm-expenses.js') }}"></script>
+    <script>
+    (function () {
+        const el = document.getElementById('crm-expenses-type-chart');
+        const src = document.getElementById('crm-expenses-type-data');
+        if (!el || !src) return;
+        const { labels, series, colors } = JSON.parse(src.textContent);
+        new ApexCharts(el, {
+            chart: { type: 'donut', height: 260 },
+            labels,
+            series,
+            colors,
+            legend: { position: 'bottom', fontSize: '12px' },
+            plotOptions: { pie: { donut: { size: '60%' } } },
+            dataLabels: { enabled: false },
+            tooltip: {
+                y: {
+                    formatter: v => new Intl.NumberFormat('fr-MA', { minimumFractionDigits: 2 }).format(v) + ' DH'
+                }
+            },
+        }).render();
+    })();
+    </script>
 @endsection

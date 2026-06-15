@@ -236,6 +236,15 @@ class CrmLovProvider
         });
     }
 
+    /** Expense types from /lov/expense-types. */
+    public function expenseTypes(): array
+    {
+        return $this->cached('expense_types', null, function () {
+            $rows = $this->safe(fn() => $this->crm->lov()->expenseTypes(limit: 100));
+            return $this->normalize($rows, ['ID'], ['NAME', 'DESIGNATION']);
+        });
+    }
+
     /** School levels (scoped to active store). */
     public function schoolLevels(?int $strStoreId): array
     {
