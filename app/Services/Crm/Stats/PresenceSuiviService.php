@@ -498,10 +498,13 @@ class PresenceSuiviService
 
             // ── Chart series ────────────────────────────────────────────────
             ksort($trend);
+            // array_values() strips the date keys — otherwise present/absent
+            // serialize as JSON objects ({"2026-06-01":…}) and the chart's
+            // numeric-index lookup (present[i]) returns undefined → flat chart.
             $trendSeries = [
                 'labels'  => array_keys($trend),
-                'present' => array_map(fn ($d) => $d['present'], $trend),
-                'absent'  => array_map(fn ($d) => $d['absent'],  $trend),
+                'present' => array_values(array_map(fn ($d) => $d['present'], $trend)),
+                'absent'  => array_values(array_map(fn ($d) => $d['absent'],  $trend)),
             ];
 
             // Top groups by présence rate (min 1 session), limit 12 for readability
