@@ -115,6 +115,22 @@ Route::prefix('crm')
         // CRM Expenses — local warehouse (site_expenses where crm_source=wimschool).
         Route::get('/expenses', [\App\Http\Controllers\Backoffice\Crm\CrmExpensesController::class, 'index'])->name('expenses.index');
 
+        // Alerts & Notifications — business alert detection from local CRM tables.
+        Route::prefix('alerts')->name('alerts.')->group(function () {
+            Route::get('/',                     [\App\Http\Controllers\Backoffice\Crm\CrmAlertsController::class, 'index'])->name('index');
+            Route::post('/generate',            [\App\Http\Controllers\Backoffice\Crm\CrmAlertsController::class, 'generate'])->name('generate');
+            Route::post('/{alert}/acknowledge', [\App\Http\Controllers\Backoffice\Crm\CrmAlertsController::class, 'acknowledge'])->name('acknowledge')->where('alert', '[0-9]+');
+            Route::post('/{alert}/resolve',     [\App\Http\Controllers\Backoffice\Crm\CrmAlertsController::class, 'resolve'])->name('resolve')->where('alert', '[0-9]+');
+            Route::post('/{alert}/dismiss',     [\App\Http\Controllers\Backoffice\Crm\CrmAlertsController::class, 'dismiss'])->name('dismiss')->where('alert', '[0-9]+');
+        });
+
+        // Group Profitability Dashboard — revenue, salary, expenses, profit per class.
+        Route::prefix('profitability')->name('profitability.')->group(function () {
+            Route::get('/',         [\App\Http\Controllers\Backoffice\Crm\CrmProfitabilityController::class, 'index'])->name('index');
+            Route::post('/rebuild', [\App\Http\Controllers\Backoffice\Crm\CrmProfitabilityController::class, 'rebuild'])->name('rebuild');
+            Route::get('/export',   [\App\Http\Controllers\Backoffice\Crm\CrmProfitabilityController::class, 'export'])->name('export');
+        });
+
         // Daily + Weekly CEO Reports.
         Route::prefix('reports')->name('reports.')->group(function () {
             Route::get('/',                    [\App\Http\Controllers\Backoffice\Crm\DailyReportController::class, 'index'])->name('index');

@@ -204,7 +204,7 @@
     </div>
 </div>
 
-{{-- ── Recouvrement par période (date range) ───────────────────────── --}}
+@if(false) {{-- Chiffre d'affaires par période — hidden --}}
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
@@ -296,6 +296,7 @@
         </div>
     </div>
 </div>
+@endif
 
 {{-- ── Classement encaissement par période ─────────────────────────── --}}
 <div class="row mb-4">

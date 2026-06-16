@@ -117,6 +117,16 @@ class CrmSyncAllCommand extends Command
             '--all --delay=500',
             'Sync expenses from CRM API into site_expenses (crm_source=wimschool)',
         ],
+        'generate_alerts'  => [
+            'crm:generate-alerts',
+            '--prune',
+            'Detect business alerts: absences, unpaid >30d, cheques, weak groups, near-end groups',
+        ],
+        'group_profitability' => [
+            'crm:build-group-profitability',
+            '--months=3',
+            'Compute per-group profitability: CA, salaire prof, bénéfice, marge, présence',
+        ],
         'daily_report'     => [
             'crm:daily-report',
             '',

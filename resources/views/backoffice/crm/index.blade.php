@@ -50,6 +50,8 @@
             ['Recouvrement',          'backoffice.crm.payment-collection',   'ti-report-money',    'payments:read',         'Créances et échéances en attente'],
             ['Classes',               'backoffice.crm.groups.classes',       'ti-school',          'groups:read',           'Groupes / classes en cours'],
             ['Level sessions',        'backoffice.crm.groups.level-sessions','ti-calendar-event',  'groups:read',           'Sessions par niveau'],
+            ['Alertes',               'backoffice.crm.alerts.index',         'ti-bell-ringing',    'all',                   'Absences, impayés >30j, chèques, groupes en fin de vie'],
+            ['Rentabilité groupes',   'backoffice.crm.profitability.index',  'ti-chart-pie',       'all',                   'CA, salaire prof, bénéfice et marge par groupe'],
         ];
 
         $lov = [
