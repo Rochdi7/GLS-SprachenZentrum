@@ -154,9 +154,36 @@ class ScheduleController extends Controller
 
         $totalWorked = $schedules->sum('worked_minutes');
 
+        // ── Derived dashboard data (read-only view) ─────────────────────
+        // No DB change: everything below is computed from the same $schedules.
+        $workingDays = $schedules->count();
+        $daysOff     = 7 - $workingDays;
+
+        // Next shift = first scheduled day today-or-later.
+        $today = Carbon::today();
+        $nextShift = $schedules
+            ->filter(fn ($s) => $s->date->gte($today))
+            ->sortBy(fn ($s) => $s->date->format('Y-m-d') . ' ' . $s->start_time)
+            ->first();
+
+        // Honest "modified this week" signal from updated_at on existing rows.
+        $lastUpdated = $schedules->max('updated_at');
+        $changedThisWeek = $schedules->contains(
+            fn ($s) => $s->updated_at
+                && $s->updated_at->gte($weekStart)
+                && $s->created_at
+                && $s->updated_at->gt($s->created_at)
+        );
+
+        // Overtime only if a contracted weekly target is configured (else hidden).
+        $weeklyTarget = (int) config('hr.weekly_target_minutes', 0);
+        $overtime = $weeklyTarget > 0 ? max(0, $totalWorked - $weeklyTarget) : null;
+
         return view('backoffice.schedules.week', compact(
             'authUser', 'target', 'isAdmin', 'staffOptions',
-            'weekStart', 'weekEnd', 'days', 'totalWorked'
+            'weekStart', 'weekEnd', 'days', 'totalWorked',
+            'workingDays', 'daysOff', 'nextShift',
+            'lastUpdated', 'changedThisWeek', 'overtime'
         ));
     }
 

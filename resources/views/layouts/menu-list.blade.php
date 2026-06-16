@@ -64,7 +64,8 @@
 
 @can('dashboard.view')
     <li class="pc-item {{ $dashboardActive ? 'active' : '' }}">
-        <a href="{{ route('dashboard') }}" class="pc-link {{ $dashboardActive ? 'active' : '' }}">
+        <a href="{{ route('dashboard') }}" id="reception-tour-menu-dashboard"
+            class="pc-link {{ $dashboardActive ? 'active' : '' }}">
             <span class="pc-micon"><i class="ph-duotone ph-gauge"></i></span>
             <span class="pc-mtext">Dashboard</span>
         </a>
@@ -73,7 +74,7 @@
 
 @canany(['level_followups.view', 'weekly_reports.view'])
     <li class="pc-item pc-hasmenu {{ $pilotageOpen ? 'pc-trigger' : '' }}">
-        <a href="#!" class="pc-link">
+        <a href="#!" id="reception-tour-menu-pilotage" class="pc-link">
             <span class="pc-micon"><i class="ph-duotone ph-chart-line-up"></i></span>
             <span class="pc-mtext">Pilotage</span>
             <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
@@ -102,7 +103,7 @@
 @canany(['sites.view', 'teachers.view', 'groups.view', 'certificates.view', 'attestations.view',
     'attestation_requests.view', 'feedbacks.view', 'translations.view', 'studienkollegs.view', 'quizzes.view'])
     <li class="pc-item pc-hasmenu {{ $schoolOpen ? 'pc-trigger' : '' }}">
-        <a href="#!" class="pc-link">
+        <a href="#!" id="reception-tour-menu-school" class="pc-link">
             <span class="pc-micon"><i class="ph-duotone ph-buildings"></i></span>
             <span class="pc-mtext">Gestion ecole</span>
             <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
@@ -247,7 +248,7 @@
 
 
 <li class="pc-item pc-hasmenu {{ $rhOpen ? 'pc-trigger' : '' }}">
-    <a href="#!" class="pc-link">
+    <a href="#!" id="reception-tour-menu-rh" class="pc-link">
         <span class="pc-micon"><i class="ph-duotone ph-calendar-blank"></i></span>
         <span class="pc-mtext">RH / Planning</span>
         <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>

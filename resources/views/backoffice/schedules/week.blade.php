@@ -24,6 +24,13 @@
         $prevWeek = (clone $weekStart)->subWeek()->toDateString();
         $nextWeek = (clone $weekStart)->addWeek()->toDateString();
         $isSelf   = $authUser->id === $target->id;
+
+        // ── View mode ───────────────────────────────────────────────
+        // Schedules are CREATED by Super Admin / Admin / Manager.
+        // A plain staff member (e.g. Réception) only CONSULTS their own
+        // planning → read-only dashboard. Admins get the editor table.
+        $canEdit = $isAdmin;
+        $todayKey = now()->format('Y-m-d');
     @endphp
 
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
@@ -89,6 +96,158 @@
         </div>
     @endif
 
+    {{-- ============================================================ --}}
+    {{-- READ-ONLY DASHBOARD — shown to staff (Réception) on their    --}}
+    {{-- own planning, and to admins as a quick overview before edit. --}}
+    {{-- ============================================================ --}}
+
+    {{-- KPI strip --}}
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center py-3">
+                    <div class="text-muted small text-uppercase">Heures planifiées</div>
+                    <div class="h3 mb-0 fw-bold text-primary">{{ \App\Models\UserSchedule::formatMinutes($totalWorked) }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center py-3">
+                    <div class="text-muted small text-uppercase">Jours travaillés</div>
+                    <div class="h3 mb-0 fw-bold text-success">{{ $workingDays }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center py-3">
+                    <div class="text-muted small text-uppercase">Jours de repos</div>
+                    <div class="h3 mb-0 fw-bold text-secondary">{{ $daysOff }}</div>
+                </div>
+            </div>
+        </div>
+        @if(!is_null($overtime))
+            <div class="col-6 col-lg">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center py-3">
+                        <div class="text-muted small text-uppercase">Heures supp.</div>
+                        <div class="h3 mb-0 fw-bold {{ $overtime > 0 ? 'text-warning' : 'text-muted' }}">
+                            +{{ \App\Models\UserSchedule::formatMinutes($overtime) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+        <div class="col-12 col-lg">
+            <div class="card border-0 shadow-sm h-100 bg-light-primary">
+                <div class="card-body py-3">
+                    <div class="text-muted small text-uppercase">Prochain service</div>
+                    @if($nextShift)
+                        <div class="fw-bold text-capitalize">
+                            {{ $nextShift->date->locale('fr')->isoFormat('ddd DD/MM') }}
+                            · {{ substr($nextShift->start_time, 0, 5) }} → {{ substr($nextShift->end_time, 0, 5) }}
+                        </div>
+                    @else
+                        <div class="text-muted">Aucun service à venir cette semaine</div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Change alert (honest: derived from updated_at) --}}
+    @if($changedThisWeek)
+        <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
+            <i class="ph-duotone ph-warning-circle fs-5"></i>
+            <div>
+                Votre planning a été modifié cette semaine.
+                @if($lastUpdated)
+                    <span class="text-muted small">· Dernière mise à jour : {{ $lastUpdated->locale('fr')->isoFormat('DD MMM [à] HH:mm') }}</span>
+                @endif
+            </div>
+        </div>
+    @endif
+
+    {{-- Weekly planner cards --}}
+    <div class="row g-3 mb-4">
+        @foreach($days as $day)
+            @php
+                $s = $day['schedule'];
+                $isToday   = $day['key'] === $todayKey;
+                $isWeekend = in_array($day['date']->dayOfWeek, [0, 6]);
+                $state  = $s ? 'work' : ($isWeekend ? 'off' : 'missing');
+                $accent = ['work' => 'success', 'off' => 'secondary', 'missing' => 'warning'][$state];
+            @endphp
+            <div class="col-6 col-md-4 col-xl-3">
+                <div class="card h-100 border-0 shadow-sm @if($isToday) border border-primary border-2 @endif"
+                     style="border-left: 4px solid var(--bs-{{ $accent }}) !important;">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="fw-bold text-capitalize">{{ $day['label'] }}</span>
+                            @if($isToday)<span class="badge bg-primary">Aujourd'hui</span>@endif
+                        </div>
+                        @if($state === 'work')
+                            <div class="fs-5 fw-semibold">
+                                {{ substr($s->start_time, 0, 5) }}
+                                <i class="ph ph-arrow-right small"></i>
+                                {{ substr($s->end_time, 0, 5) }}
+                            </div>
+                            @if($s->break_minutes > 0)
+                                <div class="text-muted small"><i class="ph-duotone ph-coffee me-1"></i>Pause {{ $s->break_formatted }}</div>
+                            @endif
+                            <div class="mt-2 badge bg-light-success text-success">{{ $s->worked_formatted }} travaillé</div>
+                            @if($s->notes)
+                                <div class="small text-muted mt-2 fst-italic">“{{ $s->notes }}”</div>
+                            @endif
+                        @elseif($state === 'off')
+                            <div class="text-secondary py-2"><i class="ph-duotone ph-bed me-1"></i>Jour de repos</div>
+                        @else
+                            <div class="text-warning py-2"><i class="ph-duotone ph-question me-1"></i>Non planifié</div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+
+    {{-- Reception-specific info --}}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body py-3">
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <div class="text-muted small text-uppercase">Centre</div>
+                    <div class="fw-semibold">{{ $target->site->name ?? '—' }}</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="text-muted small text-uppercase">Poste</div>
+                    <div class="fw-semibold">{{ $target->staff_role ?? '—' }}</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="text-muted small text-uppercase">Employé</div>
+                    <div class="fw-semibold">{{ $target->name }}</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="text-muted small text-uppercase">Semaine</div>
+                    <div class="fw-semibold">{{ $weekStart->locale('fr')->isoFormat('DD/MM') }} – {{ $weekEnd->locale('fr')->isoFormat('DD/MM') }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- ============================================================ --}}
+    {{-- EDITOR — only Super Admin / Admin / Manager can CREATE/EDIT.  --}}
+    {{-- ============================================================ --}}
+    @unless($canEdit)
+        <div class="alert alert-light border d-flex align-items-center gap-2">
+            <i class="ph-duotone ph-info fs-5 text-primary"></i>
+            <span class="small text-muted mb-0">
+                Votre planning est défini par l'administration. Pour toute modification, contactez votre responsable.
+            </span>
+        </div>
+    @endunless
+
+    @if($canEdit)
     <form method="POST" action="{{ route('backoffice.schedules.week.save') }}">
         @csrf
         <input type="hidden" name="user_id" value="{{ $target->id }}">
@@ -102,11 +261,19 @@
             </div>
         @endif
 
+        <div class="d-flex align-items-center gap-2 mb-2 mt-1">
+            <i class="ph-duotone ph-pencil-simple text-primary"></i>
+            <h6 class="mb-0">Créer / modifier le planning</h6>
+            @if(!$isSelf)
+                <span class="badge bg-light-warning text-warning">{{ $target->name }}</span>
+            @endif
+        </div>
+
         <div class="card">
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
+                        <thead class="table-light position-sticky top-0" style="z-index: 2;">
                             <tr>
                                 <th style="width: 140px;">Jour</th>
                                 <th class="text-center" style="width: 120px;">Début</th>
@@ -122,8 +289,10 @@
                                 @php
                                     $s = $day['schedule'];
                                     $isWeekend = in_array($day['date']->dayOfWeek, [0, 6]);
+                                    $isToday   = $day['key'] === $todayKey;
                                 @endphp
-                                <tr class="{{ $isWeekend ? 'table-light text-muted' : '' }}" data-row>
+                                <tr class="{{ $isWeekend ? 'table-light text-muted' : '' }} {{ $isToday ? 'table-primary' : '' }}"
+                                    data-row @if($isWeekend) data-weekend @endif>
                                     <td class="fw-medium">
                                         {{ $day['label'] }}
                                         <input type="hidden" name="days[{{ $i }}][date]" value="{{ $day['key'] }}">
@@ -182,6 +351,7 @@
             </button>
         </div>
     </form>
+    @endif
 
 @endsection
 
@@ -260,6 +430,8 @@
 
                     rows.forEach((row, idx) => {
                         if (idx === 0) return;
+                        // Skip weekend rows (samedi / dimanche) — do not auto-fill them.
+                        if (row.hasAttribute('data-weekend')) return;
                         row.querySelector('[data-field="start"]').value  = srcStart;
                         row.querySelector('[data-field="end"]').value    = srcEnd;
                         row.querySelector('[data-field="bstart"]').value = srcBStart;
