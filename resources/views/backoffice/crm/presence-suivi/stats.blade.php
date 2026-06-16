@@ -23,6 +23,16 @@
 .ps-filters input:focus,.ps-filters select:focus{outline:none;border-color:var(--ps-blue);box-shadow:0 0 0 3px rgba(70,128,255,.12)}
 .ps-filters .btn{border-radius:10px;font-weight:600;padding:9px 22px}
 
+/* Searchable group combobox */
+.gsearch{position:relative}
+.gsearch-input{border:1px solid #e6e8f2;border-radius:10px;padding:9px 13px;font-size:.85rem;min-width:200px;background:#fbfcff;transition:border .15s,box-shadow .15s}
+.gsearch-input:focus{outline:none;border-color:var(--ps-blue);box-shadow:0 0 0 3px rgba(70,128,255,.12)}
+.gsearch-menu{position:absolute;top:calc(100% + 4px);left:0;right:0;min-width:200px;max-height:260px;overflow-y:auto;background:#fff;border:1px solid #e6e8f2;border-radius:10px;box-shadow:0 8px 24px rgba(20,22,55,.12);z-index:50;display:none}
+.gsearch-menu.open{display:block}
+.gsearch-opt{padding:9px 13px;font-size:.85rem;color:#3a3f54;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gsearch-opt:hover,.gsearch-opt.active{background:#f0f4ff;color:var(--ps-blue)}
+.gsearch-opt.hidden{display:none}
+
 /* KPI tiles */
 .ps-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:14px}
 .ps-kpi{background:#fff;border-radius:16px;padding:18px 20px;box-shadow:0 2px 14px rgba(20,22,55,.05);position:relative;overflow:hidden}
@@ -119,14 +129,18 @@
             <label>Date fin</label>
             <input type="date" name="endDate" value="{{ $endDate }}">
         </div>
-        <div class="fg">
+        <div class="fg gsearch" id="groupCombo">
             <label>Groupe</label>
-            <select name="classId">
-                <option value="">Tous les groupes</option>
+            <input type="hidden" name="classId" id="groupClassId" value="{{ $classId }}">
+            <input type="text" id="groupSearch" class="gsearch-input" autocomplete="off"
+                   placeholder="Rechercher un groupe…"
+                   value="{{ $classId ? collect($classes)->firstWhere('id', $classId)['name'] ?? '' : '' }}">
+            <div class="gsearch-menu" id="groupMenu">
+                <div class="gsearch-opt" data-id="">Tous les groupes</div>
                 @foreach($classes as $c)
-                    <option value="{{ $c['id'] }}" {{ $classId === $c['id'] ? 'selected' : '' }}>{{ $c['name'] }}</option>
+                    <div class="gsearch-opt" data-id="{{ $c['id'] }}">{{ $c['name'] }}</div>
                 @endforeach
-            </select>
+            </div>
         </div>
         <div class="fg">
             <button type="submit" class="btn btn-primary">Filtrer</button>
@@ -156,15 +170,15 @@
     {{-- Séance status counts --}}
     <div class="ps-status">
         <div class="ps-st valide">
-            <div class="ic"><i class="ph-fill ph-check-circle"></i></div>
+            <div class="ic"><i class="ph-duotone ph-check-circle"></i></div>
             <div><div class="v">{{ number_format($totals['valide']) }}</div><div class="l">Séances validées</div></div>
         </div>
         <div class="ps-st brouillon">
-            <div class="ic"><i class="ph-fill ph-note-pencil"></i></div>
+            <div class="ic"><i class="ph-duotone ph-note-pencil"></i></div>
             <div><div class="v">{{ number_format($totals['brouillon']) }}</div><div class="l">Brouillons (non saisies)</div></div>
         </div>
         <div class="ps-st annule">
-            <div class="ic"><i class="ph-fill ph-x-circle"></i></div>
+            <div class="ic"><i class="ph-duotone ph-x-circle"></i></div>
             <div><div class="v">{{ number_format($totals['annule']) }}</div><div class="l">Séances annulées</div></div>
         </div>
     </div>
@@ -216,7 +230,7 @@
                                     <span style="font-size:.78rem;font-weight:700">{{ $s['taux'] }}%</span>
                                 </div>
                             </td>
-                            <td class="muted"><i class="ph ph-caret-right"></i></td>
+                            <td class="muted"><i class="ph-duotone ph-caret-right"></i></td>
                         </tr>
                     @empty
                         <tr><td colspan="8"><div class="empty">Aucune séance enregistrée sur cette période.</div></td></tr>
@@ -237,11 +251,11 @@
         </div>
         <div class="ps-cols">
             <div class="ps-col present">
-                <h6><i class="ph-fill ph-check-circle"></i> Présents <span class="cnt" id="psmPresentCount">0</span></h6>
+                <h6><i class="ph-duotone ph-check-circle"></i> Présents <span class="cnt" id="psmPresentCount">0</span></h6>
                 <ul class="slist" id="psmPresent"></ul>
             </div>
             <div class="ps-col absent">
-                <h6><i class="ph-fill ph-x-circle"></i> Absents <span class="cnt" id="psmAbsentCount">0</span></h6>
+                <h6><i class="ph-duotone ph-x-circle"></i> Absents <span class="cnt" id="psmAbsentCount">0</span></h6>
                 <ul class="slist" id="psmAbsent"></ul>
             </div>
         </div>
@@ -259,20 +273,24 @@ const PS_CHARTS = @json($charts);
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof ApexCharts === 'undefined') return;
 
-    // Chart 1 — présence vs absence trend (stacked area)
+    // Chart 1 — présence vs absence trend (stacked area).
+    // Pair each value with its date as a UTC timestamp so the datetime axis plots
+    // correctly — a bare numeric series with string categories renders nothing.
     if (PS_CHARTS.trend.labels.length) {
+        const toTs = d => new Date(d + 'T00:00:00Z').getTime();
+        const presentPairs = PS_CHARTS.trend.labels.map((d, i) => ({ x: toTs(d), y: PS_CHARTS.trend.present[i] }));
+        const absentPairs  = PS_CHARTS.trend.labels.map((d, i) => ({ x: toTs(d), y: PS_CHARTS.trend.absent[i] }));
         new ApexCharts(document.querySelector('#psChartTrend'), {
             chart:{type:'area',height:280,stacked:true,toolbar:{show:false},fontFamily:'inherit'},
             series:[
-                {name:'Présents', data:PS_CHARTS.trend.present},
-                {name:'Absents',  data:PS_CHARTS.trend.absent},
+                {name:'Présents', data:presentPairs},
+                {name:'Absents',  data:absentPairs},
             ],
             colors:['#1cc88a','#e74c3c'],
             dataLabels:{enabled:false},
             stroke:{curve:'smooth',width:2},
             fill:{type:'gradient',gradient:{opacityFrom:.4,opacityTo:.05}},
             xaxis:{
-                categories:PS_CHARTS.trend.labels,
                 type:'datetime',
                 labels:{format:'dd/MM',style:{colors:'#9197ad',fontSize:'11px'}},
                 axisBorder:{show:false},axisTicks:{show:false},
@@ -310,6 +328,52 @@ document.addEventListener('DOMContentLoaded', () => {
             '<div style="text-align:center;color:#9197ad;padding:80px 0;font-size:.85rem">Pas de données</div>';
     }
 });
+
+/* ── Searchable group combobox ──────────────────────────────────── */
+(function(){
+    const combo  = document.getElementById('groupCombo');
+    if(!combo) return;
+    const input  = document.getElementById('groupSearch');
+    const menu   = document.getElementById('groupMenu');
+    const hidden = document.getElementById('groupClassId');
+    const opts   = Array.from(menu.querySelectorAll('.gsearch-opt'));
+
+    function openMenu(){ menu.classList.add('open'); }
+    function closeMenu(){ menu.classList.remove('open'); }
+
+    function filter(q){
+        q = q.trim().toLowerCase();
+        opts.forEach(o => {
+            // Always keep "Tous les groupes" visible
+            const isAll = o.dataset.id === '';
+            o.classList.toggle('hidden', !isAll && !o.textContent.toLowerCase().includes(q));
+        });
+    }
+
+    function pick(opt){
+        hidden.value = opt.dataset.id;
+        input.value  = opt.dataset.id === '' ? '' : opt.textContent.trim();
+        closeMenu();
+    }
+
+    input.addEventListener('focus', () => { filter(input.value); openMenu(); });
+    input.addEventListener('input', () => { filter(input.value); openMenu(); hidden.value = ''; });
+    opts.forEach(o => o.addEventListener('mousedown', e => { e.preventDefault(); pick(o); }));
+
+    document.addEventListener('click', e => { if(!combo.contains(e.target)) closeMenu(); });
+
+    // Keyboard: arrow up/down + enter
+    input.addEventListener('keydown', e => {
+        const visible = opts.filter(o => !o.classList.contains('hidden'));
+        let idx = visible.findIndex(o => o.classList.contains('active'));
+        if(e.key === 'ArrowDown'){ e.preventDefault(); openMenu(); idx = Math.min(idx+1, visible.length-1); }
+        else if(e.key === 'ArrowUp'){ e.preventDefault(); idx = Math.max(idx-1, 0); }
+        else if(e.key === 'Enter' && idx >= 0){ e.preventDefault(); pick(visible[idx]); return; }
+        else return;
+        opts.forEach(o => o.classList.remove('active'));
+        if(visible[idx]){ visible[idx].classList.add('active'); visible[idx].scrollIntoView({block:'nearest'}); }
+    });
+})();
 
 /* ── Drill modal ────────────────────────────────────────────────── */
 function escapeHtml(s){const d=document.createElement('div');d.textContent=s??'';return d.innerHTML;}
