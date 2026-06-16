@@ -450,9 +450,12 @@
         }
         if (prefix === 'rec') {
             if (recChart) { recChart.destroy(); recChart = null; }
-            document.getElementById('rec-range-kpis').innerHTML  = '';
-            document.getElementById('rec-range-tbody').innerHTML = '';
-            document.getElementById('rec-range-tfoot').innerHTML = '';
+            const recKpis  = document.getElementById('rec-range-kpis');
+            const recTbody = document.getElementById('rec-range-tbody');
+            const recTfoot = document.getElementById('rec-range-tfoot');
+            if (recKpis)  recKpis.innerHTML  = '';
+            if (recTbody) recTbody.innerHTML = '';
+            if (recTfoot) recTfoot.innerHTML = '';
         } else {
             if (encChart) { encChart.destroy(); encChart = null; }
             document.getElementById('enc-range-kpis').innerHTML  = '';
@@ -460,13 +463,12 @@
             document.getElementById('enc-range-tfoot').innerHTML = '';
         }
         if (state === 'loading') {
-            document.getElementById(`${prefix}-range-loading`).classList.remove('d-none');
+            document.getElementById(`${prefix}-range-loading`)?.classList.remove('d-none');
         } else if (state === 'error') {
             const el = document.getElementById(`${prefix}-range-error`);
-            el.textContent = msg || 'Erreur inconnue.';
-            el.classList.remove('d-none');
+            if (el) { el.textContent = msg || 'Erreur inconnue.'; el.classList.remove('d-none'); }
         } else if (state === 'empty') {
-            document.getElementById(`${prefix}-range-empty`).classList.remove('d-none');
+            document.getElementById(`${prefix}-range-empty`)?.classList.remove('d-none');
         }
     }
 

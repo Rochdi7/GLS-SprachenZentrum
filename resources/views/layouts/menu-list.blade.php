@@ -455,6 +455,7 @@
                     $crmStatsCompOpen ||
                     $crmStatsOpen ||
                     request()->routeIs('backoffice.crm.reports.*');
+
             @endphp
             <li class="pc-item pc-hasmenu {{ $crmAllStatsOpen ? 'pc-trigger' : '' }}">
                 <a href="#!" class="pc-link">

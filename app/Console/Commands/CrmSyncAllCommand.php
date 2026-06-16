@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\CrmSyncLog;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -116,16 +115,6 @@ class CrmSyncAllCommand extends Command
             'crm:sync-expenses',
             '--all --delay=500',
             'Sync expenses from CRM API into site_expenses (crm_source=wimschool)',
-        ],
-        'generate_alerts'  => [
-            'crm:generate-alerts',
-            '--prune',
-            'Detect business alerts: absences, unpaid >30d, cheques, weak groups, near-end groups',
-        ],
-        'group_profitability' => [
-            'crm:build-group-profitability',
-            '--months=3',
-            'Compute per-group profitability: CA, salaire prof, bénéfice, marge, présence',
         ],
         'daily_report'     => [
             'crm:daily-report',

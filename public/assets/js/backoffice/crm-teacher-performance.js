@@ -78,8 +78,9 @@
             }
         }
 
-        // Top teacher = most active students kept (actifs), tie-break débuts.
-        const top = [...teachers].sort((a, b) => (b.actifs - a.actifs) || (b.debuts - a.debuts))[0];
+        // Top teacher = best retention (min quittants tie-break), must have intake > 0.
+        const qualified = teachers.filter(t => t.retention !== null);
+        const top = qualified.sort((a, b) => b.retention - a.retention || a.quittants - b.quittants)[0];
         document.getElementById('tp-top').innerHTML = top ? `
             <div style="font-size:2.4rem;line-height:1">🏆</div>
             <div>
@@ -100,8 +101,11 @@
             ${card('Étudiants perdus', tt.quittants, 'danger', 'ph-user-minus')}
             ${card('Actifs actuellement', tt.actifs, 'info', 'ph-users')}`;
 
-        // Chart: top 12 teachers by actifs, débuts vs perdus.
-        const top12 = [...teachers].sort((a, b) => b.actifs - a.actifs).slice(0, 12);
+        // Chart: top 12 teachers by retention (worst to best left-to-right), qualified only.
+        const top12 = [...teachers]
+            .filter(t => t.retention !== null)
+            .sort((a, b) => b.retention - a.retention || a.quittants - b.quittants)
+            .slice(0, 12);
         if (chart) { chart.destroy(); chart = null; }
         chart = new ApexCharts(document.getElementById('tp-chart'), {
             chart: { type: 'bar', height: 360, toolbar: { show: false }, fontFamily: 'inherit', stacked: false },
@@ -131,9 +135,15 @@
                 <td class="text-end text-muted small">${t.quittants} perdus</td>
             </tr>`).join('');
 
-        // Full table sorted by actifs.
+        // Full table sorted by retention desc, tie-break fewest quittants, nulls last.
+        const ranked = [...teachers].sort((a, b) => {
+            if (a.retention === null && b.retention === null) return a.quittants - b.quittants;
+            if (a.retention === null) return 1;
+            if (b.retention === null) return -1;
+            return b.retention - a.retention || a.quittants - b.quittants;
+        });
         const maxRet = Math.max(...teachers.map(t => t.retention || 0), 1);
-        document.getElementById('tp-tbody').innerHTML = teachers.map((t, i) => `
+        document.getElementById('tp-tbody').innerHTML = ranked.map((t, i) => `
             <tr>
                 <td>${medal(i)}</td>
                 <td><strong>${esc(t.teacher_name)}</strong></td>
