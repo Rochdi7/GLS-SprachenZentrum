@@ -82,6 +82,10 @@ Route::prefix('crm')
         Route::get('/presence-suivi/details',  [\App\Http\Controllers\Backoffice\Crm\PresenceSuiviController::class, 'details'])->name('presence-suivi.details');
         Route::post('/presence-suivi/resync',  [\App\Http\Controllers\Backoffice\Crm\PresenceSuiviController::class, 'resync'])->name('presence-suivi.resync');
 
+        // Statistiques de présence — par séance, avec présents/absents.
+        Route::get('/presence-stats',          [\App\Http\Controllers\Backoffice\Crm\PresenceSuiviController::class, 'stats'])->name('presence-stats');
+        Route::get('/presence-stats/session',  [\App\Http\Controllers\Backoffice\Crm\PresenceSuiviController::class, 'sessionDetail'])->name('presence-stats.session');
+
         // Statistiques par centre (encaissement + recouvrement + inscriptions).
         Route::get('/statistiques',                      [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'index'])->name('statistiques');
         Route::post('/statistiques/refresh',             [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'refresh'])->name('statistiques.refresh');

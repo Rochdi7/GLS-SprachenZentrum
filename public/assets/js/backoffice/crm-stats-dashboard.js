@@ -291,6 +291,19 @@
         });
     }
 
+    // Auto-load: default to current month
+    setEncRankDates('month');
+    var defaultMonthBtn = document.querySelector('.enc-rank-preset[data-preset="month"]');
+    if (defaultMonthBtn) {
+        document.querySelectorAll('.enc-rank-preset').forEach(function(b) {
+            b.classList.remove('active', 'btn-primary');
+            b.classList.add('btn-outline-dark');
+        });
+        defaultMonthBtn.classList.remove('btn-outline-dark');
+        defaultMonthBtn.classList.add('active', 'btn-primary');
+    }
+    doFetchEncRank();
+
     function doFetchEncRank() {
         if (encRankBusy) return;
         var start = document.getElementById('enc-rank-start-date').value;

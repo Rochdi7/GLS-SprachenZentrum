@@ -454,6 +454,8 @@
                     $crmStatsDashOpen ||
                     $crmStatsCompOpen ||
                     $crmStatsOpen ||
+                    request()->routeIs('backoffice.crm.group-evolution') ||
+                    request()->routeIs('backoffice.crm.presence-stats') ||
                     request()->routeIs('backoffice.crm.reports.*');
 
             @endphp
@@ -498,6 +500,12 @@
                         <a href="{{ route('backoffice.crm.group-evolution') }}"
                             class="pc-link {{ request()->routeIs('backoffice.crm.group-evolution') ? 'active' : '' }}">
                             <span class="pc-mtext">Évolution par groupe</span>
+                        </a>
+                    </li>
+                    <li class="pc-item {{ request()->routeIs('backoffice.crm.presence-stats') ? 'active' : '' }}">
+                        <a href="{{ route('backoffice.crm.presence-stats') }}"
+                            class="pc-link {{ request()->routeIs('backoffice.crm.presence-stats') ? 'active' : '' }}">
+                            <span class="pc-mtext">Statistiques présence</span>
                         </a>
                     </li>
                     {{-- <li class="pc-item {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">

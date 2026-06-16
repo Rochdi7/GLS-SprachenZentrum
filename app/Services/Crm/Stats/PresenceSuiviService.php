@@ -388,6 +388,185 @@ class PresenceSuiviService
     }
 
     /**
+     * Statistiques de présence par SÉANCE.
+     *
+     * Lists every recorded session in a date window (one card per séance), with
+     * its present / absent counts and presence rate. Each row carries the
+     * SESSION_ID so the UI can drill into the per-student present/absent lists
+     * via {@see sessionDetail()}.
+     */
+    public function sessionStats(?int $storeId, string $startDate, string $endDate, ?int $classId = null): array
+    {
+        $cacheKey = "crm.presence_stats.sessions.{$storeId}.{$startDate}.{$endDate}." . ($classId ?: 'all');
+
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($storeId, $startDate, $endDate, $classId) {
+            $classes = CrmClass::query()
+                ->when($storeId, fn ($q) => $q->where('site_id', $storeId))
+                ->whereNotNull('class_id')
+                ->get()->keyBy('crm_id');
+
+            if ($classes->isEmpty()) {
+                return ['sessions' => [], 'totals' => $this->emptyStatTotals()];
+            }
+
+            $crmIds = $classId
+                ? array_values(array_filter($classes->keys()->toArray(), fn ($c) => $c === $classId))
+                : $classes->keys()->toArray();
+
+            if (empty($crmIds)) {
+                return ['sessions' => [], 'totals' => $this->emptyStatTotals()];
+            }
+
+            // One row per (class, session day). Aggregate present/absent across
+            // the per-student attendance rows of that séance.
+            $rows = DB::table('crm_attendance as a')
+                ->select([
+                    'a.crm_class_id',
+                    'a.date',
+                    'a.session_reference',
+                    DB::raw('MAX(JSON_UNQUOTE(JSON_EXTRACT(a.raw_data, "$.SESSION_ID")))                  as session_id'),
+                    DB::raw('MAX(JSON_UNQUOTE(JSON_EXTRACT(a.raw_data, "$.SESSION_START_TIME")))          as start_time'),
+                    DB::raw('MAX(JSON_UNQUOTE(JSON_EXTRACT(a.raw_data, "$.SESSION_END_TIME")))            as end_time'),
+                    DB::raw('MAX(JSON_UNQUOTE(JSON_EXTRACT(a.raw_data, "$.EMPLOYEE_TEACHER_FULL_NAME")))  as teacher'),
+                    DB::raw('MAX(JSON_UNQUOTE(JSON_EXTRACT(a.raw_data, "$.PRESENCE_STATUS")))             as presence_status'),
+                    DB::raw('SUM(a.is_present)  as present_count'),
+                    DB::raw('COUNT(*)           as total'),
+                ])
+                ->whereIn('a.crm_class_id', $crmIds)
+                ->whereBetween('a.date', [$startDate, $endDate])
+                ->groupBy('a.crm_class_id', 'a.date', 'a.session_reference')
+                ->orderBy('a.date', 'desc')
+                ->orderBy('start_time', 'desc')
+                ->get();
+
+            $sessions = [];
+            $tPresent = 0; $tAbsent = 0; $tSessions = 0;
+
+            foreach ($rows as $r) {
+                // PRESENCE_STATUS=0 means the séance exists but attendance was
+                // never entered — skip from présence statistics (it's a draft).
+                if ((int) $r->presence_status === 0) continue;
+
+                $present = (int) $r->present_count;
+                $total   = (int) $r->total;
+                $absent  = $total - $present;
+                $cid     = $r->crm_class_id;
+
+                $sessions[] = [
+                    'session_id'   => $r->session_id ? (int) $r->session_id : null,
+                    'session_ref'  => $r->session_reference,
+                    'class_id'     => (int) $cid,
+                    'class_name'   => $classes[$cid]->name ?? "Groupe #{$cid}",
+                    'teacher'      => $r->teacher ?: '—',
+                    'date'         => substr((string) $r->date, 0, 10),
+                    'start_time'   => $r->start_time ? substr($r->start_time, 0, 5) : null,
+                    'end_time'     => $r->end_time   ? substr($r->end_time,   0, 5) : null,
+                    'present'      => $present,
+                    'absent'       => $absent,
+                    'total'        => $total,
+                    'taux'         => $total > 0 ? round($present / $total * 100, 1) : 0,
+                ];
+
+                $tPresent += $present;
+                $tAbsent  += $absent;
+                $tSessions++;
+            }
+
+            $tTotal = $tPresent + $tAbsent;
+
+            return [
+                'sessions' => $sessions,
+                'totals'   => [
+                    'sessions'      => $tSessions,
+                    'present'       => $tPresent,
+                    'absent'        => $tAbsent,
+                    'total'         => $tTotal,
+                    'taux_presence' => $tTotal > 0 ? round($tPresent / $tTotal * 100, 1) : 0,
+                    'taux_absence'  => $tTotal > 0 ? round($tAbsent  / $tTotal * 100, 1) : 0,
+                ],
+            ];
+        });
+    }
+
+    /**
+     * Per-student présence / absence detail for a single séance
+     * (one class on one date). Returns two name lists.
+     */
+    public function sessionDetail(int $classCrmId, string $date): array
+    {
+        $rows = CrmAttendance::query()
+            ->where('crm_class_id', $classCrmId)
+            ->whereDate('date', $date)
+            ->get();
+
+        $present = [];
+        $absent  = [];
+
+        foreach ($rows as $row) {
+            $raw  = $row->raw_data ?? [];
+            $name = trim(($raw['FIRST_NAME'] ?? '') . ' ' . ($raw['LAST_NAME'] ?? ''))
+                ?: ('#' . ($raw['STUDENT_ID'] ?? '?'));
+
+            $entry = [
+                'name'  => $name,
+                'phone' => $raw['PHONE_NUMBER'] ?? $raw['WHATSAPP_NUMBER'] ?? null,
+                'excuse'=> ($raw['EXCUSE'] ?? null) === 'Y',
+                'delay' => ($raw['DELAY'] ?? null) === 'Y',
+            ];
+
+            if ($row->is_present) {
+                $present[] = $entry;
+            } else {
+                $absent[] = $entry;
+            }
+        }
+
+        $byName = fn ($a, $b) => strcmp($a['name'], $b['name']);
+        usort($present, $byName);
+        usort($absent, $byName);
+
+        $first = $rows->first();
+        $raw   = $first->raw_data ?? [];
+
+        return [
+            'class_name'  => $raw['CLASS_NAME'] ?? null,
+            'teacher'     => $raw['EMPLOYEE_TEACHER_FULL_NAME'] ?? '—',
+            'date'        => $date,
+            'session_ref' => $raw['SESSION_REFERENCE'] ?? null,
+            'start_time'  => isset($raw['SESSION_START_TIME']) ? substr($raw['SESSION_START_TIME'], 0, 5) : null,
+            'end_time'    => isset($raw['SESSION_END_TIME'])   ? substr($raw['SESSION_END_TIME'],   0, 5) : null,
+            'present'     => $present,
+            'absent'      => $absent,
+        ];
+    }
+
+    private function emptyStatTotals(): array
+    {
+        return [
+            'sessions'      => 0,
+            'present'       => 0,
+            'absent'        => 0,
+            'total'         => 0,
+            'taux_presence' => 0,
+            'taux_absence'  => 0,
+        ];
+    }
+
+    /**
+     * Class list (for the filter dropdown) scoped to a center.
+     */
+    public function classOptions(?int $storeId): array
+    {
+        return CrmClass::query()
+            ->when($storeId, fn ($q) => $q->where('site_id', $storeId))
+            ->whereNotNull('class_id')
+            ->orderBy('name')
+            ->get(['crm_id', 'name'])
+            ->map(fn ($c) => ['id' => (int) $c->crm_id, 'name' => $c->name])
+            ->toArray();
+    }
+
+    /**
      * Global fraud summary across all centers for the given month.
      */
     public function globalFraud(string $yearMonth): array

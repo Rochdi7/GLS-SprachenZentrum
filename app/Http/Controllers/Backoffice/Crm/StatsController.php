@@ -630,7 +630,14 @@ class StatsController extends BaseCrmController
             // Retention = kept / entered. Higher = fewer losses relative to intake.
             $retention = $entrants > 0 ? round(max(0, $entrants - $t['quittants']) / $entrants * 100, 1) : null;
             return $t + ['retention' => $retention];
-        })->values()->sortByDesc('actifs')->values()->toArray();
+        })->values()->sort(function ($a, $b) {
+            // Nulls (no intake) go last
+            if (is_null($a['retention']) && is_null($b['retention'])) return $a['quittants'] <=> $b['quittants'];
+            if (is_null($a['retention'])) return 1;
+            if (is_null($b['retention'])) return -1;
+            // Best retention first, tie-break: fewest quittants
+            return $b['retention'] <=> $a['retention'] ?: $a['quittants'] <=> $b['quittants'];
+        })->values()->toArray();
 
         return [
             'teachers'   => $result,

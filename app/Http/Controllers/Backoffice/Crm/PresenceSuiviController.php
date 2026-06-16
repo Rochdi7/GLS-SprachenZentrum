@@ -74,6 +74,49 @@ class PresenceSuiviController extends BaseCrmController
     }
 
     /**
+     * Statistiques de présence — liste des séances avec présents/absents.
+     */
+    public function stats(Request $request): View
+    {
+        $storeId   = $this->currentStrStoreId();
+        $startDate = $request->query('startDate') ?: Carbon::today('Africa/Casablanca')->startOfMonth()->toDateString();
+        $endDate   = $request->query('endDate')   ?: Carbon::today('Africa/Casablanca')->toDateString();
+        $classId   = $request->filled('classId') ? (int) $request->query('classId') : null;
+
+        $data    = $this->service->sessionStats($storeId, $startDate, $endDate, $classId);
+        $classes = $this->service->classOptions($storeId);
+
+        return $this->view('backoffice.crm.presence-suivi.stats', array_merge($data, [
+            'storeId'   => $storeId,
+            'startDate' => $startDate,
+            'endDate'   => $endDate,
+            'classId'   => $classId,
+            'classes'   => $classes,
+        ]));
+    }
+
+    /**
+     * Drill into a single séance: per-student présents / absents.
+     */
+    public function sessionDetail(Request $request): JsonResponse
+    {
+        $classId = (int) $request->query('classId');
+        $date    = $request->query('date');
+
+        if (!$classId || !$date) {
+            return response()->json(['error' => 'classId et date sont requis.'], 422);
+        }
+
+        try {
+            Carbon::parse($date);
+        } catch (\Throwable) {
+            return response()->json(['error' => 'Date invalide.'], 422);
+        }
+
+        return response()->json($this->service->sessionDetail($classId, $date));
+    }
+
+    /**
      * POST /presence-suivi/resync
      *
      * Pulls the last 2 months of attendance from Wimschool (updating PRESENCE_STATUS
