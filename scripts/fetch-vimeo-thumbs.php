@@ -53,6 +53,27 @@ function httpGet(string $url, int $timeout = 20): ?string
     return $body !== false ? $body : null;
 }
 
+/**
+ * Generate an optimized AVIF sibling next to a JPG poster (quality ~52, in the
+ * requested 45–60 band) and strip metadata. Falls back silently if GD lacks AVIF.
+ * The <picture> in video-facade.blade.php serves this AVIF with the JPG fallback.
+ */
+function makeAvif(string $jpgPath, string $avifPath): void
+{
+    if (!function_exists('imageavif') || !function_exists('imagecreatefromjpeg')) {
+        return;
+    }
+    $im = @imagecreatefromjpeg($jpgPath);
+    if ($im === false) {
+        return;
+    }
+    // imageavif() re-encodes pixels only; no source metadata is carried over.
+    if (@imageavif($im, $avifPath, 52)) {
+        printf("avif  %s  (%d KB)\n", basename($avifPath), round(filesize($avifPath) / 1024));
+    }
+    imagedestroy($im);
+}
+
 function highResThumb(string $url): string
 {
     // Vimeo oEmbed returns e.g. ..._200x150?... — request a larger crop.
@@ -65,6 +86,9 @@ foreach ($ids as $id) {
     $dest = "$outDir/$id.jpg";
     if (is_file($dest) && filesize($dest) > 2000) {
         echo "skip  $id (already present)\n";
+        if (!is_file("$outDir/$id.avif")) {
+            makeAvif($dest, "$outDir/$id.avif");
+        }
         $ok++;
         continue;
     }
@@ -93,6 +117,7 @@ foreach ($ids as $id) {
     if ($img !== null && strlen($img) > 2000) {
         file_put_contents($dest, $img);
         printf("ok    %s  (%d KB)\n", $id, round(strlen($img) / 1024));
+        makeAvif($dest, "$outDir/$id.avif");
         $ok++;
     } else {
         fwrite(STDERR, "FAIL  $id (no thumbnail)\n");
