@@ -406,7 +406,7 @@ class PresenceSuiviService
                 ->get()->keyBy('crm_id');
 
             if ($classes->isEmpty()) {
-                return ['sessions' => [], 'totals' => $this->emptyStatTotals()];
+                return ['sessions' => [], 'charts' => $this->emptyCharts(), 'totals' => $this->emptyStatTotals()];
             }
 
             $crmIds = $classId
@@ -414,7 +414,7 @@ class PresenceSuiviService
                 : $classes->keys()->toArray();
 
             if (empty($crmIds)) {
-                return ['sessions' => [], 'totals' => $this->emptyStatTotals()];
+                return ['sessions' => [], 'charts' => $this->emptyCharts(), 'totals' => $this->emptyStatTotals()];
             }
 
             // One row per (class, session day). Aggregate present/absent across
@@ -441,24 +441,36 @@ class PresenceSuiviService
 
             $sessions = [];
             $tPresent = 0; $tAbsent = 0; $tSessions = 0;
+            $valide = 0; $brouillon = 0; $annule = 0;
+            $trend = [];   // [date => ['present'=>, 'absent'=>]]
+            $byClass = []; // [cid => ['name'=>, 'present'=>, 'total'=>]]
 
             foreach ($rows as $r) {
-                // PRESENCE_STATUS=0 means the séance exists but attendance was
-                // never entered — skip from présence statistics (it's a draft).
-                if ((int) $r->presence_status === 0) continue;
+                $ps = $r->presence_status;
+
+                // PRESENCE_STATUS=0 / null = brouillon (attendance never entered).
+                // 1 = valide (saisie). There is no cancellation flag in the
+                // attendance feed, so "annulé" stays 0.
+                if ($ps === null || (int) $ps === 0) {
+                    $brouillon++;
+                    continue;
+                }
+                $valide++;
 
                 $present = (int) $r->present_count;
                 $total   = (int) $r->total;
                 $absent  = $total - $present;
                 $cid     = $r->crm_class_id;
+                $date    = substr((string) $r->date, 0, 10);
+                $cname   = $classes[$cid]->name ?? "Groupe #{$cid}";
 
                 $sessions[] = [
                     'session_id'   => $r->session_id ? (int) $r->session_id : null,
                     'session_ref'  => $r->session_reference,
                     'class_id'     => (int) $cid,
-                    'class_name'   => $classes[$cid]->name ?? "Groupe #{$cid}",
+                    'class_name'   => $cname,
                     'teacher'      => $r->teacher ?: '—',
-                    'date'         => substr((string) $r->date, 0, 10),
+                    'date'         => $date,
                     'start_time'   => $r->start_time ? substr($r->start_time, 0, 5) : null,
                     'end_time'     => $r->end_time   ? substr($r->end_time,   0, 5) : null,
                     'present'      => $present,
@@ -470,14 +482,52 @@ class PresenceSuiviService
                 $tPresent += $present;
                 $tAbsent  += $absent;
                 $tSessions++;
+
+                // Chart 1: présence/absence trend per day
+                $trend[$date] ??= ['present' => 0, 'absent' => 0];
+                $trend[$date]['present'] += $present;
+                $trend[$date]['absent']  += $absent;
+
+                // Chart 2: taux de présence par groupe
+                $byClass[$cid] ??= ['name' => $cname, 'present' => 0, 'total' => 0];
+                $byClass[$cid]['present'] += $present;
+                $byClass[$cid]['total']   += $total;
             }
 
             $tTotal = $tPresent + $tAbsent;
 
+            // ── Chart series ────────────────────────────────────────────────
+            ksort($trend);
+            $trendSeries = [
+                'labels'  => array_keys($trend),
+                'present' => array_map(fn ($d) => $d['present'], $trend),
+                'absent'  => array_map(fn ($d) => $d['absent'],  $trend),
+            ];
+
+            // Top groups by présence rate (min 1 session), limit 12 for readability
+            $groupSeries = collect($byClass)
+                ->map(fn ($g) => [
+                    'name' => $g['name'],
+                    'taux' => $g['total'] > 0 ? round($g['present'] / $g['total'] * 100, 1) : 0,
+                ])
+                ->sortByDesc('taux')
+                ->take(12)
+                ->values();
+
             return [
                 'sessions' => $sessions,
+                'charts'   => [
+                    'trend'  => $trendSeries,
+                    'groups' => [
+                        'labels' => $groupSeries->pluck('name')->toArray(),
+                        'taux'   => $groupSeries->pluck('taux')->toArray(),
+                    ],
+                ],
                 'totals'   => [
                     'sessions'      => $tSessions,
+                    'valide'        => $valide,
+                    'brouillon'     => $brouillon,
+                    'annule'        => $annule,
                     'present'       => $tPresent,
                     'absent'        => $tAbsent,
                     'total'         => $tTotal,
@@ -544,11 +594,22 @@ class PresenceSuiviService
     {
         return [
             'sessions'      => 0,
+            'valide'        => 0,
+            'brouillon'     => 0,
+            'annule'        => 0,
             'present'       => 0,
             'absent'        => 0,
             'total'         => 0,
             'taux_presence' => 0,
             'taux_absence'  => 0,
+        ];
+    }
+
+    private function emptyCharts(): array
+    {
+        return [
+            'trend'  => ['labels' => [], 'present' => [], 'absent' => []],
+            'groups' => ['labels' => [], 'taux' => []],
         ];
     }
 

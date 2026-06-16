@@ -291,19 +291,6 @@
         });
     }
 
-    // Auto-load: default to current month
-    setEncRankDates('month');
-    var defaultMonthBtn = document.querySelector('.enc-rank-preset[data-preset="month"]');
-    if (defaultMonthBtn) {
-        document.querySelectorAll('.enc-rank-preset').forEach(function(b) {
-            b.classList.remove('active', 'btn-primary');
-            b.classList.add('btn-outline-dark');
-        });
-        defaultMonthBtn.classList.remove('btn-outline-dark');
-        defaultMonthBtn.classList.add('active', 'btn-primary');
-    }
-    doFetchEncRank();
-
     function doFetchEncRank() {
         if (encRankBusy) return;
         var start = document.getElementById('enc-rank-start-date').value;
@@ -463,12 +450,9 @@
         }
         if (prefix === 'rec') {
             if (recChart) { recChart.destroy(); recChart = null; }
-            const recKpis  = document.getElementById('rec-range-kpis');
-            const recTbody = document.getElementById('rec-range-tbody');
-            const recTfoot = document.getElementById('rec-range-tfoot');
-            if (recKpis)  recKpis.innerHTML  = '';
-            if (recTbody) recTbody.innerHTML = '';
-            if (recTfoot) recTfoot.innerHTML = '';
+            document.getElementById('rec-range-kpis').innerHTML  = '';
+            document.getElementById('rec-range-tbody').innerHTML = '';
+            document.getElementById('rec-range-tfoot').innerHTML = '';
         } else {
             if (encChart) { encChart.destroy(); encChart = null; }
             document.getElementById('enc-range-kpis').innerHTML  = '';
@@ -476,12 +460,13 @@
             document.getElementById('enc-range-tfoot').innerHTML = '';
         }
         if (state === 'loading') {
-            document.getElementById(`${prefix}-range-loading`)?.classList.remove('d-none');
+            document.getElementById(`${prefix}-range-loading`).classList.remove('d-none');
         } else if (state === 'error') {
             const el = document.getElementById(`${prefix}-range-error`);
-            if (el) { el.textContent = msg || 'Erreur inconnue.'; el.classList.remove('d-none'); }
+            el.textContent = msg || 'Erreur inconnue.';
+            el.classList.remove('d-none');
         } else if (state === 'empty') {
-            document.getElementById(`${prefix}-range-empty`)?.classList.remove('d-none');
+            document.getElementById(`${prefix}-range-empty`).classList.remove('d-none');
         }
     }
 

@@ -78,13 +78,26 @@ class PresenceSuiviController extends BaseCrmController
      */
     public function stats(Request $request): View
     {
-        $storeId   = $this->currentStrStoreId();
+        // Explicit center filter on this page: '' or 'all' = tous les centres,
+        // otherwise the chosen crm_store_id. Falls back to the global context.
+        if ($request->has('centerId')) {
+            $raw     = $request->query('centerId');
+            $storeId = ($raw === '' || $raw === 'all') ? null : (int) $raw;
+        } else {
+            $storeId = $this->currentStrStoreId();
+        }
+
         $startDate = $request->query('startDate') ?: Carbon::today('Africa/Casablanca')->startOfMonth()->toDateString();
         $endDate   = $request->query('endDate')   ?: Carbon::today('Africa/Casablanca')->toDateString();
         $classId   = $request->filled('classId') ? (int) $request->query('classId') : null;
 
         $data    = $this->service->sessionStats($storeId, $startDate, $endDate, $classId);
         $classes = $this->service->classOptions($storeId);
+        $centers = \App\Models\Site::whereNotNull('crm_store_id')
+            ->orderBy('name')
+            ->get(['name', 'crm_store_id'])
+            ->map(fn ($s) => ['id' => (int) $s->crm_store_id, 'name' => $s->name])
+            ->toArray();
 
         return $this->view('backoffice.crm.presence-suivi.stats', array_merge($data, [
             'storeId'   => $storeId,
@@ -92,6 +105,7 @@ class PresenceSuiviController extends BaseCrmController
             'endDate'   => $endDate,
             'classId'   => $classId,
             'classes'   => $classes,
+            'centers'   => $centers,
         ]));
     }
 
