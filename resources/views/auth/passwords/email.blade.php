@@ -7,12 +7,11 @@
         <div class="card my-5">
             <div class="card-body">
                 <div class="text-center">
-                    <img src="{{ URL::asset('assets
-                    /images/login/img-auth-fporgot-password.avif') }}" alt="images"
-                        class="img-fluid mb-3">
+                    <img src="{{ URL::asset('assets/images/logo/gls.png') }}" alt="GLS Logo" class="mb-3" style="width:120px;object-fit:contain;">
                     <h4 class="f-w-500 mb-1">Forgot Password</h4>
                     <p class="mb-3">Back to <a href="{{ route('login') }}" class="link-primary ms-1">Log in</a></p>
                 </div>
+
                 @if (session('status'))
                     <div class="alert alert-success" role="alert">
                         {{ session('status') }}
@@ -23,9 +22,9 @@
                     @csrf
                     <div class="form-group mb-3">
                         <label class="form-label">Email Address</label>
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" name="email"
-                            value="{{ old('email') }}" required autocomplete="email" autofocus id="floatingInput"
-                            placeholder="Email Address">
+                        <input type="email" class="form-control @error('email') is-invalid @enderror"
+                               name="email" value="{{ old('email') }}" required autocomplete="email"
+                               autofocus placeholder="Adresse email">
                         @error('email')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
