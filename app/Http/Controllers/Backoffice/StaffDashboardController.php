@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attestation;
 use App\Models\AttestationRequest;
 use App\Models\Certificate;
+use App\Models\GlsInscription;
 use App\Models\Group;
 use App\Models\GroupApplication;
 use App\Models\GroupLevelFollowup;
@@ -18,6 +19,7 @@ use App\Models\UserSchedule;
 use App\Models\WeeklyReport;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Centre-scoped dashboard for non-Super-Admin users.
@@ -233,9 +235,80 @@ class StaffDashboardController extends Controller
             ]);
         }
 
+        // ── Centre-scoped charts (last 12 months) ──────────────────
+        $adminGroupsTrend       = $this->adminTrend('groups', 'site_id', $effectiveIds, 8);
+        $adminTeachersTrend     = $this->adminTrend('teachers', 'site_id', $effectiveIds, 8);
+        $adminCertsTrend        = $this->adminTrend('certificates', 'site_id', $effectiveIds, 8);
+
+        $adminCertsByMonth      = $this->adminChartByMonth('certificates', 'site_id', $effectiveIds, 12);
+        $adminGroupsByMonth     = $this->adminChartByMonth('groups', 'site_id', $effectiveIds, 12);
+        $adminInscriptionsByMonth = $this->adminChartByMonth('gls_inscriptions', 'centre', $effectiveIds, 12);
+        $adminGroupAppsByMonth  = $this->adminGroupAppsByMonth($effectiveIds, 12);
+
+        $adminGroupAppsByStatus = [
+            'En attente' => $scope(GroupApplication::where('status', 'pending'), 'group')->count(),
+            'Approuvées' => $scope(GroupApplication::where('status', 'approved'), 'group')->count(),
+            'Rejetées'   => $scope(GroupApplication::where('status', 'rejected'), 'group')->count(),
+        ];
+
         return compact(
             'pendingFollowups', 'activeGroups', 'reportsReceived',
-            'staffCount', 'staffScheduledThisWeek', 'siteBreakdown'
+            'staffCount', 'staffScheduledThisWeek', 'siteBreakdown',
+            'adminGroupsTrend', 'adminTeachersTrend', 'adminCertsTrend',
+            'adminCertsByMonth', 'adminGroupsByMonth',
+            'adminInscriptionsByMonth', 'adminGroupAppsByMonth',
+            'adminGroupAppsByStatus'
         );
+    }
+
+    private function adminTrend(string $table, string $siteCol, ?array $ids, int $months = 8): array
+    {
+        $now  = Carbon::now();
+        $data = [];
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $from = $now->copy()->subMonths($i)->startOfMonth();
+            $to   = $now->copy()->subMonths($i)->endOfMonth();
+            $q    = DB::table($table)->whereBetween('created_at', [$from, $to]);
+            if ($ids !== null) {
+                if (empty($ids)) { $data[] = 0; continue; }
+                $q->whereIn($siteCol, $ids);
+            }
+            $data[] = $q->count();
+        }
+        return $data ?: array_fill(0, $months, 0);
+    }
+
+    private function adminChartByMonth(string $table, string $siteCol, ?array $ids, int $months = 12): \Illuminate\Support\Collection
+    {
+        $now    = Carbon::now();
+        $result = collect();
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $from  = $now->copy()->subMonths($i)->startOfMonth();
+            $to    = $now->copy()->subMonths($i)->endOfMonth();
+            $q     = DB::table($table)->whereBetween('created_at', [$from, $to]);
+            if ($ids !== null) {
+                if (empty($ids)) { $result->put($from->format('M Y'), 0); continue; }
+                $q->whereIn($siteCol, $ids);
+            }
+            $result->put($from->format('M Y'), $q->count());
+        }
+        return $result;
+    }
+
+    private function adminGroupAppsByMonth(?array $ids, int $months = 12): \Illuminate\Support\Collection
+    {
+        $now    = Carbon::now();
+        $result = collect();
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $from = $now->copy()->subMonths($i)->startOfMonth();
+            $to   = $now->copy()->subMonths($i)->endOfMonth();
+            $q    = GroupApplication::whereBetween('created_at', [$from, $to]);
+            if ($ids !== null) {
+                if (empty($ids)) { $result->put($from->format('M Y'), 0); continue; }
+                $q->whereHas('group', fn ($gq) => $gq->whereIn('site_id', $ids));
+            }
+            $result->put($from->format('M Y'), $q->count());
+        }
+        return $result;
     }
 }

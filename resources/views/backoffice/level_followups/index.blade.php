@@ -278,6 +278,91 @@
                 margin-left: 0;
             }
         }
+
+        /* ===== Dark mode overrides (theme uses [data-pc-theme="dark"] on body) ===== */
+        [data-pc-theme="dark"] .followup-card {
+            border-color: rgba(255, 255, 255, 0.08);
+            background: var(--bs-card-bg);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        [data-pc-theme="dark"] .followup-card__header {
+            background: radial-gradient(circle at top right, rgba(47, 126, 216, 0.18), transparent 34%), var(--bs-card-bg);
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+
+        [data-pc-theme="dark"] .followup-card__title {
+            color: var(--bs-heading-color, #fafafa);
+        }
+
+        [data-pc-theme="dark"] .followup-card__subtitle,
+        [data-pc-theme="dark"] .followup-meta-note {
+            color: var(--bs-body-color);
+        }
+
+        [data-pc-theme="dark"] .followup-chip--center {
+            background: rgba(47, 126, 216, 0.18);
+            color: #6fb3ff;
+        }
+
+        [data-pc-theme="dark"] .followup-chip--teacher {
+            background: rgba(255, 255, 255, 0.06);
+            color: #c4ccd8;
+        }
+
+        [data-pc-theme="dark"] .followup-chip--due {
+            background: rgba(173, 104, 0, 0.22);
+            color: #ffce7a;
+        }
+
+        [data-pc-theme="dark"] .followup-stat {
+            border-color: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        [data-pc-theme="dark"] .followup-stat__label {
+            color: #97a3b6;
+        }
+
+        [data-pc-theme="dark"] .followup-stat__value {
+            color: var(--bs-heading-color, #fafafa);
+        }
+
+        [data-pc-theme="dark"] .followup-stepper-wrap {
+            border-color: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        [data-pc-theme="dark"] .followup-card__footer {
+            border-top-color: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Stepper inner elements */
+        [data-pc-theme="dark"] .level-stepper {
+            --track-color: rgba(255, 255, 255, 0.12);
+        }
+
+        [data-pc-theme="dark"] .level-stepper__circle {
+            background: var(--bs-card-bg);
+            box-shadow: 0 0 0 4px var(--bs-card-bg);
+        }
+
+        [data-pc-theme="dark"] .level-stepper__label {
+            color: #e5e9f0;
+        }
+
+        [data-pc-theme="dark"] .level-stepper__step--current .level-stepper__circle {
+            background: rgba(47, 126, 216, 0.22);
+        }
+
+        [data-pc-theme="dark"] .level-stepper__step--inactive .level-stepper__circle {
+            border-color: rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        [data-pc-theme="dark"] .level-stepper__step--inactive .level-stepper__label {
+            color: #7a8599;
+        }
     </style>
 @endsection
 
