@@ -102,11 +102,11 @@
                         <i class="ph-duotone ph-users-three me-1"></i> Gérer le planning de :
                     </label>
                     <div>
-                        <select name="user_id" class="form-select" onchange="this.form.submit()">
+                        <select name="user_id" id="week-employee-select" class="form-select">
                             <option value="{{ $authUser->id }}" {{ $target->id === $authUser->id ? 'selected' : '' }}>— Moi-même —</option>
                             @foreach($staffOptions as $u)
                                 <option value="{{ $u->id }}" {{ $target->id === $u->id ? 'selected' : '' }}>
-                                    {{ $u->name }} · {{ $u->staff_role ?? 'Sans rôle' }}
+                                    {{ $u->name }}{{ $u->staff_role ? ' · ' . $u->staff_role : '' }}
                                 </option>
                             @endforeach
                         </select>

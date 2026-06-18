@@ -65,8 +65,8 @@ class QuizQuestionController extends Controller
                 /** @var QuizOption $option */
                 $option = $question->options()->create([
                     'option_text' => $optionText,
-                    'is_correct'  => $i === $correctIndex,
-                    'sort_order'  => $i,
+                    'is_correct'  => (int) $i === $correctIndex,
+                    'sort_order'  => (int) $i,
                 ]);
 
                 // Save option image ONLY if options_type=image
@@ -149,8 +149,8 @@ class QuizQuestionController extends Controller
                 /** @var QuizOption $option */
                 $option = $question->options()->create([
                     'option_text' => $optionText,
-                    'is_correct'  => $i === $correctIndex,
-                    'sort_order'  => $i,
+                    'is_correct'  => (int) $i === $correctIndex,
+                    'sort_order'  => (int) $i,
                 ]);
 
                 if ($optionsType === 'image' && $request->hasFile("options.$i.image")) {

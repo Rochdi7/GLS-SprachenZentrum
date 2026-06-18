@@ -126,14 +126,7 @@
 
 </div>
 
-<div class="mb-3">
-    <label class="form-label">Légende média (optionnel)</label>
-    <input type="text" name="media_caption" value="{{ old('media_caption', $question->media_caption ?? '') }}"
-        class="form-control @error('media_caption') is-invalid @enderror">
-    @error('media_caption')
-        <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-</div>
+<input type="hidden" name="media_caption" value="{{ old('media_caption', $question->media_caption ?? '') }}">
 
 {{-- ============================= --}}
 {{-- OPTIONS --}}

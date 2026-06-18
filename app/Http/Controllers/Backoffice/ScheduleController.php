@@ -29,7 +29,7 @@ class ScheduleController extends Controller
 
         $sites = Site::where('is_active', true)->get();
         $roles = User::STAFF_ROLES;
-        $staffQuery = User::query()->whereNotNull('staff_role')->where('is_active', true);
+        $staffQuery = User::query()->where('is_active', true);
 
         if (! $authUser->hasRole('Super Admin')) {
             // Regular admin: limited to centres they are affected to (primary + extras)
@@ -123,7 +123,7 @@ class ScheduleController extends Controller
         // Staff list for the admin's dropdown (scoped to their site unless Super Admin)
         $staffOptions = collect();
         if ($isAdmin) {
-            $q = User::whereNotNull('staff_role')->where('is_active', true);
+            $q = User::where('is_active', true);
             if (! $authUser->hasRole('Super Admin')) {
                 $accessibleSiteIds = $authUser->accessibleSiteIds();
                 $q->where(function ($qq) use ($accessibleSiteIds) {
@@ -322,11 +322,8 @@ class ScheduleController extends Controller
         // Permission-gated (route also enforces permission:schedules.create).
         abort_unless($authUser->can('schedules.create'), 403, 'Vous n’avez pas la permission de créer un planning.');
 
-        // Employee list scoped by role:
-        //   • Super Admin → all staff, all centres.
-        //   • Admin / Manager → only staff of the centre(s) they are affected to.
-        $employeesQuery = User::whereNotNull('staff_role')
-            ->where('is_active', true)
+        // Employee list: all active users (staff_role may be empty string or null).
+        $employeesQuery = User::where('is_active', true)
             ->with('site');
 
         $sitesQuery = Site::where('is_active', true);
@@ -541,7 +538,7 @@ class ScheduleController extends Controller
             ->values();
 
         // Employee filter list (scoped).
-        $empQuery = User::whereNotNull('staff_role')->where('is_active', true);
+        $empQuery = User::where('is_active', true);
         if (! $authUser->hasRole('Super Admin')) {
             $ids = $authUser->accessibleSiteIds();
             $empQuery->where(function ($q) use ($ids) {

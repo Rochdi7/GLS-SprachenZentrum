@@ -28,7 +28,7 @@
                     <label class="form-label fw-semibold mb-1">
                         <i class="ph-duotone ph-user me-1"></i> Employé <span class="text-danger">*</span>
                     </label>
-                    <select name="user_id" class="form-select" onchange="this.form.submit()" required>
+                    <select name="user_id" id="employee-select" class="form-select" required>
                         <option value="">— Choisir un employé —</option>
                         @foreach($employees as $emp)
                             <option value="{{ $emp->id }}" {{ $target && $target->id === $emp->id ? 'selected' : '' }}>
@@ -166,6 +166,25 @@
 @section('scripts')
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // ===== Searchable employee dropdown =====
+            const empSelect = document.getElementById('employee-select');
+            if (empSelect && typeof Choices !== 'undefined') {
+                const choicesInst = new Choices(empSelect, {
+                    searchEnabled: true,
+                    searchPlaceholderValue: 'Rechercher...',
+                    itemSelectText: '',
+                    shouldSort: false,
+                    noResultsText: 'Aucun résultat',
+                    noChoicesText: 'Aucun employé',
+                });
+                empSelect.addEventListener('change', function() {
+                    empSelect.closest('form').submit();
+                });
+            } else if (empSelect) {
+                empSelect.addEventListener('change', function() {
+                    empSelect.closest('form').submit();
+                });
+            }
             // ===== Real-time worked-time calculation =====
             function toMinutes(val) {
                 if (!val || !/^\d{1,2}:\d{2}$/.test(val)) return null;

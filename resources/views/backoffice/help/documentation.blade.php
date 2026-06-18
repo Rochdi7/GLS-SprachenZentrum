@@ -392,6 +392,108 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* ============================================================== */
+        /*  DARK MODE  (theme toggles [data-pc-theme="dark"] on body)      */
+        /*  Surfaces go dark; text is re-lightened so nothing disappears.  */
+        /*  Colored pastel pills (doc-tag--*, bg-doc-*, eyebrow, icons)    */
+        /*  already pair light bg + colored text, so they stay readable.   */
+        /* ============================================================== */
+        [data-pc-theme="dark"] {
+            --doc-surface: #1f2731;     /* card / hero base */
+            --doc-surface-2: #262f3a;   /* nested boxes */
+            --doc-border: rgba(255, 255, 255, 0.09);
+            --doc-heading: #f1f4f8;
+            --doc-text: #b9c2cf;
+            --doc-text-soft: #8b97a7;
+        }
+
+        /* Hero — inline style backgrounds need !important to be overridden */
+        [data-pc-theme="dark"] .doc-hero {
+            border-color: var(--doc-border);
+            background:
+                radial-gradient(circle at top right, rgba(4, 169, 245, 0.20), transparent 30%),
+                var(--doc-surface) !important;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.40);
+        }
+
+        [data-pc-theme="dark"] .doc-hero__title { color: var(--doc-heading); }
+        [data-pc-theme="dark"] .doc-hero__text { color: var(--doc-text); }
+
+        [data-pc-theme="dark"] .doc-metric {
+            border-color: var(--doc-border);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        [data-pc-theme="dark"] .doc-metric__value { color: var(--doc-heading); }
+        [data-pc-theme="dark"] .doc-metric__label { color: var(--doc-text-soft); }
+
+        /* Cards */
+        [data-pc-theme="dark"] .doc-card {
+            border-color: var(--doc-border);
+            background: var(--doc-surface);
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+        }
+        [data-pc-theme="dark"] .doc-card__title { color: var(--doc-heading); }
+        [data-pc-theme="dark"] .doc-card__text { color: var(--doc-text); }
+
+        /* Lists */
+        [data-pc-theme="dark"] .doc-list li { color: var(--doc-text); }
+        [data-pc-theme="dark"] .doc-list strong { color: var(--doc-heading); }
+
+        /* Generic chips (neutral grey ones) */
+        [data-pc-theme="dark"] .doc-chip {
+            background: var(--doc-surface-2);
+            color: var(--doc-text);
+        }
+
+        /* Language buttons */
+        [data-pc-theme="dark"] .doc-langbtn {
+            border-color: var(--doc-border);
+            background: var(--doc-surface-2);
+            color: var(--doc-text);
+        }
+        [data-pc-theme="dark"] .doc-langbtn:hover { border-color: #4aa3ff; color: #4aa3ff; }
+        [data-pc-theme="dark"] .doc-langbtn.is-active {
+            background: #4680ff;
+            border-color: #4680ff;
+            color: #fff;
+        }
+
+        /* Quick-jump tag bar (the sticky pill bar) */
+        [data-pc-theme="dark"] .doc-tagbar {
+            background: rgba(31, 39, 49, 0.92);
+            border-color: var(--doc-border);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        }
+        [data-pc-theme="dark"] .doc-tagbar__label { color: var(--doc-text-soft); }
+        /* Neutral (uncolored) tags only — colored doc-tag--* keep their pastel look */
+        [data-pc-theme="dark"] .doc-tag:not([class*="doc-tag--"]) {
+            background: var(--doc-surface-2);
+            border-color: var(--doc-border);
+            color: var(--doc-text);
+        }
+
+        /* Workflow steps */
+        [data-pc-theme="dark"] .doc-step {
+            border-color: var(--doc-border);
+            background: rgba(255, 255, 255, 0.03);
+        }
+        [data-pc-theme="dark"] .doc-step__title { color: var(--doc-heading); }
+        [data-pc-theme="dark"] .doc-step__text { color: var(--doc-text); }
+
+        /* Notes */
+        [data-pc-theme="dark"] .doc-note {
+            border-color: rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--doc-text);
+        }
+        [data-pc-theme="dark"] .doc-note strong { color: var(--doc-heading); }
+
+        /* Tables inside docs */
+        [data-pc-theme="dark"] .doc-card table,
+        [data-pc-theme="dark"] .doc-hero table {
+            color: var(--doc-text);
+        }
     </style>
 @endsection
 
