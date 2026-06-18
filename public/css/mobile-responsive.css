@@ -1,0 +1,128 @@
+/* =====================================================================
+   GLS Backoffice — Global mobile responsiveness layer
+   Targets the known mobile failure patterns portal-wide without
+   editing individual Blade views. Loaded after the theme CSS so it
+   overrides where needed. Scoped to <= 575.98px unless noted.
+   ===================================================================== */
+
+/* ---- Tables: contain wide tables + tighten cells on small screens ---- */
+@media (max-width: 991.98px) {
+    /* Smooth momentum scrolling for all responsive table wrappers. */
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+    }
+    /* Safety net: a bare .table directly in a .card-body that was NOT wrapped
+       in .table-responsive gets horizontal scroll instead of breaking layout.
+       Excludes fixed-layout tables (they are designed to fit, not scroll). */
+    .card-body > table.table:not([style*="table-layout"]) {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .table > :not(caption) > * > * {
+        padding: 0.5rem 0.5rem;      /* tighter cells */
+    }
+    .table th, .table td {
+        font-size: 0.82rem;
+        white-space: nowrap;          /* prevent ugly wrapping in data tables */
+    }
+    /* Keep free-text note/description columns wrappable */
+    .table td.text-wrap, .table td .text-wrap {
+        white-space: normal;
+    }
+}
+
+/* ---- Page headers: wrap title + action buttons instead of overflowing ---- */
+@media (max-width: 767.98px) {
+    /* Common header pattern: d-flex justify-content-between with buttons */
+    .page-header-actions,
+    .card-header.d-flex,
+    .d-flex.justify-content-between.align-items-center {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    /* Action button clusters become full-width and stack */
+    .header-actions,
+    .card-header .btn-group {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 575.98px) {
+    /* Page title H4/H5 a touch smaller on phones */
+    .pc-content h4 { font-size: 1.2rem; }
+    .pc-content h5 { font-size: 1.05rem; }
+
+    /* Buttons in a header row: let them grow to share the width */
+    .d-flex.gap-2 > .btn,
+    .d-flex.flex-wrap > .btn { flex: 1 1 auto; }
+
+    /* Big KPI numbers never overflow their card */
+    .statistics-card-1 h3,
+    .statistics-card-1 h4,
+    .card-body h2.mb-0,
+    .card-body h3.mb-0 {
+        font-size: clamp(1.1rem, 6vw, 1.6rem);
+        word-break: break-word;
+    }
+}
+
+/* ---- Filter bars: stack filter controls vertically on phones ---- */
+@media (max-width: 575.98px) {
+    form .row.g-2 > [class*="col"],
+    form .row.g-3 > [class*="col"] {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    /* Selects/inputs in toolbars go full-width */
+    .card-body form .form-select,
+    .card-body form .form-control {
+        width: 100% !important;
+    }
+}
+
+/* ---- Date-range / inline forms in toolbars ---- */
+@media (max-width: 575.98px) {
+    input[type="date"], input[type="time"] {
+        min-height: 42px;             /* comfortable tap target */
+    }
+}
+
+/* ---- Stat / KPI card grids: comfortable 2-up, never cramped ---- */
+@media (max-width: 575.98px) {
+    .statistics-card-1 .card-body { padding: 1rem; }
+    .statistics-card-1 .img-bg { opacity: 0.5; }  /* less visual noise on small cards */
+}
+
+/* ---- Modals: full-width with breathing room on phones ---- */
+@media (max-width: 575.98px) {
+    .modal-dialog:not(.modal-fullscreen) {
+        margin: 0.5rem;
+    }
+    .modal-body { padding: 1rem; }
+}
+
+/* ---- Pagination: wrap + smaller on phones ---- */
+@media (max-width: 575.98px) {
+    .pagination { flex-wrap: wrap; gap: 2px; }
+    .pagination .page-link { padding: 0.35rem 0.6rem; font-size: 0.85rem; }
+}
+
+/* ---- Tabs / nav-pills: horizontal scroll instead of wrapping mess ---- */
+@media (max-width: 575.98px) {
+    .nav-tabs, .nav-pills {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .nav-tabs .nav-link, .nav-pills .nav-link { white-space: nowrap; }
+}
+
+/* ---- Generic: prevent any element from forcing horizontal page scroll ---- */
+@media (max-width: 575.98px) {
+    .pc-content { overflow-x: hidden; }
+}

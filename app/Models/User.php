@@ -26,11 +26,6 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     public const STAFF_ROLES = [
         'Administration',
         'Réception',
-        'Commercial',
-        'Manager',
-        'Coordination',
-        'Caissier',
-        'Autre',
     ];
 
     protected $fillable = [

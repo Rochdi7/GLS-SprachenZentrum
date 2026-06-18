@@ -8,19 +8,25 @@ use App\Models\Attestation;
 use App\Models\AttestationRequest;
 use App\Models\Certificate;
 use App\Models\Group;
+use App\Models\GroupApplication;
 use App\Models\GroupLevelFollowup;
+use App\Models\Site;
 use App\Models\Teacher;
 use App\Models\Translation;
+use App\Models\User;
 use App\Models\UserSchedule;
 use App\Models\WeeklyReport;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 /**
- * Dashboard for staff users (Réception / Coordination / Manager / etc.) —
- * scoped to the centres they are affected to. Super Admin / Admin keep using
- * the full DashboardController.
+ * Centre-scoped dashboard for non-Super-Admin users.
  *
+ *   • Admin (centre responsible) → management variant (dashboard.admin),
+ *     limited to the centre(s) they are affected to — NOT global.
+ *   • Réception / other staff → front-desk variant (dashboard.staff).
+ *
+ * Super Admin keeps the global DashboardController view.
  * Encaissements / Primes intentionally excluded for now (still in dev).
  */
 class StaffDashboardController extends Controller
@@ -30,132 +36,206 @@ class StaffDashboardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $accessibleSites = $this->accessibleSites($user);
-        $allowedSiteIds = $this->accessibleSiteIds($user); // null = all centres
+        $isAdmin = $user->hasRole('Admin');
 
-        // Hard gate: non-admin users with NO centre assignment can't see data.
-        if (! $this->userSeesAllSites($user) && empty($allowedSiteIds)) {
+        // Centre scoping. Admins are treated as "see all" by the shared trait,
+        // but on THIS dashboard we deliberately limit them to their own
+        // centre(s) — so resolve the IDs directly from the pivot.
+        $accessibleSites = $this->accessibleSites($user);
+        if ($isAdmin) {
+            $accessibleSites = Site::where('is_active', true)
+                ->whereIn('id', $user->accessibleSiteIds() ?: [0])
+                ->orderBy('name')->get();
+            $allowedSiteIds = $user->accessibleSiteIds();
+        } else {
+            $allowedSiteIds = $this->accessibleSiteIds($user); // null = all
+        }
+
+        // Hard gate: a centre-scoped user with NO centre can't see data.
+        if (($isAdmin || ! $this->userSeesAllSites($user)) && empty($allowedSiteIds)) {
             return view('backoffice.dashboard.staff_no_site');
         }
 
-        // Optional centre picker (must be in accessible list)
+        // Optional centre picker (must be in the accessible list).
         $requested = $request->filled('site_id') ? (int) $request->site_id : null;
-        $activeSiteId = $this->resolveRequestedSiteId($requested, $user);
+        if ($isAdmin) {
+            $ids = $user->accessibleSiteIds();
+            $activeSiteId = ($requested !== null && in_array($requested, $ids, true)) ? $requested : null;
+        } else {
+            $activeSiteId = $this->resolveRequestedSiteId($requested, $user);
+        }
 
-        $now = Carbon::now();
+        $now        = Carbon::now();
         $weekStart  = $now->copy()->startOfWeek(Carbon::MONDAY);
         $weekEnd    = $now->copy()->endOfWeek(Carbon::SUNDAY);
         $monthStart = $now->copy()->startOfMonth();
         $monthEnd   = $now->copy()->endOfMonth();
 
-        // Effective filter — if a specific centre is picked, narrow to it.
-        $effectiveIds = $allowedSiteIds; // null = all
+        // Effective centre filter. null = all centres (only non-admin see-all).
+        $effectiveIds = $allowedSiteIds;
         if ($activeSiteId) {
             $effectiveIds = [$activeSiteId];
         }
 
+        // Helper to apply the site filter (null = no filter).
+        $applySite = function ($query, string $relation = null) use ($effectiveIds) {
+            if ($effectiveIds === null) return $query;
+            if (empty($effectiveIds)) return $query->whereRaw('1 = 0');
+            return $relation
+                ? $query->whereHas($relation, fn ($q) => $q->whereIn('site_id', $effectiveIds))
+                : $query->whereIn('site_id', $effectiveIds);
+        };
+
         // ── KPIs ────────────────────────────────────────────────────
-        $certQuery = Certificate::query();
-        $certThisMonthQuery = Certificate::whereBetween('created_at', [$monthStart, $monthEnd]);
-        if ($effectiveIds !== null) {
-            if (empty($effectiveIds)) {
-                $certQuery->whereRaw('1 = 0');
-                $certThisMonthQuery->whereRaw('1 = 0');
-            } else {
-                $certQuery->whereIn('site_id', $effectiveIds);
-                $certThisMonthQuery->whereIn('site_id', $effectiveIds);
-            }
-        }
-        $certificatesTotal     = $certQuery->count();
-        $certificatesThisMonth = $certThisMonthQuery->count();
+        $certificatesTotal     = $applySite(Certificate::query())->count();
+        $certificatesThisMonth = $applySite(Certificate::whereBetween('created_at', [$monthStart, $monthEnd]))->count();
 
-        // Attestations: tied via group → site_id
-        $attestationsQuery = Attestation::query();
-        $attestationsThisMonthQuery = Attestation::whereBetween('created_at', [$monthStart, $monthEnd]);
-        if ($effectiveIds !== null) {
-            if (empty($effectiveIds)) {
-                $attestationsQuery->whereRaw('1 = 0');
-                $attestationsThisMonthQuery->whereRaw('1 = 0');
-            } else {
-                $attestationsQuery->whereHas('group', fn ($q) => $q->whereIn('site_id', $effectiveIds));
-                $attestationsThisMonthQuery->whereHas('group', fn ($q) => $q->whereIn('site_id', $effectiveIds));
-            }
-        }
-        $attestationsTotal     = $attestationsQuery->count();
-        $attestationsThisMonth = $attestationsThisMonthQuery->count();
+        $attestationsTotal     = $applySite(Attestation::query(), 'group')->count();
+        $attestationsThisMonth = $applySite(Attestation::whereBetween('created_at', [$monthStart, $monthEnd]), 'group')->count();
 
-        // Attestation requests (public form submissions)
+        // Attestation requests + translations — scoped where a centre link exists,
+        // otherwise global (these public submissions are not centre-bound).
         $attestationRequestsTotal   = AttestationRequest::count();
         $attestationRequestsPending = AttestationRequest::where('status', AttestationRequest::STATUS_PENDING)->count();
 
-        // Translations (Maroc–Allemagne tracking)
-        $translationsTotal    = Translation::count();
-        $translationsActive   = Translation::whereIn('status', [Translation::STATUS_PENDING, Translation::STATUS_TRANSLATOR])->count();
+        $translationsTotal  = Translation::count();
+        $translationsActive = Translation::whereIn('status', [Translation::STATUS_PENDING, Translation::STATUS_TRANSLATOR])->count();
 
-        // Teachers (scoped to accessible centres)
-        $teachersQuery = Teacher::query();
-        if ($effectiveIds !== null) {
-            $teachersQuery->whereIn('site_id', $effectiveIds ?: [0]);
-        }
-        $teachersTotal = $teachersQuery->count();
+        $teachersTotal     = $applySite(Teacher::query())->count();
+        $activeGroupsTotal = $applySite(Group::where('status', 'active'))->count();
+        $groupsTotal       = $applySite(Group::query())->count();
 
-        // Active groups (scoped)
-        $activeGroupsQuery = Group::where('status', 'active');
-        if ($effectiveIds !== null) {
-            $activeGroupsQuery->whereIn('site_id', $effectiveIds ?: [0]);
-        }
-        $activeGroupsTotal = $activeGroupsQuery->count();
+        // Group applications (candidatures) — scoped via group → site.
+        $groupAppsTotal   = $applySite(GroupApplication::query(), 'group')->count();
+        $groupAppsPending = $applySite(GroupApplication::where('status', 'pending'), 'group')->count();
 
-        // ── Suivi niveau (rappels profs) ───────────────────────────
+        // ── Suivi niveau (rappels profs) — due today or overdue ─────
         $followupsQuery = GroupLevelFollowup::with(['group.teacher', 'group.site'])
             ->where('status', 'pending')
             ->whereDate('due_date', '<=', $now->toDateString())
             ->orderBy('due_date');
-
-        if ($effectiveIds !== null) {
-            if (empty($effectiveIds)) {
-                $followupsQuery->whereRaw('1 = 0');
-            } else {
-                $followupsQuery->whereHas('group', fn ($q) => $q->whereIn('site_id', $effectiveIds));
-            }
-        }
+        $followupsQuery = $applySite($followupsQuery, 'group');
 
         $levelFollowupsDue = $followupsQuery->get()
-            // de-duplicate: keep earliest due followup per group
             ->groupBy('group_id')
             ->map(fn ($items) => $items->sortBy('due_date')->first())
             ->values();
 
-        // ── Personal weekly schedule ───────────────────────────────
+        // All follow-ups for those groups — powers the level-pill progression.
+        $groupIds = $levelFollowupsDue->pluck('group_id')->unique()->values();
+        $levelFollowupsByGroup = $groupIds->isNotEmpty()
+            ? GroupLevelFollowup::whereIn('group_id', $groupIds)->get()->groupBy('group_id')
+            : collect();
+
+        // ── Personal weekly schedule (always the user's own) ────────
         $myWeek = UserSchedule::where('user_id', $user->id)
             ->whereBetween('date', [$weekStart->toDateString(), $weekEnd->toDateString()])
             ->orderBy('date')
             ->get();
         $myWorkedMinutes = $myWeek->sum('worked_minutes');
 
-        // ── Weekly reports for accessible centres (current week) ──
+        // ── Weekly reports for accessible centres (current week) ────
         $reportQuery = WeeklyReport::with(['teacher.site', 'group'])
             ->whereBetween('report_date', [$weekStart, $weekEnd]);
-        if ($effectiveIds !== null) {
-            if (empty($effectiveIds)) {
-                $reportQuery->whereRaw('1 = 0');
-            } else {
-                $reportQuery->whereHas('teacher', fn ($q) => $q->whereIn('site_id', $effectiveIds));
-            }
-        }
+        $reportQuery = $applySite($reportQuery, 'teacher');
         $weeklyReports = $reportQuery->orderBy('report_date')->get();
 
-        return view('backoffice.dashboard.staff', compact(
+        // ── Activity trend (last 6 months) ─────────────────────────
+        // Attestation requests + translations received per month. These are
+        // public submissions (not centre-bound), matching their KPI scope.
+        $activityLabels = [];
+        $activityRequests = [];
+        $activityTranslations = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $m = $now->copy()->subMonths($i);
+            $from = $m->copy()->startOfMonth();
+            $to   = $m->copy()->endOfMonth();
+            $activityLabels[]       = ucfirst($m->locale('fr')->isoFormat('MMM'));
+            $activityRequests[]     = AttestationRequest::whereBetween('created_at', [$from, $to])->count();
+            $activityTranslations[] = Translation::whereBetween('created_at', [$from, $to])->count();
+        }
+
+        $payload = compact(
             'accessibleSites', 'activeSiteId',
             'certificatesTotal', 'certificatesThisMonth',
             'attestationsTotal', 'attestationsThisMonth',
             'attestationRequestsTotal', 'attestationRequestsPending',
             'translationsTotal', 'translationsActive',
-            'teachersTotal', 'activeGroupsTotal',
-            'levelFollowupsDue',
+            'teachersTotal', 'activeGroupsTotal', 'groupsTotal',
+            'groupAppsTotal', 'groupAppsPending',
+            'levelFollowupsDue', 'levelFollowupsByGroup',
             'myWeek', 'myWorkedMinutes',
             'weeklyReports',
-            'monthStart', 'monthEnd', 'weekStart', 'weekEnd'
-        ));
+            'monthStart', 'monthEnd', 'weekStart', 'weekEnd',
+            'activityLabels', 'activityRequests', 'activityTranslations'
+        );
+
+        if ($isAdmin) {
+            $payload = array_merge($payload, $this->adminExtras($user, $effectiveIds, $weekStart, $weekEnd, $now));
+            return view('backoffice.dashboard.admin', $payload);
+        }
+
+        return view('backoffice.dashboard.staff', $payload);
+    }
+
+    /**
+     * Extra management data shown only on the Admin (centre responsible) board.
+     */
+    private function adminExtras(User $user, ?array $effectiveIds, Carbon $weekStart, Carbon $weekEnd, Carbon $now): array
+    {
+        $scope = function ($query, string $relation = null) use ($effectiveIds) {
+            if ($effectiveIds === null) return $query;
+            if (empty($effectiveIds)) return $query->whereRaw('1 = 0');
+            return $relation
+                ? $query->whereHas($relation, fn ($q) => $q->whereIn('site_id', $effectiveIds))
+                : $query->whereIn('site_id', $effectiveIds);
+        };
+
+        // Pending follow-ups (all upcoming, not just due) — pressure indicator.
+        $pendingFollowups = $scope(
+            GroupLevelFollowup::where('status', 'pending'),
+            'group'
+        )->count();
+
+        // Weekly reports expected vs received: active groups should each have one.
+        $activeGroups = $scope(Group::where('status', 'active'))->count();
+        $reportsReceived = $scope(
+            WeeklyReport::whereBetween('report_date', [$weekStart, $weekEnd]),
+            'teacher'
+        )->count();
+
+        // Staff of this centre with a schedule this week (coverage).
+        $staffCount = User::whereNotNull('staff_role')
+            ->where('is_active', true)
+            ->where(function ($q) use ($effectiveIds) {
+                if ($effectiveIds === null) return;
+                if (empty($effectiveIds)) { $q->whereRaw('1 = 0'); return; }
+                $q->whereIn('site_id', $effectiveIds)
+                  ->orWhereHas('sites', fn ($sq) => $sq->whereIn('sites.id', $effectiveIds));
+            })
+            ->count();
+
+        $staffScheduledThisWeek = UserSchedule::whereBetween('date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+            ->when($effectiveIds !== null, fn ($q) => empty($effectiveIds)
+                ? $q->whereRaw('1 = 0')
+                : $q->whereIn('site_id', $effectiveIds))
+            ->distinct('user_id')
+            ->count('user_id');
+
+        // Per-centre breakdown (only meaningful when managing >1 centre).
+        $siteBreakdown = collect();
+        $ids = $effectiveIds ?? ($user->accessibleSiteIds() ?: []);
+        if (! empty($ids)) {
+            $siteBreakdown = Site::whereIn('id', $ids)->orderBy('name')->get()->map(fn ($s) => [
+                'name'    => $s->name,
+                'groups'  => Group::where('site_id', $s->id)->where('status', 'active')->count(),
+                'teachers'=> Teacher::where('site_id', $s->id)->count(),
+            ]);
+        }
+
+        return compact(
+            'pendingFollowups', 'activeGroups', 'reportsReceived',
+            'staffCount', 'staffScheduledThisWeek', 'siteBreakdown'
+        );
     }
 }

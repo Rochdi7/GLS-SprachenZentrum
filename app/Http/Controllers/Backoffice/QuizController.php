@@ -11,7 +11,7 @@ class QuizController extends Controller
 {
     public function index()
     {
-        $quizzes = Quiz::query()->orderBy('level')->get();
+        $quizzes = Quiz::withCount('questions')->orderBy('level')->get();
 
         return view('backoffice.quizzes.index', compact('quizzes'));
     }

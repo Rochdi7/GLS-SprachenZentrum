@@ -105,8 +105,7 @@
 <div class="ps-wrap">
     <div class="ps-head">
         <div>
-            <h4>Statistiques de présence</h4>
-            <p>Chaque séance avec son taux de présence. Cliquez une ligne pour voir les présents et les absents.</p>
+           <p>Chaque séance avec son taux de présence. Cliquez une ligne pour voir les présents et les absents.</p>
         </div>
     </div>
 

@@ -4,6 +4,20 @@
 @section('breadcrumb-item', 'RH / Planning')
 @section('breadcrumb-item-active', 'Semaine')
 
+@section('css')
+<style>
+    /* Week-nav btn-group: full width on mobile, auto on ≥576px */
+    @media (min-width: 576px) {
+        .w-sm-auto { width: auto !important; }
+    }
+    /* Tap-friendly time inputs in the editor on small screens */
+    @media (max-width: 575.98px) {
+        .schedule-table input[type="time"],
+        .schedule-table input[type="text"] { min-height: 40px; }
+    }
+</style>
+@endsection
+
 @section('content')
 
     @if (session('success') || session('error'))
@@ -26,62 +40,68 @@
         $isSelf   = $authUser->id === $target->id;
 
         // ── View mode ───────────────────────────────────────────────
-        // Schedules are CREATED by Super Admin / Admin / Manager.
-        // A plain staff member (e.g. Réception) only CONSULTS their own
-        // planning → read-only dashboard. Admins get the editor table.
-        $canEdit = $isAdmin;
+        // Creating a planning is gated by the `schedules.create` permission
+        // (handled below as $canCreate). A plain staff member without that
+        // permission (e.g. Réception) only CONSULTS their own planning.
         $todayKey = now()->format('Y-m-d');
     @endphp
 
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
-        <div>
-            <h5 class="mb-1">
-                @if($isSelf)
-                    Mon planning
-                @else
-                    Planning de {{ $target->name }}
-                @endif
-            </h5>
-            <div class="text-muted small">
-                Semaine du {{ $weekStart->locale('fr')->isoFormat('DD MMMM') }} au {{ $weekEnd->locale('fr')->isoFormat('DD MMMM YYYY') }}
-                @if($target->site)
-                    · <span class="badge bg-light-info">{{ $target->site->name }}</span>
-                @endif
-                @if($target->staff_role)
-                    · <span class="badge bg-light-primary">{{ $target->staff_role }}</span>
-                @endif
-            </div>
+    {{-- Title + meta --}}
+    <div class="mb-3">
+        <h5 class="mb-1">
+            @if($isSelf)
+                Mon planning
+            @else
+                Planning de {{ $target->name }}
+            @endif
+        </h5>
+        <div class="text-muted small d-flex flex-wrap align-items-center gap-1">
+            <span>Semaine du {{ $weekStart->locale('fr')->isoFormat('DD MMM') }} au {{ $weekEnd->locale('fr')->isoFormat('DD MMM YYYY') }}</span>
+            @if($target->site)
+                <span class="badge bg-light-info">{{ $target->site->name }}</span>
+            @endif
+            @if($target->staff_role)
+                <span class="badge bg-light-primary">{{ $target->staff_role }}</span>
+            @endif
         </div>
-        <div class="d-flex gap-2 align-items-center">
-            <a href="{{ route('backoffice.schedules.week', ['week' => $prevWeek, 'user_id' => $target->id]) }}" class="btn btn-outline-secondary btn-sm">
-                <i class="ph-duotone ph-caret-left"></i> Précédente
+    </div>
+
+    {{-- Week navigation + PDF — mobile-first, no overflow --}}
+    <div class="d-flex flex-column flex-sm-row gap-2 align-items-stretch align-items-sm-center mb-4">
+        <div class="btn-group w-100 w-sm-auto" role="group" aria-label="Navigation semaine">
+            <a href="{{ route('backoffice.schedules.week', ['week' => $prevWeek, 'user_id' => $target->id]) }}"
+               class="btn btn-outline-secondary btn-sm">
+                <i class="ph-duotone ph-caret-left"></i><span class="d-none d-sm-inline ms-1">Précédente</span>
             </a>
-            <form method="GET" class="d-inline">
-                <input type="hidden" name="user_id" value="{{ $target->id }}">
-                <input type="date" name="week" class="form-control form-control-sm" value="{{ $weekStart->toDateString() }}" onchange="this.form.submit()" style="width: 160px;">
-            </form>
-            <a href="{{ route('backoffice.schedules.week', ['week' => $nextWeek, 'user_id' => $target->id]) }}" class="btn btn-outline-secondary btn-sm">
-                Suivante <i class="ph-duotone ph-caret-right"></i>
+            <a href="{{ route('backoffice.schedules.week', ['week' => now()->startOfWeek(\Carbon\Carbon::MONDAY)->toDateString(), 'user_id' => $target->id]) }}"
+               class="btn btn-outline-secondary btn-sm">
+                <i class="ph-duotone ph-house"></i><span class="d-none d-sm-inline ms-1">Aujourd'hui</span>
             </a>
-            <a href="{{ route('backoffice.schedules.week.pdf', ['week' => $weekStart->toDateString(), 'user_id' => $target->id]) }}"
-               class="btn btn-danger btn-sm" target="_blank">
-                <i class="ph-duotone ph-file-pdf me-1"></i> Exporter PDF
+            <a href="{{ route('backoffice.schedules.week', ['week' => $nextWeek, 'user_id' => $target->id]) }}"
+               class="btn btn-outline-secondary btn-sm">
+                <span class="d-none d-sm-inline me-1">Suivante</span><i class="ph-duotone ph-caret-right"></i>
             </a>
         </div>
+        <form method="GET" class="flex-grow-1">
+            <input type="hidden" name="user_id" value="{{ $target->id }}">
+            <input type="date" name="week" class="form-control form-control-sm w-100" value="{{ $weekStart->toDateString() }}" onchange="this.form.submit()">
+        </form>
+        <a href="{{ route('backoffice.schedules.week.pdf', ['week' => $weekStart->toDateString(), 'user_id' => $target->id]) }}"
+           class="btn btn-danger btn-sm" target="_blank">
+            <i class="ph-duotone ph-file-pdf me-1"></i> Exporter PDF
+        </a>
     </div>
 
     {{-- Admin-only: switch target user --}}
     @if($isAdmin && $staffOptions->isNotEmpty())
-        <div class="card mb-3">
+        <div class="card border-0 shadow-sm mb-3">
             <div class="card-body py-3">
-                <form method="GET" class="row g-2 align-items-end">
+                <form method="GET">
                     <input type="hidden" name="week" value="{{ $weekStart->toDateString() }}">
-                    <div class="col-auto">
-                        <label class="form-label small mb-1 fw-semibold">
-                            <i class="ph-duotone ph-users-three me-1"></i> Gérer le planning de :
-                        </label>
-                    </div>
-                    <div class="col">
+                    <label class="form-label small mb-1 fw-semibold">
+                        <i class="ph-duotone ph-users-three me-1"></i> Gérer le planning de :
+                    </label>
+                    <div>
                         <select name="user_id" class="form-select" onchange="this.form.submit()">
                             <option value="{{ $authUser->id }}" {{ $target->id === $authUser->id ? 'selected' : '' }}>— Moi-même —</option>
                             @foreach($staffOptions as $u)
@@ -101,38 +121,38 @@
     {{-- own planning, and to admins as a quick overview before edit. --}}
     {{-- ============================================================ --}}
 
-    {{-- KPI strip --}}
-    <div class="row g-3 mb-4">
+    {{-- KPI strip — compact on mobile (2-up), inline on desktop --}}
+    <div class="row g-2 g-lg-3 mb-4">
         <div class="col-6 col-lg">
             <div class="card border-0 shadow-sm h-100">
-                <div class="card-body text-center py-3">
-                    <div class="text-muted small text-uppercase">Heures planifiées</div>
-                    <div class="h3 mb-0 fw-bold text-primary">{{ \App\Models\UserSchedule::formatMinutes($totalWorked) }}</div>
+                <div class="card-body text-center p-2 p-lg-3">
+                    <div class="text-muted text-uppercase" style="font-size:.68rem;letter-spacing:.02em;">Heures planifiées</div>
+                    <div class="fw-bold text-primary lh-1 mt-1" style="font-size:clamp(1.25rem,5vw,1.6rem);">{{ \App\Models\UserSchedule::formatMinutes($totalWorked) }}</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-lg">
             <div class="card border-0 shadow-sm h-100">
-                <div class="card-body text-center py-3">
-                    <div class="text-muted small text-uppercase">Jours travaillés</div>
-                    <div class="h3 mb-0 fw-bold text-success">{{ $workingDays }}</div>
+                <div class="card-body text-center p-2 p-lg-3">
+                    <div class="text-muted text-uppercase" style="font-size:.68rem;letter-spacing:.02em;">Jours travaillés</div>
+                    <div class="fw-bold text-success lh-1 mt-1" style="font-size:clamp(1.25rem,5vw,1.6rem);">{{ $workingDays }}</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-lg">
             <div class="card border-0 shadow-sm h-100">
-                <div class="card-body text-center py-3">
-                    <div class="text-muted small text-uppercase">Jours de repos</div>
-                    <div class="h3 mb-0 fw-bold text-secondary">{{ $daysOff }}</div>
+                <div class="card-body text-center p-2 p-lg-3">
+                    <div class="text-muted text-uppercase" style="font-size:.68rem;letter-spacing:.02em;">Jours de repos</div>
+                    <div class="fw-bold text-secondary lh-1 mt-1" style="font-size:clamp(1.25rem,5vw,1.6rem);">{{ $daysOff }}</div>
                 </div>
             </div>
         </div>
         @if(!is_null($overtime))
             <div class="col-6 col-lg">
                 <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body text-center py-3">
-                        <div class="text-muted small text-uppercase">Heures supp.</div>
-                        <div class="h3 mb-0 fw-bold {{ $overtime > 0 ? 'text-warning' : 'text-muted' }}">
+                    <div class="card-body text-center p-2 p-lg-3">
+                        <div class="text-muted text-uppercase" style="font-size:.68rem;letter-spacing:.02em;">Heures supp.</div>
+                        <div class="fw-bold lh-1 mt-1 {{ $overtime > 0 ? 'text-warning' : 'text-muted' }}" style="font-size:clamp(1.25rem,5vw,1.6rem);">
                             +{{ \App\Models\UserSchedule::formatMinutes($overtime) }}
                         </div>
                     </div>
@@ -141,16 +161,19 @@
         @endif
         <div class="col-12 col-lg">
             <div class="card border-0 shadow-sm h-100 bg-light-primary">
-                <div class="card-body py-3">
-                    <div class="text-muted small text-uppercase">Prochain service</div>
-                    @if($nextShift)
-                        <div class="fw-bold text-capitalize">
-                            {{ $nextShift->date->locale('fr')->isoFormat('ddd DD/MM') }}
-                            · {{ substr($nextShift->start_time, 0, 5) }} → {{ substr($nextShift->end_time, 0, 5) }}
-                        </div>
-                    @else
-                        <div class="text-muted">Aucun service à venir cette semaine</div>
-                    @endif
+                <div class="card-body p-2 p-lg-3 d-flex align-items-center gap-2">
+                    <i class="ph-duotone ph-arrow-fat-right fs-4 text-primary d-none d-lg-block"></i>
+                    <div>
+                        <div class="text-muted text-uppercase" style="font-size:.68rem;letter-spacing:.02em;">Prochain service</div>
+                        @if($nextShift)
+                            <div class="fw-bold text-capitalize">
+                                {{ $nextShift->date->locale('fr')->isoFormat('ddd DD/MM') }}
+                                · {{ substr($nextShift->start_time, 0, 5) }} → {{ substr($nextShift->end_time, 0, 5) }}
+                            </div>
+                        @else
+                            <div class="text-muted small">Aucun service à venir cette semaine</div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -236,18 +259,49 @@
     </div>
 
     {{-- ============================================================ --}}
-    {{-- EDITOR — only Super Admin / Admin / Manager can CREATE/EDIT.  --}}
+    {{-- ACTIONS — creating a planning is permission-gated.            --}}
+    {{-- Only users with `schedules.create` see the create button.     --}}
+    {{--   • Super Admin → can schedule for every employee.            --}}
+    {{--   • Admin / Manager → only employees of their centre(s).      --}}
+    {{--   • Réception (no permission) → button hidden, read-only.     --}}
     {{-- ============================================================ --}}
-    @unless($canEdit)
+    @php $canCreate = $authUser->can('schedules.create'); @endphp
+
+    @if($canCreate)
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-2 py-3">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="ph-duotone ph-calendar-plus fs-4 text-primary"></i>
+                    <div>
+                        <div class="fw-semibold">Planifier un employé</div>
+                        <div class="text-muted small">
+                            Créez le planning d'un employé sur une période donnée
+                            (samedis &amp; dimanches exclus automatiquement).
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('backoffice.schedules.create') }}" class="btn btn-primary">
+                        <i class="ph-duotone ph-plus me-1"></i> Créer un planning
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#inlineWeekEditor">
+                        <i class="ph-duotone ph-pencil-simple me-1"></i> Éditer cette semaine
+                    </button>
+                </div>
+            </div>
+        </div>
+    @else
         <div class="alert alert-light border d-flex align-items-center gap-2">
             <i class="ph-duotone ph-info fs-5 text-primary"></i>
             <span class="small text-muted mb-0">
                 Votre planning est défini par l'administration. Pour toute modification, contactez votre responsable.
             </span>
         </div>
-    @endunless
+    @endif
 
-    @if($canEdit)
+    {{-- Inline weekly editor — collapsed by default, opens on demand. --}}
+    @if($canCreate)
+    <div class="collapse" id="inlineWeekEditor">
     <form method="POST" action="{{ route('backoffice.schedules.week.save') }}">
         @csrf
         <input type="hidden" name="user_id" value="{{ $target->id }}">
@@ -263,7 +317,7 @@
 
         <div class="d-flex align-items-center gap-2 mb-2 mt-1">
             <i class="ph-duotone ph-pencil-simple text-primary"></i>
-            <h6 class="mb-0">Créer / modifier le planning</h6>
+            <h6 class="mb-0">Éditer la semaine du {{ $weekStart->locale('fr')->isoFormat('DD/MM') }}</h6>
             @if(!$isSelf)
                 <span class="badge bg-light-warning text-warning">{{ $target->name }}</span>
             @endif
@@ -272,7 +326,7 @@
         <div class="card">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0 schedule-table">
                         <thead class="table-light position-sticky top-0" style="z-index: 2;">
                             <tr>
                                 <th style="width: 140px;">Jour</th>
@@ -351,6 +405,7 @@
             </button>
         </div>
     </form>
+    </div>{{-- /#inlineWeekEditor --}}
     @endif
 
 @endsection

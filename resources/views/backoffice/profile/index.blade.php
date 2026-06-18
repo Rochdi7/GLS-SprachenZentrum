@@ -109,19 +109,15 @@
                             <h5>Informations personnelles</h5>
                         </div>
                         <div class="card-body position-relative">
-                            <div class="d-inline-flex align-items-center justify-content-between w-100 mb-3">
-                                <p class="mb-0 text-muted me-1">Email</p>
-                                <p class="mb-0">{{ $user->email }}</p>
+                            <div class="d-flex align-items-start justify-content-between w-100 mb-3 gap-2">
+                                <p class="mb-0 text-muted me-1 flex-shrink-0">Email</p>
+                                <p class="mb-0 text-break text-end" style="min-width:0;">{{ $user->email }}</p>
                             </div>
-                            <div class="d-inline-flex align-items-center justify-content-between w-100 mb-3">
+                            <div class="d-flex align-items-center justify-content-between w-100 mb-3">
                                 <p class="mb-0 text-muted me-1">Téléphone</p>
                                 <p class="mb-0">{{ $user->phone ?? 'Non fourni' }}</p>
                             </div>
-                            <div class="d-inline-flex align-items-center justify-content-between w-100 mb-3">
-                                <p class="mb-0 text-muted me-1">Localisation</p>
-                                <p class="mb-0">{{ $user->location ?? 'Non fourni' }}</p>
-                            </div>
-                            <div class="d-inline-flex align-items-center justify-content-between w-100">
+                            <div class="d-flex align-items-center justify-content-between w-100">
                                 <p class="mb-0 text-muted me-1">Dernière connexion</p>
                                 <p class="mb-0">{{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Jamais' }}</p>
                             </div>

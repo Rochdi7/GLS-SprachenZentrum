@@ -34,7 +34,14 @@ class TeacherController extends Controller
      */
     public function store(StoreTeacherRequest $request)
     {
-        $teacher = Teacher::create($request->validated());
+        $validated = $request->validated();
+        [$primarySiteId, $siteIds] = $this->resolveSites($validated);
+
+        $validated['site_id'] = $primarySiteId;
+        unset($validated['site_ids']);
+
+        $teacher = Teacher::create($validated);
+        $teacher->sites()->sync($siteIds);
 
         // Save image with MediaLibrary
         if ($request->hasFile('image')) {
@@ -61,7 +68,7 @@ class TeacherController extends Controller
      */
     public function edit(string $id)
     {
-        $teacher = Teacher::findOrFail($id);
+        $teacher = Teacher::with('sites')->findOrFail($id);
         $sites = Site::orderBy('name')->get();
 
         return view('backoffice.teachers.edit', compact('teacher', 'sites'));
@@ -74,7 +81,14 @@ class TeacherController extends Controller
     {
         $teacher = Teacher::findOrFail($id);
 
-        $teacher->update($request->validated());
+        $validated = $request->validated();
+        [$primarySiteId, $siteIds] = $this->resolveSites($validated);
+
+        $validated['site_id'] = $primarySiteId;
+        unset($validated['site_ids']);
+
+        $teacher->update($validated);
+        $teacher->sites()->sync($siteIds);
 
         // Replace image if new one uploaded
         if ($request->hasFile('image')) {
@@ -104,5 +118,26 @@ class TeacherController extends Controller
         return redirect()
             ->route('backoffice.teachers.index')
             ->with('success', 'L’enseignant a été supprimé avec succès.');
+    }
+
+    /**
+     * Resolve the multi-centre selection into a primary `site_id` and the full
+     * list of affected site ids. The primary is the first selected centre; it
+     * is kept on `teachers.site_id` so groups/attestations/CRM mirror sync
+     * keep working, while the pivot lists every centre the teacher works in.
+     *
+     * @return array{0:int|null,1:array<int>}
+     */
+    private function resolveSites(array $validated): array
+    {
+        $ids = collect($validated['site_ids'] ?? [])
+            ->map(fn ($v) => (int) $v)
+            ->filter()
+            ->unique()
+            ->values();
+
+        $primary = $ids->isNotEmpty() ? (int) $ids->first() : null;
+
+        return [$primary, $ids->all()];
     }
 }

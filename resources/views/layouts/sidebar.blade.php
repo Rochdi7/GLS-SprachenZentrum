@@ -4,7 +4,7 @@
         <div class="m-header">
             <a href="{{ route('dashboard') }}" class="b-brand text-primary">
                 <img src="{{ URL::asset('assets/images/logo/gls.avif') }}" alt="image du logo" class="logo-lg">
-                <span class="badge bg-brand-color-2 rounded-pill ms-1 theme-version">v2.0.0</span>
+                <span class="badge bg-brand-color-2 rounded-pill ms-1 theme-version">v4.0.0</span>
             </a>
         </div>
         <div class="navbar-content">

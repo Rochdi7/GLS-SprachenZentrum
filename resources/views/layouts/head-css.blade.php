@@ -14,3 +14,6 @@
 <!-- [Template CSS Files] -->
 <link rel="stylesheet" href="{{ URL::asset('build/css/style.css') }}" id="main-style-link">
 <link rel="stylesheet" href="{{ URL::asset('build/css/style-preset.css') }}">
+<!-- [GLS mobile responsiveness layer — overrides theme on small screens] -->
+<link rel="stylesheet" href="{{ asset('css/mobile-responsive.css') }}">
+

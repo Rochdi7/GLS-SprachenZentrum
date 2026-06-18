@@ -317,16 +317,69 @@ class ScheduleController extends Controller
 
     public function create(Request $request)
     {
-        $this->authorizeAdmin($request->user());
+        $authUser = $request->user();
 
-        $sites = Site::where('is_active', true)->get();
-        $employees = User::whereNotNull('staff_role')
+        // Permission-gated (route also enforces permission:schedules.create).
+        abort_unless($authUser->can('schedules.create'), 403, 'Vous n’avez pas la permission de créer un planning.');
+
+        // Employee list scoped by role:
+        //   • Super Admin → all staff, all centres.
+        //   • Admin / Manager → only staff of the centre(s) they are affected to.
+        $employeesQuery = User::whereNotNull('staff_role')
             ->where('is_active', true)
-            ->with('site')
-            ->orderBy('name')
-            ->get();
+            ->with('site');
 
-        return view('backoffice.schedules.create', compact('sites', 'employees'));
+        $sitesQuery = Site::where('is_active', true);
+
+        if (! $authUser->hasRole('Super Admin')) {
+            $accessibleSiteIds = $authUser->accessibleSiteIds();
+            $employeesQuery->where(function ($q) use ($accessibleSiteIds) {
+                $q->whereIn('site_id', $accessibleSiteIds)
+                  ->orWhereHas('sites', fn ($sq) => $sq->whereIn('sites.id', $accessibleSiteIds));
+            });
+            $sitesQuery->whereIn('id', $accessibleSiteIds);
+        }
+
+        $employees = $employeesQuery->orderBy('name')->get();
+        $sites = $sitesQuery->get();
+
+        // ── Week + target for the per-day editor ────────────────────────
+        $weekStart = $request->filled('week')
+            ? Carbon::parse($request->week)->startOfWeek(Carbon::MONDAY)
+            : Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $weekEnd = (clone $weekStart)->endOfWeek(Carbon::SUNDAY);
+
+        // Selected employee (if any). Must be manageable by the auth user.
+        $target = null;
+        $days = [];
+        $totalWorked = 0;
+        if ($request->filled('user_id')) {
+            $target = $employees->firstWhere('id', (int) $request->user_id);
+            if ($target) {
+                $this->authorizeManage($authUser, $target);
+
+                $schedules = UserSchedule::where('user_id', $target->id)
+                    ->whereBetween('date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+                    ->get()
+                    ->keyBy(fn ($s) => $s->date->format('Y-m-d'));
+
+                for ($i = 0; $i < 7; $i++) {
+                    $d = (clone $weekStart)->addDays($i);
+                    $key = $d->format('Y-m-d');
+                    $days[] = [
+                        'date'     => $d,
+                        'key'      => $key,
+                        'label'    => $d->locale('fr')->isoFormat('ddd DD/MM'),
+                        'schedule' => $schedules->get($key),
+                    ];
+                }
+                $totalWorked = $schedules->sum('worked_minutes');
+            }
+        }
+
+        return view('backoffice.schedules.create', compact(
+            'sites', 'employees', 'target', 'weekStart', 'weekEnd', 'days', 'totalWorked'
+        ));
     }
 
     public function store(Request $request)
@@ -394,7 +447,11 @@ class ScheduleController extends Controller
         $msg = "{$created} jour(s) planifié(s).";
         if ($skipped > 0) $msg .= " {$skipped} ignoré(s) (déjà planifié).";
 
-        return redirect()->route('backoffice.schedules.index')->with('success', $msg);
+        // Land on the target's weekly planning at the start of the created range.
+        return redirect()->route('backoffice.schedules.week', [
+            'user_id' => $target->id,
+            'week'    => $validated['date_from'],
+        ])->with('success', $msg);
     }
 
     public function edit(UserSchedule $schedule, Request $request)
@@ -441,6 +498,86 @@ class ScheduleController extends Controller
         $this->authorizeManage($request->user(), $schedule->user);
         $schedule->delete();
         return redirect()->back()->with('success', 'Entrée supprimée.');
+    }
+
+    // ─── Gestion planning — grouped by employee + week ──────────────────
+
+    /**
+     * Management overview: every planning grouped by (employee, week),
+     * scoped to the centres the auth user can manage.
+     */
+    public function manage(Request $request)
+    {
+        $authUser = $request->user();
+        abort_unless($authUser->can('schedules.view'), 403);
+
+        $query = UserSchedule::with('user');
+
+        if (! $authUser->hasRole('Super Admin')) {
+            $query->whereIn('site_id', $authUser->accessibleSiteIds());
+        }
+        if ($request->filled('user_id')) {
+            $query->where('user_id', (int) $request->user_id);
+        }
+
+        $schedules = $query->orderByDesc('date')->get();
+
+        // Group by employee + ISO week-start (Monday).
+        $weeks = $schedules
+            ->groupBy(fn ($s) => $s->user_id . '|' . $s->date->copy()->startOfWeek(Carbon::MONDAY)->format('Y-m-d'))
+            ->map(function ($group) {
+                $first     = $group->first();
+                $weekStart = $first->date->copy()->startOfWeek(Carbon::MONDAY);
+                return [
+                    'user'       => $first->user,
+                    'user_id'    => $first->user_id,
+                    'week_start' => $weekStart,
+                    'week_end'   => $weekStart->copy()->endOfWeek(Carbon::SUNDAY),
+                    'days'       => $group->count(),
+                    'worked'     => $group->sum('worked_minutes'),
+                ];
+            })
+            ->sortByDesc('week_start')
+            ->values();
+
+        // Employee filter list (scoped).
+        $empQuery = User::whereNotNull('staff_role')->where('is_active', true);
+        if (! $authUser->hasRole('Super Admin')) {
+            $ids = $authUser->accessibleSiteIds();
+            $empQuery->where(function ($q) use ($ids) {
+                $q->whereIn('site_id', $ids)
+                  ->orWhereHas('sites', fn ($sq) => $sq->whereIn('sites.id', $ids));
+            });
+        }
+        $employees = $empQuery->orderBy('name')->get();
+
+        return view('backoffice.schedules.manage', compact('weeks', 'employees'));
+    }
+
+    /**
+     * Delete every schedule entry for one employee within one week.
+     */
+    public function destroyWeek(Request $request)
+    {
+        $authUser = $request->user();
+
+        $validated = $request->validate([
+            'user_id'    => 'required|exists:users,id',
+            'week_start' => 'required|date',
+        ]);
+
+        $target = User::findOrFail($validated['user_id']);
+        $this->authorizeManage($authUser, $target);
+
+        $weekStart = Carbon::parse($validated['week_start'])->startOfWeek(Carbon::MONDAY);
+        $weekEnd   = (clone $weekStart)->endOfWeek(Carbon::SUNDAY);
+
+        $deleted = UserSchedule::where('user_id', $target->id)
+            ->whereBetween('date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+            ->delete();
+
+        return redirect()->route('backoffice.schedules.manage')
+            ->with('success', "Semaine supprimée ({$deleted} jour(s)) pour {$target->name}.");
     }
 
     // ─── Authorization helpers ──────────────────────────────────────────

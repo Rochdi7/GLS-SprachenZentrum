@@ -20,10 +20,28 @@
 
     @yield('css')
     @include('layouts.head-css')
+
+    {{-- Apply saved theme before paint to avoid a flash of the wrong mode --}}
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('gls-theme') || 'light';
+                document.documentElement.setAttribute('data-pc-theme-init', saved);
+            } catch (e) {}
+        })();
+    </script>
 </head>
 
 <body data-pc-preset="preset-5" data-pc-sidebar-theme="light" data-pc-sidebar-caption="true" data-pc-direction="ltr"
     data-pc-theme="light">
+
+    {{-- Sync body theme with saved preference immediately (before stylesheets paint content) --}}
+    <script>
+        (function () {
+            var saved = document.documentElement.getAttribute('data-pc-theme-init') || 'light';
+            document.body.setAttribute('data-pc-theme', saved);
+        })();
+    </script>
 
     <style>
         .logo-lg {
@@ -152,6 +170,40 @@
     @include('layouts.footer')
     @include('layouts.customizer')
     @include('layouts.footerjs')
+
+    {{-- Dark mode toggle: applies saved theme via the theme engine and persists choice --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var toggle = document.getElementById('dark-mode-toggle');
+            if (!toggle) return;
+
+            var iconDark = toggle.querySelector('.dark-mode-icon-dark');
+            var iconLight = toggle.querySelector('.dark-mode-icon-light');
+
+            function applyTheme(theme) {
+                if (typeof layout_change === 'function') {
+                    layout_change(theme);
+                } else {
+                    document.body.setAttribute('data-pc-theme', theme);
+                }
+                var isDark = theme === 'dark';
+                if (iconDark) iconDark.style.display = isDark ? 'none' : '';
+                if (iconLight) iconLight.style.display = isDark ? '' : 'none';
+            }
+
+            var saved = 'light';
+            try { saved = localStorage.getItem('gls-theme') || 'light'; } catch (e) {}
+            applyTheme(saved);
+
+            toggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                var current = document.body.getAttribute('data-pc-theme') === 'dark' ? 'dark' : 'light';
+                var next = current === 'dark' ? 'light' : 'dark';
+                applyTheme(next);
+                try { localStorage.setItem('gls-theme', next); } catch (e) {}
+            });
+        });
+    </script>
 
     @yield('scripts')
 

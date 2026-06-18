@@ -11,6 +11,7 @@
                         <th style="width:90px;">Niveau</th>
                         <th>Titre</th>
                         <th style="width:160px;">Questions</th>
+                        <th style="width:80px;" class="text-center">Total</th>
                         <th style="width:120px;">Actif</th>
                         <th style="width:260px;" class="text-end">Actions</th>
                     </tr>
@@ -25,6 +26,9 @@
                                     class="btn btn-sm btn-outline-secondary">
                                     Gérer les Questions
                                 </a>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-primary rounded-pill">{{ $quiz->questions_count ?? $quiz->questions()->count() }}</span>
                             </td>
                             <td>
                                 @if ($quiz->is_active)
@@ -55,7 +59,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-4 text-muted">
+                            <td colspan="6" class="text-center py-4 text-muted">
                                 Aucun quiz trouvé.
                             </td>
                         </tr>

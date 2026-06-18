@@ -10,18 +10,26 @@
                required>
     </div>
 
-    {{-- GLS SITE --}}
+    {{-- CENTRES AFFECTÉS (multi) --}}
+    @php
+        $assignedSiteIds = collect(old('site_ids', isset($teacher) ? $teacher->accessibleSiteIds() : []))
+            ->map(fn ($v) => (int) $v)
+            ->all();
+    @endphp
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Centre GLS</label>
-        <select name="site_id" class="form-select" required>
-            <option value="">Sélectionner un centre</option>
+        <label class="form-label fw-bold">Centres affectés (accès multi-centres) <span class="text-danger">*</span></label>
+        <select name="site_ids[]" class="form-select" id="teacher_sites_multi" multiple size="6" required>
             @foreach($sites as $site)
                 <option value="{{ $site->id }}"
-                    {{ old('site_id', $teacher->site_id ?? '') == $site->id ? 'selected' : '' }}>
+                    {{ in_array((int) $site->id, $assignedSiteIds, true) ? 'selected' : '' }}>
                     {{ $site->name }} ({{ $site->city }})
                 </option>
             @endforeach
         </select>
+        <small class="text-muted">
+            Maintenez <kbd>Ctrl</kbd> (ou <kbd>⌘</kbd>) pour sélectionner plusieurs centres.
+            Au moins un centre est requis.
+        </small>
     </div>
 
     {{-- IMAGE --}}
@@ -67,17 +75,6 @@
                class="form-control"
                value="{{ old('speciality', $teacher->speciality ?? '') }}"
                placeholder="Ex: A1, A2, B1, Grammaire">
-    </div>
-
-    {{-- PAYMENT PER STUDENT --}}
-    <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Paiement par étudiant (DH)</label>
-        <input type="number" name="payment_per_student"
-               class="form-control"
-               value="{{ old('payment_per_student', $teacher->payment_per_student ?? '') }}"
-               step="0.01" min="0"
-               placeholder="Ex: 300.00 ou 500.00">
-        <small class="text-muted">Taux par défaut pour le calcul de la paie enseignant</small>
     </div>
 
     {{-- BIO --}}

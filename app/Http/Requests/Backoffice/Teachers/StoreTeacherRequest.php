@@ -14,13 +14,13 @@ class StoreTeacherRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'site_id'     => 'required|exists:sites,id',
+            'site_ids'    => 'required|array|min:1',
+            'site_ids.*'  => 'integer|exists:sites,id',
             'name'        => 'required|string|max:255',
             'email'       => 'nullable|email|max:255',
             'phone'       => 'nullable|string|max:50',
             'speciality'  => 'nullable|string|max:255',
             'bio'         => 'nullable|string',
-            'payment_per_student' => 'nullable|numeric|min:0',
 
             // MediaLibrary image
             'image'       => 'nullable|image|max:4096',
@@ -30,7 +30,8 @@ class StoreTeacherRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'site_id.required' => 'Veuillez sélectionner un centre GLS.',
+            'site_ids.required' => 'Veuillez sélectionner au moins un centre GLS.',
+            'site_ids.min'      => 'Veuillez sélectionner au moins un centre GLS.',
             'name.required'    => 'Le nom de l’enseignant est obligatoire.',
             'email.email'      => 'L’adresse email n’est pas valide.',
             'image.image'      => 'Le fichier doit être une image.',

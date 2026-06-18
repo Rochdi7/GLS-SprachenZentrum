@@ -59,9 +59,6 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-body text-end">
-                    <a href="{{ route('backoffice.payroll.presence.dashboard') }}" class="btn btn-outline-secondary me-2">
-                        <i class="ph-duotone ph-arrow-left me-1"></i> Imports Excel
-                    </a>
                     <a href="{{ route('backoffice.payroll.crm.legacy.dashboard') }}" class="btn btn-outline-secondary">
                         <i class="ph-duotone ph-database me-1"></i> Legacy
                     </a>

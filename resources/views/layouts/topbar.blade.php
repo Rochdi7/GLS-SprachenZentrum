@@ -12,7 +12,15 @@
             </a>
         </li>
         <div class="ms-auto">
-            <ul class="list-unstyled">
+            <ul class="list-unstyled d-flex align-items-center mb-0">
+
+                <li class="pc-h-item">
+                    <a href="#" class="pc-head-link me-0" id="dark-mode-toggle" role="button"
+                        aria-label="Basculer le mode sombre" title="Mode clair / sombre">
+                        <i class="ph-duotone ph-moon dark-mode-icon-dark" style="font-size:20px;"></i>
+                        <i class="ph-duotone ph-sun dark-mode-icon-light" style="font-size:20px;display:none;"></i>
+                    </a>
+                </li>
 
                 <li class="dropdown pc-h-item header-user-profile">
                     <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"

@@ -200,7 +200,6 @@
     </li>
 @endcanany
 
-@hasanyrole('Super Admin|Admin')
     @canany(['applications.view', 'leads.view', 'lead_stats.view', 'newsletter_subscribers.view'])
         <li class="pc-item pc-hasmenu {{ $admissionsOpen ? 'pc-trigger' : '' }}">
             <a href="#!" class="pc-link">
@@ -213,7 +212,7 @@
                     <li class="pc-item {{ request()->routeIs('backoffice.applications.*') ? 'active' : '' }}">
                         <a href="{{ route('backoffice.applications.index') }}"
                             class="pc-link {{ request()->routeIs('backoffice.applications.*') ? 'active' : '' }}">
-                            <span class="pc-mtext">Applications</span>
+                            <span class="pc-mtext">Candidatures groupes</span>
                         </a>
                     </li>
                 @endcan
@@ -244,7 +243,6 @@
             </ul>
         </li>
     @endcanany
-@endhasanyrole
 
 
 <li class="pc-item pc-hasmenu {{ $rhOpen ? 'pc-trigger' : '' }}">
@@ -262,10 +260,10 @@
             </a>
         </li>
         @can('schedules.view')
-            <li class="pc-item {{ request()->routeIs('backoffice.schedules.index') ? 'active' : '' }}">
-                <a href="{{ route('backoffice.schedules.index') }}"
-                    class="pc-link {{ request()->routeIs('backoffice.schedules.index') ? 'active' : '' }}">
-                    <span class="pc-mtext">Planning équipe</span>
+            <li class="pc-item {{ request()->routeIs('backoffice.schedules.manage') ? 'active' : '' }}">
+                <a href="{{ route('backoffice.schedules.manage') }}"
+                    class="pc-link {{ request()->routeIs('backoffice.schedules.manage') ? 'active' : '' }}">
+                    <span class="pc-mtext">Gestion planning</span>
                 </a>
             </li>
             <li class="pc-item {{ request()->routeIs('backoffice.planning.*') ? 'active' : '' }}">

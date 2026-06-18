@@ -505,6 +505,10 @@ Route::prefix('backoffice')
                 Route::post('/week', [ScheduleController::class, 'saveWeek'])->name('week.save');
                 Route::get('/week/pdf', [ScheduleController::class, 'weekPdf'])->name('week.pdf');
 
+                // Gestion planning — grouped by employee + week
+                Route::get('/manage', [ScheduleController::class, 'manage'])->middleware('permission:schedules.view')->name('manage');
+                Route::delete('/week', [ScheduleController::class, 'destroyWeek'])->middleware('permission:schedules.delete')->name('week.destroy');
+
                 // Admin-only overview + legacy batch edit
                 Route::get('/', [ScheduleController::class, 'index'])->middleware('permission:schedules.view')->name('index');
                 Route::get('/create', [ScheduleController::class, 'create'])->middleware('permission:schedules.create')->name('create');

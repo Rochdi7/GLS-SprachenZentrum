@@ -29,10 +29,13 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Branch: only Super Admin / Admin see the global dashboard.
-        // Other staff get a centre-scoped dashboard.
+        // Branch:
+        //   • Super Admin → global dashboard (this view).
+        //   • Everyone else (Admin = centre responsible, Réception, …) → the
+        //     centre-scoped dashboard. Admin gets a management variant, other
+        //     staff a front-desk variant — both limited to their centre(s).
         $auth = auth()->user();
-        if ($auth && ! $auth->hasAnyRole(['Super Admin', 'Admin'])) {
+        if ($auth && ! $auth->hasRole('Super Admin')) {
             return redirect()->route('backoffice.dashboard.staff');
         }
 
