@@ -45,8 +45,7 @@ class StaffDashboardController extends Controller
         // centre(s) — so resolve the IDs directly from the pivot.
         $accessibleSites = $this->accessibleSites($user);
         if ($isAdmin) {
-            $accessibleSites = Site::where('is_active', true)
-                ->whereIn('id', $user->accessibleSiteIds() ?: [0])
+            $accessibleSites = Site::whereIn('id', $user->accessibleSiteIds() ?: [0])
                 ->orderBy('name')->get();
             $allowedSiteIds = $user->accessibleSiteIds();
         } else {
