@@ -151,7 +151,7 @@ SECOND ROW — MANAGEMENT KPIS
 
     {{-- Candidatures de groupes --}}
     <div class="col-md-3 col-sm-6">
-        <a href="{{ route('backoffice.group_applications.index') }}" class="text-decoration-none">
+        <a href="{{ route('backoffice.applications.index') }}" class="text-decoration-none">
             <div class="card statistics-card-1 overflow-hidden">
                 <div class="card-body">
                     <div class="float-end">
