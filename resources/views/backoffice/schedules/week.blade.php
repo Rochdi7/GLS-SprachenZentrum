@@ -416,6 +416,25 @@
             const toastEl = document.getElementById('liveToast');
             if (toastEl) { new bootstrap.Toast(toastEl).show(); }
 
+            // ===== Searchable employee dropdown =====
+            const weekEmpSelect = document.getElementById('week-employee-select');
+            if (weekEmpSelect && typeof Choices !== 'undefined') {
+                new Choices(weekEmpSelect, {
+                    searchEnabled: true,
+                    searchPlaceholderValue: 'Rechercher...',
+                    itemSelectText: '',
+                    shouldSort: false,
+                    noResultsText: 'Aucun résultat',
+                });
+                weekEmpSelect.addEventListener('change', function() {
+                    weekEmpSelect.closest('form').submit();
+                });
+            } else if (weekEmpSelect) {
+                weekEmpSelect.addEventListener('change', function() {
+                    weekEmpSelect.closest('form').submit();
+                });
+            }
+
             // ===== Real-time worked-time calculation =====
             function toMinutes(val) {
                 if (!val || !/^\d{1,2}:\d{2}$/.test(val)) return null;

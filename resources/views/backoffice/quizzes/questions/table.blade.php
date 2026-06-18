@@ -23,9 +23,13 @@
                                 <div class="fw-semibold">{{ \Illuminate\Support\Str::limit($q->question_text, 120) }}
                                 </div>
                                 <div class="text-muted small">
-                                    Options: {{ $q->options->count() }} |
+                                    @php $correctOption = $q->options->firstWhere('is_correct', true); @endphp
                                     Correct:
-                                    {{ optional($q->options->firstWhere('is_correct', true))->option_text ?? '—' }}
+                                    @if($correctOption)
+                                        <span class="text-success fw-semibold">{{ $correctOption->option_text }}</span>
+                                    @else
+                                        <span class="text-danger">non défini</span>
+                                    @endif
                                 </div>
                             </td>
                             <td>{{ $q->points }}</td>
