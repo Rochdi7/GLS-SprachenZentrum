@@ -31,7 +31,7 @@ class CollectionsService
         return Cache::remember($key, 900, function () use ($strStoreId) {
             $today    = Carbon::today();
             $todayStr = $today->toDateString();
-            $endWeek  = $today->copy()->addDays(7)->toDateString();
+            $endWeek  = $today->copy()->endOfWeek()->toDateString(); // Sunday of current week
             $endMonth = $today->copy()->endOfMonth()->toDateString();
 
             $base = $this->baseQuery($strStoreId);
@@ -152,6 +152,7 @@ class CollectionsService
     private function baseQuery(?int $strStoreId): \Illuminate\Database\Eloquent\Builder
     {
         return CrmCollectionRow::query()
+            ->where('registration_status_name', 'Active')
             ->whereNotNull('rest_amount')
             ->where('rest_amount', '>', 0)
             ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId));

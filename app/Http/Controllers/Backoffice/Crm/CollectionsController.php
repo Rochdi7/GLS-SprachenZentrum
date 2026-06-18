@@ -93,7 +93,7 @@ class CollectionsController extends BaseCrmController
 
         match ($type) {
             'dueToday'  => $query->whereDate('due_date', $today->toDateString()),
-            'dueWeek'   => $query->whereBetween('due_date', [$today->toDateString(), $today->copy()->addDays(7)->toDateString()]),
+            'dueWeek'   => $query->whereBetween('due_date', [$today->toDateString(), $today->copy()->endOfWeek()->toDateString()]),
             'dueMonth'  => $query->whereBetween('due_date', [$today->toDateString(), $today->copy()->endOfMonth()->toDateString()]),
             'overdue7'  => $query->where('due_date', '<=', $today->copy()->subDays(7)->toDateString()),
             'overdue30' => $query->where('due_date', '<=', $today->copy()->subDays(30)->toDateString()),
