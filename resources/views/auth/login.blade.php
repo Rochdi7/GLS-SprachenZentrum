@@ -14,7 +14,7 @@
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
                     <div class="form-group mb-3">
-                        <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="admin@Gls Team.com" required autocomplete="email" autofocus id="floatingInput" placeholder="Adresse email">
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus id="floatingInput" placeholder="Adresse email">
                         @error('email')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -22,12 +22,17 @@
                     @enderror
                     </div>
                     <div class="form-group mb-3">
-                        <input type="password" type="password" class="form-control @error('password') is-invalid @enderror" value="12345678" name="password" required autocomplete="current-password" id="floatingInput1" placeholder="Mot de passe">
-                        @error('password')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+                        <div class="input-group">
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" id="floatingInput1" placeholder="Mot de passe">
+                            <button type="button" class="input-group-text bg-white border-start-0" id="togglePassword" tabindex="-1" style="cursor:pointer;border-color:#dee2e6;">
+                                <i id="toggleIcon" class="ti ti-eye-off" style="font-size:1.1rem;color:#6c757d;"></i>
+                            </button>
+                            @error('password')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
                     </div>
                     <div class="d-flex mt-1 justify-content-between align-items-center">
                         <div class="form-check">
@@ -46,4 +51,17 @@
             </div>
         </div>
     </div>
+<script>
+document.getElementById('togglePassword').addEventListener('click', function () {
+    var input = document.getElementById('floatingInput1');
+    var icon  = document.getElementById('toggleIcon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('ti-eye-off', 'ti-eye');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('ti-eye', 'ti-eye-off');
+    }
+});
+</script>
 @endsection
