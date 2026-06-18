@@ -94,9 +94,6 @@ Route::prefix('crm')
         Route::get('/statistiques/comparaison',          [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'comparaison'])->name('statistiques.comparaison');
         Route::get('/statistiques/comparaison/data',     [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'comparaisonData'])->name('statistiques.comparaison.data');
 
-        // Résumé annuel CA — chiffre d'affaire, collecté, reste à payer, dépenses
-        Route::get('/statistiques/ca-annuel',            [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'caAnnuel'])->name('statistiques.ca-annuel');
-
         // Résumé annuel — meilleure performance centre (primes) sur une période
         Route::get('/statistiques/resume-annuel',        [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'resumeAnnuel'])->name('statistiques.resume-annuel');
         Route::get('/statistiques/resume-annuel/data',   [\App\Http\Controllers\Backoffice\Crm\StatsController::class, 'resumeAnnuelData'])->name('statistiques.resume-annuel.data');

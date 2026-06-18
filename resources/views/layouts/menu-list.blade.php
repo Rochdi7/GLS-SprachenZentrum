@@ -48,10 +48,8 @@
     $crmCollectionsOpen = request()->routeIs('backoffice.crm.collections.*');
     $crmStatsDashOpen =
         request()->routeIs('backoffice.crm.statistiques') &&
-        !request()->routeIs('backoffice.crm.statistiques.comparaison*') &&
-        !request()->routeIs('backoffice.crm.statistiques.ca-annuel');
+        !request()->routeIs('backoffice.crm.statistiques.comparaison*');
     $crmStatsCompOpen = request()->routeIs('backoffice.crm.statistiques.comparaison*');
-    $crmCaAnnuelOpen = request()->routeIs('backoffice.crm.statistiques.ca-annuel');
     $crmPresenceSuiviOpen = request()->routeIs('backoffice.crm.presence-suivi');
 
     $financesOpen = request()->routeIs('backoffice.encaissements.*');
@@ -474,13 +472,6 @@
                         <a href="{{ route('backoffice.crm.statistiques.comparaison') }}"
                             class="pc-link {{ $crmStatsCompOpen ? 'active' : '' }}">
                             <span class="pc-mtext">Comparaison centres</span>
-                        </a>
-                    </li> --}}
-                    {{-- CA Annuel --}}
-                    {{-- <li class="pc-item {{ $crmCaAnnuelOpen ? 'active' : '' }}">
-                        <a href="{{ route('backoffice.crm.statistiques.ca-annuel') }}"
-                            class="pc-link {{ $crmCaAnnuelOpen ? 'active' : '' }}">
-                            <span class="pc-mtext">CA Annuel</span>
                         </a>
                     </li> --}}
                     {{-- <li class="pc-item {{ request()->routeIs('backoffice.crm.statistiques.resume-annuel') ? 'active' : '' }}">
