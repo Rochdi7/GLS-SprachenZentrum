@@ -155,6 +155,53 @@ class StatsController extends BaseCrmController
         ]);
     }
 
+    public function recouvrementRangeDrill(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $startDate = $request->query('startDate');
+        $endDate   = $request->query('endDate');
+        $storeId   = $request->query('strStoreId') ? (int) $request->query('strStoreId') : null;
+
+        if (!$startDate || !$endDate) {
+            return response()->json(['error' => 'startDate et endDate sont requis.'], 422);
+        }
+
+        $storeFilter = $storeId ? "AND crm_store_id = {$storeId}" : '';
+
+        $rows = DB::select("
+            SELECT student_id, student_name, store_name, crm_store_id,
+                   registration_id,
+                   SUM(total_price) as total_ca,
+                   SUM(rest_amount) as total_reste,
+                   COUNT(*)         as nb_echeances,
+                   MIN(due_date)    as next_due
+            FROM crm_collection_rows
+            WHERE due_date BETWEEN ? AND ?
+              AND rest_amount > 0
+              AND registration_status_id != 10
+              {$storeFilter}
+            GROUP BY student_id, student_name, store_name, crm_store_id, registration_id
+            ORDER BY total_ca DESC
+        ", [$startDate, $endDate]);
+
+        $data = collect($rows)->map(fn ($r) => [
+            'student_id'      => $r->student_id,
+            'student_name'    => $r->student_name ?? '—',
+            'store_name'      => $r->store_name   ?? '—',
+            'registration_id' => $r->registration_id,
+            'total_ca'        => (float) $r->total_ca,
+            'total_reste'     => (float) $r->total_reste,
+            'nb_echeances'    => (int) $r->nb_echeances,
+            'next_due'        => $r->next_due,
+        ])->values()->toArray();
+
+        return response()->json([
+            'rows'       => $data,
+            'total_ca'   => array_sum(array_column($data, 'total_ca')),
+            'total_reste'=> array_sum(array_column($data, 'total_reste')),
+            'count'      => count($data),
+        ]);
+    }
+
     public function comparaison(): View
     {
         $sites = Site::whereNotNull('crm_store_id')->orderBy('name')->get(['id', 'name', 'crm_store_id']);

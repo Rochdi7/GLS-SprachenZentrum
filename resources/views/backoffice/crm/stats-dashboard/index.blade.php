@@ -390,6 +390,52 @@
 </div>
 
 
+{{-- ── CA Drill modal ───────────────────────────────────────────────── --}}
+<div class="modal fade" id="caDrillModal" tabindex="-1" aria-labelledby="caDrillModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="caDrillModalLabel">
+                    <i class="ph-duotone ph-users me-2 text-primary"></i>
+                    Détail CA — <span id="ca-drill-store-name"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="ca-drill-loading" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="text-muted mt-2 small">Chargement…</p>
+                </div>
+                <div id="ca-drill-error" class="alert alert-danger m-3 d-none"></div>
+                <div id="ca-drill-body" class="d-none">
+                    <div class="px-3 pt-3 pb-2 d-flex gap-3 align-items-center flex-wrap border-bottom">
+                        <span class="badge bg-primary fs-6" id="ca-drill-total-ca"></span>
+                        <span class="badge bg-warning text-dark fs-6" id="ca-drill-total-reste"></span>
+                        <span class="badge bg-secondary fs-6" id="ca-drill-count"></span>
+                        <input type="search" id="ca-drill-search" class="form-control form-control-sm ms-auto" style="max-width:240px" placeholder="Rechercher étudiant…">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle mb-0">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Étudiant</th>
+                                    <th>Centre</th>
+                                    <th class="text-end">CA total (DH)</th>
+                                    <th class="text-end">Reste à payer</th>
+                                    <th class="text-end">Nb éch.</th>
+                                    <th class="text-end">Prochaine éch.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ca-drill-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
@@ -529,6 +575,7 @@
 {
     "encRangeEndpoint": "{{ route('backoffice.crm.statistiques.encaissement-range') }}",
     "recRangeEndpoint": "{{ route('backoffice.crm.statistiques.recouvrement-range') }}",
+    "recDrillEndpoint": "{{ route('backoffice.crm.statistiques.recouvrement-range.drill') }}",
     "storeId": "{{ $storeId ?? '' }}"
 }
 </script>

@@ -3,7 +3,7 @@
 (function () {
     const d = document.getElementById('crm-stats-dashboard-config');
     if (!d) return;
-    const { encRangeEndpoint, recRangeEndpoint, storeId } = JSON.parse(d.textContent);
+    const { encRangeEndpoint, recRangeEndpoint, recDrillEndpoint, storeId } = JSON.parse(d.textContent);
 
     const COLORS = ['#4680ff','#1cc88a','#ffc107','#dc3545','#0dcaf0','#6f42c1','#fd7e14'];
     const MEDALS = ['🥇','🥈','🥉'];
@@ -233,6 +233,8 @@
         recChart.render();
 
         // Table
+        const recStart = document.getElementById('rec-start-date').value;
+        const recEnd   = document.getElementById('rec-end-date').value;
         document.getElementById('rec-range-tbody').innerHTML = data.map((r, i) => {
             const pct   = grand_reste > 0 ? (r.total_reste / grand_reste * 100).toFixed(1) : 0;
             const color = COLORS[i % COLORS.length];
@@ -240,7 +242,16 @@
                 <td class="text-muted">${i + 1}</td>
                 <td><span class="badge" style="background:${color}20;color:${color};font-size:.8rem">${r.store_name}</span></td>
                 <td class="text-end fw-semibold text-warning">${fullDH(r.total_reste)}</td>
-                <td class="text-end text-primary">${fullDH(r.total_ca)}</td>
+                <td class="text-end">
+                    <button class="btn btn-link p-0 fw-semibold text-primary text-decoration-underline ca-drill-btn"
+                        data-store-id="${r.store_id}"
+                        data-store-name="${r.store_name}"
+                        data-start="${recStart}"
+                        data-end="${recEnd}"
+                        title="Voir le détail par étudiant">
+                        ${fullDH(r.total_ca)}
+                    </button>
+                </td>
                 <td class="text-end">${r.cnt.toLocaleString('fr-MA')}</td>
                 <td><div class="progress" style="height:6px"><div class="progress-bar bg-warning" style="width:${pct}%"></div></div></td>
             </tr>`;
@@ -477,5 +488,78 @@
         if (recButtonLabel) {
             recButtonLabel.textContent = isLoading ? 'Chargement...' : 'Afficher';
         }
+    }
+
+    // ── CA drill-down modal ────────────────────────────────────────────
+    let caDrillAllRows = [];
+
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.ca-drill-btn');
+        if (!btn || !recDrillEndpoint) return;
+
+        const storeName = btn.dataset.storeName;
+        const storeIdDrill = btn.dataset.storeId;
+        const start     = btn.dataset.start;
+        const end       = btn.dataset.end;
+
+        document.getElementById('ca-drill-store-name').textContent = storeName;
+        document.getElementById('ca-drill-loading').classList.remove('d-none');
+        document.getElementById('ca-drill-body').classList.add('d-none');
+        document.getElementById('ca-drill-error').classList.add('d-none');
+        document.getElementById('ca-drill-search').value = '';
+
+        const modal = new bootstrap.Modal(document.getElementById('caDrillModal'));
+        modal.show();
+
+        const params = new URLSearchParams({ startDate: start, endDate: end, strStoreId: storeIdDrill });
+
+        fetch(`${recDrillEndpoint}?${params}`, {
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(json => {
+            document.getElementById('ca-drill-loading').classList.add('d-none');
+            if (json.error) {
+                const el = document.getElementById('ca-drill-error');
+                el.textContent = json.error;
+                el.classList.remove('d-none');
+                return;
+            }
+            caDrillAllRows = json.rows || [];
+            document.getElementById('ca-drill-total-ca').textContent    = 'CA total : ' + fullDH(json.total_ca);
+            document.getElementById('ca-drill-total-reste').textContent = 'Reste : ' + fullDH(json.total_reste);
+            document.getElementById('ca-drill-count').textContent       = json.count + ' étudiant(s)';
+            renderCaDrillTable(caDrillAllRows);
+            document.getElementById('ca-drill-body').classList.remove('d-none');
+        })
+        .catch(err => {
+            document.getElementById('ca-drill-loading').classList.add('d-none');
+            const el = document.getElementById('ca-drill-error');
+            el.textContent = 'Erreur réseau : ' + err.message;
+            el.classList.remove('d-none');
+        });
+    });
+
+    document.getElementById('ca-drill-search')?.addEventListener('input', function () {
+        const q = this.value.trim().toLowerCase();
+        const filtered = q ? caDrillAllRows.filter(r => r.student_name.toLowerCase().includes(q)) : caDrillAllRows;
+        renderCaDrillTable(filtered);
+    });
+
+    function renderCaDrillTable(rows) {
+        document.getElementById('ca-drill-tbody').innerHTML = rows.map((r, i) => `
+            <tr>
+                <td class="text-muted">${i + 1}</td>
+                <td>
+                    <div class="fw-semibold">${r.student_name}</div>
+                    <small class="text-muted">#${r.student_id}</small>
+                </td>
+                <td><span class="badge bg-light text-dark border">${r.store_name}</span></td>
+                <td class="text-end fw-semibold text-primary">${fullDH(r.total_ca)}</td>
+                <td class="text-end text-warning fw-semibold">${fullDH(r.total_reste)}</td>
+                <td class="text-end">${r.nb_echeances}</td>
+                <td class="text-end text-muted small">${r.next_due ?? '—'}</td>
+            </tr>
+        `).join('');
     }
 })();
