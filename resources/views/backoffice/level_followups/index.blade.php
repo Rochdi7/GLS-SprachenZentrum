@@ -573,7 +573,7 @@
                                     </span>
                                     <span class="followup-chip followup-chip--due">
                                         <i class="ti ti-calendar-event f-16"></i>
-                                        {{ $followup->due_date ? \Carbon\Carbon::parse($followup->due_date)->format('d/m/Y') : 'Aucune echeance' }}
+                                        Fin : {{ $followup->group?->date_fin ? \Carbon\Carbon::parse($followup->group->date_fin)->format('d/m/Y') : '—' }}
                                     </span>
                                 </div>
                             </div>

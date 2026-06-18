@@ -421,7 +421,7 @@ SUIVI NIVEAU (Rappels profs)
                                     <th>Groupe · Prof</th>
                                     <th>Niveaux</th>
                                     <th>Progression</th>
-                                    <th>Échéance</th>
+                                    <th>Fin formation</th>
                                     <th class="text-end">Action</th>
                                 </tr>
                             </thead>
@@ -478,7 +478,7 @@ SUIVI NIVEAU (Rappels profs)
                                         <td>
                                             <span class="sn-due">
                                                 <i class="ti ti-calendar-event f-13"></i>
-                                                {{ \Carbon\Carbon::parse($followup->due_date)->format('d/m/Y') }}
+                                                {{ $followup->group?->date_fin ? \Carbon\Carbon::parse($followup->group->date_fin)->format('d/m/Y') : '—' }}
                                             </span>
                                         </td>
                                         <td class="text-end" style="min-width:170px">
