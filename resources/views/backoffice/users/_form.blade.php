@@ -101,9 +101,14 @@
         <select name="role" class="form-select" required>
             <option value="">-- Sélectionner un rôle --</option>
             @foreach($roles as $role)
+                @php
+                    $roleLabel = in_array($role->name, ['Reception', 'Réception', 'RÃ©ception'], true)
+                        ? 'Conseiller Administration'
+                        : $role->name;
+                @endphp
                 <option value="{{ $role->name }}"
                     {{ old('role', isset($user) ? $user->roles->first()?->name : '') === $role->name ? 'selected' : '' }}>
-                    {{ $role->name }}
+                    {{ $roleLabel }}
                 </option>
             @endforeach
         </select>

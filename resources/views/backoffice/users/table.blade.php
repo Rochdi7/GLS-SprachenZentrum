@@ -25,7 +25,12 @@
 
                     <td>
                         @forelse($user->roles as $role)
-                            <span class="badge bg-light-primary">{{ $role->name }}</span>
+                            @php
+                                $roleLabel = in_array($role->name, ['Reception', 'Réception', 'RÃ©ception'], true)
+                                    ? 'Conseiller Administration'
+                                    : $role->name;
+                            @endphp
+                            <span class="badge bg-light-primary">{{ $roleLabel }}</span>
                         @empty
                             <span class="badge bg-light-warning">Aucun rôle</span>
                         @endforelse
