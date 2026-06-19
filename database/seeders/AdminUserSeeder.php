@@ -28,7 +28,7 @@ class AdminUserSeeder extends Seeder
             'yassine.elbadaoui@glszentrum.com' => 'Yassine Elbadaoui',
         ];
 
-        $receptions = [
+        $conseillersAdministration = [
             'ahmed.khadimerrahman@glszentrum.com' => 'Ahmed Khadimerrahman',
             'amal.laamiri@glszentrum.com' => 'Amal Laamiri',
             'hafsa.elkhatabi@glszentrum.com' => 'Hafsa Elkhatabi',
@@ -40,18 +40,21 @@ class AdminUserSeeder extends Seeder
             'mehdi.joundi@glszentrum.com' => 'Mehdi Joundi',
             'mouna.zakri@glszentrum.com' => 'Mouna Zakri',
             'mustapha.benlmekki@glszentrum.com' => 'Mustapha Benlmekki',
+            'oumayma.sayedi@glszentrum.com' => 'Oumayma Sayedi',
             'oumnya.salim@glszentrum.com' => 'Oumnya Salim',
             'rihab.riad@glszentrum.com' => 'Rihab Riad',
             'saad.soutafi@glszentrum.com' => 'Saad Soutafi',
             'sara.grija@glszentrum.com' => 'Sara Grija',
+            'yassine.ait-lachguer@glszentrum.com' => 'Yassine Ait-lachguer',
+            'zineb.hmimas@glszentrum.com' => 'Zineb Hmimas',
         ];
 
         $this->createUsersWithRole($superAdmins, 'Super Admin');
         $this->createUsersWithRole($admins, 'Admin');
-        $this->createUsersWithRole($receptions, 'Reception');
+        $this->createUsersWithRole($conseillersAdministration, 'Reception', 'Conseiller Administration');
     }
 
-    private function createUsersWithRole(array $users, string $role): void
+    private function createUsersWithRole(array $users, string $role, ?string $staffRole = null): void
     {
         foreach ($users as $email => $name) {
             $user = User::firstOrCreate(
@@ -62,6 +65,10 @@ class AdminUserSeeder extends Seeder
                     'email_verified_at' => now(),
                 ]
             );
+
+            if ($staffRole && $user->staff_role !== $staffRole) {
+                $user->update(['staff_role' => $staffRole]);
+            }
 
             if (! $user->hasRole($role)) {
                 $user->assignRole($role);

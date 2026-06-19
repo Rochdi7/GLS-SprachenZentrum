@@ -81,7 +81,7 @@ class EncaissementFakeDataSeeder extends Seeder
 
     private function seedEmployees(): void
     {
-        $roles = ['Réception', 'Commercial', 'Coordination'];
+        $roles = ['Conseiller Administration', 'Commercial', 'Coordination'];
         foreach ($this->sitePerformance as $siteId => $perf) {
             $count = User::where('site_id', $siteId)->whereNotNull('staff_role')->count();
             if ($count >= 3) continue;
@@ -114,7 +114,7 @@ class EncaissementFakeDataSeeder extends Seeder
         // Get operators for this site
         $operators = User::where('site_id', $site->id)
             ->where('is_active', true)
-            ->whereIn('staff_role', ['Réception', 'Commercial'])
+            ->whereIn('staff_role', ['Conseiller Administration', 'Commercial'])
             ->pluck('name')
             ->toArray();
         if (empty($operators)) $operators = ['Latifa Abouelfath', 'Mustapha Benmoussa'];
