@@ -55,12 +55,21 @@
                                             $media = $user?->getFirstMedia('profile_photo');
                                         @endphp
 
-                                        <img class="rounded-circle img-fluid wid-90 img-thumbnail"
-                                            src="{{ $media
-                                                ? route('media.custom', ['id' => $media->id, 'filename' => $media->file_name])
-                                                : URL::asset('build/images/user/avatar-1.jpg') }}"
-                                            alt="Image utilisateur"
-                                            style="aspect-ratio:1/1;object-fit:cover;" />
+                                        <a href="{{ route('profile.index') }}#avatar"
+                                            class="position-relative d-inline-flex js-open-avatar-modal"
+                                            title="Changer la photo"
+                                            style="width:90px;height:90px;flex-shrink:0;text-decoration:none;">
+                                            <img class="rounded-circle img-fluid img-thumbnail"
+                                                src="{{ $media
+                                                    ? route('media.custom', ['id' => $media->id, 'filename' => $media->file_name])
+                                                    : URL::asset('build/images/user/avatar-1.jpg') }}"
+                                                alt="Image utilisateur"
+                                                style="aspect-ratio:1/1;object-fit:cover;width:90px;height:90px;" />
+                                            <span
+                                                style="position:absolute;bottom:2px;right:2px;width:24px;height:24px;border-radius:50%;background:#4680ff;border:2px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.25);text-decoration:none;">
+                                                <i class="ph-duotone ph-camera" style="font-size:11px;color:#fff;line-height:1;"></i>
+                                            </span>
+                                        </a>
 
                                         <div class="ms-3">
                                             <h5 class="mb-0">{{ Auth::user()->name ?? 'Administrateur' }}</h5>

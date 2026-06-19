@@ -477,7 +477,51 @@
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const avatarModalElement = document.getElementById('avatarPickerModal');
+            const profileUrl = @json(route('profile.index'));
             const updateLink = document.querySelector('.update-password-tab');
+
+            function getAvatarModalInstance() {
+                if (!avatarModalElement || typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+                    return null;
+                }
+
+                return bootstrap.Modal.getOrCreateInstance(avatarModalElement);
+            }
+
+            function openAvatarModal() {
+                const avatarModal = getAvatarModalInstance();
+                if (!avatarModal) {
+                    return;
+                }
+
+                avatarModal.show();
+            }
+
+            function isCurrentProfilePage(link) {
+                try {
+                    const currentUrl = new URL(window.location.href);
+                    const targetUrl = new URL(link.href, window.location.origin);
+                    const profilePageUrl = new URL(profileUrl, window.location.origin);
+
+                    return currentUrl.pathname === profilePageUrl.pathname
+                        && targetUrl.pathname === profilePageUrl.pathname;
+                } catch (error) {
+                    return false;
+                }
+            }
+
+            document.querySelectorAll('.js-open-avatar-modal').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    if (!isCurrentProfilePage(link)) {
+                        return;
+                    }
+
+                    e.preventDefault();
+                    history.replaceState(null, '', '#avatar');
+                    openAvatarModal();
+                });
+            });
 
             if (updateLink) {
                 updateLink.addEventListener('click', function(e) {
@@ -514,6 +558,24 @@
                     const bsTab = new bootstrap.Tab(tabTrigger);
                     bsTab.show();
                 }
+            }
+
+            if (window.location.hash === '#avatar') {
+                openAvatarModal();
+            }
+
+            window.addEventListener('hashchange', function() {
+                if (window.location.hash === '#avatar') {
+                    openAvatarModal();
+                }
+            });
+
+            if (avatarModalElement) {
+                avatarModalElement.addEventListener('hidden.bs.modal', function() {
+                    if (window.location.hash === '#avatar') {
+                        history.replaceState(null, '', window.location.pathname + window.location.search);
+                    }
+                });
             }
         });
     </script>

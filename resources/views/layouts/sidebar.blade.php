@@ -32,11 +32,20 @@
                         $media = Auth::user()->getFirstMedia('profile_photo');
                     @endphp
 
-                    <img src="{{ $media
-                        ? route('media.custom', ['id' => $media->id, 'filename' => $media->file_name])
-                        : asset('assets/images/user/avatar-2.avif') }}"
-                        alt="image utilisateur" class="user-avtar wid-45 rounded-circle"
-                        style="aspect-ratio:1/1;object-fit:cover;" />
+                    <a href="{{ route('profile.index') }}#avatar"
+                        class="position-relative d-inline-flex js-open-avatar-modal"
+                        title="Changer la photo"
+                        style="width:45px;height:45px;flex-shrink:0;text-decoration:none;">
+                        <img src="{{ $media
+                            ? route('media.custom', ['id' => $media->id, 'filename' => $media->file_name])
+                            : asset('assets/images/user/avatar-2.avif') }}"
+                            alt="image utilisateur" class="user-avtar rounded-circle"
+                            style="aspect-ratio:1/1;object-fit:cover;width:45px;height:45px;" />
+                        <span
+                            style="position:absolute;bottom:0;right:0;width:18px;height:18px;border-radius:50%;background:#4680ff;border:2px solid #fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 5px rgba(0,0,0,.25);text-decoration:none;">
+                            <i class="ph-duotone ph-camera" style="font-size:8px;color:#fff;line-height:1;"></i>
+                        </span>
+                    </a>
 
 
                     <div class="flex-grow-1 ms-3">
