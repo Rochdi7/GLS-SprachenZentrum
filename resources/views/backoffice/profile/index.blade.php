@@ -55,21 +55,147 @@
                     <div class="card overflow-hidden">
                         <div class="card-body position-relative">
                             <div class="text-center mt-3">
-                                <div class="chat-avtar d-inline-flex mx-auto">
+                                <div class="d-inline-flex mx-auto position-relative" style="width:90px;height:90px;">
                                     @php
                                         $user = Auth::user();
                                         $media = $user?->getFirstMedia('profile_photo');
                                     @endphp
 
-                                    <img class="rounded-circle img-fluid wid-90 img-thumbnail"
+                                    <img class="rounded-circle img-fluid img-thumbnail"
+                                        id="avatar-preview"
                                         src="{{ $media
                                             ? route('media.custom', ['id' => $media->id, 'filename' => $media->file_name])
                                             : URL::asset('build/images/user/avatar-1.jpg') }}"
                                         alt="Image utilisateur"
-                                        style="aspect-ratio:1/1;object-fit:cover;" />
+                                        style="aspect-ratio:1/1;object-fit:cover;width:90px;height:90px;" />
 
-                                    <i class="chat-badge bg-success me-2 mb-2"></i>
+                                    <button type="button"
+                                        data-bs-toggle="modal" data-bs-target="#avatarPickerModal"
+                                        title="Changer la photo"
+                                        style="position:absolute;bottom:2px;right:2px;width:26px;height:26px;border-radius:50%;background:#4680ff;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25);">
+                                        <i class="ph-duotone ph-camera" style="font-size:12px;color:#fff;line-height:1;"></i>
+                                    </button>
                                 </div>
+
+                                {{-- Avatar Picker Modal --}}
+                                <div class="modal fade" id="avatarPickerModal" tabindex="-1" aria-labelledby="avatarPickerLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="avatarPickerLabel">
+                                                    <i class="ph-duotone ph-user-circle me-2 text-primary"></i>Choisir un avatar
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                {{-- Preset avatars grid --}}
+                                                <p class="text-muted small mb-3">Sélectionnez un avatar prédéfini :</p>
+                                                <div class="d-flex flex-wrap gap-3 justify-content-center mb-4" id="preset-grid">
+                                                    @for($i = 1; $i <= 13; $i++)
+                                                    <img src="{{ URL::asset('build/images/user/avatar-' . $i . '.jpg') }}"
+                                                         data-index="{{ $i }}"
+                                                         class="avatar-option rounded-circle"
+                                                         style="width:60px;height:60px;object-fit:cover;cursor:pointer;border:3px solid transparent;transition:border-color .2s,transform .2s;"
+                                                         alt="Avatar {{ $i }}"
+                                                         title="Avatar {{ $i }}">
+                                                    @endfor
+                                                </div>
+
+                                                <hr class="my-3">
+
+                                                {{-- Upload custom --}}
+                                                <p class="text-muted small mb-2">Ou télécharger une photo personnalisée :</p>
+                                                <input type="file" id="modal-file-input" accept="image/*" class="form-control form-control-sm">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Annuler</button>
+                                                <button type="button" class="btn btn-primary btn-sm" id="apply-avatar-btn" disabled>
+                                                    <i class="ph-duotone ph-check me-1"></i>Appliquer
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Hidden forms --}}
+                                <form id="preset-avatar-form" method="POST" action="{{ route('profile.update') }}" class="d-none">
+                                    @csrf
+                                    <input type="hidden" name="name" value="{{ $user->name }}">
+                                    <input type="hidden" name="preset_avatar" id="preset-avatar-value">
+                                </form>
+                                <form id="upload-avatar-form" method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="d-none">
+                                    @csrf
+                                    <input type="hidden" name="name" value="{{ $user->name }}">
+                                    <input type="file" id="upload-avatar-input" name="profile_photo">
+                                </form>
+
+                                <script>
+                                (function () {
+                                    let selectedPreset = null;
+                                    let selectedFile   = null;
+
+                                    // Preset grid selection
+                                    document.querySelectorAll('.avatar-option').forEach(img => {
+                                        img.addEventListener('click', function () {
+                                            document.querySelectorAll('.avatar-option').forEach(i => {
+                                                i.style.borderColor = 'transparent';
+                                                i.style.transform = 'scale(1)';
+                                            });
+                                            this.style.borderColor = '#4680ff';
+                                            this.style.transform = 'scale(1.1)';
+                                            selectedPreset = this.dataset.index;
+                                            selectedFile = null;
+                                            document.getElementById('modal-file-input').value = '';
+                                            document.getElementById('apply-avatar-btn').disabled = false;
+                                        });
+                                    });
+
+                                    // File input
+                                    document.getElementById('modal-file-input').addEventListener('change', function () {
+                                        if (!this.files.length) return;
+                                        selectedFile = this.files[0];
+                                        selectedPreset = null;
+                                        document.querySelectorAll('.avatar-option').forEach(i => {
+                                            i.style.borderColor = 'transparent';
+                                            i.style.transform = 'scale(1)';
+                                        });
+                                        document.getElementById('apply-avatar-btn').disabled = false;
+                                    });
+
+                                    // Apply button
+                                    document.getElementById('apply-avatar-btn').addEventListener('click', function () {
+                                        if (selectedPreset) {
+                                            document.getElementById('preset-avatar-value').value = selectedPreset;
+                                            // Live preview
+                                            document.getElementById('avatar-preview').src =
+                                                '{{ URL::asset('build/images/user/avatar-') }}' + selectedPreset + '.jpg';
+                                            document.getElementById('preset-avatar-form').submit();
+                                        } else if (selectedFile) {
+                                            // Transfer file to upload form input
+                                            const dt = new DataTransfer();
+                                            dt.items.add(selectedFile);
+                                            document.getElementById('upload-avatar-input').files = dt.files;
+                                            // Live preview
+                                            const reader = new FileReader();
+                                            reader.onload = e => document.getElementById('avatar-preview').src = e.target.result;
+                                            reader.readAsDataURL(selectedFile);
+                                            document.getElementById('upload-avatar-form').submit();
+                                        }
+                                    });
+
+                                    // Reset state when modal closes
+                                    document.getElementById('avatarPickerModal').addEventListener('hidden.bs.modal', function () {
+                                        selectedPreset = null;
+                                        selectedFile = null;
+                                        document.querySelectorAll('.avatar-option').forEach(i => {
+                                            i.style.borderColor = 'transparent';
+                                            i.style.transform = 'scale(1)';
+                                        });
+                                        document.getElementById('modal-file-input').value = '';
+                                        document.getElementById('apply-avatar-btn').disabled = true;
+                                    });
+                                })();
+                                </script>
                                 <h5 class="mb-0">{{ $user->name }}</h5>
                                 <p class="text-muted text-sm">
                                     Contactez <a href="mailto:{{ $user->email }}"

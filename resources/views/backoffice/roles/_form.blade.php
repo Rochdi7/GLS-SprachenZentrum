@@ -79,6 +79,7 @@
                 'icon'  => 'ph-duotone ph-database',
                 'color' => 'primary',
                 'modules' => ['crm', 'crm_prof_payment'],
+                'viewOnly' => true,
             ],
         ];
 
@@ -150,6 +151,7 @@
 
                 $color = $colorMap[$group['color']] ?? $colorMap['primary'];
                 $collapseId = 'perm-group-' . $gIdx;
+                $groupViewOnly = !empty($group['viewOnly']);
             @endphp
             <div class="accordion-item border mb-2 rounded overflow-hidden" style="border-color: {{ $color['bg'] }}20 !important;">
                 <h2 class="accordion-header">
@@ -179,14 +181,18 @@
                                 <tr>
                                     <th style="min-width:200px; padding-left:1.25rem;">Module</th>
                                     @foreach($actions as $action)
+                                    @if(!$groupViewOnly || $action === 'view')
                                     <th class="text-center" style="width:110px;">
                                         <i class="ph-duotone {{ $actionIcons[$action] }} me-1"></i>
                                         {{ $actionLabels[$action] }}
                                     </th>
+                                    @endif
                                     @endforeach
+                                    @if(!$groupViewOnly)
                                     <th class="text-center" style="width:90px;">
                                         <small class="text-muted">Tout</small>
                                     </th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
@@ -202,6 +208,7 @@
                                         {{ $moduleLabels[$module] ?? ucfirst(str_replace('_', ' ', $module)) }}
                                     </td>
                                     @foreach($actions as $action)
+                                    @if(!$groupViewOnly || $action === 'view')
                                     <td class="text-center">
                                         @if(isset($modulePerms[$action]))
                                             @php $permName = $modulePerms[$action]; @endphp
@@ -218,8 +225,10 @@
                                             <span class="text-muted small">—</span>
                                         @endif
                                     </td>
+                                    @endif
                                     @endforeach
-                                    {{-- Row "select all" toggle --}}
+                                    {{-- Row "select all" toggle — hidden for view-only groups --}}
+                                    @if(!$groupViewOnly)
                                     <td class="text-center">
                                         <div class="form-check d-flex justify-content-center">
                                             <input class="form-check-input row-toggle"
@@ -230,6 +239,7 @@
                                                    data-group="{{ $collapseId }}">
                                         </div>
                                     </td>
+                                    @endif
                                 </tr>
                                 @endforeach
                             </tbody>

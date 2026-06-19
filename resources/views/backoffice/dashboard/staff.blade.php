@@ -218,7 +218,7 @@
             <div class="card-body">
                 <img src="{{ URL::asset('build/images/widget/img-status-2.svg') }}" alt="img" class="img-fluid img-bg" />
                 <div class="d-flex align-items-center">
-                    <div class="avtar bg-light-warning"><i class="ti ti-users-group f-24"></i></div>
+                    <div class="avtar bg-light-warning"><i class="ti ti-users f-24"></i></div>
                     <div class="flex-grow-1 ms-3">
                         <p class="mb-0 text-muted">Groupes</p>
                         <h4 class="f-w-300 m-b-0">{{ $groupsTotal }}</h4>

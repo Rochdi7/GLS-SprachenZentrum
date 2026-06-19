@@ -210,17 +210,40 @@
         const src = document.getElementById('crm-expenses-type-data');
         if (!el || !src) return;
         const { labels, series, colors } = JSON.parse(src.textContent);
+        const total = series.reduce((a, b) => a + b, 0) || 1;
+        // sqrt-normalize so small slices are still visually distinguishable
+        const sqrtSeries = series.map(v => Math.sqrt(v));
+        const sqrtTotal  = sqrtSeries.reduce((a, b) => a + b, 0) || 1;
         new ApexCharts(el, {
-            chart: { type: 'donut', height: 260 },
+            chart: { type: 'donut', height: 300 },
             labels,
-            series,
+            series: sqrtSeries,
             colors,
             legend: { position: 'bottom', fontSize: '12px' },
-            plotOptions: { pie: { donut: { size: '60%' } } },
-            dataLabels: { enabled: false },
+            plotOptions: {
+                pie: {
+                    donut: { size: '60%' },
+                    expandOnClick: false,
+                    minAngleToShowLabel: 0,
+                }
+            },
+            stroke: { width: 2, colors: ['#1e2533'] },
+            dataLabels: {
+                enabled: true,
+                // Show real % of actual total, not the normalized arc
+                formatter: (val, opts) => {
+                    const real = (series[opts.seriesIndex] / total * 100).toFixed(1);
+                    return real >= 1 ? real + '%' : '';
+                },
+                dropShadow: { enabled: false },
+                style: { fontSize: '11px' },
+            },
             tooltip: {
                 y: {
-                    formatter: v => new Intl.NumberFormat('fr-MA', { minimumFractionDigits: 2 }).format(v) + ' DH'
+                    formatter: (v, opts) => {
+                        const real = series[opts.seriesIndex];
+                        return new Intl.NumberFormat('fr-MA', { minimumFractionDigits: 2 }).format(real) + ' DH';
+                    }
                 }
             },
         }).render();

@@ -25,7 +25,8 @@ class ProfileController extends Controller
             'bio'           => 'nullable|string',
             'phone'         => 'nullable|string|max:30',
             'address'       => 'nullable|string',
-            'profile_photo' => 'nullable|image|max:2048'
+            'profile_photo' => 'nullable|image|max:2048',
+            'preset_avatar' => 'nullable|integer|between:1,13',
         ]);
 
         // Basic fields
@@ -34,10 +35,16 @@ class ProfileController extends Controller
         $user->phone   = $request->phone;
         $user->address = $request->address;
 
-        // Profile photo (Spatie Media Library)
+        // Profile photo — uploaded file takes priority over preset
         if ($request->hasFile('profile_photo')) {
             $user->clearMediaCollection('profile_photo');
             $user->addMediaFromRequest('profile_photo')->toMediaCollection('profile_photo');
+        } elseif ($request->filled('preset_avatar')) {
+            $path = public_path('build/images/user/avatar-' . $request->preset_avatar . '.jpg');
+            if (file_exists($path)) {
+                $user->clearMediaCollection('profile_photo');
+                $user->addMedia($path)->preservingOriginal()->toMediaCollection('profile_photo');
+            }
         }
 
         $user->save();
