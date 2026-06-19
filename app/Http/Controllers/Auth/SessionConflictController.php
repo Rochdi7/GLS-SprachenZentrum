@@ -3,49 +3,33 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
-class LoginController extends Controller
+class SessionConflictController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
-
-    use AuthenticatesUsers;
-
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = RouteServiceProvider::HOME;
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function show(Request $request)
     {
-        $this->middleware('guest')->except('logout');
+        $user = Auth::user();
+
+        return view('auth.session-conflict', [
+            'device'    => $user->session_device ?? 'Appareil inconnu',
+            'ip'        => $user->session_ip ?? '—',
+            'sessionAt' => $user->session_at,
+        ]);
     }
 
-    protected function authenticated(Request $request, $user): void
+    /**
+     * Current user keeps their session — kick the other device by issuing a new token.
+     */
+    public function keep(Request $request)
     {
-        $token = \Illuminate\Support\Str::random(60);
+        $user  = Auth::user();
+        $token = Str::random(60);
         $ua    = $request->userAgent() ?? '';
 
         $user->update([
-            'last_login_at'  => now(),
             'session_token'  => $token,
             'session_ip'     => $request->ip(),
             'session_device' => $this->parseDevice($ua),
@@ -53,6 +37,20 @@ class LoginController extends Controller
         ]);
 
         $request->session()->put('session_token', $token);
+
+        return redirect()->intended(route('backoffice.dashboard'));
+    }
+
+    /**
+     * Current user logs themselves out — let the other device stay.
+     */
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->flush();
+        $request->session()->regenerate(true);
+
+        return redirect()->route('login');
     }
 
     private function parseDevice(string $ua): string

@@ -12,10 +12,17 @@ Auth::routes([
 ]);
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\SessionConflictController;
 
 Route::middleware('guest')->group(function () {
     Route::get('/gls-portal', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/gls-portal', [LoginController::class, 'login'])->name('login.post');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/session/conflict', [SessionConflictController::class, 'show'])->name('session.conflict');
+    Route::post('/session/keep', [SessionConflictController::class, 'keep'])->name('session.keep');
+    Route::post('/session/logout', [SessionConflictController::class, 'logout'])->name('session.logout');
 });
 
 Route::post('/logout', [LoginController::class, 'logout'])

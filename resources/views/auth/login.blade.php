@@ -11,13 +11,6 @@
                     <h4 class="f-w-500 mb-1">Connectez-vous avec votre email</h4>
                 </div>
 
-                @if(session('session_kicked'))
-                <div class="alert alert-warning d-flex align-items-center gap-2 mb-3" role="alert">
-                    <i class="ti ti-device-desktop-off fs-5"></i>
-                    <span>Votre session a été déconnectée car vous vous êtes connecté depuis un autre appareil.</span>
-                </div>
-                @endif
-
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
 

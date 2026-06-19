@@ -15,12 +15,12 @@ class EnforceSingleSession
             $sessionToken = $request->session()->get('session_token');
 
             if ($user->session_token !== $sessionToken) {
-                Auth::logout();
-                $request->session()->flush();
-                $request->session()->regenerate(true);
+                // Don't kick — redirect to conflict page so user can decide
+                if ($request->routeIs('session.conflict') || $request->routeIs('session.keep') || $request->routeIs('session.logout')) {
+                    return $next($request);
+                }
 
-                return redirect()->route('login')
-                    ->with('session_kicked', true);
+                return redirect()->route('session.conflict');
             }
         }
 

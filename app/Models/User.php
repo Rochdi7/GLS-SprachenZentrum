@@ -44,12 +44,18 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'email_verified_at',
         'last_login_at',
         'session_token',
+        'session_ip',
+        'session_device',
+        'session_at',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
         'session_token',
+        'session_ip',
+        'session_device',
+        'session_at',
     ];
 
     protected $casts = [
