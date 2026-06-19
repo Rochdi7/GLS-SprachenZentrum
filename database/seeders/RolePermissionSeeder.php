@@ -85,8 +85,8 @@ class RolePermissionSeeder extends Seeder
         /*
         |----------------------------------------------------------------------
         | Réception — front-desk operations only
-        | Can view most things, create/edit leads & school data, no delete,
-        | no access to payroll, HR, admin, or content management
+        | Can view most school data, no delete,
+        | no access to admissions, leads, CRM, payroll, HR, admin, or content management
         |----------------------------------------------------------------------
         */
         $reception = Role::firstOrCreate(['name' => 'Réception', 'guard_name' => 'web']);
@@ -109,16 +109,8 @@ class RolePermissionSeeder extends Seeder
             'translations.view', 'translations.create', 'translations.edit',
             'studienkollegs.view',
 
-            // Admissions — reception handles incoming students
-            'applications.view', 'applications.create', 'applications.edit',
-            'leads.view',
-            'lead_stats.view',
-
             // Quizzes — view only
             'quizzes.view',
-
-            // CRM — view access
-            'crm.view',
 
             // Encaissements — view access
             'encaissements.view',

@@ -33,17 +33,35 @@
                         @enderror
                     </div>
                     <div class="form-group mb-3">
-                        <input type="password" class="form-control @error('password') is-invalid @enderror" name="password"
-                            required autocomplete="new-password" placeholder="Password">
+                        <div class="auth-password-field">
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" name="password"
+                                id="registerPassword" required autocomplete="new-password" placeholder="Password">
+                            <button type="button"
+                                class="auth-password-toggle"
+                                data-password-toggle="registerPassword"
+                                aria-label="Show password"
+                                aria-pressed="false">
+                                <i class="ti ti-eye-off"></i>
+                            </button>
+                        </div>
                         @error('password')
-                            <span class="invalid-feedback" role="alert">
+                            <span class="invalid-feedback d-block" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
                         @enderror
                     </div>
                     <div class="form-group mb-3">
-                        <input type="password" class="form-control" name="password_confirmation" required
-                            autocomplete="new-password" placeholder="Confirm Password">
+                        <div class="auth-password-field">
+                            <input type="password" class="form-control" name="password_confirmation" required
+                                id="registerPasswordConfirmation" autocomplete="new-password" placeholder="Confirm Password">
+                            <button type="button"
+                                class="auth-password-toggle"
+                                data-password-toggle="registerPasswordConfirmation"
+                                aria-label="Show password confirmation"
+                                aria-pressed="false">
+                                <i class="ti ti-eye-off"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="d-grid mt-4">
                         <button type="submit" class="btn btn-primary">Create Account</button>

@@ -30,34 +30,36 @@
 
                     <div class="form-group mb-3">
                         <label class="form-label">New Password</label>
-                        <div class="input-group">
+                        <div class="auth-password-field">
                             <input type="password" class="form-control @error('password') is-invalid @enderror"
                                    name="password" required autocomplete="new-password"
                                    id="resetPassword" placeholder="Nouveau mot de passe">
-                            <button type="button" class="input-group-text bg-white border-start-0"
-                                    id="toggleResetPassword" tabindex="-1"
-                                    style="cursor:pointer;border-color:#dee2e6;">
-                                <i id="toggleResetIcon" class="ti ti-eye-off" style="font-size:1.1rem;color:#6c757d;"></i>
+                            <button type="button" class="auth-password-toggle"
+                                    data-password-toggle="resetPassword"
+                                    aria-label="Afficher le mot de passe"
+                                    aria-pressed="false">
+                                <i class="ti ti-eye-off"></i>
                             </button>
-                            @error('password')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
                         </div>
+                        @error('password')
+                            <span class="invalid-feedback d-block" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
 
                     <div class="form-group mb-3">
                         <label class="form-label">Confirm Password</label>
-                        <div class="input-group">
+                        <div class="auth-password-field">
                             <input type="password" class="form-control"
                                    name="password_confirmation" required
                                    autocomplete="new-password"
                                    id="resetConfirm" placeholder="Confirmer le mot de passe">
-                            <button type="button" class="input-group-text bg-white border-start-0"
-                                    id="toggleConfirm" tabindex="-1"
-                                    style="cursor:pointer;border-color:#dee2e6;">
-                                <i id="toggleConfirmIcon" class="ti ti-eye-off" style="font-size:1.1rem;color:#6c757d;"></i>
+                            <button type="button" class="auth-password-toggle"
+                                    data-password-toggle="resetConfirm"
+                                    aria-label="Afficher la confirmation du mot de passe"
+                                    aria-pressed="false">
+                                <i class="ti ti-eye-off"></i>
                             </button>
                         </div>
                     </div>
@@ -69,22 +71,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-    function toggleField(btnId, inputId, iconId) {
-        document.getElementById(btnId).addEventListener('click', function () {
-            var input = document.getElementById(inputId);
-            var icon  = document.getElementById(iconId);
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.replace('ti-eye-off', 'ti-eye');
-            } else {
-                input.type = 'password';
-                icon.classList.replace('ti-eye', 'ti-eye-off');
-            }
-        });
-    }
-    toggleField('toggleResetPassword', 'resetPassword', 'toggleResetIcon');
-    toggleField('toggleConfirm', 'resetConfirm', 'toggleConfirmIcon');
-    </script>
 @endsection

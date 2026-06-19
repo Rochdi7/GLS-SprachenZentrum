@@ -30,16 +30,17 @@
 
                     {{-- Password --}}
                     <div class="form-group mb-3">
-                        <div class="input-group @error('password') is-invalid @enderror">
+                        <div class="auth-password-field">
                             <input type="password"
                                    class="form-control @error('password') is-invalid @enderror"
                                    name="password" required autocomplete="current-password"
                                    id="loginPassword" placeholder="Mot de passe">
                             <button type="button"
-                                    class="input-group-text bg-white border-start-0"
-                                    id="togglePassword" tabindex="-1"
-                                    style="cursor:pointer;border-color:#dee2e6;">
-                                <i id="toggleIcon" class="ti ti-eye-off" style="font-size:1.1rem;color:#6c757d;"></i>
+                                    class="auth-password-toggle"
+                                    data-password-toggle="loginPassword"
+                                    aria-label="Afficher le mot de passe"
+                                    aria-pressed="false">
+                                <i class="ti ti-eye-off"></i>
                             </button>
                         </div>
                         @error('password')
@@ -68,17 +69,4 @@
         </div>
     </div>
 
-    <script>
-    document.getElementById('togglePassword').addEventListener('click', function () {
-        var input = document.getElementById('loginPassword');
-        var icon  = document.getElementById('toggleIcon');
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.replace('ti-eye-off', 'ti-eye');
-        } else {
-            input.type = 'password';
-            icon.classList.replace('ti-eye', 'ti-eye-off');
-        }
-    });
-    </script>
 @endsection

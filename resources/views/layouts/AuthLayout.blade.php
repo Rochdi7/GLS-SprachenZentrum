@@ -17,6 +17,64 @@
     <link rel="icon" href="{{ URL::asset('assets/images/favicon/favicon.svg') }}" type="image/x-icon">
     @yield('css')
 
+    <style>
+        .auth-password-field {
+            position: relative;
+        }
+
+        .auth-password-field .form-control {
+            padding-right: 3.25rem;
+        }
+
+        .auth-password-field .form-control.is-invalid,
+        .auth-password-field .was-validated .form-control:invalid {
+            padding-right: 5rem;
+            background-position: right calc(2.5rem + 0.375em) center;
+        }
+
+        .auth-password-toggle {
+            position: absolute;
+            inset-inline-end: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2rem;
+            height: 2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: #6c757d;
+            z-index: 4;
+        }
+
+        .auth-password-toggle:focus-visible {
+            outline: 2px solid rgba(52, 124, 242, 0.35);
+            outline-offset: 2px;
+            border-radius: 999px;
+        }
+
+        @media (max-width: 575.98px) {
+            .auth-password-field .form-control {
+                min-height: 48px;
+                padding-right: 3rem;
+            }
+
+            .auth-password-field .form-control.is-invalid,
+            .auth-password-field .was-validated .form-control:invalid {
+                padding-right: 4.5rem;
+                background-position: right calc(2.2rem + 0.375em) center;
+            }
+
+            .auth-password-toggle {
+                inset-inline-end: 0.625rem;
+                width: 1.875rem;
+                height: 1.875rem;
+            }
+        }
+    </style>
+
     @include('layouts.head-css')
 </head>
 
@@ -48,6 +106,29 @@
     @include('layouts.customizer')
 
     @include('layouts.footerjs')
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('[data-password-toggle]').forEach(function (button) {
+                var input = document.getElementById(button.getAttribute('data-password-toggle'));
+                var icon = button.querySelector('i');
+
+                if (!input || !icon) {
+                    return;
+                }
+
+                button.addEventListener('click', function () {
+                    var isHidden = input.type === 'password';
+
+                    input.type = isHidden ? 'text' : 'password';
+                    icon.classList.toggle('ti-eye', isHidden);
+                    icon.classList.toggle('ti-eye-off', !isHidden);
+                    button.setAttribute('aria-pressed', String(isHidden));
+                    button.setAttribute('aria-label', isHidden ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+                });
+            });
+        });
+    </script>
 
     @yield('scripts')
 </body>

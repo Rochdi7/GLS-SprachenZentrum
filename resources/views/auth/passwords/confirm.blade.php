@@ -17,10 +17,19 @@
                             <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
 
                             <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+                                <div class="auth-password-field">
+                                    <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+                                    <button type="button"
+                                            class="auth-password-toggle"
+                                            data-password-toggle="password"
+                                            aria-label="Show password"
+                                            aria-pressed="false">
+                                        <i class="ti ti-eye-off"></i>
+                                    </button>
+                                </div>
 
                                 @error('password')
-                                    <span class="invalid-feedback" role="alert">
+                                    <span class="invalid-feedback d-block" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
