@@ -16,11 +16,11 @@ class EnforceSingleSession
 
             if ($user->session_token !== $sessionToken) {
                 Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
+                $request->session()->flush();
+                $request->session()->regenerate(true);
 
                 return redirect()->route('login')
-                    ->withErrors(['email' => 'Your session was terminated because you logged in from another device.']);
+                    ->with('session_kicked', true);
             }
         }
 

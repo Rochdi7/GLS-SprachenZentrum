@@ -17,7 +17,7 @@ class TeacherController extends Controller
      */
     public function index()
     {
-        $teachers = Teacher::with('site')->latest()->get();
+        $teachers = $this->scopeToUserSites(Teacher::with('site'))->latest()->get();
 
         return view('backoffice.teachers.index', compact('teachers'));
     }

@@ -19,10 +19,10 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = User::with(['roles', 'site', 'sites'])
-            ->whereNotIn('email', self::HIDDEN_EMAILS)
-            ->latest()
-            ->get();
+        $users = $this->scopeToUserSites(
+            User::with(['roles', 'site', 'sites'])
+                ->whereNotIn('email', self::HIDDEN_EMAILS)
+        )->latest()->get();
 
         return view('backoffice.users.index', compact('users'));
     }
