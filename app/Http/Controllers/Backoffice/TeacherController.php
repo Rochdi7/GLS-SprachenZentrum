@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backoffice\Teachers\StoreTeacherRequest;
 use App\Http\Requests\Backoffice\Teachers\UpdateTeacherRequest;
@@ -10,6 +11,7 @@ use App\Models\Site;
 
 class TeacherController extends Controller
 {
+    use ScopesToUserSites;
     /**
      * Display a listing of the resource.
      */
@@ -25,7 +27,7 @@ class TeacherController extends Controller
      */
     public function create()
     {
-        $sites = Site::orderBy('name')->get(); // Needed for select site
+        $sites = $this->accessibleSites();
         return view('backoffice.teachers.create', compact('sites'));
     }
 
@@ -69,7 +71,7 @@ class TeacherController extends Controller
     public function edit(string $id)
     {
         $teacher = Teacher::with('sites')->findOrFail($id);
-        $sites = Site::orderBy('name')->get();
+        $sites = $this->accessibleSites();
 
         return view('backoffice.teachers.edit', compact('teacher', 'sites'));
     }

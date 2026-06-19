@@ -43,11 +43,13 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'staff_notes',
         'email_verified_at',
         'last_login_at',
+        'session_token',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'session_token',
     ];
 
     protected $casts = [

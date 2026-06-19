@@ -11,8 +11,8 @@ use Illuminate\Support\Collection;
 /**
  * Centralised "show only what this user is affected to" rules.
  *
- * Roles allowed to see EVERY centre: Super Admin, Admin.
- * All other roles: limited to centres in `users.site_id` + `site_user` pivot.
+ * Roles allowed to see EVERY centre: Super Admin only.
+ * Admin and all other roles: limited to centres in `users.site_id` + `site_user` pivot.
  *
  * Applied to controllers that list/filter centre-scoped data so the rules stay
  * consistent across the app.
@@ -26,7 +26,7 @@ trait ScopesToUserSites
     {
         $user = $user ?: auth()->user();
         if (! $user) return false;
-        return $user->hasAnyRole(['Super Admin', 'Admin']);
+        return $user->hasRole('Super Admin');
     }
 
     /**
@@ -62,8 +62,8 @@ trait ScopesToUserSites
     /**
      * Apply the centre filter to an Eloquent / Query builder.
      *
-     * - Super Admin / Admin → no-op.
-     * - Others with centres → whereIn(column, accessibleSiteIds()).
+     * - Super Admin → no-op (sees all).
+     * - Admin / others with centres → whereIn(column, accessibleSiteIds()).
      * - Others with no centre → forces an impossible filter (empty result).
      */
     protected function scopeToUserSites($query, string $column = 'site_id', ?User $user = null)

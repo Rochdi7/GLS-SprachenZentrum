@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Models\Site;
 use App\Models\User;
@@ -20,6 +21,7 @@ use Illuminate\Http\Request;
  */
 class ScheduleController extends Controller
 {
+    use ScopesToUserSites;
     // ─── Legacy tabular view (admin-only overview) ──────────────────────
 
     public function index(Request $request)
@@ -27,7 +29,7 @@ class ScheduleController extends Controller
         $authUser = $request->user();
         $isAdmin = $authUser->isCenterAdmin();
 
-        $sites = Site::where('is_active', true)->get();
+        $sites = $this->accessibleSites();
         $roles = User::STAFF_ROLES;
         $staffQuery = User::query()->where('is_active', true);
 
@@ -455,7 +457,7 @@ class ScheduleController extends Controller
     {
         $this->authorizeManage($request->user(), $schedule->user);
 
-        $sites = Site::where('is_active', true)->get();
+        $sites = $this->accessibleSites();
         $employees = User::whereNotNull('staff_role')->where('is_active', true)->orderBy('name')->get();
 
         return view('backoffice.schedules.edit', compact('schedule', 'sites', 'employees'));

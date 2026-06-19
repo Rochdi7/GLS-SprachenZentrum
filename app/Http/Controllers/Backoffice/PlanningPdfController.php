@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Models\Site;
 use App\Models\User;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 
 class PlanningPdfController extends Controller
 {
+    use ScopesToUserSites;
     /**
      * PDF for a single staff member (bound as User via /pdf/employee/{employee}).
      */
@@ -86,9 +88,20 @@ class PlanningPdfController extends Controller
 
     public function exportForm()
     {
-        $sites = Site::where('is_active', true)->get();
+        $sites = $this->accessibleSites();
+        $allowedSiteIds = $this->accessibleSiteIds();
         $employees = User::whereNotNull('staff_role')
             ->where('is_active', true)
+            ->when($allowedSiteIds !== null, function ($q) use ($allowedSiteIds) {
+                if (empty($allowedSiteIds)) {
+                    $q->whereRaw('1 = 0');
+                } else {
+                    $q->where(function ($q2) use ($allowedSiteIds) {
+                        $q2->whereIn('site_id', $allowedSiteIds)
+                           ->orWhereHas('sites', fn ($sq) => $sq->whereIn('sites.id', $allowedSiteIds));
+                    });
+                }
+            })
             ->with('site')
             ->orderBy('name')
             ->get();

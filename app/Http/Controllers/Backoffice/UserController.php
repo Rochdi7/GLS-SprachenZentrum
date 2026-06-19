@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Models\Site;
 use App\Models\User;
@@ -11,6 +12,7 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    use ScopesToUserSites;
     private const HIDDEN_EMAILS = [
         'rochdi.karouali1234@gmail.com',
     ];
@@ -28,7 +30,7 @@ class UserController extends Controller
     public function create()
     {
         $roles = $this->availableRoles();
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
         $staffRoles = User::STAFF_ROLES;
 
         return view('backoffice.users.create', compact('roles', 'sites', 'staffRoles'));
@@ -73,7 +75,7 @@ class UserController extends Controller
     {
         $user  = User::with('sites')->findOrFail($id);
         $roles = $this->availableRoles();
-        $sites = Site::where('is_active', true)->orderBy('name')->get();
+        $sites = $this->accessibleSites();
         $staffRoles = User::STAFF_ROLES;
 
         return view('backoffice.users.edit', compact('user', 'roles', 'sites', 'staffRoles'));

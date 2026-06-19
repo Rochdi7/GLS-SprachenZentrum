@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Jobs\SyncLeadToGoogleSheetJob;
 use App\Models\Group;
@@ -11,22 +12,37 @@ use Illuminate\Http\Request;
 
 class GroupApplicationController extends Controller
 {
+    use ScopesToUserSites;
+
     public function index(Request $request)
     {
         $query = GroupApplication::with(['group.site'])->latest();
+
+        // Scope to user's accessible centres (via group → site_id)
+        $allowedSiteIds = $this->accessibleSiteIds();
+        if ($allowedSiteIds !== null) {
+            if (empty($allowedSiteIds)) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->whereHas('group', fn ($q) => $q->whereIn('site_id', $allowedSiteIds));
+            }
+        }
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
         if ($request->filled('center')) {
-            $query->whereHas('group.site', function ($q) use ($request) {
-                $q->where('id', $request->center);
-            });
+            $resolved = $this->resolveRequestedSiteId((int) $request->center);
+            if ($resolved !== null) {
+                $query->whereHas('group', fn ($q) => $q->where('site_id', $resolved));
+            } else {
+                $query->whereRaw('1 = 0');
+            }
         }
 
         $applications = $query->get();
-        $sites = Site::orderBy('name')->get();
+        $sites = $this->accessibleSites();
 
         return view('backoffice.applications.index', compact('applications', 'sites'));
     }

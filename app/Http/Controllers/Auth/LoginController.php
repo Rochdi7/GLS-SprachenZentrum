@@ -41,6 +41,13 @@ class LoginController extends Controller
 
     protected function authenticated(Request $request, $user): void
     {
-        $user->update(['last_login_at' => now()]);
+        $token = \Illuminate\Support\Str::random(60);
+
+        $user->update([
+            'last_login_at'  => now(),
+            'session_token'  => $token,
+        ]);
+
+        $request->session()->put('session_token', $token);
     }
 }

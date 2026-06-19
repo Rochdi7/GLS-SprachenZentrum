@@ -40,31 +40,19 @@ class StaffDashboardController extends Controller
         $user = $request->user();
         $isAdmin = $user->hasRole('Admin');
 
-        // Centre scoping. Admins are treated as "see all" by the shared trait,
-        // but on THIS dashboard we deliberately limit them to their own
-        // centre(s) — so resolve the IDs directly from the pivot.
+        // Centre scoping. Super Admin sees all; Admin and others are scoped to
+        // their assigned centres via the shared trait.
         $accessibleSites = $this->accessibleSites($user);
-        if ($isAdmin) {
-            $accessibleSites = Site::whereIn('id', $user->accessibleSiteIds() ?: [0])
-                ->orderBy('name')->get();
-            $allowedSiteIds = $user->accessibleSiteIds();
-        } else {
-            $allowedSiteIds = $this->accessibleSiteIds($user); // null = all
-        }
+        $allowedSiteIds  = $this->accessibleSiteIds($user); // null = all (Super Admin only)
 
         // Hard gate: a centre-scoped user with NO centre can't see data.
-        if (($isAdmin || ! $this->userSeesAllSites($user)) && empty($allowedSiteIds)) {
+        if (! $this->userSeesAllSites($user) && empty($allowedSiteIds)) {
             return view('backoffice.dashboard.staff_no_site');
         }
 
         // Optional centre picker (must be in the accessible list).
-        $requested = $request->filled('site_id') ? (int) $request->site_id : null;
-        if ($isAdmin) {
-            $ids = $user->accessibleSiteIds();
-            $activeSiteId = ($requested !== null && in_array($requested, $ids, true)) ? $requested : null;
-        } else {
-            $activeSiteId = $this->resolveRequestedSiteId($requested, $user);
-        }
+        $requested    = $request->filled('site_id') ? (int) $request->site_id : null;
+        $activeSiteId = $this->resolveRequestedSiteId($requested, $user);
 
         $now        = Carbon::now();
         $weekStart  = $now->copy()->startOfWeek(Carbon::MONDAY);
