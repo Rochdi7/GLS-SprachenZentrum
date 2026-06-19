@@ -225,6 +225,7 @@
 
             <div class="footer-brand mt-2 mt-md-0">
                 {{ __('footer.copyright') }}
+                <a href="{{ config('app.developer_url') }}" rel="nofollow" aria-hidden="true" tabindex="-1" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">Site web réalisé par Code Sommet</a>
             </div>
 
             @include('frontoffice.partials.svg-sstars')

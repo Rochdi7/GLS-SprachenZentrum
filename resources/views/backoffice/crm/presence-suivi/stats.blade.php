@@ -98,6 +98,57 @@
 .slist li .tag{font-size:.64rem;font-weight:700;padding:1px 7px;border-radius:10px;background:#fff3d6;color:#b78103}
 .slist li .tag.ex{background:#e8f0ff;color:#3461c9}
 @media(max-width:600px){.ps-cols{grid-template-columns:1fr}.ps-col+.ps-col{border-left:none;border-top:1px solid #f0f1f7}}
+
+/* ===== DARK MODE (theme toggles [data-pc-theme="dark"] on body) ===== */
+/* Surfaces darken; text re-lightens. Colored status pills keep their look. */
+[data-pc-theme="dark"]{
+  --ps-surface:#1f2731;--ps-surface-2:#262f3a;--ps-border:rgba(255,255,255,.09);
+  --ps-heading:#f1f4f8;--ps-text:#b9c2cf;--ps-soft:#8b97a7;
+}
+[data-pc-theme="dark"] .ps-card{background:var(--ps-surface);box-shadow:0 2px 18px rgba(0,0,0,.35)}
+[data-pc-theme="dark"] .ps-head h4{color:var(--ps-heading)}
+[data-pc-theme="dark"] .ps-head p{color:var(--ps-soft)}
+
+[data-pc-theme="dark"] .ps-filters{background:var(--ps-surface);box-shadow:0 2px 14px rgba(0,0,0,.35)}
+[data-pc-theme="dark"] .ps-filters label{color:var(--ps-soft)}
+[data-pc-theme="dark"] .ps-filters input,
+[data-pc-theme="dark"] .ps-filters select,
+[data-pc-theme="dark"] .gsearch-input{
+  background:var(--ps-surface-2);border-color:var(--ps-border);color:var(--ps-text)
+}
+[data-pc-theme="dark"] .gsearch-menu{background:var(--ps-surface-2);border-color:var(--ps-border)}
+[data-pc-theme="dark"] .gsearch-opt{color:var(--ps-text)}
+[data-pc-theme="dark"] .gsearch-opt:hover,
+[data-pc-theme="dark"] .gsearch-opt.active{background:rgba(70,128,255,.18)}
+
+[data-pc-theme="dark"] .ps-kpi{background:var(--ps-surface);box-shadow:0 2px 14px rgba(0,0,0,.35)}
+[data-pc-theme="dark"] .ps-kpi .v{color:var(--ps-heading)}
+[data-pc-theme="dark"] .ps-kpi .l{color:var(--ps-soft)}
+
+[data-pc-theme="dark"] .ps-st{background:var(--ps-surface);box-shadow:0 2px 14px rgba(0,0,0,.35)}
+[data-pc-theme="dark"] .ps-st .v{color:var(--ps-heading)}
+[data-pc-theme="dark"] .ps-st .l{color:var(--ps-soft)}
+
+[data-pc-theme="dark"] .ps-chart h6{color:var(--ps-heading)}
+[data-pc-theme="dark"] .ps-chart .sub{color:var(--ps-soft)}
+
+/* Table */
+[data-pc-theme="dark"] .ps-table thead th{
+  background:var(--ps-surface-2);color:var(--ps-soft);border-bottom-color:var(--ps-border)
+}
+[data-pc-theme="dark"] .ps-table tbody td{color:var(--ps-text);border-bottom-color:rgba(255,255,255,.05)}
+[data-pc-theme="dark"] .ps-table tbody tr:hover{background:rgba(70,128,255,.08)}
+[data-pc-theme="dark"] .bar{background:rgba(255,255,255,.10)}
+[data-pc-theme="dark"] .muted,[data-pc-theme="dark"] .empty{color:var(--ps-soft)}
+
+/* Modal */
+[data-pc-theme="dark"] .ps-modal-box{background:var(--ps-surface)}
+[data-pc-theme="dark"] .ps-modal-head{background:var(--ps-surface);border-bottom-color:var(--ps-border)}
+[data-pc-theme="dark"] .ps-modal-head h5{color:var(--ps-heading)}
+[data-pc-theme="dark"] .ps-modal-head .sub{color:var(--ps-soft)}
+[data-pc-theme="dark"] .ps-modal-close{background:var(--ps-surface-2);color:var(--ps-text)}
+[data-pc-theme="dark"] .ps-modal-close:hover{background:rgba(255,255,255,.12)}
+[data-pc-theme="dark"] .slist li{background:rgba(255,255,255,.04);color:var(--ps-text)}
 </style>
 @endsection
 
@@ -272,6 +323,12 @@ const PS_CHARTS = @json($charts);
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof ApexCharts === 'undefined') return;
 
+    // Dark-mode aware colors for chart axes/grid so labels stay readable.
+    const psDark = document.body.getAttribute('data-pc-theme') === 'dark';
+    const axisColor = psDark ? '#8b97a7' : '#9197ad';
+    const labelColor = psDark ? '#b9c2cf' : '#3a3f54';
+    const gridColor = psDark ? 'rgba(255,255,255,.08)' : '#f0f1f7';
+
     // Chart 1 — présence vs absence trend (stacked area).
     // Pair each value with its date as a UTC timestamp so the datetime axis plots
     // correctly — a bare numeric series with string categories renders nothing.
@@ -291,12 +348,12 @@ document.addEventListener('DOMContentLoaded', () => {
             fill:{type:'gradient',gradient:{opacityFrom:.4,opacityTo:.05}},
             xaxis:{
                 type:'datetime',
-                labels:{format:'dd/MM',style:{colors:'#9197ad',fontSize:'11px'}},
+                labels:{format:'dd/MM',style:{colors:axisColor,fontSize:'11px'}},
                 axisBorder:{show:false},axisTicks:{show:false},
             },
-            yaxis:{labels:{style:{colors:'#9197ad',fontSize:'11px'}}},
-            legend:{position:'top',horizontalAlign:'right',fontSize:'12px'},
-            grid:{borderColor:'#f0f1f7',strokeDashArray:4},
+            yaxis:{labels:{style:{colors:axisColor,fontSize:'11px'}}},
+            legend:{position:'top',horizontalAlign:'right',fontSize:'12px',labels:{colors:labelColor}},
+            grid:{borderColor:gridColor,strokeDashArray:4},
             tooltip:{x:{format:'dd/MM/yyyy'}},
         }).render();
     } else {
@@ -315,11 +372,11 @@ document.addEventListener('DOMContentLoaded', () => {
             xaxis:{
                 categories:PS_CHARTS.groups.labels,
                 max:100,
-                labels:{formatter:v=>v+'%',style:{colors:'#9197ad',fontSize:'11px'}},
+                labels:{formatter:v=>v+'%',style:{colors:axisColor,fontSize:'11px'}},
                 axisBorder:{show:false},axisTicks:{show:false},
             },
-            yaxis:{labels:{style:{colors:'#3a3f54',fontSize:'11px'}}},
-            grid:{borderColor:'#f0f1f7',strokeDashArray:4},
+            yaxis:{labels:{style:{colors:labelColor,fontSize:'11px'}}},
+            grid:{borderColor:gridColor,strokeDashArray:4},
             tooltip:{y:{formatter:v=>v+'%'}},
         }).render();
     } else {
