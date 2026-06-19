@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class SessionConflictController extends Controller
 {
-    public function show(Request $request)
+    public function show()
     {
+        /** @var User $user */
         $user = Auth::user();
 
         return view('auth.session-conflict', [
@@ -25,6 +27,7 @@ class SessionConflictController extends Controller
      */
     public function keep(Request $request)
     {
+        /** @var User $user */
         $user  = Auth::user();
         $token = Str::random(60);
         $ua    = $request->userAgent() ?? '';
@@ -38,7 +41,7 @@ class SessionConflictController extends Controller
 
         $request->session()->put('session_token', $token);
 
-        return redirect()->intended(route('backoffice.dashboard'));
+        return redirect()->intended(route('dashboard'));
     }
 
     /**
