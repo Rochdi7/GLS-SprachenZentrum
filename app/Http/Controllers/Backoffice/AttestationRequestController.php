@@ -120,6 +120,8 @@ class AttestationRequestController extends Controller
 
     public function destroy(string $id)
     {
+        abort_unless(auth()->user()->hasRole('Super Admin'), 403);
+
         AttestationRequest::findOrFail($id)->delete();
 
         return redirect()->route('backoffice.attestation_requests.index')

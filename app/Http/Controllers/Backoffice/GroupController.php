@@ -36,8 +36,8 @@ class GroupController extends Controller
      */
     public function create()
     {
-        $sites = $this->accessibleSites();
-        $teachers = Teacher::orderBy('name')->get();
+        $sites    = $this->accessibleSites();
+        $teachers = $this->scopeToUserSites(Teacher::query(), 'site_id')->orderBy('name')->get();
 
         return view('backoffice.groups.create', compact('sites', 'teachers'));
     }
@@ -79,8 +79,8 @@ class GroupController extends Controller
             403
         );
 
-        $sites = $this->accessibleSites();
-        $teachers = Teacher::orderBy('name')->get();
+        $sites    = $this->accessibleSites();
+        $teachers = $this->scopeToUserSites(Teacher::query(), 'site_id')->orderBy('name')->get();
 
         return view('backoffice.groups.edit', compact('group', 'sites', 'teachers'));
     }

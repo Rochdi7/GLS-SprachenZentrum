@@ -92,7 +92,7 @@
                                                class="avtar avtar-xs btn-link-secondary me-2" title="Voir">
                                                 <i class="ti ti-eye f-20"></i>
                                             </a>
-                                            @can('attestations.delete')
+                                            @role('Super Admin')
                                                 <form action="{{ route('backoffice.attestation_requests.destroy', $r->id) }}" method="POST" class="d-inline-block">
                                                     @csrf
                                                     @method('DELETE')
@@ -103,7 +103,7 @@
                                                         <i class="ti ti-trash f-20"></i>
                                                     </button>
                                                 </form>
-                                            @endcan
+                                            @endrole
                                         </td>
                                     </tr>
                                 @empty
