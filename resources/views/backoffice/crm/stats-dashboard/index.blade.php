@@ -205,7 +205,7 @@
 </div>
 
 {{-- ── Recouvrement par période (date range) ───────────────────────── --}}
-<div class="row mb-4">
+<div class="row mb-4 d-none">
     <div class="col-12">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
