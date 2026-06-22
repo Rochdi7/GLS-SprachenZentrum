@@ -266,8 +266,8 @@
                         <div id="rec-range-chart" style="min-height:320px"></div>
                     </div>
 
-                    {{-- Table --}}
-                    {{-- <div class="table-responsive">
+                    {{-- Table (hidden — tbody/tfoot kept in DOM so JS doesn't crash) --}}
+                    <div class="table-responsive d-none">
                         <table class="table table-bordered table-sm align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
@@ -282,7 +282,7 @@
                             <tbody id="rec-range-tbody"></tbody>
                             <tfoot id="rec-range-tfoot" class="table-secondary fw-semibold"></tfoot>
                         </table>
-                    </div> --}}
+                    </div>
 
                 </div>
 
