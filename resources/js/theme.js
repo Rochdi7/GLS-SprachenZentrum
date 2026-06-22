@@ -97,7 +97,7 @@ function layout_sidebar_change(value) {
       control.classList.remove('active'); // Remove active class from current button
     }
     if (document.querySelector('.pc-sidebar .m-header .logo-lg')) {
-      document.querySelector('.pc-sidebar .m-header .logo-lg').setAttribute('src', logoPath);
+      document.querySelector('.pc-sidebar .m-header .logo-lg').setAttribute('src', dark_flag ? logoPathDark : logoPath);
     }
 
     // Add the active class to the button representing the dark theme
@@ -115,7 +115,7 @@ function layout_sidebar_change(value) {
       control.classList.remove('active'); // Remove active class from current button
     }
     if (document.querySelector('.pc-sidebar .m-header .logo-lg')) {
-      document.querySelector('.pc-sidebar .m-header .logo-lg').setAttribute('src', logoPath);
+      document.querySelector('.pc-sidebar .m-header .logo-lg').setAttribute('src', dark_flag ? logoPathDark : logoPath);
     }
 
     // Add the active class to the button representing the light theme
