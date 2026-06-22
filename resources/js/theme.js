@@ -16,6 +16,7 @@ Description:  this file will contains overall theme setup and handle
 var rtl_flag = false;
 var dark_flag = false;
 const logoPath = 'assets/images/logo/gls-noir.avif';
+const logoPathDark = 'assets/images/logo/gls-blanc.webp';
 
 function layout_change_default() {
   // Determine the initial layout based on the user's system preference for color scheme
@@ -197,20 +198,19 @@ function layout_change(layout) {
   if (layout == 'dark') {
     dark_flag = true;
     if (document.querySelector('.pc-sidebar .m-header .logo-lg')) {
-      document.querySelector('.pc-sidebar .m-header .logo-lg').setAttribute('src', logoPath);
+      document.querySelector('.pc-sidebar .m-header .logo-lg').setAttribute('src', logoPathDark);
     }
-
     if (document.querySelector('.navbar-brand .logo-lg')) {
-      document.querySelector('.navbar-brand .logo-lg').setAttribute('src', logoPath);
+      document.querySelector('.navbar-brand .logo-lg').setAttribute('src', logoPathDark);
     }
     if (document.querySelector('.landing-logo')) {
-      document.querySelector('.landing-logo').setAttribute('src', logoPath);
+      document.querySelector('.landing-logo').setAttribute('src', logoPathDark);
     }
     if (document.querySelector('.auth-main.v1 .auth-sidefooter')) {
-      document.querySelector('.auth-main.v1 .auth-sidefooter img').setAttribute('src', logoPath);
+      document.querySelector('.auth-main.v1 .auth-sidefooter img').setAttribute('src', logoPathDark);
     }
     if (document.querySelector('.footer-top .footer-logo')) {
-      document.querySelector('.footer-top .footer-logo').setAttribute('src', logoPath);
+      document.querySelector('.footer-top .footer-logo').setAttribute('src', logoPathDark);
     }
     var control = document.querySelector('.theme-layout .btn.active');
     if (control) {
@@ -225,7 +225,6 @@ function layout_change(layout) {
     if (document.querySelector('.navbar-brand .logo-lg')) {
       document.querySelector('.navbar-brand .logo-lg').setAttribute('src', logoPath);
     }
-
     if (document.querySelector('.landing-logo')) {
       document.querySelector('.landing-logo').setAttribute('src', logoPath);
     }
