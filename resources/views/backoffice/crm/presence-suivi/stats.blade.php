@@ -329,15 +329,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const labelColor = psDark ? '#b9c2cf' : '#3a3f54';
     const gridColor = psDark ? 'rgba(255,255,255,.08)' : '#f0f1f7';
 
-    // Chart 1 — présence vs absence trend (stacked area).
-    // Pair each value with its date as a UTC timestamp so the datetime axis plots
-    // correctly — a bare numeric series with string categories renders nothing.
+    // Chart 1 — présence vs absence trend (non-stacked area).
+    // Use local midnight (no Z suffix) so dates aren't shifted by timezone offset.
+    // stacked:false so each series shows its own value, not a cumulative total.
     if (PS_CHARTS.trend.labels.length) {
-        const toTs = d => new Date(d + 'T00:00:00Z').getTime();
+        const toTs = d => new Date(d + 'T00:00:00').getTime();
         const presentPairs = PS_CHARTS.trend.labels.map((d, i) => ({ x: toTs(d), y: PS_CHARTS.trend.present[i] }));
         const absentPairs  = PS_CHARTS.trend.labels.map((d, i) => ({ x: toTs(d), y: PS_CHARTS.trend.absent[i] }));
         new ApexCharts(document.querySelector('#psChartTrend'), {
-            chart:{type:'area',height:280,stacked:true,toolbar:{show:false},fontFamily:'inherit'},
+            chart:{type:'area',height:280,stacked:false,toolbar:{show:false},fontFamily:'inherit'},
             series:[
                 {name:'Présents', data:presentPairs},
                 {name:'Absents',  data:absentPairs},
@@ -345,16 +345,16 @@ document.addEventListener('DOMContentLoaded', () => {
             colors:['#1cc88a','#e74c3c'],
             dataLabels:{enabled:false},
             stroke:{curve:'smooth',width:2},
-            fill:{type:'gradient',gradient:{opacityFrom:.4,opacityTo:.05}},
+            fill:{type:'gradient',gradient:{opacityFrom:.25,opacityTo:.03}},
             xaxis:{
                 type:'datetime',
-                labels:{format:'dd/MM',style:{colors:axisColor,fontSize:'11px'}},
+                labels:{format:'dd/MM',style:{colors:axisColor,fontSize:'11px'},datetimeUTC:false},
                 axisBorder:{show:false},axisTicks:{show:false},
             },
             yaxis:{labels:{style:{colors:axisColor,fontSize:'11px'}}},
             legend:{position:'top',horizontalAlign:'right',fontSize:'12px',labels:{colors:labelColor}},
             grid:{borderColor:gridColor,strokeDashArray:4},
-            tooltip:{x:{format:'dd/MM/yyyy'}},
+            tooltip:{x:{format:'dd/MM/yyyy'},shared:true,intersect:false},
         }).render();
     } else {
         document.querySelector('#psChartTrend').innerHTML =
