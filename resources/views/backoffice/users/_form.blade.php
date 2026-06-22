@@ -138,30 +138,15 @@
         </p>
     </div>
 
-    {{-- PRIMARY SITE --}}
-    <div class="col-md-4 mb-3">
-        <label class="form-label fw-bold">Centre principal</label>
-        <select name="site_id" class="form-select" id="user_primary_site">
-            <option value="">— Aucun —</option>
-            @foreach($sites as $site)
-                <option value="{{ $site->id }}"
-                    {{ (string) old('site_id', $user->site_id ?? '') === (string) $site->id ? 'selected' : '' }}>
-                    {{ $site->name }}
-                </option>
-            @endforeach
-        </select>
-        <small class="text-muted">Centre par défaut affiché dans les filtres et exports.</small>
-    </div>
-
-    {{-- ADDITIONAL CENTRES (multi) --}}
+    {{-- CENTRES AFFECTÉS --}}
     @php
         $assignedSiteIds = collect(old('site_ids', isset($user) ? $user->sites->pluck('id')->all() : []))
             ->map(fn ($v) => (int) $v)
             ->all();
     @endphp
-    <div class="col-md-8 mb-3">
+    <div class="col-12 mb-3">
         <label class="form-label fw-bold">Centres affectés (accès multi-centres)</label>
-        <select name="site_ids[]" class="form-select" id="user_sites_multi" multiple size="6">
+        <select name="site_ids[]" class="form-select" multiple size="6">
             @foreach($sites as $site)
                 <option value="{{ $site->id }}"
                     {{ in_array((int) $site->id, $assignedSiteIds, true) ? 'selected' : '' }}>
@@ -171,30 +156,9 @@
         </select>
         <small class="text-muted">
             Maintenez <kbd>Ctrl</kbd> (ou <kbd>⌘</kbd>) pour sélectionner plusieurs centres.
-            L'utilisateur verra les données de chacun des centres cochés.
+            Le premier centre sélectionné devient le centre principal.
         </small>
     </div>
-
-    <script>
-        // Keep the primary site inside the multi list automatically.
-        (function () {
-            var primary = document.getElementById('user_primary_site');
-            var multi   = document.getElementById('user_sites_multi');
-            if (!primary || !multi) return;
-
-            primary.addEventListener('change', function () {
-                if (!primary.value) return;
-                var found = false;
-                for (var i = 0; i < multi.options.length; i++) {
-                    if (multi.options[i].value === primary.value) {
-                        multi.options[i].selected = true;
-                        found = true;
-                    }
-                }
-                // (No-op when not found — multi is filled from the same $sites list.)
-            });
-        })();
-    </script>
 
     {{-- STAFF ROLE --}}
     <div class="col-md-4 mb-3">

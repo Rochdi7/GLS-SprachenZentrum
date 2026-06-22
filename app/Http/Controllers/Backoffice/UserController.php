@@ -147,7 +147,6 @@ class UserController extends Controller
             'password'    => $userId ? 'nullable|string|min:6|confirmed' : 'required|string|min:6|confirmed',
             'role'        => 'required|string|exists:roles,name',
             'phone'       => 'nullable|string|max:50',
-            'site_id'     => 'nullable|exists:sites,id',
             'site_ids'    => 'nullable|array',
             'site_ids.*'  => 'integer|exists:sites,id',
             'staff_role'  => ['nullable', Rule::in(User::STAFF_ROLES)],
