@@ -1,3 +1,8 @@
+<!-- Logo paths for theme switcher -->
+<script>
+    window.GLS_LOGO_LIGHT = "{{ URL::asset('assets/images/logo/gls.avif') }}";
+    window.GLS_LOGO_DARK  = "{{ URL::asset('assets/images/logo/gls-blanc.webp') }}";
+</script>
 <!-- Required Js -->
 <script src="{{ URL::asset('build/js/plugins/popper.min.js') }}"></script>
 <script src="{{ URL::asset('build/js/plugins/simplebar.min.js') }}"></script>

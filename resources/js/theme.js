@@ -15,8 +15,8 @@ Description:  this file will contains overall theme setup and handle
 
 var rtl_flag = false;
 var dark_flag = false;
-const logoPath = 'assets/images/logo/gls-noir.avif';
-const logoPathDark = 'assets/images/logo/gls-blanc.webp';
+const logoPath     = (typeof window.GLS_LOGO_LIGHT !== 'undefined') ? window.GLS_LOGO_LIGHT : 'assets/images/logo/gls.avif';
+const logoPathDark = (typeof window.GLS_LOGO_DARK  !== 'undefined') ? window.GLS_LOGO_DARK  : 'assets/images/logo/gls-blanc.webp';
 
 function layout_change_default() {
   // Determine the initial layout based on the user's system preference for color scheme
