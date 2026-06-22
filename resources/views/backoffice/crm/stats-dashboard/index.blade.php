@@ -267,7 +267,7 @@
                     </div>
 
                     {{-- Table --}}
-                    <div class="table-responsive">
+                    {{-- <div class="table-responsive">
                         <table class="table table-bordered table-sm align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
@@ -282,7 +282,7 @@
                             <tbody id="rec-range-tbody"></tbody>
                             <tfoot id="rec-range-tfoot" class="table-secondary fw-semibold"></tfoot>
                         </table>
-                    </div>
+                    </div> --}}
 
                 </div>
 

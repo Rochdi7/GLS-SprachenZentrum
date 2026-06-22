@@ -468,12 +468,12 @@
                             <span class="pc-mtext">Rentabilité par centre</span>
                         </a>
                     </li>
-                    {{-- <li class="pc-item {{ $crmStatsCompOpen ? 'active' : '' }}">
+                    <li class="pc-item {{ $crmStatsCompOpen ? 'active' : '' }}">
                         <a href="{{ route('backoffice.crm.statistiques.comparaison') }}"
                             class="pc-link {{ $crmStatsCompOpen ? 'active' : '' }}">
                             <span class="pc-mtext">Comparaison centres</span>
                         </a>
-                    </li> --}}
+                    </li>
                     {{-- <li class="pc-item {{ request()->routeIs('backoffice.crm.statistiques.resume-annuel') ? 'active' : '' }}">
                         <a href="{{ route('backoffice.crm.statistiques.resume-annuel') }}"
                             class="pc-link {{ request()->routeIs('backoffice.crm.statistiques.resume-annuel') ? 'active' : '' }}">
@@ -498,12 +498,12 @@
                             <span class="pc-mtext">Statistiques présence</span>
                         </a>
                     </li>
-                    {{-- <li class="pc-item {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">
+                    <li class="pc-item {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">
                         <a href="{{ route('backoffice.crm.reports.index') }}"
                             class="pc-link {{ request()->routeIs('backoffice.crm.reports.*') ? 'active' : '' }}">
                             <span class="pc-mtext">Rapports CEO</span>
                         </a>
-                    </li> --}}
+                    </li>
                 </ul>
             </li>
         </ul>
