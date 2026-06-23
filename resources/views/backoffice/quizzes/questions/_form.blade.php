@@ -206,7 +206,9 @@
 {{-- ============================= --}}
 {{-- JS LOGIC --}}
 {{-- ============================= --}}
-@push('scripts')
+{{-- NOTE: inline (not @push/@section) because layouts.main uses @yield('scripts'),
+     and this partial is @include'd inside the form — a pushed stack would be silently
+     dropped, killing the text/image option toggle + submit validation. --}}
     <script>
         (function() {
             const qType = document.getElementById('question_media_type');
@@ -392,4 +394,3 @@
             applyOptionsType();
         })();
     </script>
-@endpush

@@ -71,7 +71,19 @@ class TeacherController extends Controller
     public function edit(string $id)
     {
         $teacher = Teacher::with('sites')->findOrFail($id);
+
+        // Active centres the current user can pick from...
         $sites = $this->accessibleSites();
+
+        // ...plus any centre this teacher is already assigned to, even if it is
+        // now inactive. Otherwise the assignment is invisible in the dropdown and
+        // silently wiped on the next save.
+        $assignedIds = $teacher->accessibleSiteIds();
+        $missing = Site::whereIn('id', $assignedIds)
+            ->whereNotIn('id', $sites->pluck('id'))
+            ->get();
+
+        $sites = $sites->concat($missing)->sortBy('name')->values();
 
         return view('backoffice.teachers.edit', compact('teacher', 'sites'));
     }

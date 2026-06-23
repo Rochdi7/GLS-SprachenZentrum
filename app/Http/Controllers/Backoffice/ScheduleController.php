@@ -455,10 +455,30 @@ class ScheduleController extends Controller
 
     public function edit(UserSchedule $schedule, Request $request)
     {
-        $this->authorizeManage($request->user(), $schedule->user);
+        $authUser = $request->user();
+        $this->authorizeManage($authUser, $schedule->user);
 
         $sites = $this->accessibleSites();
-        $employees = User::whereNotNull('staff_role')->where('is_active', true)->orderBy('name')->get();
+
+        // Active users the auth user can manage (same scope as create()/manage()).
+        // NOTE: do NOT filter on staff_role — it is null for every account, which
+        // would empty the dropdown entirely.
+        $employeesQuery = User::where('is_active', true);
+        if (! $authUser->hasRole('Super Admin')) {
+            $accessibleSiteIds = $authUser->accessibleSiteIds();
+            $employeesQuery->where(function ($q) use ($accessibleSiteIds) {
+                $q->whereIn('site_id', $accessibleSiteIds)
+                  ->orWhereHas('sites', fn ($sq) => $sq->whereIn('sites.id', $accessibleSiteIds));
+            });
+        }
+        $employees = $employeesQuery->orderBy('name')->get();
+
+        // Always include the schedule's current employee, even if now inactive or
+        // outside the auth user's centres — otherwise the row shows empty and the
+        // assignment is lost on save.
+        if ($schedule->user && ! $employees->contains('id', $schedule->user_id)) {
+            $employees = $employees->push($schedule->user)->sortBy('name')->values();
+        }
 
         return view('backoffice.schedules.edit', compact('schedule', 'sites', 'employees'));
     }

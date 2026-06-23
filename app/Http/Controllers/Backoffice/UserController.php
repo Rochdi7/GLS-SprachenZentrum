@@ -78,6 +78,19 @@ class UserController extends Controller
         $sites = $this->accessibleSites();
         $staffRoles = User::STAFF_ROLES;
 
+        // Include any centre this user is already assigned to, even if it is now
+        // inactive or outside the current admin's scope. Otherwise the assignment
+        // is invisible in the dropdown and silently wiped on the next save.
+        $assignedIds = $user->sites->pluck('id')->all();
+        if ($user->site_id) {
+            $assignedIds[] = $user->site_id;
+        }
+        $missing = Site::whereIn('id', $assignedIds)
+            ->whereNotIn('id', $sites->pluck('id'))
+            ->get();
+
+        $sites = $sites->concat($missing)->sortBy('name')->values();
+
         return view('backoffice.users.edit', compact('user', 'roles', 'sites', 'staffRoles'));
     }
 
