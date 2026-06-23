@@ -3,7 +3,7 @@
 =========================================================================
 Template Name: Code Sommet - Bootstrap Admin Template
 Author: Gls Team
-Support: https://Gls Team.authordesk.app
+Support: https://codesommet.com/
 File: script.js
 Description:  this file will contains code for handling Buynow link.
 =========================================================================

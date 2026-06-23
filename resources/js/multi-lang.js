@@ -1,9 +1,9 @@
 /**
 =========================================================================
 =========================================================================
-Template Name: Light-able - Admin Template
+Template Name: Codesommet Agency Theme
 Author: Gls Team
-Support: https://Gls Team.authordesk.app
+Support: https://codesommet.com/
 File: multi-lang.js
 Description:  this file will contains snippet code
               about handling language change of the page.

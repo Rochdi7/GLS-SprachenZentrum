@@ -1,9 +1,9 @@
 /**
 =========================================================================
 =========================================================================
-Template Name: Light-able - Admin Template
+Template Name: Codesommet Agency Theme
 Author: Gls Team
-Support: https://Gls Team.authordesk.app
+Support: https://codesommet.com/
 File: layout-tab.js
 Description:  this file will contains defining code for build tab layouts
               and handle funcnality of a tab layout in theme.

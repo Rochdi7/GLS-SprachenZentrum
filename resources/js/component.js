@@ -1,9 +1,9 @@
 /**
 =========================================================================
 =========================================================================
-Template Name: Light-able - Admin Template
+Template Name: Codesommet Agency Theme
 Author: Gls Team
-Support: https://Gls Team.authordesk.app
+Support: https://codesommet.com/
 File: component.js
 Description:  this file will contains defining the code for to genarte
               a code for for user visiblity purpose and allow user to 

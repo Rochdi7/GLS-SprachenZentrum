@@ -2,7 +2,7 @@
 =========================================================================
 Template Name: Code Sommet - Bootstrap Admin Template
 Author: Gls Team
-Support: https://Gls Team.authordesk.app
+Support: https://codesommet.com/
 File: style.css
 =========================================================================
 =================================================================================== */
@@ -226,12 +226,8 @@ header {
 }
 
 .bg-dark {
-    background: linear-gradient(
-            198deg,
-            #131920 21.56%,
-            #1d2630 48.55%,
-            #131920 91.02%
-        ),
+    background:
+        linear-gradient(198deg, #131920 21.56%, #1d2630 48.55%, #131920 91.02%),
         #f7f9fc;
 }
 
@@ -513,7 +509,8 @@ header {
         top: 18px;
         right: -40px;
         font-weight: 600;
-        box-shadow: 0 10px 16px 0px rgba(0, 0, 0, 0.2),
+        box-shadow:
+            0 10px 16px 0px rgba(0, 0, 0, 0.2),
             0 10px 16px 0px rgba(var(--bs-primary-rgb) 0.15);
     }
 

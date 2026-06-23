@@ -7,7 +7,7 @@
         <div class="card my-5">
             <div class="card-body">
                 <div class="text-center">
-                    <img src="{{ URL::asset('assets/images/logo/gls.png') }}" alt="GLS Logo" class="mb-3" style="width:120px;object-fit:contain;">
+                    <img src="{{ URL::asset('assets/images/logo/gls.avif') }}" alt="GLS Logo" class="mb-3" style="width:120px;object-fit:contain;" onerror="this.src='{{ URL::asset('assets/images/logo/gls.png') }}'">
                     <h4 class="f-w-500 mb-1">Connectez-vous avec votre email</h4>
                 </div>
 

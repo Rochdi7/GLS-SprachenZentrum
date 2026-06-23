@@ -29,17 +29,19 @@ class CollectionsService
         $key = 'crm.collections.kpis:' . ($strStoreId ?: 'all');
 
         return Cache::remember($key, 900, function () use ($strStoreId) {
-            $today    = Carbon::today();
-            $todayStr = $today->toDateString();
-            $endWeek  = $today->copy()->endOfWeek()->toDateString(); // Sunday of current week
-            $endMonth = $today->copy()->endOfMonth()->toDateString();
+            $today        = Carbon::today();
+            $todayStr     = $today->toDateString();
+            $endWeek      = $today->copy()->endOfWeek()->toDateString(); // Sunday of current week
+            $startMonth   = $today->copy()->startOfMonth()->toDateString();
+            $endMonth     = $today->copy()->endOfMonth()->toDateString();
 
             $base = $this->baseQuery($strStoreId);
 
             $outstandingTotal = (float) (clone $base)->sum('rest_amount');
             $dueToday         = (float) (clone $base)->whereDate('due_date', $todayStr)->sum('rest_amount');
             $dueWeek          = (float) (clone $base)->whereBetween('due_date', [$todayStr, $endWeek])->sum('rest_amount');
-            $dueMonth         = (float) (clone $base)->whereBetween('due_date', [$todayStr, $endMonth])->sum('rest_amount');
+            // Include past-due échéances from the start of the month (not yet recovered)
+            $dueMonth         = (float) (clone $base)->whereBetween('due_date', [$startMonth, $endMonth])->sum('rest_amount');
             $overdue7         = (float) (clone $base)->where('due_date', '<=', $today->copy()->subDays(7)->toDateString())->sum('rest_amount');
             $overdue30        = (float) (clone $base)->where('due_date', '<=', $today->copy()->subDays(30)->toDateString())->sum('rest_amount');
             $overdue60        = (float) (clone $base)->where('due_date', '<=', $today->copy()->subDays(60)->toDateString())->sum('rest_amount');

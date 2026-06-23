@@ -1,9 +1,9 @@
 /**
 =========================================================================
 =========================================================================
-Template Name: Light-able - Admin Template
+Template Name: Codesommet Agency Theme
 Author: Gls Team
-Support: https://Gls Team.authordesk.app
+Support: https://codesommet.com/
 File: script.js
 Description:  this file will contains behavior, properties,
               functionality and interactions of a small module of ui element

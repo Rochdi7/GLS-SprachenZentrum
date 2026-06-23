@@ -1,9 +1,9 @@
 /**
 =========================================================================
 =========================================================================
-Template Name: Light-able - Admin Template
-Author: Rochdi & Halima
-Support: https://Gls Team.authordesk.app
+Template Name: Codesommet Agency Theme
+Author: Rochdi & Codesommet
+Support: https://codesommet.com/
 File: themes.js
 Description:  this file will contains overall theme setup and handle
               behavior of live custumizer like Dark/Light, LTR/RTL,

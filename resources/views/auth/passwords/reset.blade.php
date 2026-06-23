@@ -7,7 +7,7 @@
         <div class="card my-5">
             <div class="card-body">
                 <div class="text-center">
-                    <img src="{{ URL::asset('assets/images/logo/gls.png') }}" alt="GLS Logo" class="mb-3" style="width:120px;object-fit:contain;">
+                    <img src="{{ URL::asset('assets/images/logo/gls.avif') }}" alt="GLS Logo" class="mb-3" style="width:120px;object-fit:contain;">
                     <h4 class="f-w-500 mb-1">Reset password</h4>
                     <p class="mb-3">Back to <a href="{{ route('login') }}" class="link-primary ms-1">Log in</a></p>
                 </div>

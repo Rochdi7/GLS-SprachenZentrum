@@ -2,7 +2,7 @@
 =========================================================================
 Template Name: Code Sommet - Bootstrap Admin Template
 Author: Gls Team
-Support: https://Gls Team.authordesk.app
+Support: https://codesommet.com/
 File: style.css
 =========================================================================
 =================================================================================== */
@@ -312,7 +312,8 @@ File: style.css
             }
 
             &:focus {
-                box-shadow: 0 0 0 1px #fff,
+                box-shadow:
+                    0 0 0 1px #fff,
                     0 0 0 3px transparentize($pc-primary, 0.71);
             }
         }
@@ -327,7 +328,9 @@ File: style.css
         }
         .swal2-styled {
             &:focus {
-                box-shadow: 0 0 0 1px #fff, 0 0 0 3px rgba($pc-primary, 0.4) !important;
+                box-shadow:
+                    0 0 0 1px #fff,
+                    0 0 0 3px rgba($pc-primary, 0.4) !important;
             }
         }
         .slider-tick {
