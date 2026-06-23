@@ -203,8 +203,12 @@
             {{-- Header --}}
             <div class="detail-page-header">
                 <div class="title-block">
-                    <h2><i class="ph-duotone ph-file-text me-2"></i> Détail du Rapport</h2>
-                    <div class="meta">{{ ucfirst($date->locale('fr')->isoFormat('dddd D MMMM YYYY')) }}</div>
+                    <h2><i class="ph-duotone ph-calendar-check me-2"></i> Rapport de la Semaine</h2>
+                    <div class="meta">
+                        {{ ucfirst($date->locale('fr')->isoFormat('D MMM')) }}
+                        &mdash;
+                        {{ ucfirst($date->copy()->addDays(4)->locale('fr')->isoFormat('D MMMM YYYY')) }}
+                    </div>
                 </div>
                 <div class="actions">
                     <a href="{{ url()->previous() }}" class="btn btn-light btn-sm">
@@ -234,8 +238,10 @@
                     </div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Date</div>
-                    <div class="info-value">{{ $date->format('d/m/Y') }}</div>
+                    <div class="info-label">Semaine</div>
+                    <div class="info-value" style="font-size:.85rem;">
+                        {{ $date->format('d/m') }} – {{ $date->copy()->addDays(4)->format('d/m/Y') }}
+                    </div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Entrées</div>

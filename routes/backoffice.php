@@ -484,6 +484,7 @@ Route::prefix('backoffice')
                 Route::post('/', [WeeklyReportController::class, 'store'])->middleware('permission:weekly_reports.create')->name('store');
                 Route::get('/events', [WeeklyReportController::class, 'events'])->middleware('permission:weekly_reports.view')->name('events');
                 Route::get('/for-day', [WeeklyReportController::class, 'forDay'])->middleware('permission:weekly_reports.view')->name('for_day');
+                Route::get('/for-week', [WeeklyReportController::class, 'forWeek'])->middleware('permission:weekly_reports.view')->name('for_week');
                 Route::post('/batch-sync', [WeeklyReportController::class, 'batchSync'])->middleware('permission:weekly_reports.create')->name('batch_sync');
                 Route::get('/export-pdf', [WeeklyReportController::class, 'exportPdf'])->middleware('permission:weekly_reports.view')->name('export_pdf');
                 Route::get('/export-single-pdf', [WeeklyReportController::class, 'exportSinglePdf'])->middleware('permission:weekly_reports.view')->name('export_single_pdf');

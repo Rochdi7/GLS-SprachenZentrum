@@ -212,18 +212,25 @@ class WeeklyReportController extends Controller
     }
 
     /**
-     * Show a detail page for a single (teacher, group?, date) tuple — opened by the eye button.
+     * Show a detail page for a (teacher, group?, week) tuple — opened by the eye button.
+     * Accepts ?week=YYYY-MM-DD (any date in the week) or legacy ?date=YYYY-MM-DD.
      */
     public function show(Request $request)
     {
         $data = $request->validate([
-            'date'       => 'required|date',
+            'week'       => 'nullable|date',
+            'date'       => 'nullable|date',
             'teacher_id' => 'required|exists:teachers,id',
             'group_id'   => 'nullable|integer|exists:groups,id',
         ]);
 
+        // Support both ?week= (new) and ?date= (legacy)
+        $anchor = $data['week'] ?? $data['date'] ?? now()->toDateString();
+        $monday = Carbon::parse($anchor)->startOfWeek(Carbon::MONDAY);
+        $friday = $monday->copy()->addDays(4);
+
         $reports = WeeklyReport::with(['teacher', 'group', 'attachments'])
-            ->whereDate('report_date', $data['date'])
+            ->whereBetween('report_date', [$monday, $friday])
             ->where('teacher_id', $data['teacher_id'])
             ->when(true, function ($q) use ($data) {
                 $gid = $data['group_id'] ?? null;
@@ -233,22 +240,23 @@ class WeeklyReportController extends Controller
                     $q->where('group_id', $gid);
                 }
             })
+            ->orderBy('report_date')
             ->orderBy('skill')
             ->orderBy('created_at')
             ->get();
 
         if ($reports->isEmpty()) {
             return redirect()
-                ->route('backoffice.weekly_reports.index', ['week' => $data['date']])
+                ->route('backoffice.weekly_reports.index', ['week' => $anchor])
                 ->with('error', 'Aucun rapport trouvé pour cette sélection.');
         }
 
         $teacher = $reports->first()->teacher;
-        $group = $reports->first()->group;
-        $date = Carbon::parse($data['date']);
+        $group   = $reports->first()->group;
+        $date    = $monday; // used by the view for the week header
 
         $exportParams = [
-            'date'       => $data['date'],
+            'week'       => $monday->format('Y-m-d'),
             'teacher_id' => $data['teacher_id'],
         ];
         if (!empty($data['group_id'])) {
@@ -261,20 +269,26 @@ class WeeklyReportController extends Controller
     }
 
     /**
-     * Export a single (teacher, group?, date) detail as PDF — used by the "eye" button in the modal.
+     * Export a single (teacher, group?, week) detail as PDF — used by the "eye" button in the modal.
+     * Accepts ?week= (new) or legacy ?date=.
      */
     public function exportSinglePdf(Request $request)
     {
         $data = $request->validate([
-            'date'       => 'required|date',
+            'week'       => 'nullable|date',
+            'date'       => 'nullable|date',
             'teacher_id' => 'required|exists:teachers,id',
             'group_id'   => 'nullable|integer|exists:groups,id',
         ]);
 
+        $anchor = $data['week'] ?? $data['date'] ?? now()->toDateString();
+        $monday = Carbon::parse($anchor)->startOfWeek(Carbon::MONDAY);
+        $friday = $monday->copy()->addDays(4);
+
         $reports = WeeklyReport::with(['teacher', 'group', 'attachments'])
-            ->whereDate('report_date', $data['date'])
+            ->whereBetween('report_date', [$monday, $friday])
             ->where('teacher_id', $data['teacher_id'])
-            ->when(array_key_exists('group_id', $data), function ($q) use ($data) {
+            ->when(true, function ($q) use ($data) {
                 $gid = $data['group_id'] ?? null;
                 if ($gid === null || $gid === '') {
                     $q->whereNull('group_id');
@@ -282,6 +296,7 @@ class WeeklyReportController extends Controller
                     $q->where('group_id', $gid);
                 }
             })
+            ->orderBy('report_date')
             ->orderBy('skill')
             ->orderBy('created_at')
             ->get();
@@ -291,8 +306,8 @@ class WeeklyReportController extends Controller
         }
 
         $teacher = $reports->first()->teacher;
-        $group = $reports->first()->group;
-        $date = Carbon::parse($data['date']);
+        $group   = $reports->first()->group;
+        $date    = $monday;
 
         $pdf = Pdf::loadView('backoffice.pdf.weekly-report-single', compact(
             'reports', 'teacher', 'group', 'date'
@@ -302,9 +317,48 @@ class WeeklyReportController extends Controller
             ->setOption('isPhpEnabled', true);
 
         $slug = str()->slug($teacher->name) . ($group ? '_' . str()->slug($group->name) : '');
-        $filename = 'rapport_' . $slug . '_' . $date->format('Y-m-d') . '.pdf';
+        $filename = 'rapport_semaine_' . $slug . '_' . $monday->format('Y-m-d') . '_' . $friday->format('Y-m-d') . '.pdf';
 
         return $pdf->download($filename);
+    }
+
+    /**
+     * Return all reports for a full week (Mon–Fri) — used by the per-week modal.
+     * Accepts ?week=YYYY-MM-DD (any date in the week; normalised to Monday).
+     */
+    public function forWeek(Request $request)
+    {
+        $request->validate(['week' => 'required|date']);
+
+        $monday = Carbon::parse($request->week)->startOfWeek(Carbon::MONDAY);
+        $friday = $monday->copy()->addDays(4);
+
+        $reports = WeeklyReport::with(['teacher', 'group', 'attachments'])
+            ->whereBetween('report_date', [$monday, $friday])
+            ->orderBy('report_date')
+            ->orderBy('created_at')
+            ->get()
+            ->map(fn ($r) => [
+                'id'              => $r->id,
+                'teacher_id'      => $r->teacher_id,
+                'group_id'        => $r->group_id,
+                'group_label'     => $r->group?->name,
+                'skill'           => $r->skill,
+                'notes'           => $r->notes,
+                'report_date'     => $r->report_date->format('Y-m-d'),
+                'attachment_url'  => $r->attachment_url,
+                'attachment_name' => $r->attachment_original_name,
+                'attachments'     => $r->attachments->map(fn ($a) => [
+                    'id'   => $a->id,
+                    'url'  => $a->url,
+                    'name' => $a->original_name ?: 'PDF',
+                ])->values(),
+            ]);
+
+        return response()->json([
+            'reports' => $reports,
+            'friday'  => $friday->format('Y-m-d'),
+        ]);
     }
 
     /**
@@ -480,8 +534,11 @@ class WeeklyReportController extends Controller
                 }
             }
 
-            // Delete reports for that day that were removed in the modal
-            $toDelete = WeeklyReport::whereDate('report_date', $reportDate)
+            // Delete reports for that whole week that were removed in the modal.
+            // $reportDate is the Friday of the week (set by the per-week modal).
+            $monday = Carbon::parse($reportDate)->startOfWeek(Carbon::MONDAY);
+            $friday = $monday->copy()->addDays(4);
+            $toDelete = WeeklyReport::whereBetween('report_date', [$monday, $friday])
                 ->when(!empty($keepIds), fn ($q) => $q->whereNotIn('id', $keepIds))
                 ->get();
 

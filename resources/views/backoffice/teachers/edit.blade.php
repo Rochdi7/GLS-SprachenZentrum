@@ -3,7 +3,7 @@
 @section('title', 'Modifier un Enseignant')
 @section(‘breadcrumb-item’, ‘GLS Centres’)
 @section(‘breadcrumb-item-link’, route(‘backoffice.teachers.index’))
-@section(‘breadcrumb-item-active’, ‘Modifier l’Enseignant’)
+@section(‘breadcrumb-item-active’, "Modifier l’Enseignant")
 @section('page-animation', 'animate__rollIn')
 
 @section('css')
