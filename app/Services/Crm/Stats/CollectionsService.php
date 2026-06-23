@@ -46,10 +46,11 @@ class CollectionsService
             $overdue30        = (float) (clone $base)->where('due_date', '<=', $today->copy()->subDays(30)->toDateString())->sum('rest_amount');
             $overdue60        = (float) (clone $base)->where('due_date', '<=', $today->copy()->subDays(60)->toDateString())->sum('rest_amount');
             $overdue90        = (float) (clone $base)->where('due_date', '<=', $today->copy()->subDays(90)->toDateString())->sum('rest_amount');
+            $overdueAll       = (float) (clone $base)->where('due_date', '<', $todayStr)->sum('rest_amount');
 
             return compact(
                 'outstandingTotal', 'dueToday', 'dueWeek', 'dueMonth',
-                'overdue7', 'overdue30', 'overdue60', 'overdue90',
+                'overdue7', 'overdue30', 'overdue60', 'overdue90', 'overdueAll',
             );
         });
     }
