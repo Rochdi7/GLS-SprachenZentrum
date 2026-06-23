@@ -117,7 +117,7 @@
         ['type'=>'overdue7',  'label'=>'En retard &gt; 7 jours',  'value'=>$kpis['overdue7']??null,  'color'=>'secondary', 'style'=>''],
         ['type'=>'overdue30', 'label'=>'En retard &gt; 30 jours', 'value'=>$kpis['overdue30']??null, 'color'=>'warning',   'style'=>''],
         ['type'=>'overdue60', 'label'=>'En retard &gt; 60 jours', 'value'=>$kpis['overdue60']??null, 'color'=>'danger',    'style'=>''],
-        ['type'=>'overdueAll', 'label'=>'Tout en retard <small class="text-muted fw-normal">jusqu\'au ' . now()->format('d/m/Y') . '</small>', 'value'=>$kpis['overdueAll']??null, 'color'=>'dark', 'style'=>''],
+        ['type'=>'overdueAll', 'label'=>'Tout en retard', 'sublabel'=>now()->format('d/m/Y'), 'value'=>$kpis['overdueAll']??null, 'color'=>'dark', 'style'=>''],
     ];
     @endphp
 
@@ -147,13 +147,18 @@
             <div class="card kpi-card h-100 border-start border-{{ $card['color'] }} border-3">
                 <div class="card-body d-flex justify-content-between align-items-start">
                     <div>
-                        <div class="kpi-label">{!! $card['label'] !!}</div>
+                        <div class="kpi-label">
+                            {!! $card['label'] !!}
+                            @if(!empty($card['sublabel']))
+                                <span class="text-muted fw-normal" style="font-size:.7rem;"> — {{ $card['sublabel'] }}</span>
+                            @endif
+                        </div>
                         <h3 class="text-{{ $card['color'] }}">
                             {{ $card['value'] !== null ? number_format($card['value'], 2, ',', ' ') . ' DH' : '—' }}
                         </h3>
                     </div>
                     <span class="drill-btn text-{{ $card['color'] }}"
-                          data-type="{{ $card['type'] }}" data-label="{!! $card['label'] !!}" title="Voir les dossiers">
+                          data-type="{{ $card['type'] }}" data-label="{{ $card['label'] }}" title="Voir les dossiers">
                         <i class="ph-duotone ph-eye fs-4"></i>
                     </span>
                 </div>
