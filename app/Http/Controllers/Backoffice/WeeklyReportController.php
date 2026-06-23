@@ -444,12 +444,16 @@ class WeeklyReportController extends Controller
         try {
             $rows = $data['rows'] ?? [];
             $reportDate = $data['report_date'];
+            // Normalise to the Mon–Fri range of this week so we can find records
+            // regardless of which day they were originally saved on.
+            $weekMonday = Carbon::parse($reportDate)->startOfWeek(Carbon::MONDAY);
+            $weekFriday = $weekMonday->copy()->addDays(4);
             $keepIds = [];
 
             foreach ($rows as $row) {
                 if (!empty($row['id'])) {
                     $report = WeeklyReport::where('id', $row['id'])
-                        ->whereDate('report_date', $reportDate)
+                        ->whereBetween('report_date', [$weekMonday, $weekFriday])
                         ->first();
 
                     if (!$report) continue;
@@ -535,10 +539,7 @@ class WeeklyReportController extends Controller
             }
 
             // Delete reports for that whole week that were removed in the modal.
-            // $reportDate is the Friday of the week (set by the per-week modal).
-            $monday = Carbon::parse($reportDate)->startOfWeek(Carbon::MONDAY);
-            $friday = $monday->copy()->addDays(4);
-            $toDelete = WeeklyReport::whereBetween('report_date', [$monday, $friday])
+            $toDelete = WeeklyReport::whereBetween('report_date', [$weekMonday, $weekFriday])
                 ->when(!empty($keepIds), fn ($q) => $q->whereNotIn('id', $keepIds))
                 ->get();
 
