@@ -117,7 +117,7 @@
         ['type'=>'overdue7',  'label'=>'En retard &gt; 7 jours',  'value'=>$kpis['overdue7']??null,  'color'=>'secondary', 'style'=>''],
         ['type'=>'overdue30', 'label'=>'En retard &gt; 30 jours', 'value'=>$kpis['overdue30']??null, 'color'=>'warning',   'style'=>''],
         ['type'=>'overdue60', 'label'=>'En retard &gt; 60 jours', 'value'=>$kpis['overdue60']??null, 'color'=>'danger',    'style'=>''],
-        ['type'=>'overdueAll', 'label'=>'Tout en retard', 'value'=>$kpis['overdueAll']??null, 'color'=>'dark', 'style'=>''],
+        ['type'=>'overdueAll', 'label'=>'Tout en retard <small class="text-muted fw-normal">jusqu\'au ' . now()->format('d/m/Y') . '</small>', 'value'=>$kpis['overdueAll']??null, 'color'=>'dark', 'style'=>''],
     ];
     @endphp
 
