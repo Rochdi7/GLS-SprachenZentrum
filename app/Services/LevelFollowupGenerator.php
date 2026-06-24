@@ -97,12 +97,8 @@ class LevelFollowupGenerator
                     'done_at' => $doneAt,
                 ];
 
-                // Next level starts day after done_at (if completed early) or after segEnd
-                if ($status === 'done' && $doneAt) {
-                    $segStart = Carbon::parse($doneAt)->startOfDay()->addDay();
-                } else {
-                    $segStart = $segEnd->copy()->addDay();
-                }
+                // Next level always starts the day after level_end_date
+                $segStart = $segEnd->copy()->addDay();
             }
 
             // Update the group's end date from the last level

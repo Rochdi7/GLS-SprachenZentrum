@@ -262,11 +262,11 @@ class LevelFollowupController extends Controller
 
         $followup->update([
             'status' => 'done',
-            'done_at' => now(),
+            'done_at' => $followup->level_end_date ?? now(),
             'done_notes' => $validated['done_notes'] ?? null,
         ]);
 
-        // Recalculate subsequent levels so the next one starts the day after done_at
+        // Recalculate subsequent levels so the next one starts the day after level_end_date
         if ($followup->group) {
             (new LevelFollowupGenerator())->generateForGroup($followup->group);
         }
