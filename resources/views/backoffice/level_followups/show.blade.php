@@ -243,7 +243,7 @@
                                         <td>{{ $end ? $end->format('d/m/Y') : '-' }}</td>
                                         <td>
                                             @if($f->status === 'done')
-                                                <small class="text-success fw-bold">Termine le {{ $finishedAt ? $finishedAt->format('d/m/Y') : ($end ? $end->format('d/m/Y') : '-') }}</small>
+                                                <small class="text-success fw-bold">Termine le {{ $end ? $end->format('d/m/Y') : '-' }}</small>
                                             @elseif($isOverdue)
                                                 <small class="text-danger fw-bold"><i class="ti ti-alert-triangle"></i> En retard!</small>
                                             @elseif($isCurrent)
