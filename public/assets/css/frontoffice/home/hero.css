@@ -134,6 +134,110 @@ z-index: 4;
 }
 
 /* =========================================================
+ANIMATED TWO-LINE TITLE – word by word
+========================================================= */
+
+.hero-title--animated{
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 0.18em;
+line-height: 1;
+width: 100%;
+padding: 0 16px;
+box-sizing: border-box;
+}
+
+.hero-title__top{
+display: block;
+text-align: center;
+white-space: nowrap;
+/* vw-driven so it always fits one line at any screen width */
+font-size: min(7vw, 120px);
+overflow: hidden;
+max-width: 100%;
+}
+
+/* Shrink further on narrow screens so it truly fits */
+@media (max-width: 900px){ .hero-title__top{ font-size: min(5.8vw, 80px); } }
+@media (max-width: 600px){ .hero-title__top{ font-size: min(5vw,  44px); } }
+@media (max-width: 400px){ .hero-title__top{ font-size: min(4.4vw, 34px); } }
+
+.hero-title__bottom{
+display: block;
+text-align: center;
+white-space: nowrap;
+font-family: 'Noto Nastaliq Urdu', 'Scheherazade New', 'Amiri', serif;
+font-size: min(5vw, 64px);
+font-weight: 700;
+color: rgba(255,255,255,0.9);
+letter-spacing: 0;
+text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+line-height: 1.7;
+max-width: 100%;
+overflow: hidden;
+}
+
+@media (max-width: 900px){ .hero-title__bottom{ font-size: min(4.5vw, 50px); } }
+@media (max-width: 600px){ .hero-title__bottom{ font-size: min(4.2vw, 34px); } }
+@media (max-width: 400px){ .hero-title__bottom{ font-size: min(3.8vw, 26px); } }
+
+/* ── Word group: flows inline so spaces work naturally ───── */
+.hero-word-group{
+display: inline;
+}
+
+/* ── Each letter span ───────────────────────────────────── */
+.hero-char{
+display: inline-block;
+opacity: 0;
+will-change: transform, opacity, filter;
+letter-spacing: 0;
+margin: 0;
+padding: 0;
+}
+
+/* LTR letters: rise from below-left */
+.hero-char.char-from-left{
+animation: charRiseLeft 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+/* RTL / Arabic letters: rise from below-right */
+.hero-char.char-from-right{
+animation: charRiseRight 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+/* ── Keyframes ──────────────────────────────────────────── */
+
+@keyframes charRiseLeft{
+0%{
+  opacity: 0;
+  filter: blur(6px);
+  transform: translateY(22px) translateX(-8px) scale(0.92);
+}
+55%{ filter: blur(0px); }
+100%{
+  opacity: 1;
+  filter: blur(0px);
+  transform: translateY(0) translateX(0) scale(1);
+}
+}
+
+@keyframes charRiseRight{
+0%{
+  opacity: 0;
+  filter: blur(6px);
+  transform: translateY(22px) translateX(8px) scale(0.92);
+}
+55%{ filter: blur(0px); }
+100%{
+  opacity: 1;
+  filter: blur(0px);
+  transform: translateY(0) translateX(0) scale(1);
+}
+}
+
+/* =========================================================
 RESPONSIVE
 ========================================================= */
 @media (max-width: 992px){
@@ -235,11 +339,10 @@ padding-top: 2.5rem;
 position: relative;
 z-index: 5;
 display: block;
-
-margin: 0 auto; /* ❌ removed -130px hack */
+margin: 0 auto;
 line-height: .95;
 max-width: 980px;
-font-size: 30px;
+font-size: inherit;
 }
 }
 
@@ -264,8 +367,7 @@ margin: 0 auto;
 
 .hero .hero-title{
 margin: 0;
-line-height: 1.05;
-font-size: clamp(30px, 7.2vw, 44px);
-text-wrap: balance;
+line-height: 1;
+font-size: inherit;
 }
 }

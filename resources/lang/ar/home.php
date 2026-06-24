@@ -9,8 +9,10 @@ return [
     // HERO SECTION
     // ========================
     'hero' => [
-        'title' => 'تعلّم الألمانية في المغرب – GLS',
+        'title' => 'خطوتك الأولى',
+        'title2' => 'نحو ألمانيا',
 
+        'subtitle_ar' => 'خطوتك الأولى نحو ألمانيا',
         'badge1' => 'Jawohl',
         'badge2' => 'Wunderbar',
         'badge3' => 'Guten Tag',

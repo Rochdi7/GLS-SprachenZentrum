@@ -2,15 +2,17 @@
 
 return [
 
-    'meta_title' => 'Apprendre l’allemand au Maroc | Cours d’allemand GLS',
-    'meta_description' => 'Centre de langue allemande au Maroc : cours intensifs A1–B2, préparation Goethe et certifications. 6 centres — Rabat, Casablanca et plus.',
+    'meta_title' => "Apprendre l'allemand au Maroc | Cours d'allemand GLS",
+    'meta_description' => "Centre de langue allemande au Maroc : cours intensifs A1–B2, préparation Goethe et certifications. 6 centres — Rabat, Casablanca et plus.",
 
     // ========================
     // 🔵 HERO SECTION
     // ========================
     'hero' => [
-        'title' => 'Apprenez l’allemand au Maroc – GLS',
+        'title' => "Votre premier pas",
+        'title2' => "vers l'Allemagne",
 
+        'subtitle_ar' => 'خطوتك الأولى نحو ألمانيا',
         'badge1' => 'Jawohl',
         'badge2' => 'Wunderbar',
         'badge3' => 'Guten Tag',
@@ -21,29 +23,29 @@ return [
     // 🟢 INTRO SECTION
     // ========================
     'site_heading' => [
-        'rabat'      => 'Cours d’allemand à Rabat – GLS',
+        'rabat'      => "Cours d'allemand à Rabat – GLS",
         'kenitra'    => 'Centre GLS à Kénitra',
-        'marrakech'  => 'École d’allemand à Marrakech',
-        'sale'       => 'Cours d’allemand à Salé – GLS',
+        'marrakech'  => "École d'allemand à Marrakech",
+        'sale'       => "Cours d'allemand à Salé – GLS",
         'agadir'     => 'Campus GLS Agadir',
-        'casablanca' => 'Cours d’allemand à Casablanca',
+        'casablanca' => "Cours d'allemand à Casablanca",
     ],
 
     'intro' => [
         'logo_alt' => 'Logo GLS Sprachenzentrum',
-        'tagline' => 'Apprenez l’allemand chez GLS',
+        'tagline' => "Apprenez l'allemand chez GLS",
         'heading' => 'Apprendre. Connecter. Découvrir.',
-        'description' => 'Notre objectif est d’accompagner nos étudiants à travers une expérience linguistique immersive et motivante.',
+        'description' => "Notre objectif est d'accompagner nos étudiants à travers une expérience linguistique immersive et motivante.",
         'button' => 'Voir nos cours',
     ],
 
     'site_image_alt' => [
-        'rabat' => 'Cours d’allemand à Rabat – GLS Sprachenzentrum',
-        'kenitra' => 'Cours d’allemand à Kénitra – GLS Sprachenzentrum',
-        'marrakech' => 'Cours d’allemand à Marrakech – GLS Sprachenzentrum',
-        'sale' => 'Cours d’allemand à Salé – GLS Sprachenzentrum',
-        'casablanca' => 'Cours d’allemand à Casablanca – GLS Sprachenzentrum',
-        'agadir' => 'Cours d’allemand à Agadir – GLS Sprachenzentrum',
+        'rabat' => "Cours d'allemand à Rabat – GLS Sprachenzentrum",
+        'kenitra' => "Cours d'allemand à Kénitra – GLS Sprachenzentrum",
+        'marrakech' => "Cours d'allemand à Marrakech – GLS Sprachenzentrum",
+        'sale' => "Cours d'allemand à Salé – GLS Sprachenzentrum",
+        'casablanca' => "Cours d'allemand à Casablanca – GLS Sprachenzentrum",
+        'agadir' => "Cours d'allemand à Agadir – GLS Sprachenzentrum",
     ],
 
     'video_facade' => [
@@ -51,12 +53,12 @@ return [
     ],
 
     'reviews' => [
-        'title' => 'Rejoignez l’école d’allemand la mieux notée au Maroc',
+        'title' => "Rejoignez l'école d'allemand la mieux notée au Maroc",
         'rating_line' => '4.9 / 5 (+677 avis)',
 
         'items' => [
             [
-                'text' => 'GLS m’a beaucoup aidé à améliorer mon allemand. Les professeurs sont très patients et passionnés.',
+                'text' => "GLS m'a beaucoup aidé à améliorer mon allemand. Les professeurs sont très patients et passionnés.",
                 'name' => 'Salma Benyahia',
                 'year' => 2025,
             ],
@@ -71,12 +73,12 @@ return [
                 'year' => 2025,
             ],
             [
-                'text' => 'Je recommande vivement GLS à tous ceux qui veulent apprendre l’allemand dans une ambiance agréable.',
+                'text' => "Je recommande vivement GLS à tous ceux qui veulent apprendre l'allemand dans une ambiance agréable.",
                 'name' => 'Rachid El Khattabi',
                 'year' => 2024,
             ],
             [
-                'text' => 'Mon professeur était incroyable ! Les cours étaient amusants, interactifs et très utiles pour mes examens.',
+                'text' => "Mon professeur était incroyable ! Les cours étaient amusants, interactifs et très utiles pour mes examens.",
                 'name' => 'Imane Ait Lhaj',
                 'year' => 2025,
             ],
@@ -86,12 +88,12 @@ return [
                 'year' => 2024,
             ],
             [
-                'text' => 'GLS Sprachenzentrum est un endroit incroyable pour apprendre l’allemand à ton rythme.',
+                'text' => "GLS Sprachenzentrum est un endroit incroyable pour apprendre l'allemand à ton rythme.",
                 'name' => 'Nadia Cherkaoui',
                 'year' => 2025,
             ],
             [
-                'text' => 'L’ambiance de l’école est familiale. Tout le monde est gentil et très professionnel.',
+                'text' => "L'ambiance de l'école est familiale. Tout le monde est gentil et très professionnel.",
                 'name' => 'Karim Berrada',
                 'year' => 2024,
             ],
@@ -101,7 +103,7 @@ return [
                 'year' => 2025,
             ],
             [
-                'text' => 'GLS m’a vraiment aidé à préparer mon examen B1. Méthodologie claire et efficace.',
+                'text' => "GLS m'a vraiment aidé à préparer mon examen B1. Méthodologie claire et efficace.",
                 'name' => 'Ayoub Idrissi',
                 'year' => 2025,
             ],
@@ -112,8 +114,8 @@ return [
         'title' => 'Nos cours',
 
         'intensive' => [
-            'title' => 'Cours intensifs d’allemand',
-            'subtitle' => 'Cours d’allemand A1–B2',
+            'title' => "Cours intensifs d'allemand",
+            'subtitle' => "Cours d'allemand A1–B2",
             'description' => 'Du lundi au vendredi — 2h30 par séance',
 
             'cards' => [
@@ -121,7 +123,7 @@ return [
                     'letter' => 'A',
                     'number' => '1',
                     'title' => 'Allemand A1<br>Débutant',
-                    'text' => 'Apprenez les bases de l’allemand.<br>Parfait pour débuter !',
+                    'text' => "Apprenez les bases de l'allemand.<br>Parfait pour débuter !",
                     'button' => 'Cours A1',
                     'route' => 'front.online-courses',
                 ],
@@ -159,7 +161,7 @@ return [
             'cards' => [
                 'online' => [
                     'title' => 'Cours<br>en ligne',
-                    'text' => 'Apprenez l’allemand depuis le confort de votre domicile.',
+                    'text' => "Apprenez l'allemand depuis le confort de votre domicile.",
                     'button' => 'Cours en ligne',
                     'route' => 'front.online-courses',
                 ],
@@ -171,7 +173,7 @@ return [
                 ],
                 'goethe' => [
                     'title' => 'Préparation<br>examens Goethe',
-                    'text' => 'Obtenez la certification Goethe reconnue à l’international.',
+                    'text' => "Obtenez la certification Goethe reconnue à l'international.",
                     'button' => 'Voir les programmes',
                     'route' => 'front.exams.goethe',
                 ],
@@ -180,11 +182,11 @@ return [
     ],
 
     'learn_more' => [
-        'title' => 'Apprendre l’allemand<br>Avec<br>GLS Maroc',
+        'title' => "Apprendre l'allemand<br>Avec<br>GLS Maroc",
 
-        'description' => "Chez GLS Maroc, apprendre l’allemand est une expérience immersive et adaptée à chaque étudiant.
+        'description' => "Chez GLS Maroc, apprendre l'allemand est une expérience immersive et adaptée à chaque étudiant.
     Nos petites classes et nos formateurs certifiés garantissent un accompagnement pédagogique de qualité,
-    du niveau débutant jusqu’au niveau avancé, avec un suivi personnalisé pour atteindre vos objectifs en Allemagne.",
+    du niveau débutant jusqu'au niveau avancé, avec un suivi personnalisé pour atteindre vos objectifs en Allemagne.",
 
         'cards' => [
             [
@@ -214,12 +216,12 @@ return [
     ],
 
     '9onsol' => [
-        'title' => 'Willkommen to<br>9onsol’s Talks',
+        'title' => "Willkommen to<br>9onsol's Talks",
 
-        'description' => "Willkommen dans <strong>9onsol’s Talks</strong> – le podcast qui stimule votre motivation pour
+        'description' => "Willkommen dans <strong>9onsol's Talks</strong> – le podcast qui stimule votre motivation pour
             relever des défis et atteindre vos objectifs !<br><br>
             Animé par <strong>@l9onsol</strong>, chaque épisode apporte des conversations authentiques avec
-            des étudiants, des professeurs et des invités inspirants de <strong>GLS Morocco</strong> et d’ailleurs.<br>
+            des étudiants, des professeurs et des invités inspirants de <strong>GLS Morocco</strong> et d'ailleurs.<br>
             Écoutez, apprenez et laissez-vous inspirer pour évoluer dans votre parcours – épisode après épisode.",
 
         'button' => 'Écouter maintenant',
@@ -227,9 +229,9 @@ return [
     'highlights' => [
         'title' => 'Bientôt disponible !',
         'big_card' => [
-            'title' => 'Cours "Fais ce que tu dois",<br>Payez ce que vous voulez.',
-            'subtitle' => 'Un cours d\'allemand pour débutants que vous pouvez vous permettre selon vos conditions',
-            'description' => 'Le coût ne devrait pas vous arrêter d\'apprendre l\'allemand ! Rejoignez notre cours complet A1 l\'après-midi sur la base du "payez ce que vous voulez". Places limitées, inscrivez-vous en personne dans notre campus.',
+            'title' => "Cours \"Fais ce que tu dois\",<br>Payez ce que vous voulez.",
+            'subtitle' => "Un cours d'allemand pour débutants que vous pouvez vous permettre selon vos conditions",
+            'description' => "Le coût ne devrait pas vous arrêter d'apprendre l'allemand ! Rejoignez notre cours complet A1 l'après-midi sur la base du \"payez ce que vous voulez\". Places limitées, inscrivez-vous en personne dans notre campus.",
             'start_date' => 'À partir du 2 décembre (durée 4 semaines).',
             'button_directions' => 'Obtenir les directions',
             'button_learn_more' => 'Suivez-nous sur Instagram',
@@ -237,13 +239,13 @@ return [
         'card_a1' => [
             'title' => 'Nouveaux cours <span class="hh-yellow">A1</span> bientôt disponibles !',
             'spots_available' => 'Places encore disponibles !',
-            'description' => 'Voulez-vous commencer votre cours d\'allemand aujourd\'hui ?<br>Pas de problème ! Inscrivez-vous aujourd\'hui et commencez.',
-            'button' => 'S\'inscrire maintenant',
+            'description' => "Voulez-vous commencer votre cours d'allemand aujourd'hui ?<br>Pas de problème ! Inscrivez-vous aujourd'hui et commencez.",
+            'button' => "S'inscrire maintenant",
         ],
         'card_intensive' => [
-            'title' => 'Cours intensifs d\'allemand au Maroc',
+            'title' => "Cours intensifs d'allemand au Maroc",
             'join_anytime' => 'Rejoignez-nous à tout moment !',
-            'description' => 'Mardi au vendredi, 4 semaines, 16 heures par semaine.<br>Apprenez aussi longtemps que vous le souhaitez.',
+            'description' => "Mardi au vendredi, 4 semaines, 16 heures par semaine.<br>Apprenez aussi longtemps que vous le souhaitez.",
             'button' => 'Voir le tarif',
         ],
     ],
@@ -442,7 +444,7 @@ return [
         'att_tag'               => 'Demande en ligne',
         'att_cta'               => 'Demander mon attestation',
         'att_preview_request'   => 'Demande envoyée',
-        'att_preview_status'    => 'En cours d\'examen',
+        'att_preview_status'    => "En cours d'examen",
         'att_preview_level'     => 'Niveau',
         'att_step1'             => 'Soumis',
         'att_step2'             => 'Validation',

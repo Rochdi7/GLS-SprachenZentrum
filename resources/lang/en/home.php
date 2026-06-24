@@ -9,7 +9,9 @@ return [
     // 🔵 HERO SECTION
     // ========================
     'hero' => [
-        'title' => 'Learn German in Morocco with GLS',
+        'title' => 'Your first step',
+        'title2' => 'towards Germany',
+        'subtitle_ar' => 'خطوتك الأولى نحو ألمانيا',
         'badge1' => 'Jawohl',
         'badge2' => 'Wunderbar',
         'badge3' => 'Guten Tag',

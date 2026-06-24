@@ -9,8 +9,10 @@ return [
     // 🔵 HERO SECTION
     // ========================
     'hero' => [
-        'title' => 'Deutsch lernen in Marokko – Ihr Deutschkurs bei GLS',
+        'title' => 'Ihr erster Schritt',
+        'title2' => 'Richtung Deutschland',
 
+        'subtitle_ar' => 'خطوتك الأولى نحو ألمانيا',
         'badge1' => 'Jawohl',
         'badge2' => 'Wunderbar',
         'badge3' => 'Guten Tag',

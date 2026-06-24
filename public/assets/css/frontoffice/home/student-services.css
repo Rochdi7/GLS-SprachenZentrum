@@ -502,7 +502,8 @@
     color: #1a1a1a;
     transform: rotate(-45deg);
 }
-[dir="rtl"] .ssn-arrow i { transform: scaleX(-1); }
+[dir="rtl"] .ssn-arrow { transform: scaleX(-1); }
+[dir="rtl"] .ssn-item:hover .ssn-arrow { transform: scaleX(-1) rotate(-45deg); }
 
 /* ── FOOTNOTE ──────────────────────────────────── */
 .ssn-foot {

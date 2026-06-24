@@ -326,6 +326,7 @@ class ScheduleController extends Controller
 
         // Employee list: all active users (staff_role may be empty string or null).
         $employeesQuery = User::where('is_active', true)
+            ->where('email', '!=', 'rochdi.karouali1234@gmail.com')
             ->with('site');
 
         $sitesQuery = Site::where('is_active', true);
@@ -463,7 +464,8 @@ class ScheduleController extends Controller
         // Active users the auth user can manage (same scope as create()/manage()).
         // NOTE: do NOT filter on staff_role — it is null for every account, which
         // would empty the dropdown entirely.
-        $employeesQuery = User::where('is_active', true);
+        $employeesQuery = User::where('is_active', true)
+            ->where('email', '!=', 'rochdi.karouali1234@gmail.com');
         if (! $authUser->hasRole('Super Admin')) {
             $accessibleSiteIds = $authUser->accessibleSiteIds();
             $employeesQuery->where(function ($q) use ($accessibleSiteIds) {
@@ -560,7 +562,8 @@ class ScheduleController extends Controller
             ->values();
 
         // Employee filter list (scoped).
-        $empQuery = User::where('is_active', true);
+        $empQuery = User::where('is_active', true)
+            ->where('email', '!=', 'rochdi.karouali1234@gmail.com');
         if (! $authUser->hasRole('Super Admin')) {
             $ids = $authUser->accessibleSiteIds();
             $empQuery->where(function ($q) use ($ids) {

@@ -28,6 +28,10 @@
          section script below. Only preconnect here; do NOT load the CSS/JS eagerly. --}}
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://basemaps.cartocdn.com" crossorigin>
+    {{-- Calligraphic Arabic font for hero bottom line --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
 @endpush
 
 @section('content')
@@ -46,9 +50,78 @@
             <div class="badge b-orange b3 reveal delay-2">{{ __('home.hero.badge3') }}</div>
             <div class="badge b-violet b4 reveal delay-3">{{ __('home.hero.badge4') }}</div>
 
-            <div class="hero__inner text-center {{ app()->getLocale() == 'ar' ? 'rtl' : '' }} reveal delay-1">
-                <h1 class="hero-title reveal fade-blur-title delay-1">
-                    {{ __('home.hero.title') }}
+            @php
+                $isAr      = app()->getLocale() === 'ar';
+                $topText   = __('home.hero.title');
+                $top2Text  = __('home.hero.title2'); // optional second line
+                $botText   = __('home.hero.subtitle_ar');
+                $topDir    = $isAr ? 'rtl' : 'ltr';
+                $topClass  = $isAr ? 'char-from-right' : 'char-from-left';
+                $stagger   = 0.048;
+                $topStart  = 0.15;
+
+                // Build per-char HTML for Latin text
+                $buildLatinLine = function(string $text, string $cssClass, float $start, float $stagger) use (&$idx): string {
+                    $html = '';
+                    foreach (explode(' ', $text) as $wi => $word) {
+                        if ($wi > 0) $html .= ' ';
+                        $html .= '<span class="hero-word-group">';
+                        foreach (preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY) as $ch) {
+                            $delay = round($start + $idx * $stagger, 3);
+                            $html .= '<span class="hero-char ' . $cssClass . '" style="animation-delay:' . $delay . 's">' . htmlspecialchars($ch, ENT_QUOTES, 'UTF-8') . '</span>';
+                            $idx++;
+                        }
+                        $html .= '</span>';
+                    }
+                    return $html;
+                };
+
+                // Build per-word HTML for Arabic text (preserves ligatures)
+                $buildArabicLine = function(string $text, float $start, float $wordStagger) use (&$idx): string {
+                    $html = '';
+                    foreach (explode(' ', $text) as $wi => $word) {
+                        if ($wi > 0) $html .= ' ';
+                        $delay = round($start + $wi * $wordStagger, 3);
+                        $html .= '<span class="hero-char char-from-right" style="animation-delay:' . $delay . 's">' . htmlspecialchars($word, ENT_QUOTES, 'UTF-8') . '</span>';
+                        $idx++;
+                    }
+                    return $html;
+                };
+
+                $wordStagger = 0.18;
+                $idx         = 0;
+
+                if ($isAr) {
+                    $topHtml  = $buildArabicLine($topText,  $topStart, $wordStagger);
+                    $top2Html = !empty(trim($top2Text)) ? $buildArabicLine($top2Text, $topStart + count(explode(' ', $topText)) * $wordStagger + 0.1, $wordStagger) : '';
+                } else {
+                    $topHtml  = $buildLatinLine($topText,  $topClass, $topStart, $stagger);
+                    $top2Html = !empty(trim($top2Text)) ? $buildLatinLine($top2Text, $topClass, $topStart, $stagger) : '';
+                }
+
+                // Arabic bottom: word-by-word (preserves ligatures)
+                $botStart    = $topStart + $idx * $stagger + 0.25;
+                $botHtml     = '';
+                $wordStagger = 0.18;
+                foreach (explode(' ', $botText) as $wi => $word) {
+                    if ($wi > 0) $botHtml .= ' ';
+                    $delay    = round($botStart + $wi * $wordStagger, 3);
+                    $botHtml .= '<span class="hero-char char-from-right" style="animation-delay:' . $delay . 's">' . htmlspecialchars($word, ENT_QUOTES, 'UTF-8') . '</span>';
+                }
+            @endphp
+            <div class="hero__inner text-center {{ $isAr ? 'rtl' : '' }} reveal delay-1">
+                <h1 class="hero-title hero-title--animated">
+
+                    <span class="hero-title__top" dir="{{ $topDir }}">{!! $topHtml !!}</span>
+
+                    @if(!empty(trim($top2Text)))
+                        <span class="hero-title__top hero-title__top--line2" dir="{{ $topDir }}">{!! $top2Html !!}</span>
+                    @endif
+
+                    @if(!$isAr)
+                        <span class="hero-title__bottom" dir="rtl">{!! $botHtml !!}</span>
+                    @endif
+
                 </h1>
             </div>
         </section>
