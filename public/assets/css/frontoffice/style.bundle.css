@@ -2334,7 +2334,7 @@ font-size: min(4.2vw, 34px);
 }
 
 .course-card_level-circle {
-    border: 2px solid var(--off-black);
+    border: 2px solid #1a1a1a !important;
     border-radius: 1000px;
     justify-content: center;
     align-items: center;
@@ -2343,17 +2343,15 @@ font-size: min(4.2vw, 34px);
     margin-right: -1px;
     font-weight: 700;
     display: flex;
-    
-    /* Default background for A1, other colors inherited from card background/color scheme */
-    color: var(--off-black); 
-    background-color: transparent; 
+    color: #1a1a1a !important;
+    background-color: transparent;
 }
 
 /* Override Level Circle colors if needed (based on provided card colors) */
-.course-card.is-green .course-card_level-circle { border-color: var(--off-black); color: var(--off-black); }
-.course-card.is-purple .course-card_level-circle { border-color: var(--off-black); color: var(--off-black); }
-.course-card.is-yellow .course-card_level-circle { border-color: var(--off-black); color: var(--off-black); }
-.course-card.is-orange .course-card_level-circle { border-color: var(--off-black); color: var(--off-black); }
+.course-card.is-green .course-card_level-circle { border-color: #1a1a1a !important; color: #1a1a1a !important; }
+.course-card.is-purple .course-card_level-circle { border-color: #1a1a1a !important; color: #1a1a1a !important; }
+.course-card.is-yellow .course-card_level-circle { border-color: #1a1a1a !important; color: #1a1a1a !important; }
+.course-card.is-orange .course-card_level-circle { border-color: #1a1a1a !important; color: #1a1a1a !important; }
 
 /* Card Title and Text */
 .course-card_title {
