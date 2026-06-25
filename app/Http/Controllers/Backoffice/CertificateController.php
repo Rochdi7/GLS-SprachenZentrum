@@ -31,10 +31,22 @@ class CertificateController extends Controller
             'oral_max'       => 75,
         ],
         'a2' => [
-            'reading'   => 25,  // Lesen
-            'listening' => 25,  // Hören
-            'writing'   => 25,  // Schreiben
-            'speaking'  => 25,  // Sprechen
+            'reading'   => 25,
+            'listening' => 25,
+            'writing'   => 25,
+            'speaking'  => 25,
+        ],
+        'a1' => [
+            'reading'   => 15,
+            'listening' => 15,
+            'writing'   => 15,
+            'speaking'  => 15,
+        ],
+        'b1' => [
+            'reading'   => 60,
+            'listening' => 60,
+            'writing'   => 60,
+            'speaking'  => 60,
         ],
     ];
 
@@ -214,10 +226,10 @@ class CertificateController extends Controller
      */
     private function hydrateScores(array $data): array
     {
-        $type = $data['certificate_type'] ?? 'b2';
+        $type   = $data['certificate_type'] ?? 'b2';
         $config = self::SCORE_CONFIGS[$type] ?? self::SCORE_CONFIGS['b2'];
 
-        if ($type === 'a2') {
+        if (in_array($type, ['a1', 'a2', 'b1'], true)) {
             return $this->hydrateA2($data, $config);
         }
 

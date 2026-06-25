@@ -2,16 +2,17 @@
 
     {{-- ROLE NAME --}}
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Nom du rôle</label>
+        <label class="form-label fw-bold">Nom du rôle <span class="text-danger">*</span></label>
         @if(isset($role) && $role->name === 'Super Admin')
             <input type="text" class="form-control" value="Super Admin" disabled>
             <input type="hidden" name="name" value="Super Admin">
         @else
             <input type="text" name="name"
-                   class="form-control"
+                   class="form-control @error('name') is-invalid @enderror"
                    value="{{ old('name', $role->name ?? '') }}"
                    placeholder="Nom du rôle"
                    required>
+            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
         @endif
     </div>
 

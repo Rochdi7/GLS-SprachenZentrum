@@ -21,7 +21,7 @@ class UpdateCertificateRequest extends FormRequest
             'birth_date'         => 'required|date',
             'birth_place'        => 'nullable|string|max:255',
 
-            'certificate_type'   => 'required|in:a2,b2',
+            'certificate_type'   => 'required|in:a1,a2,b1,b2',
             'exam_level'         => 'required|string|max:255',
             'exam_date'          => 'required|date',
             'issue_date'         => 'required|date',
@@ -33,11 +33,21 @@ class UpdateCertificateRequest extends FormRequest
             'ergebnis_note'      => 'nullable|string|max:255',
         ];
 
-        if ($type === 'a2') {
+        if ($type === 'a1') {
+            $rules['reading_score']   = 'required|integer|min:0|max:15';
+            $rules['listening_score'] = 'required|integer|min:0|max:15';
+            $rules['writing_score']   = 'required|integer|min:0|max:15';
+            $rules['speaking_score']  = 'required|integer|min:0|max:15';
+        } elseif ($type === 'a2') {
             $rules['reading_score']   = 'required|integer|min:0|max:25';
             $rules['listening_score'] = 'required|integer|min:0|max:25';
             $rules['writing_score']   = 'required|integer|min:0|max:25';
             $rules['speaking_score']  = 'required|integer|min:0|max:25';
+        } elseif ($type === 'b1') {
+            $rules['reading_score']   = 'required|integer|min:0|max:60';
+            $rules['listening_score'] = 'required|integer|min:0|max:60';
+            $rules['writing_score']   = 'required|integer|min:0|max:60';
+            $rules['speaking_score']  = 'required|integer|min:0|max:60';
         } else {
             $rules['reading_score']        = 'required|integer|min:0|max:75';
             $rules['grammar_score']        = 'required|integer|min:0|max:30';

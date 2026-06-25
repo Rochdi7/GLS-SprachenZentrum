@@ -98,6 +98,10 @@
    RESPONSIVE TWEAKS
 ========================================================= */
 @media screen and (max-width: 991px) {
+  .hero-section.section.intensive-hero {
+    margin-bottom: 220px;
+  }
+
   .hero-image {
     border-radius: var(--radius-small);
     height: 400px;
@@ -114,6 +118,10 @@
 }
 
 @media screen and (max-width: 479px) {
+  .hero-section.section.intensive-hero {
+    margin-bottom: 170px;
+  }
+
   .hero-image {
     height: 300px;
     margin-top: 3rem;

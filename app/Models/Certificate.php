@@ -109,14 +109,14 @@ class Certificate extends Model
         return $this->belongsTo(Site::class);
     }
 
-    public function isA2(): bool
-    {
-        return $this->certificate_type === 'a2';
-    }
+    public function isA1(): bool { return $this->certificate_type === 'a1'; }
+    public function isA2(): bool { return $this->certificate_type === 'a2'; }
+    public function isB1(): bool { return $this->certificate_type === 'b1'; }
+    public function isB2(): bool { return $this->certificate_type === 'b2'; }
 
-    public function isB2(): bool
+    public function isSimpleType(): bool
     {
-        return $this->certificate_type === 'b2';
+        return in_array($this->certificate_type, ['a1', 'a2', 'b1'], true);
     }
 
     /*
@@ -127,7 +127,7 @@ class Certificate extends Model
 
     public function getTotalMaxAttribute()
     {
-        if ($this->isA2()) {
+        if ($this->isSimpleType() || $this->isA2()) {
             return ($this->reading_max ?? 0) + ($this->listening_max ?? 0)
                  + ($this->writing_max ?? 0) + ($this->speaking_max ?? 0);
         }
@@ -137,7 +137,7 @@ class Certificate extends Model
 
     public function getTotalScoreAttribute()
     {
-        if ($this->isA2()) {
+        if ($this->isSimpleType() || $this->isA2()) {
             return ($this->reading_score ?? 0) + ($this->listening_score ?? 0)
                  + ($this->writing_score ?? 0) + ($this->speaking_score ?? 0);
         }

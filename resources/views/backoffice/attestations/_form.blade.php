@@ -13,27 +13,31 @@
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Nom</label>
-        <input type="text" name="last_name" class="form-control" required
+        <label class="form-label fw-bold">Nom <span class="text-danger">*</span></label>
+        <input type="text" name="last_name" class="form-control @error('last_name') is-invalid @enderror" required
                value="{{ old('last_name', $att->last_name ?? $pr->last_name ?? '') }}">
+        @error('last_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Prénom</label>
-        <input type="text" name="first_name" class="form-control" required
+        <label class="form-label fw-bold">Prénom <span class="text-danger">*</span></label>
+        <input type="text" name="first_name" class="form-control @error('first_name') is-invalid @enderror" required
                value="{{ old('first_name', $att->first_name ?? $pr->first_name ?? '') }}">
+        @error('first_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Date de naissance</label>
-        <input type="date" name="birth_date" class="form-control"
+        <input type="date" name="birth_date" class="form-control @error('birth_date') is-invalid @enderror"
                value="{{ old('birth_date', isset($att->birth_date) ? $att->birth_date->format('Y-m-d') : (isset($pr->birth_date) ? $pr->birth_date->format('Y-m-d') : '')) }}">
+        @error('birth_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Lieu de naissance</label>
-        <input type="text" name="birth_place" class="form-control"
+        <input type="text" name="birth_place" class="form-control @error('birth_place') is-invalid @enderror"
                value="{{ old('birth_place', $att->birth_place ?? $pr->birth_place ?? '') }}">
+        @error('birth_place') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     {{-- ============================================================ --}}
@@ -94,12 +98,12 @@
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Niveau sélectionné</label>
+        <label class="form-label fw-bold">Niveau sélectionné <span class="text-danger">*</span></label>
         @php
             $selectedLevel = old('level', $att->level ?? $pr->level ?? '');
             $staticLevels = ['A1', 'A2', 'B1', 'B2'];
         @endphp
-        <select name="level" id="att-level-select" class="form-select" required>
+        <select name="level" id="att-level-select" class="form-select @error('level') is-invalid @enderror" required>
             <option value="">— Sélectionner un niveau —</option>
             @foreach($staticLevels as $lvl)
                 <option value="{{ $lvl }}" {{ $selectedLevel === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
@@ -143,10 +147,12 @@
     {{--   VOLUME HORAIRE (manuel)                                    --}}
     {{-- ============================================================ --}}
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Unités d'enseignement (45 min)</label>
-        <input type="number" min="0" step="1" name="units_45min" id="att-units-input" class="form-control" required
+        <label class="form-label fw-bold">Unités d'enseignement (45 min) <span class="text-danger">*</span></label>
+        <input type="number" min="0" step="1" name="units_45min" id="att-units-input"
+               class="form-control @error('units_45min') is-invalid @enderror" required
                value="{{ old('units_45min', $att->units_45min ?? '') }}">
         <small class="text-muted">Saisir manuellement le nombre de séances de 45 minutes.</small>
+        @error('units_45min') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     {{-- ============================================================ --}}
@@ -182,17 +188,21 @@
     </div>
 
     <div class="col-md-3 mb-3">
-        <label class="form-label fw-bold">Niveau actuel</label>
-        <input type="number" min="1" max="9" name="stufe_index" class="form-control" required
+        <label class="form-label fw-bold">Niveau actuel <span class="text-danger">*</span></label>
+        <input type="number" min="1" max="9" name="stufe_index"
+               class="form-control @error('stufe_index') is-invalid @enderror" required
                value="{{ old('stufe_index', $att->stufe_index ?? 1) }}">
         <small class="text-muted">Numéro du palier en cours.</small>
+        @error('stufe_index') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     <div class="col-md-3 mb-3">
-        <label class="form-label fw-bold">Nombre total de niveaux</label>
-        <input type="number" min="1" max="9" name="stufe_total" class="form-control" required
+        <label class="form-label fw-bold">Nombre total de niveaux <span class="text-danger">*</span></label>
+        <input type="number" min="1" max="9" name="stufe_total"
+               class="form-control @error('stufe_total') is-invalid @enderror" required
                value="{{ old('stufe_total', $att->stufe_total ?? 3) }}">
         <small class="text-muted">Total des paliers du parcours.</small>
+        @error('stufe_total') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     {{-- ============================================================ --}}
@@ -220,9 +230,10 @@
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Date de délivrance</label>
-        <input type="date" name="issue_date" class="form-control" required
+        <label class="form-label fw-bold">Date de délivrance <span class="text-danger">*</span></label>
+        <input type="date" name="issue_date" class="form-control @error('issue_date') is-invalid @enderror" required
                value="{{ old('issue_date', isset($att->issue_date) ? $att->issue_date->format('Y-m-d') : now()->format('Y-m-d')) }}">
+        @error('issue_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
 </div>

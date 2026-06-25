@@ -32,6 +32,11 @@ class LevelFollowupGenerator
 
 
     /**
+     * Default level durations in days (A1=2m, A2=2.5m, B1=2.5m, B2=3m ≈ 10m total).
+     */
+    private array $defaultDays = ['A1' => 61, 'A2' => 76, 'B1' => 76, 'B2' => 91];
+
+    /**
      * Generate followups for a single group (idempotent).
      */
     public function generateForGroup(Group $group): void
@@ -51,13 +56,16 @@ class LevelFollowupGenerator
         $levels = array_slice($this->order, $startIndex);
         $segmentCount = count($levels);
 
+        // Compute per-level day counts — scale proportionally if date_fin is set
+        $levelDays = $this->computeLevelDays($levels, $startDate, $group->date_fin);
+
         // Load existing done records to respect early completions
         $existingByLevel = GroupLevelFollowup::query()
             ->where('group_id', $group->id)
             ->get()
             ->keyBy('level');
 
-        DB::transaction(function () use ($group, $levels, $segmentCount, $startDate, $existingByLevel) {
+        DB::transaction(function () use ($group, $levels, $segmentCount, $startDate, $existingByLevel, $levelDays) {
             $computed = [];
             $segStart = $startDate->copy();
 
@@ -65,18 +73,8 @@ class LevelFollowupGenerator
                 $level = $levels[$i];
                 $existing = $existingByLevel->get($level);
 
-                // Inclusive end date = start + duration - 1 day
-                $segEnd = $segStart->copy();
-                if ($level === 'A1') {
-                    $segEnd->addMonthsNoOverflow(2)->subDay();
-                } elseif ($level === 'A2') {
-                    $segEnd->addMonthsNoOverflow(2)->addDays(15)->subDay();
-                } elseif ($level === 'B1') {
-                    $segEnd->addMonthsNoOverflow(2)->addDays(15)->subDay();
-                } elseif ($level === 'B2') {
-                    $segEnd->addMonthsNoOverflow(3)->subDay();
-                }
-                $segEnd->startOfDay();
+                // Inclusive end date = start + duration in days - 1
+                $segEnd = $segStart->copy()->addDays($levelDays[$level] - 1)->startOfDay();
 
                 // Auto-mark past levels as done; keep manual done_at if exists
                 $isPast = $segEnd->copy()->endOfDay()->isPast();
@@ -101,14 +99,8 @@ class LevelFollowupGenerator
                 $segStart = $segEnd->copy()->addDay();
             }
 
-            // Update the group's end date from the last level
-            if ($segmentCount > 0) {
-                $lastEndDate = $computed[$segmentCount - 1]['level_end_date'];
-                if ($group->date_fin !== $lastEndDate && $group->status === 'active') {
-                    Group::where('id', $group->id)->update(['date_fin' => $lastEndDate]);
-                    $group->date_fin = $lastEndDate;
-                }
-            }
+            // date_fin is always set by the form before this runs (auto or manual).
+            // Segments are already scaled to fit — no need to overwrite date_fin here.
 
             $intendedLevels = array_column($computed, 'level');
 
@@ -154,6 +146,47 @@ class LevelFollowupGenerator
                 $existing->update($updateData);
             }
         });
+    }
+
+    /**
+     * Compute how many days each level gets.
+     * If date_fin is provided, scale the default ratios to fit exactly within
+     * (date_debut → date_fin). The last level absorbs any rounding remainder
+     * so segments always end exactly on date_fin.
+     */
+    private function computeLevelDays(array $levels, Carbon $startDate, ?string $dateFin): array
+    {
+        // Default days for each level in this path
+        $defaults = [];
+        foreach ($levels as $lvl) {
+            $defaults[$lvl] = $this->defaultDays[$lvl] ?? 60;
+        }
+
+        if (empty($dateFin)) {
+            return $defaults;
+        }
+
+        $endDate   = Carbon::parse($dateFin)->startOfDay();
+        $totalDays = $startDate->diffInDays($endDate) + 1; // inclusive
+
+        $defaultTotal = array_sum($defaults);
+        $result       = [];
+        $assigned     = 0;
+
+        $lastLevel = $levels[array_key_last($levels)];
+
+        foreach ($levels as $lvl) {
+            if ($lvl === $lastLevel) {
+                // Last level gets the remainder to avoid rounding drift
+                $result[$lvl] = $totalDays - $assigned;
+            } else {
+                $days          = (int) round($totalDays * ($defaults[$lvl] / $defaultTotal));
+                $result[$lvl]  = max(1, $days);
+                $assigned     += $result[$lvl];
+            }
+        }
+
+        return $result;
     }
 }
 

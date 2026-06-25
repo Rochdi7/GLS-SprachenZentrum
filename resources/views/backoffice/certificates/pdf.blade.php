@@ -322,8 +322,8 @@
     </table>
 
 
-    @if ($certificate->isA2())
-        {{-- A2 SCORES --}}
+    @if ($certificate->isA1() || $certificate->isA2() || $certificate->isB1())
+        {{-- A1 / A2 / B1 SCORES (same 4-field layout, stored max values differ) --}}
 
         <div class="section-title">Prüfungsergebnisse</div>
 

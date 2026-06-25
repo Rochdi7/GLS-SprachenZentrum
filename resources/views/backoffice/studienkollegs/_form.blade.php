@@ -118,14 +118,16 @@ $requirementsValue = old('requirements');
     <div class="card-body row">
 
         <div class="col-md-6 mb-3">
-            <label class="form-label">Nom</label>
-            <input type="text" name="name" class="form-control" required value="{{ old('name', $item->name ?? '') }}">
+            <label class="form-label">Nom <span class="text-danger">*</span></label>
+            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" required value="{{ old('name', $item->name ?? '') }}">
+            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
         <div class="col-md-3 mb-3">
-            <label class="form-label">Ville</label>
-            <input type="text" name="city" class="form-control" required
+            <label class="form-label">Ville <span class="text-danger">*</span></label>
+            <input type="text" name="city" class="form-control @error('city') is-invalid @enderror" required
                 value="{{ old('city', $item->city ?? '') }}">
+            @error('city') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
         <div class="col-md-3 mb-3">

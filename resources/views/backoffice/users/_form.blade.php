@@ -51,18 +51,18 @@
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Nom complet <span class="text-danger">*</span></label>
         <input type="text" name="name"
-               class="form-control"
+               class="form-control @error('name') is-invalid @enderror"
                value="{{ old('name', $user->name ?? '') }}"
                placeholder="Nom de l'utilisateur"
                required>
+        @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     {{-- EMAIL --}}
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Email <span class="text-danger">*</span></label>
-        {{-- type="text" + pattern: tolerate non-ASCII local parts (e.g. réception@gls.ma) --}}
         <input type="text" name="email"
-               class="form-control"
+               class="form-control @error('email') is-invalid @enderror"
                value="{{ old('email', $user->email ?? '') }}"
                placeholder="email@exemple.com"
                pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
@@ -70,29 +70,33 @@
                inputmode="email"
                autocomplete="email"
                required>
+        @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     {{-- PASSWORD --}}
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">
             Mot de passe
-            @if(isset($user))
-                <small class="text-muted">(laisser vide pour ne pas changer)</small>
-            @endif
+            @if(!isset($user)) <span class="text-danger">*</span> @else <small class="text-muted">(laisser vide pour ne pas changer)</small> @endif
         </label>
         <input type="password" name="password"
-               class="form-control"
+               class="form-control @error('password') is-invalid @enderror"
                placeholder="Mot de passe"
                {{ isset($user) ? '' : 'required' }}>
+        @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     {{-- PASSWORD CONFIRMATION --}}
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Confirmer le mot de passe</label>
+        <label class="form-label fw-bold">
+            Confirmer le mot de passe
+            @if(!isset($user)) <span class="text-danger">*</span> @endif
+        </label>
         <input type="password" name="password_confirmation"
-               class="form-control"
+               class="form-control @error('password_confirmation') is-invalid @enderror"
                placeholder="Confirmer le mot de passe"
                {{ isset($user) ? '' : 'required' }}>
+        @error('password_confirmation') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     {{-- ROLE (application role) --}}

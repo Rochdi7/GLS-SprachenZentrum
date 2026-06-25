@@ -1,93 +1,101 @@
 <div class="row">
 
     {{-- NOM DU GROUPE (DEFAULT / BACKUP) --}}
-    <div class="col-md-12 mb-3">
-        <label class="form-label fw-bold">Nom du groupe (Fallback)</label>
-        <input type="text" name="name"
-               class="form-control"
-               value="{{ old('name', $group->name ?? '') }}"
-               placeholder="Ex: Groupe A1 Intensif">
-        <small class="text-muted">Utilisé si les versions FR/EN sont vides.</small>
+    <div class=”col-md-12 mb-3”>
+        <label class=”form-label fw-bold”>Nom du groupe (Fallback) <span class=”text-danger”>*</span></label>
+        <input type=”text” name=”name”
+               class=”form-control @error(‘name’) is-invalid @enderror”
+               value=”{{ old(‘name’, $group->name ?? ‘’) }}”
+               placeholder=”Ex: Groupe A1 Intensif”>
+        <small class=”text-muted”>Utilisé si les versions FR/EN sont vides.</small>
+        @error(‘name’) <div class=”invalid-feedback”>{{ $message }}</div> @enderror
     </div>
 
     {{-- NOM FR --}}
-    <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Nom du groupe (FR)</label>
-        <input type="text" name="name_fr"
-               class="form-control"
-               value="{{ old('name_fr', $group->name_fr ?? '') }}"
-               placeholder="Ex: Groupe A1 Intensif">
+    <div class=”col-md-6 mb-3”>
+        <label class=”form-label fw-bold”>Nom du groupe (FR)</label>
+        <input type=”text” name=”name_fr”
+               class=”form-control @error(‘name_fr’) is-invalid @enderror”
+               value=”{{ old(‘name_fr’, $group->name_fr ?? ‘’) }}”
+               placeholder=”Ex: Groupe A1 Intensif”>
+        @error(‘name_fr’) <div class=”invalid-feedback”>{{ $message }}</div> @enderror
     </div>
 
     {{-- NOM EN --}}
-    <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Nom du groupe (EN)</label>
-        <input type="text" name="name_en"
-               class="form-control"
-               value="{{ old('name_en', $group->name_en ?? '') }}"
-               placeholder="Ex: A1 Intensive Group">
+    <div class=”col-md-6 mb-3”>
+        <label class=”form-label fw-bold”>Nom du groupe (EN)</label>
+        <input type=”text” name=”name_en”
+               class=”form-control @error(‘name_en’) is-invalid @enderror”
+               value=”{{ old(‘name_en’, $group->name_en ?? ‘’) }}”
+               placeholder=”Ex: A1 Intensive Group”>
+        @error(‘name_en’) <div class=”invalid-feedback”>{{ $message }}</div> @enderror
     </div>
 
     {{-- SITE --}}
-    <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Centre GLS</label>
-        <select name="site_id" class="form-select" required>
-            <option value="">Sélectionner un centre</option>
+    <div class=”col-md-6 mb-3”>
+        <label class=”form-label fw-bold”>Centre GLS <span class=”text-danger”>*</span></label>
+        <select name=”site_id” class=”form-select @error(‘site_id’) is-invalid @enderror” required>
+            <option value=””>Sélectionner un centre</option>
             @foreach($sites as $site)
-                <option value="{{ $site->id }}"
-                    {{ old('site_id', $group->site_id ?? '') == $site->id ? 'selected' : '' }}>
+                <option value=”{{ $site->id }}”
+                    {{ old(‘site_id’, $group->site_id ?? ‘’) == $site->id ? ‘selected’ : ‘’ }}>
                     {{ $site->name }} ({{ $site->city }})
                 </option>
             @endforeach
         </select>
+        @error(‘site_id’) <div class=”invalid-feedback”>{{ $message }}</div> @enderror
     </div>
 
     {{-- ENSEIGNANT (OPTIONNEL) --}}
-    <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Enseignant</label>
-        <select name="teacher_id" class="form-select">
-            <option value="">(Non défini pour le moment)</option>
+    <div class=”col-md-6 mb-3”>
+        <label class=”form-label fw-bold”>Enseignant</label>
+        <select name=”teacher_id” class=”form-select @error(‘teacher_id’) is-invalid @enderror”>
+            <option value=””>(Non défini pour le moment)</option>
             @foreach($teachers as $teacher)
-                <option value="{{ $teacher->id }}"
-                    {{ old('teacher_id', $group->teacher_id ?? '') == $teacher->id ? 'selected' : '' }}>
+                <option value=”{{ $teacher->id }}”
+                    {{ old(‘teacher_id’, $group->teacher_id ?? ‘’) == $teacher->id ? ‘selected’ : ‘’ }}>
                     {{ $teacher->name }}
                 </option>
             @endforeach
         </select>
-        <small class="text-muted">Tu peux l’ajouter plus tard après validation.</small>
+        <small class=”text-muted”>Tu peux l’ajouter plus tard après validation.</small>
+        @error(‘teacher_id’) <div class=”invalid-feedback”>{{ $message }}</div> @enderror
     </div>
 
     {{-- NIVEAU --}}
-    <div class="col-md-4 mb-3">
-        <label class="form-label fw-bold">Niveau</label>
-        <select name="level" class="form-select" required>
-            @foreach (['A1', 'A2', 'B1', 'B2'] as $level)
-                <option value="{{ $level }}"
-                    {{ old('level', $group->level ?? '') == $level ? 'selected' : '' }}>
+    <div class=”col-md-4 mb-3”>
+        <label class=”form-label fw-bold”>Niveau <span class=”text-danger”>*</span></label>
+        <select name=”level” class=”form-select @error(‘level’) is-invalid @enderror” required>
+            @foreach ([‘A1’, ‘A2’, ‘B1’, ‘B2’] as $level)
+                <option value=”{{ $level }}”
+                    {{ old(‘level’, $group->level ?? ‘’) == $level ? ‘selected’ : ‘’ }}>
                     {{ $level }}
                 </option>
             @endforeach
         </select>
+        @error(‘level’) <div class=”invalid-feedback”>{{ $message }}</div> @enderror
     </div>
 
     {{-- STATUT --}}
-    <div class="col-md-4 mb-3">
-        <label class="form-label fw-bold">Statut</label>
-        <select name="status" class="form-select" required id="group_status">
-            <option value="active"   {{ old('status', $group->status ?? '') == 'active' ? 'selected' : '' }}>Actif</option>
-            <option value="upcoming" {{ old('status', $group->status ?? '') == 'upcoming' ? 'selected' : '' }}>À venir</option>
+    <div class=”col-md-4 mb-3”>
+        <label class=”form-label fw-bold”>Statut <span class=”text-danger”>*</span></label>
+        <select name=”status” class=”form-select @error(‘status’) is-invalid @enderror” required id=”group_status”>
+            <option value=”active”   {{ old(‘status’, $group->status ?? ‘’) == ‘active’ ? ‘selected’ : ‘’ }}>Actif</option>
+            <option value=”upcoming” {{ old(‘status’, $group->status ?? ‘’) == ‘upcoming’ ? ‘selected’ : ‘’ }}>À venir</option>
         </select>
-        <small class="text-muted">Si “À venir”, le suivi (dates) sera désactivé.</small>
+        <small class=”text-muted”>Si “À venir”, le suivi (dates) sera désactivé.</small>
+        @error(‘status’) <div class=”invalid-feedback”>{{ $message }}</div> @enderror
     </div>
 
     {{-- HORAIRE --}}
-    <div class="col-md-4 mb-3">
-        <label class="form-label fw-bold">Horaire</label>
-        <input type="text" name="time_range"
-               class="form-control"
-               value="{{ old('time_range', $group->time_range ?? '') }}"
-               placeholder="Ex: 10:00 - 12:30" required>
-        <small class="text-muted">La période sera détectée automatiquement.</small>
+    <div class=”col-md-4 mb-3”>
+        <label class=”form-label fw-bold”>Horaire <span class=”text-danger”>*</span></label>
+        <input type=”text” name=”time_range”
+               class=”form-control @error(‘time_range’) is-invalid @enderror”
+               value=”{{ old(‘time_range’, $group->time_range ?? ‘’) }}”
+               placeholder=”Ex: 10:00 - 12:30” required>
+        <small class=”text-muted”>La période sera détectée automatiquement.</small>
+        @error(‘time_range’) <div class=”invalid-feedback”>{{ $message }}</div> @enderror
     </div>
 
 </div>
@@ -97,8 +105,32 @@
 {{-- ===============  SUIVI DU GROUPE (DATE) ================== --}}
 {{-- ========================================================== --}}
 
+@php
+  $dateModeOld = old('date_mode', 'auto');
+@endphp
+
 <div class="row mt-4 pt-3 border-top" id="suivi_block">
     <h5 class="fw-bold mb-3">📅 Suivi du groupe</h5>
+
+    {{-- MODE SELECTOR --}}
+    <div class="col-md-12 mb-3">
+        <div class="d-flex gap-4">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="date_mode" id="date_mode_auto" value="auto"
+                    {{ $dateModeOld !== 'manual' ? 'checked' : '' }}>
+                <label class="form-check-label fw-semibold" for="date_mode_auto">
+                    Automatique <span class="text-muted fw-normal">(date fin = début + 10 mois)</span>
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="date_mode" id="date_mode_manual" value="manual"
+                    {{ $dateModeOld === 'manual' ? 'checked' : '' }}>
+                <label class="form-check-label fw-semibold" for="date_mode_manual">
+                    Manuel <span class="text-muted fw-normal">(saisir les deux dates librement)</span>
+                </label>
+            </div>
+        </div>
+    </div>
 
     {{-- DATE DE DÉBUT --}}
     <div class="col-md-6 mb-3">
@@ -115,13 +147,13 @@
         </small>
     </div>
 
-    {{-- DATE DE FIN (editable, auto-calculated to +10 months) --}}
+    {{-- DATE DE FIN --}}
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Date de fin</label>
         <input type="date" id="picker_end_display" name="date_fin" class="form-control"
                value="{{ old('date_fin', $group->date_fin ?? '') }}">
-        <small class="text-muted">
-            Calculée automatiquement à 10 mois. Vous pouvez la modifier manuellement.
+        <small id="date_fin_hint" class="text-muted">
+            Calculée automatiquement à 10 mois.
         </small>
     </div>
 
@@ -140,12 +172,15 @@
 
 <script>
 (function () {
-  const $status = document.getElementById('group_status');
-  const $suiviBlock = document.getElementById('suivi_block');
-  const $rangeInput = document.getElementById('date_range_picker');
-  const $pickerEndDisplay = document.getElementById('picker_end_display');
-  const $dateDebut = document.getElementById('date_debut_value');
-  const $durationLabel = document.getElementById('duration_label');
+  const $status       = document.getElementById('group_status');
+  const $suiviBlock   = document.getElementById('suivi_block');
+  const $rangeInput   = document.getElementById('date_range_picker');
+  const $endInput     = document.getElementById('picker_end_display');
+  const $dateDebut    = document.getElementById('date_debut_value');
+  const $durationLabel= document.getElementById('duration_label');
+  const $dateFinHint  = document.getElementById('date_fin_hint');
+  const $modeAuto     = document.getElementById('date_mode_auto');
+  const $modeManual   = document.getElementById('date_mode_manual');
 
   const FORMATION_MONTHS = 10;
 
@@ -175,20 +210,34 @@
     return Math.max(0, months);
   };
 
+  const isAutoMode = () => $modeAuto && $modeAuto.checked;
+
   const updateDurationLabel = () => {
     const s = parseYMD($dateDebut.value);
-    const e = parseYMD($pickerEndDisplay ? $pickerEndDisplay.value : '');
-    if (!s || !e) {
-      $durationLabel.textContent = '—';
-      return;
+    const e = parseYMD($endInput ? $endInput.value : '');
+    $durationLabel.textContent = (s && e) ? diffMonths(s, e) + ' mois' : '—';
+  };
+
+  const applyModeUI = () => {
+    if (isAutoMode()) {
+      if ($endInput) $endInput.setAttribute('readonly', 'readonly');
+      if ($dateFinHint) $dateFinHint.textContent = 'Calculée automatiquement à 10 mois.';
+      // Recalculate end if start already set
+      const start = parseYMD($dateDebut.value);
+      if (start && $endInput) {
+        $endInput.value = toYMD(addMonths(start, FORMATION_MONTHS));
+      }
+    } else {
+      if ($endInput) $endInput.removeAttribute('readonly');
+      if ($dateFinHint) $dateFinHint.textContent = 'Saisir la date de fin manuellement.';
     }
-    $durationLabel.textContent = diffMonths(s, e) + ' mois';
+    updateDurationLabel();
   };
 
   const clearDates = () => {
     $dateDebut.value = '';
     if ($rangeInput) $rangeInput.value = '';
-    if ($pickerEndDisplay) $pickerEndDisplay.value = '';
+    if ($endInput) $endInput.value = '';
     $durationLabel.textContent = '—';
   };
 
@@ -198,67 +247,31 @@
       clearDates();
     } else {
       $suiviBlock.style.display = '';
-      updateDurationLabel();
+      applyModeUI();
     }
   };
 
   $status.addEventListener('change', toggleSuiviByStatus);
 
-  // Auto-calculate end date: start + 10 months
-  const autoCalcEnd = (startValue) => {
-    const start = parseYMD(startValue);
-    if (!start) return;
-
-    const end = addMonths(start, FORMATION_MONTHS);
-    const endYMD = toYMD(end);
-
-    $dateDebut.value = startValue;
-    if ($pickerEndDisplay) $pickerEndDisplay.value = endYMD;
-    updateDurationLabel();
-  };
+  if ($modeAuto)   $modeAuto.addEventListener('change', applyModeUI);
+  if ($modeManual) $modeManual.addEventListener('change', applyModeUI);
 
   // Called from the date picker when user picks a start date
   window.__syncGroupDatesFromPicker = function (startYMD) {
     if ($status.value === 'upcoming') return;
-    autoCalcEnd(startYMD);
+    $dateDebut.value = startYMD;
+    if (isAutoMode() && $endInput) {
+      const start = parseYMD(startYMD);
+      if (start) $endInput.value = toYMD(addMonths(start, FORMATION_MONTHS));
+    }
+    updateDurationLabel();
   };
 
-  // When user manually edits end date, just update duration label
-  if ($pickerEndDisplay) {
-    $pickerEndDisplay.addEventListener('change', updateDurationLabel);
-  }
-
-  // Confirm popup if duration is not ~10 months on form submit
-  const form = $status.closest('form');
-  if (form) {
-    form.addEventListener('submit', function (e) {
-      if ($status.value !== 'active') return; // no check for upcoming
-
-      const s = parseYMD($dateDebut.value);
-      const endVal = $pickerEndDisplay ? $pickerEndDisplay.value : '';
-      const en = parseYMD(endVal);
-
-      if (!s || !en) return; // dates missing, let backend validate
-
-      const days = Math.round((en - s) / (1000 * 60 * 60 * 24));
-      const months = (days / 30.44).toFixed(1);
-
-      // Allow ±15 days tolerance around 10 months (~304 days)
-      if (days < 289 || days > 319) {
-        const ok = confirm(
-          'La durée du groupe est de ' + months + ' mois au lieu des 10 mois habituels.\n\n' +
-          'Voulez-vous continuer quand même ?'
-        );
-        if (!ok) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      }
-    });
+  if ($endInput) {
+    $endInput.addEventListener('change', updateDurationLabel);
   }
 
   // init
   toggleSuiviByStatus();
-  updateDurationLabel();
 })();
 </script>
