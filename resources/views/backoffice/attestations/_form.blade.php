@@ -147,11 +147,11 @@
     {{--   VOLUME HORAIRE (manuel)                                    --}}
     {{-- ============================================================ --}}
     <div class="col-md-6 mb-3">
-        <label class="form-label fw-bold">Unités d'enseignement (45 min) <span class="text-danger">*</span></label>
+        <label class="form-label fw-bold">Unités d'enseignement (minutes) <span class="text-danger">*</span></label>
         <input type="number" min="0" step="1" name="units_45min" id="att-units-input"
                class="form-control @error('units_45min') is-invalid @enderror" required
                value="{{ old('units_45min', $att->units_45min ?? '') }}">
-        <small class="text-muted">Saisir manuellement le nombre de séances de 45 minutes.</small>
+        <small class="text-muted">Saisir manuellement le nombre de minutes.</small>
         @error('units_45min') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 

@@ -112,11 +112,22 @@
     $methodologyText =
         trim((string) ($attestation->methodology_text ?? '')) !== '' ? $attestation->methodology_text : $t['legal'];
 
-    $site = $attestation->group?->site;
-    $footerAddress =
-        $site?->address ?? 'Avenue Yacoub El Mansour, Immeuble Espace Guéliz, 3ème étage Bureau 28, Marrakech.';
-    $footerPhone = $site?->phone ?? '0808540625 / 0622996078';
-    $footerEmail = $site?->email ?? 'info@gls-sprachzentrum.ma';
+    // Prefer the direct site relation; fall back to group → site.
+    $site = $attestation->site ?? $attestation->group?->site;
+    $addressMap = [
+        'Casablanca' => '14 Bd de Paris, 1er étage N°8, Casablanca 20000',
+        'Marrakech'  => 'Avenue Yacoub El Mansour, Immeuble Espace Guéliz, 3ème étage, Bureau 28, Marrakech',
+        'Rabat'      => 'Avenue Fal Ould Oumeir, Immeuble 77, 1er étage N°1, Agdal, Rabat',
+        'Kenitra'    => 'Avenue Mohammed V, Bureaux Rania, 7ème étage, Kénitra',
+        'Kénitra'    => 'Avenue Mohammed V, Bureaux Rania, 7ème étage, Kénitra',
+        'Sale'       => 'Avenue Mohamed V, Rue Halima N°12 Diyar, Salé',
+        'Salé'       => 'Avenue Mohamed V, Rue Halima N°12 Diyar, Salé',
+        'Agadir'     => 'Av. Massoude Al Wafkaoui, Place des Taxis, Hay Essalam, Agadir',
+    ];
+    $siteCity      = $site?->city ?? '';
+    $footerAddress = $addressMap[$siteCity] ?? ($site?->address ?? '');
+    $footerPhone   = $site?->phone ?? '';
+    $footerEmail   = $site?->email ?? 'info@gls-sprachzentrum.ma';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $lang }}">

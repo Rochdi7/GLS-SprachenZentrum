@@ -9,7 +9,8 @@
      *  - White-space: nowrap on names/dates so long values don't wrap and break columns.
      */
 
-    $site         = $attestation->group?->site;
+    // Prefer the direct site relation; fall back to group → site.
+    $site = $attestation->site ?? $attestation->group?->site;
 
     // Format helper — empty values are rendered as a non-breaking dash so layout doesn't collapse.
     $fmt = fn ($d) => $d?->format('d-m-Y') ?? '—';
@@ -27,10 +28,21 @@
         ? $attestation->methodology_text
         : $defaultMethodology;
 
-    // Footer — fixed (Salé head office), used on all bilingual exports.
-    $footerAddress = 'Rue Halima Saadia N12 Lgherabliya en face la pharmacie centrale près de station tram Diyar';
-    $footerPhone   = '0808540625 / 0622996078';
-    $footerEmail   = 'gls.sprachenzentrum.sale@gmail.com';
+    // Footer — address/phone/email resolved from site record.
+    $addressMap = [
+        'Casablanca' => '14 Bd de Paris, 1er étage N°8, Casablanca 20000',
+        'Marrakech'  => 'Avenue Yacoub El Mansour, Immeuble Espace Guéliz, 3ème étage, Bureau 28, Marrakech',
+        'Rabat'      => 'Avenue Fal Ould Oumeir, Immeuble 77, 1er étage N°1, Agdal, Rabat',
+        'Kenitra'    => 'Avenue Mohammed V, Bureaux Rania, 7ème étage, Kénitra',
+        'Kénitra'    => 'Avenue Mohammed V, Bureaux Rania, 7ème étage, Kénitra',
+        'Sale'       => 'Avenue Mohamed V, Rue Halima N°12 Diyar, Salé',
+        'Salé'       => 'Avenue Mohamed V, Rue Halima N°12 Diyar, Salé',
+        'Agadir'     => 'Av. Massoude Al Wafkaoui, Place des Taxis, Hay Essalam, Agadir',
+    ];
+    $siteCity      = $site?->city ?? '';
+    $footerAddress = $addressMap[$siteCity] ?? ($site?->address ?? '');
+    $footerPhone   = $site?->phone ?? '';
+    $footerEmail   = $site?->email ?? 'info@gls-sprachzentrum.ma';
 @endphp
 <!DOCTYPE html>
 <html lang="de">
