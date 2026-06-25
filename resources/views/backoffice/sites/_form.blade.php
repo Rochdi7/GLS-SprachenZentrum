@@ -1,3 +1,5 @@
+@php $site = $site ?? null; @endphp
+
 <div class="row">
 
     {{-- NOM DU SITE --}}

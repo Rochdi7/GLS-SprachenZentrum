@@ -1,3 +1,5 @@
+@php $post = $post ?? null; @endphp
+
 <div class="row">
 
     {{-- TITLE FR --}}

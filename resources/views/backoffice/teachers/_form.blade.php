@@ -1,3 +1,5 @@
+@php $teacher = $teacher ?? null; @endphp
+
 <div class="row">
 
     {{-- TEACHER NAME --}}

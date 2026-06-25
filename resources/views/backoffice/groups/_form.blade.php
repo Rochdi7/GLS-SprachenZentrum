@@ -1,3 +1,5 @@
+@php $group = $group ?? null; @endphp
+
 <div class="row">
 
     {{-- NOM DU GROUPE (DEFAULT / BACKUP) --}}
