@@ -41,7 +41,7 @@
     ];
     $siteCity      = $site?->city ?? '';
     $footerAddress = $addressMap[$siteCity] ?? ($site?->address ?? '');
-    $footerPhone   = $site?->phone ?? '';
+    $footerPhone   = $site?->phone ?? '+212 6 69 51 50 19 / +212 5 37 37 20 03';
     $footerEmail   = $site?->email ?? 'info@gls-sprachzentrum.ma';
 @endphp
 <!DOCTYPE html>
