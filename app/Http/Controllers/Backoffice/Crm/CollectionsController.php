@@ -87,11 +87,12 @@ class CollectionsController extends BaseCrmController
         $strStoreId = $this->currentStrStoreId();
         $today      = Carbon::today();
 
-        // Mirror CollectionsService::baseQuery so drill totals reconcile with the KPI cards.
-        // Exclude only cancelled (status_id 10) — overdue debts from finished/archived
-        // 2025 registrations must still appear in "Tout en retard".
+        // Mirror CollectionsService::baseQuery so drill totals reconcile with the KPI
+        // cards: only LIVE (Active) registrations. Archive/Annulé carry stale
+        // REST_AMOUNT for students who re-enrolled and already paid via a new
+        // registration (e.g. IMANE AGOUNI #61354).
         $query = CrmCollectionRow::query()
-            ->where('registration_status_id', '!=', 10)
+            ->where('registration_status_name', 'Active')
             ->whereNotNull('rest_amount')
             ->where('rest_amount', '>', 0)
             ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId));

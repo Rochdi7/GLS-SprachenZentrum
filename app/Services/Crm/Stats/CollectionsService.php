@@ -155,13 +155,15 @@ class CollectionsService
 
     private function baseQuery(?int $strStoreId): \Illuminate\Database\Eloquent\Builder
     {
-        // A debt is still owed even after the registration ends. We must NOT
-        // restrict to status "Active" — that hides overdue tranches from
-        // finished/archived 2025 registrations and made "Tout en retard" only
-        // show the current month. Exclude only cancelled (status_id 10, Annulé),
-        // matching the convention used in StatsController and caData().
+        // Collectible debt = unpaid tranches on a LIVE (Active) registration only.
+        // Archive/Annulé registrations are closed or replaced: when a student
+        // re-enrolls, the old registration is archived and its tranches keep a
+        // stale REST_AMOUNT in the CRM even though the student paid via the new
+        // (Active) registration — e.g. IMANE AGOUNI #61354, whose archived
+        // Feb-2026 tranche still showed rest=1300 although fully paid. Counting
+        // those would double-bill paid students, so restrict to Active.
         return CrmCollectionRow::query()
-            ->where('registration_status_id', '!=', 10)
+            ->where('registration_status_name', 'Active')
             ->whereNotNull('rest_amount')
             ->where('rest_amount', '>', 0)
             ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId));
