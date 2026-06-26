@@ -156,8 +156,13 @@ class CollectionsService
 
     private function baseQuery(?int $strStoreId): \Illuminate\Database\Eloquent\Builder
     {
+        // A debt is still owed even after the registration ends. We must NOT
+        // restrict to status "Active" — that hides overdue tranches from
+        // finished/archived 2025 registrations and made "Tout en retard" only
+        // show the current month. Exclude only cancelled (status_id 10, Annulé),
+        // matching the convention used in StatsController and caData().
         return CrmCollectionRow::query()
-            ->where('registration_status_name', 'Active')
+            ->where('registration_status_id', '!=', 10)
             ->whereNotNull('rest_amount')
             ->where('rest_amount', '>', 0)
             ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId));

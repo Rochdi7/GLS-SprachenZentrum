@@ -88,8 +88,10 @@ class CollectionsController extends BaseCrmController
         $today      = Carbon::today();
 
         // Mirror CollectionsService::baseQuery so drill totals reconcile with the KPI cards.
+        // Exclude only cancelled (status_id 10) — overdue debts from finished/archived
+        // 2025 registrations must still appear in "Tout en retard".
         $query = CrmCollectionRow::query()
-            ->where('registration_status_name', 'Active')
+            ->where('registration_status_id', '!=', 10)
             ->whereNotNull('rest_amount')
             ->where('rest_amount', '>', 0)
             ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId));
