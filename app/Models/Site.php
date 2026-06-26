@@ -111,16 +111,16 @@ class Site extends Model implements HasMedia
 
     /**
      * Get course duration (in hours) based on center
-     * 2h for: Rabat, Sale, Casablanca, Online
-     * 2.5h for: Kenitra, Agadir, Marrakech
+     * 2.5h for: Marrakech, Agadir
+     * 2h for everyone else: Rabat, Casablanca, Kenitra, Sale, Online
      */
     public function getCourseDuration()
     {
-        $twohCenters = ['rabat', 'sale', 'casablanca', 'online'];
-        if (in_array(strtolower($this->slug), $twohCenters)) {
-            return 2;
+        $twoHalfCenters = ['marrakech', 'agadir'];
+        if (in_array(strtolower($this->slug), $twoHalfCenters)) {
+            return 2.5;
         }
-        // Default to 2.5h for other centers (Kenitra, Agadir, Marrakech)
-        return 2.5;
+        // Default to 2h for all other centers (Rabat, Casablanca, Kenitra, Sale, Online)
+        return 2;
     }
 }

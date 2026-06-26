@@ -87,14 +87,18 @@ class CollectionsController extends BaseCrmController
         $strStoreId = $this->currentStrStoreId();
         $today      = Carbon::today();
 
+        // Mirror CollectionsService::baseQuery so drill totals reconcile with the KPI cards.
         $query = CrmCollectionRow::query()
             ->where('registration_status_name', 'Active')
+            ->whereNotNull('rest_amount')
+            ->where('rest_amount', '>', 0)
             ->when($strStoreId, fn ($q) => $q->where('crm_store_id', $strStoreId));
 
         match ($type) {
             'dueToday'  => $query->whereDate('due_date', $today->toDateString()),
+            // "Dues" = upcoming only (today → end of period), matching the KPI service.
             'dueWeek'   => $query->whereBetween('due_date', [$today->toDateString(), $today->copy()->endOfWeek()->toDateString()]),
-            'dueMonth'  => $query->whereBetween('due_date', [$today->copy()->startOfMonth()->toDateString(), $today->copy()->endOfMonth()->toDateString()]),
+            'dueMonth'  => $query->whereBetween('due_date', [$today->toDateString(), $today->copy()->endOfMonth()->toDateString()]),
             'overdue7'  => $query->where('due_date', '<=', $today->copy()->subDays(7)->toDateString()),
             'overdue30' => $query->where('due_date', '<=', $today->copy()->subDays(30)->toDateString()),
             'overdue60' => $query->where('due_date', '<=', $today->copy()->subDays(60)->toDateString()),
