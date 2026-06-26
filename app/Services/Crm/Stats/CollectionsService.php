@@ -32,18 +32,17 @@ class CollectionsService
             $today        = Carbon::today();
             $todayStr     = $today->toDateString();
             $endWeek      = $today->copy()->endOfWeek()->toDateString(); // Sunday of current week
+            $startMonth   = $today->copy()->startOfMonth()->toDateString();
             $endMonth     = $today->copy()->endOfMonth()->toDateString();
 
             $base = $this->baseQuery($strStoreId);
 
             $outstandingTotal = (float) (clone $base)->sum('rest_amount');
             $dueToday         = (float) (clone $base)->whereDate('due_date', $todayStr)->sum('rest_amount');
-            // "Dues" = upcoming échéances from TODAY forward. Anything before today
-            // is not "due", it is overdue and lives in the overdue/Tout-en-retard cards.
-            // Both week and month start at today so the cards are reconcilable:
-            // dueWeek ⊆ dueMonth, and neither overlaps overdueAll.
             $dueWeek          = (float) (clone $base)->whereBetween('due_date', [$todayStr, $endWeek])->sum('rest_amount');
-            $dueMonth         = (float) (clone $base)->whereBetween('due_date', [$todayStr, $endMonth])->sum('rest_amount');
+            // "Ce mois" = full calendar month [01 → end], matching the CRM's
+            // "Prévisions de paiement" total for the same 01→30 range.
+            $dueMonth         = (float) (clone $base)->whereBetween('due_date', [$startMonth, $endMonth])->sum('rest_amount');
             $overdue7         = (float) (clone $base)->where('due_date', '<=', $today->copy()->subDays(7)->toDateString())->sum('rest_amount');
             $overdue30        = (float) (clone $base)->where('due_date', '<=', $today->copy()->subDays(30)->toDateString())->sum('rest_amount');
             $overdue60        = (float) (clone $base)->where('due_date', '<=', $today->copy()->subDays(60)->toDateString())->sum('rest_amount');
