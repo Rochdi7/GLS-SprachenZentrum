@@ -406,7 +406,6 @@
 
         // Ranking table
         document.getElementById('enc-rank-tbody').innerHTML = sorted.map((r, i) => {
-            const pct   = grand_total > 0 ? (r.total / grand_total * 100).toFixed(1) : 0;
             const color = COLORS[i % COLORS.length];
             const medal = MEDALS[i] ?? (i + 1);
             return `<tr>
@@ -414,21 +413,12 @@
                 <td><span class="badge" style="background:${color}20;color:${color};font-size:.82rem">${r.store_name}</span></td>
                 <td class="text-end fw-semibold text-primary">${fullDH(r.total)}</td>
                 <td class="text-end text-muted">${r.nb.toLocaleString('fr-MA')}</td>
-                <td>
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="progress flex-grow-1" style="height:7px">
-                            <div class="progress-bar" style="width:${pct}%;background:${color}"></div>
-                        </div>
-                        <small class="text-muted" style="min-width:36px;text-align:right">${pct}%</small>
-                    </div>
-                </td>
             </tr>`;
         }).join('');
         document.getElementById('enc-rank-tfoot').innerHTML = `<tr>
             <td colspan="2">Total</td>
             <td class="text-end">${fullDH(grand_total)}</td>
             <td class="text-end">${grand_nb.toLocaleString('fr-MA')}</td>
-            <td></td>
         </tr>`;
 
         document.getElementById('enc-rank-snapshot').textContent = json.snapshot ? 'Snapshot : ' + json.snapshot : '';

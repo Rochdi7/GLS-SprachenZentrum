@@ -53,7 +53,6 @@
                 renderBarChart(data);
                 renderPieChart(data);
                 renderRankTable(data);
-                renderDetailTable(data);
             })
             .catch(e => setState('error', e.message));
     }
@@ -158,46 +157,14 @@
     function renderRankTable(data) {
         const entries  = Object.entries(data.stores).sort((a, b) => b[1].total - a[1].total);
         const colorMap = buildColorMap(entries.map(([id]) => id));
-        const grand    = entries.reduce((s, [,v]) => s + v.total, 0);
         document.getElementById('comp-rank-tbody').innerHTML = entries.map(([id, info], i) => {
-            const pct = grand > 0 ? (info.total / grand * 100).toFixed(1) : 0;
             return `<tr>
                 <td class="text-center fw-bold">${medals[i] ?? (i + 1)}</td>
                 <td><span class="fw-semibold" style="color:${colorMap[id]}">${info.name}</span></td>
                 <td class="text-end fw-semibold">${fullDH(info.total)}</td>
                 <td class="text-end text-muted">${info.nb.toLocaleString('fr-MA')}</td>
-                <td><div class="d-flex align-items-center gap-2">
-                    <div class="flex-grow-1 bg-light rounded" style="height:8px">
-                        <div class="rank-bar" style="width:${pct}%;background:${colorMap[id]}"></div>
-                    </div>
-                    <span class="small text-muted">${pct}%</span>
-                </div></td>
             </tr>`;
         }).join('');
-    }
-
-    function renderDetailTable(data) {
-        const entries  = Object.entries(data.stores);
-        const colorMap = buildColorMap(entries.map(([id]) => id));
-        document.getElementById('comp-detail-head').innerHTML = `<tr>
-            <th>Période</th>
-            ${entries.map(([id, info]) => `<th class="text-end" style="color:${colorMap[id]}">${info.name}</th>`).join('')}
-            <th class="text-end">Total</th>
-        </tr>`;
-        const rows = data.periods.map(period => {
-            let rowTotal = 0;
-            const cells = entries.map(([id]) => {
-                const v = data.pivot[id]?.[period]?.total ?? 0;
-                rowTotal += v;
-                return `<td class="text-end">${v > 0 ? fmtDH(v) : '<span class="text-muted">—</span>'}</td>`;
-            }).join('');
-            return `<tr><td class="fw-semibold">${period}</td>${cells}<td class="text-end fw-semibold">${fmtDH(rowTotal)}</td></tr>`;
-        });
-        document.getElementById('comp-detail-tbody').innerHTML = rows.join('');
-        const footCells  = entries.map(([,info]) => `<td class="text-end">${fmtDH(info.total)}</td>`).join('');
-        const grandTotal = entries.reduce((s, [,v]) => s + v.total, 0);
-        document.getElementById('comp-detail-tfoot').innerHTML =
-            `<tr><td>TOTAL</td>${footCells}<td class="text-end">${fmtDH(grandTotal)}</td></tr>`;
     }
 
     doFetch();

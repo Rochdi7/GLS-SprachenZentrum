@@ -151,26 +151,9 @@
                             <th>Centre</th>
                             <th class="text-end">Total encaissé</th>
                             <th class="text-end">Nb paiements</th>
-                            <th style="width:35%">Part</th>
                         </tr>
                     </thead>
                     <tbody id="comp-rank-tbody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    {{-- Detail table per period --}}
-    <div class="card">
-        <div class="card-header">
-            <h6 class="mb-0"><i class="ph-duotone ph-table me-2 text-info"></i>Détail par période</h6>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-bordered table-sm align-middle mb-0" id="comp-detail-table">
-                    <thead class="table-light" id="comp-detail-head"></thead>
-                    <tbody id="comp-detail-tbody"></tbody>
-                    <tfoot id="comp-detail-tfoot" class="table-secondary fw-semibold"></tfoot>
                 </table>
             </div>
         </div>

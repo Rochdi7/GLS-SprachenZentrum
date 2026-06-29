@@ -164,7 +164,6 @@
                         $ranking[$sid] = array_sum($mths);
                     }
                     arsort($ranking);
-                    $maxRank = max(array_values($ranking) ?: [1]);
                 @endphp
                 @if (empty($ranking))
                     <p class="text-muted text-center py-4">Aucune donnée.</p>
@@ -172,11 +171,11 @@
                     <div class="table-responsive">
                         <table class="table table-sm align-middle mb-0">
                             <thead class="table-light">
-                                <tr><th>#</th><th>Centre</th><th class="text-end">Total</th><th style="width:35%"></th></tr>
+                                <tr><th>#</th><th>Centre</th><th class="text-end">Total</th></tr>
                             </thead>
                             <tbody>
                                 @foreach ($ranking as $sid => $total)
-                                @php $pct = round($total / $maxRank * 100); $i = $loop->iteration; @endphp
+                                @php $i = $loop->iteration; @endphp
                                 <tr>
                                     <td>
                                         @if ($i === 1) 🥇
@@ -187,12 +186,6 @@
                                     </td>
                                     <td><strong>{{ $siteNames[$sid] ?? 'Store #'.$sid }}</strong></td>
                                     <td class="text-end text-primary fw-semibold">{{ number_format($total, 0, ',', ' ') }} DH</td>
-                                    <td>
-                                        <div class="progress" style="height:8px">
-                                            <div class="progress-bar {{ $i === 1 ? 'bg-warning' : ($i === 2 ? 'bg-secondary' : 'bg-primary') }}"
-                                                 style="width:{{ $pct }}%"></div>
-                                        </div>
-                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -367,7 +360,6 @@
                                             <th>Centre</th>
                                             <th class="text-end">Encaissé</th>
                                             <th class="text-end">Nb</th>
-                                            <th style="width:28%">Part</th>
                                         </tr>
                                     </thead>
                                     <tbody id="enc-rank-tbody"></tbody>
