@@ -177,5 +177,5 @@
 }
 </script>
 <script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
-<script src="{{ URL::asset('assets/js/backoffice/crm-stats-comparaison.js') }}"></script>
+<script src="{{ URL::asset('assets/js/backoffice/crm-stats-comparaison.js') }}?v={{ @filemtime(public_path('assets/js/backoffice/crm-stats-comparaison.js')) ?: '1' }}"></script>
 @endsection
