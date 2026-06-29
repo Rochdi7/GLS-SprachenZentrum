@@ -152,7 +152,7 @@ class CollectionsController extends BaseCrmController
             ->where('registration_status_id', '!=', 10)
             ->whereBetween('due_date', [$startDate, $endDate])
             ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
-            ->selectRaw("crm_store_id, store_name, {$dateFmt} AS period, SUM(total_price) AS ca, COUNT(*) AS nb")
+            ->selectRaw("crm_store_id, store_name, {$dateFmt} AS period, SUM(rest_amount) AS ca, COUNT(*) AS nb")
             ->groupBy('crm_store_id', 'store_name', 'period')
             ->orderBy('period')
             ->get();

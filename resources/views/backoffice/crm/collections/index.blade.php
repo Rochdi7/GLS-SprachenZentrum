@@ -176,8 +176,8 @@
                 <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <h5 class="mb-0">
                         <i class="ph-duotone ph-currency-circle-dollar me-2 text-success"></i>
-                        Chiffre d'affaires par période
-                        <small class="text-muted fw-normal ms-1">(échéances, statut actif)</small>
+                        Reste à recouvrer par période
+                        <small class="text-muted fw-normal ms-1">(échéances impayées, statut actif)</small>
                     </h5>
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <input type="date" id="ca-start" class="form-control form-control-sm" style="width:150px">
