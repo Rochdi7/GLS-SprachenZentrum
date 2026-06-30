@@ -371,57 +371,57 @@ class CrmInsightsController extends BaseCrmController
             ]);
         }
 
-        // Build the ordered list of months that appear (non-inscription payments only).
-        $months = $allocs->where('is_inscription', 0)
+        // The group's LAST month = class END_DATE month. Fall back to the latest
+        // month any non-inscription payment exists, in case END_DATE is missing.
+        $paidMonths = $allocs->where('is_inscription', 0)
             ->pluck('allocation_month')
             ->filter()
             ->unique()
             ->sort()
             ->values()
             ->all();
+        $lastMonth = $classEndYm ?: (end($paidMonths) ?: null);
 
-        // Resolve student names from the local students mirror.
-        $studentIds = $allocs->pluck('student_id')->unique()->values()->all();
-        $names = CrmStudent::whereIn('crm_id', $studentIds)
+        if (!$lastMonth) {
+            return response()->json([
+                'rows' => [], 'count' => 0,
+                'last_month' => null,
+                'class_start_ym' => $classStartYm,
+                'class_end_ym'   => $classEndYm,
+            ]);
+        }
+
+        // Per student → total paid in the LAST month (non-inscription only).
+        $lastMonthByStudent = []; // [sid => amount]
+        foreach ($allocs as $a) {
+            if ($a->is_inscription || $a->allocation_month !== $lastMonth) {
+                continue;
+            }
+            $sid = (string) $a->student_id;
+            $lastMonthByStudent[$sid] = ($lastMonthByStudent[$sid] ?? 0) + (float) $a->amount;
+        }
+
+        // Keep only students who actually paid the last month → "Terminés".
+        $finishers = array_filter($lastMonthByStudent, fn ($v) => $v > 0);
+
+        $names = CrmStudent::whereIn('crm_id', array_keys($finishers))
             ->get(['crm_id', 'first_name', 'last_name'])
             ->mapWithKeys(fn ($s) => [(string) $s->crm_id => trim("{$s->first_name} {$s->last_name}")]);
 
-        // Pivot: per student → [month => total amount], plus inscription total.
-        $byStudent = []; // [sid => ['months' => [ym => amount], 'inscription' => amount]]
-        foreach ($allocs as $a) {
-            $sid = (string) $a->student_id;
-            $byStudent[$sid] ??= ['months' => [], 'inscription' => 0.0];
-            if ($a->is_inscription) {
-                $byStudent[$sid]['inscription'] += (float) $a->amount;
-            } elseif ($a->allocation_month) {
-                $byStudent[$sid]['months'][$a->allocation_month] =
-                    ($byStudent[$sid]['months'][$a->allocation_month] ?? 0) + (float) $a->amount;
-            }
-        }
-
         $rows = [];
-        foreach ($byStudent as $sid => $data) {
-            $paidMonths = array_keys(array_filter($data['months'], fn ($v) => $v > 0));
+        foreach ($finishers as $sid => $amount) {
             $rows[] = [
-                'student_id'  => (int) $sid,
-                'student_name'=> $names[$sid] ?? ('#' . $sid),
-                'inscription' => $data['inscription'],
-                'months'      => $data['months'],            // [ym => amount]
-                'paid_count'  => count($paidMonths),
-                'finished'    => $classEndYm && in_array($classEndYm, $paidMonths, true),
+                'student_id'       => (int) $sid,
+                'student_name'     => $names[$sid] ?? ('#' . $sid),
+                'last_month_amount'=> $amount,
             ];
         }
-
-        // Finished students first, then most months paid, then name.
-        usort($rows, function ($a, $b) {
-            return [$b['finished'], $b['paid_count'], $b['student_name']]
-                <=> [$a['finished'], $a['paid_count'], $a['student_name']];
-        });
+        usort($rows, fn ($a, $b) => strcmp($a['student_name'], $b['student_name']));
 
         return response()->json([
             'rows'           => $rows,
             'count'          => count($rows),
-            'months'         => $months,
+            'last_month'     => $lastMonth,
             'class_start_ym' => $classStartYm,
             'class_end_ym'   => $classEndYm,
         ]);

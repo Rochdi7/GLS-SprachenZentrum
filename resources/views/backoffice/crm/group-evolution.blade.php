@@ -521,18 +521,21 @@
                     <p class="mt-2 text-muted">Chargement...</p>
                 </div>
                 <div id="geFinContent" class="d-none">
-                    <div class="px-3 pt-2 pb-2">
+                    <div class="px-3 pt-2 pb-2 d-flex align-items-center gap-2">
                         <input type="text" id="geFinSearch" class="form-control form-control-sm" placeholder="Rechercher par nom...">
                     </div>
+                    <div class="alert alert-light border-0 mb-0 mx-3 small text-muted">
+                        <i class="ti ti-info-circle me-1"></i>
+                        Élèves ayant payé le <strong>dernier mois</strong> du groupe
+                        (<span id="geFinLastMonth">—</span>) — formations terminées.
+                    </div>
                     <div class="table-responsive">
-                        <table class="table table-hover table-sm align-middle mb-0" style="font-size:.85rem;">
+                        <table class="table table-hover table-sm align-middle mb-0">
                             <thead class="table-light sticky-top">
-                                <tr id="geFinHead">
+                                <tr>
                                     <th style="min-width:30px;">N°</th>
-                                    <th style="min-width:180px;">Étudiant</th>
-                                    <th class="text-center">Inscription</th>
-                                    {{-- month columns injected by JS --}}
-                                    <th class="text-center" style="min-width:80px;">Terminé</th>
+                                    <th style="min-width:220px;">Étudiant</th>
+                                    <th class="text-end" style="min-width:140px;">Montant dernier mois</th>
                                 </tr>
                             </thead>
                             <tbody id="geFinTbody"></tbody>
@@ -541,7 +544,7 @@
                 </div>
                 <div id="geFinEmpty" class="d-none text-center py-5 text-muted">
                     <i class="ph-duotone ph-info fs-1"></i>
-                    <p class="mt-2">Aucun paiement trouvé pour ce groupe.</p>
+                    <p class="mt-2">Aucun élève n'a payé le dernier mois de ce groupe.</p>
                 </div>
             </div>
         </div>
@@ -687,18 +690,17 @@
     }
 })();
 
-// ── Finished-group drill: monthly payment grid (separate logic/modal) ──
+// ── Finished-group drill: list students who paid the LAST month (terminés) ──
 (function initGroupEvolutionFinishedDrill() {
     const url = '{{ route("backoffice.crm.group-evolution.finished-drill") }}';
     let modal = null;
     let allRows = [];
-    let months = [];
 
-    // Format 'YYYY-MM' → short French month label, e.g. "nov. 25".
     function monthLabel(ym) {
+        if (!ym) return '—';
         const [y, m] = ym.split('-');
-        const names = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
-        return (names[parseInt(m, 10) - 1] || m) + ' ' + y.slice(2);
+        const names = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+        return (names[parseInt(m, 10) - 1] || m) + ' ' + y;
     }
     function fmtDH(v) {
         return new Intl.NumberFormat('fr-MA').format(Math.round(v)) + ' DH';
@@ -726,8 +728,8 @@
                 .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
                 .then(data => {
                     allRows = Array.isArray(data.rows) ? data.rows : [];
-                    months  = Array.isArray(data.months) ? data.months : [];
                     document.getElementById('geFinLoading').classList.add('d-none');
+                    document.getElementById('geFinLastMonth').textContent = monthLabel(data.last_month);
 
                     if (data.class_start_ym || data.class_end_ym) {
                         const sub = document.createElement('small');
@@ -741,14 +743,13 @@
                     }
 
                     if (allRows.length === 0) {
-                        document.getElementById('geFinCount').textContent = '0 étudiant(s)';
+                        document.getElementById('geFinCount').textContent = '0 terminé(s)';
                         document.getElementById('geFinEmpty').classList.remove('d-none');
                         return;
                     }
-                    buildHead();
                     document.getElementById('geFinContent').classList.remove('d-none');
                     render(allRows);
-                    document.getElementById('geFinCount').textContent = allRows.length + ' étudiant(s)';
+                    document.getElementById('geFinCount').textContent = allRows.length + ' terminé(s)';
                 })
                 .catch(err => {
                     document.getElementById('geFinLoading').classList.add('d-none');
@@ -764,35 +765,12 @@
         render(allRows.filter(r => (r.student_name || '').toLowerCase().includes(q)));
     });
 
-    // Rebuild the header with one column per payment month.
-    function buildHead() {
-        const head = document.getElementById('geFinHead');
-        const monthCols = months.map(m => `<th class="text-center" style="min-width:78px;">${monthLabel(m)}</th>`).join('');
-        head.innerHTML =
-            '<th style="min-width:30px;">N°</th>' +
-            '<th style="min-width:180px;">Étudiant</th>' +
-            '<th class="text-center">Inscr.</th>' +
-            monthCols +
-            '<th class="text-center" style="min-width:80px;">Terminé</th>';
-    }
-
     function render(rows) {
-        const lastYm = months.length ? months[months.length - 1] : null;
         document.getElementById('geFinTbody').innerHTML = rows.map((r, i) => {
-            const cells = months.map(m => {
-                const amt = r.months && r.months[m];
-                const isEnd = m === lastYm;
-                if (amt && amt > 0) {
-                    return `<td class="text-center" style="background:#c6f6d5;">${fmtDH(amt)}</td>`;
-                }
-                return `<td class="text-center" style="background:${isEnd ? '#fde2e1' : '#eceff1'};">&nbsp;</td>`;
-            }).join('');
             return `<tr>
                 <td class="text-muted">${i + 1}</td>
                 <td><strong>${r.student_name}</strong><br><small class="text-muted">#${r.student_id}</small></td>
-                <td class="text-center">${r.inscription > 0 ? fmtDH(r.inscription) : '<span class="text-muted">—</span>'}</td>
-                ${cells}
-                <td class="text-center">${r.finished ? '<span class="badge" style="background:#0d9488;">Oui</span>' : '<span class="text-muted small">—</span>'}</td>
+                <td class="text-end fw-semibold" style="color:#0d9488;">${fmtDH(r.last_month_amount)}</td>
             </tr>`;
         }).join('');
     }
