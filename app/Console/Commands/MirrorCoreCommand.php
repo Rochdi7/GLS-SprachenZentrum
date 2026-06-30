@@ -71,9 +71,11 @@ class MirrorCoreCommand extends Command
     {
         $page = 0;
         $size = 100;
+        $label = $history === 'Y' ? 'history' : 'active';
+        $seen = 0;
+        $finished = 0;
 
         do {
-            $label = $history === 'Y' ? 'history' : 'active';
             $this->comment("Fetching classes ({$label}) page {$page}...");
             $response = $this->crm->groups()->bulkClasses($page, $size, extra: array_filter([
                 'history' => $history,
@@ -85,6 +87,10 @@ class MirrorCoreCommand extends Command
             }
 
             foreach ($response['data'] as $item) {
+                $seen++;
+                if (($item['STATUS_NAME'] ?? null) === 'Terminé') {
+                    $finished++;
+                }
                 CrmClass::updateOrCreate(
                     ['crm_id' => $item['ID']],
                     [
@@ -102,6 +108,8 @@ class MirrorCoreCommand extends Command
             $page++;
             $hasNext = $response['pagination']['hasMore'] ?? false;
         } while ($hasNext);
+
+        $this->info("Classes ({$label}): {$seen} fetched, {$finished} with status 'Terminé'.");
     }
 
     protected function syncTeachers()

@@ -84,18 +84,13 @@ class BuildGroupEvolutionCommand extends Command
 
     private function computeForStore(int $storeId, string $rangeStart, string $rangeEnd): int
     {
-        $today = Carbon::today('Africa/Casablanca')->toDateString();
-
         // Load classes from the local mirror — zero API calls.
-        // Include the active statuses AND any group whose END_DATE has already
-        // passed (a finished group), regardless of its CRM status. Finished
-        // groups (mirrored via history=Y) power the "Groupes terminés" tab.
+        // Active statuses ('En formation', 'En Préparation') power the active tab;
+        // the 'Terminé' status (CRM Historique) powers the "Groupes terminés" tab.
+        // Both come from the local mirror, which now syncs history=Y groups too.
         $classes = CrmClass::where('site_id', $storeId)
             ->whereNotNull('class_id')
-            ->where(function ($q) use ($today) {
-                $q->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.STATUS_NAME')) IN ('En formation', 'En Préparation')")
-                  ->orWhereRaw("DATE(JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.END_DATE'))) < ?", [$today]);
-            })
+            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.STATUS_NAME')) IN ('En formation', 'En Préparation', 'Terminé')")
             ->get();
 
         if ($classes->isEmpty()) {
@@ -227,8 +222,8 @@ class BuildGroupEvolutionCommand extends Command
             $classStartDate = isset($raw['START_DATE']) ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->toDateString() : null;
             $classEndDate = isset($raw['END_DATE']) ? Carbon::parse($raw['END_DATE'])->setTimezone('Africa/Casablanca')->toDateString() : null;
 
-            // A group is finished once its scheduled END_DATE is in the past.
-            $isFinished = $classEndDate !== null && $classEndDate < $today;
+            // A group is finished when the CRM marks it 'Terminé' (Historique tab).
+            $isFinished = ($raw['STATUS_NAME'] ?? null) === 'Terminé';
 
             $upserts[] = [
                 'crm_store_id' => $storeId,
