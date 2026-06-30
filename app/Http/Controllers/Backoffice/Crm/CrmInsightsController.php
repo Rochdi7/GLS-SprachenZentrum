@@ -371,8 +371,11 @@ class CrmInsightsController extends BaseCrmController
             ]);
         }
 
-        // The group's LAST month = class END_DATE month. Fall back to the latest
-        // month any non-inscription payment exists, in case END_DATE is missing.
+        // The group's LAST month = the latest month that actually has payments for
+        // this class. We do NOT use the class END_DATE month: the CRM END_DATE is
+        // often a few days into a month with no payments (e.g. END=2026-04-02 but the
+        // last real payment month is 2026-03), which would make "paid the last month"
+        // match nobody. The latest allocation month is the true final month paid.
         $paidMonths = $allocs->where('is_inscription', 0)
             ->pluck('allocation_month')
             ->filter()
@@ -380,7 +383,7 @@ class CrmInsightsController extends BaseCrmController
             ->sort()
             ->values()
             ->all();
-        $lastMonth = $classEndYm ?: (end($paidMonths) ?: null);
+        $lastMonth = !empty($paidMonths) ? end($paidMonths) : null;
 
         if (!$lastMonth) {
             return response()->json([

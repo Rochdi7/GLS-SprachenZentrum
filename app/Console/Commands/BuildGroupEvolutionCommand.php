@@ -109,7 +109,6 @@ class BuildGroupEvolutionCommand extends Command
         // crm_registrations.crm_class_id = LEVEL_SESSION_ID ?? CLASS_ID, and LEVEL_SESSION_ID
         // equals raw_data.ID on the class record (e.g. 9363), NOT the CLASS_ID column (e.g. 9948).
         $classStartMonths = []; // [raw_data.ID => 'YYYY-MM']
-        $classEndMonths = [];   // [raw_data.ID => 'YYYY-MM'] — group's last (END_DATE) month
         $rawIdByClassId = []; // [CLASS_ID => raw_data.ID] for upsert lookup
         foreach ($classes as $class) {
             $raw = $class->raw_data ?? [];
@@ -118,7 +117,6 @@ class BuildGroupEvolutionCommand extends Command
                 continue;
             }
             $classStartMonths[$rawId] = isset($raw['START_DATE']) ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m') : null;
-            $classEndMonths[$rawId] = isset($raw['END_DATE']) ? Carbon::parse($raw['END_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m') : null;
             $rawIdByClassId[(int) $class->class_id] = $rawId;
         }
 
@@ -199,38 +197,42 @@ class BuildGroupEvolutionCommand extends Command
             }
         }
 
-        // ── Terminé: paid the group's LAST month (class END_DATE month) ──
-        // Source: crm_payment_allocations (full history, joined directly on CLASS_ID),
-        // not crm_payment_snapshots (2-month rolling window). Finished groups ended
-        // months ago, so their last-month payments are only in the allocations table.
+        // ── Terminé: paid the group's LAST month that actually has payments ──
+        // Source: crm_payment_allocations (full history, joined directly on CLASS_ID).
         //
-        // IMPORTANT: keyed by CLASS_ID (not $rawId) so it matches the finished-group
-        // drill popup exactly — both count distinct students who paid the class's
-        // END_DATE month in THAT specific class. Keying by $rawId could merge two
-        // CLASS_IDs that map to the same level-session and inflate the count.
+        // The "last month" is the LATEST allocation_month for the class — NOT the class
+        // END_DATE month. The CRM END_DATE is often a couple of days into a month that
+        // has no payments (e.g. END=2026-04-02 but the last real payment month is
+        // 2026-03), so using END_DATE would match nobody. The latest paid month is the
+        // true final month, and matches the finished-group drill popup exactly.
         //
-        // END month is keyed by $rawId in $classEndMonths; build a CLASS_ID → END-month map.
-        $terminesByClassId = [];        // [CLASS_ID => [student_id => true]]
-        $endMonthByClassId = [];        // [CLASS_ID => 'YYYY-MM']
-        foreach ($rawIdByClassId as $classIdCol => $rawId) {
-            if (!empty($classEndMonths[$rawId])) {
-                $endMonthByClassId[$classIdCol] = $classEndMonths[$rawId];
-            }
-        }
+        // Keyed by CLASS_ID (the snapshot's display key + the popup's filter key).
+        $terminesByClassId = [];   // [CLASS_ID => [student_id => true]]
+        $classIds = array_keys($rawIdByClassId);
 
-        if (!empty($endMonthByClassId)) {
+        if (!empty($classIds)) {
+            // 1) Per class: the latest month that has a non-inscription payment.
+            $lastMonthByClassId = DB::table('crm_payment_allocations')
+                ->where('crm_store_id', $storeId)
+                ->where('is_inscription', 0)
+                ->whereIn('class_id', $classIds)
+                ->selectRaw('class_id, MAX(allocation_month) as last_month')
+                ->groupBy('class_id')
+                ->pluck('last_month', 'class_id'); // [CLASS_ID => 'YYYY-MM']
+
+            // 2) Distinct students who paid that last month, per class.
             DB::table('crm_payment_allocations')
                 ->where('crm_store_id', $storeId)
                 ->where('is_inscription', 0)
-                ->whereIn('class_id', array_keys($endMonthByClassId))
+                ->whereIn('class_id', $classIds)
                 ->select('student_id', 'class_id', 'allocation_month')
                 ->distinct()
                 ->orderBy('class_id')
-                ->chunk(2000, function ($rows) use ($endMonthByClassId, &$terminesByClassId) {
+                ->chunk(2000, function ($rows) use ($lastMonthByClassId, &$terminesByClassId) {
                     foreach ($rows as $r) {
                         $classIdCol = (int) $r->class_id;
-                        $endYm      = $endMonthByClassId[$classIdCol] ?? null;
-                        if (!$endYm || $r->allocation_month !== $endYm) {
+                        $lastYm     = $lastMonthByClassId[$classIdCol] ?? null;
+                        if (!$lastYm || $r->allocation_month !== $lastYm) {
                             continue;
                         }
                         $terminesByClassId[$classIdCol][(int) $r->student_id] = true;
