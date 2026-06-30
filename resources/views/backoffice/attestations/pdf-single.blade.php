@@ -114,6 +114,18 @@
 
     // Prefer the direct site relation; fall back to group → site.
     $site = $attestation->site ?? $attestation->group?->site;
+
+    // Session duration depends on the centre (NOT a fixed 45 min):
+    //   2h    → Rabat, Casablanca, Sale, Kenitra, Online
+    //   2h30  → Marrakech, Agadir
+    $durationHours = $site?->getCourseDuration() ?? 2;
+    $isTwoHalf = $durationHours == 2.5;
+    $t['units_suffix'] = match ($lang) {
+        'fr'    => $isTwoHalf ? "unités d'enseignement de 2 heures 30 chacune." : "unités d'enseignement de 2 heures chacune.",
+        'en'    => $isTwoHalf ? 'teaching units of 2 hours 30 minutes each.'     : 'teaching units of 2 hours each.',
+        default => $isTwoHalf ? 'Unterrichtseinheiten zu je 2 Stunden 30 Minuten.' : 'Unterrichtseinheiten zu je 2 Stunden.',
+    };
+
     $addressMap = [
         'Casablanca' => '14 Bd de Paris, 1er étage N°8, Casablanca 20000',
         'Marrakech'  => 'Avenue Yacoub El Mansour, Immeuble Espace Guéliz, 3ème étage, Bureau 28, Marrakech',

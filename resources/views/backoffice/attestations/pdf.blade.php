@@ -12,6 +12,13 @@
     // Prefer the direct site relation; fall back to group → site.
     $site = $attestation->site ?? $attestation->group?->site;
 
+    // Session duration depends on the centre (NOT a fixed 45 min):
+    //   2h    → Rabat, Casablanca, Sale, Kenitra, Online
+    //   2h30  → Marrakech, Agadir
+    $durationHours = $site?->getCourseDuration() ?? 2;
+    $durationDe = $durationHours == 2.5 ? '2 Stunden 30 Minuten' : '2 Stunden';
+    $durationFr = $durationHours == 2.5 ? '2 heures 30' : '2 heures';
+
     // Format helper — empty values are rendered as a non-breaking dash so layout doesn't collapse.
     $fmt = fn ($d) => $d?->format('d-m-Y') ?? '—';
 
@@ -300,11 +307,11 @@
         <tr>
             <td class="label-de">Der Kurs umfasste</td>
             <td class="num" rowspan="2">{{ $attestation->units_45min }}</td>
-            <td class="suffix-de"><span class="underline">Unterrichtseinheiten</span> 45 Minuten.</td>
+            <td class="suffix-de"><span class="underline">Unterrichtseinheiten</span> zu je {{ $durationDe }}.</td>
         </tr>
         <tr>
             <td class="label-fr">Le cours comprenait</td>
-            <td class="suffix-fr">unités de cours de 45 minutes.</td>
+            <td class="suffix-fr">unités de cours de {{ $durationFr }} chacune.</td>
         </tr>
     </table>
 

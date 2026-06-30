@@ -116,9 +116,13 @@ class Site extends Model implements HasMedia
      */
     public function getCourseDuration()
     {
-        $twoHalfCenters = ['marrakech', 'agadir'];
-        if (in_array(strtolower($this->slug), $twoHalfCenters)) {
-            return 2.5;
+        // Match on slug, name OR city so the 2h30 centres are detected reliably
+        // even when one of those fields is unset (slug can be empty for old rows).
+        $haystack = strtolower(trim(($this->slug ?? '') . ' ' . ($this->name ?? '') . ' ' . ($this->city ?? '')));
+        foreach (['marrakech', 'agadir'] as $needle) {
+            if (str_contains($haystack, $needle)) {
+                return 2.5;
+            }
         }
         // Default to 2h for all other centers (Rabat, Casablanca, Kenitra, Sale, Online)
         return 2;
