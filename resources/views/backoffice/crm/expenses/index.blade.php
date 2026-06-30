@@ -23,16 +23,6 @@
     </div>
 </div>
 
-{{-- ── Chart ── --}}
-<div class="card mb-4">
-    <div class="card-header py-2">
-        <h6 class="mb-0">Dépenses mensuelles par centre (6 derniers mois)</h6>
-    </div>
-    <div class="card-body">
-        <div id="crm-expenses-chart" style="min-height:300px;"></div>
-    </div>
-</div>
-
 {{-- ── Filters ── --}}
 <form method="GET" action="{{ route('backoffice.crm.expenses.index') }}" class="row g-2 mb-3 align-items-end">
     <div class="col-auto">
@@ -65,6 +55,16 @@
         </a>
     </div>
 </form>
+
+{{-- ── Chart ── --}}
+<div class="card mb-4">
+    <div class="card-header py-2">
+        <h6 class="mb-0">Dépenses mensuelles par centre (6 derniers mois)</h6>
+    </div>
+    <div class="card-body">
+        <div id="crm-expenses-chart" style="min-height:300px;"></div>
+    </div>
+</div>
 
 {{-- ── Centre ranking ── --}}
 @php

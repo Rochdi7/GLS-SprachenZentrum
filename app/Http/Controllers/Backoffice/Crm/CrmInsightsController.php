@@ -203,6 +203,9 @@ class CrmInsightsController extends BaseCrmController
         $classStartYm = isset($classRaw['START_DATE'])
             ? Carbon::parse($classRaw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
             : null;
+        $classEndYm = isset($classRaw['END_DATE'])
+            ? Carbon::parse($classRaw['END_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
+            : null;
         $storeId = $classRecord?->site_id;
         $crmId   = $classRecord?->crm_id ?? $classId;
 
@@ -225,7 +228,7 @@ class CrmInsightsController extends BaseCrmController
             ->groupBy('student_id')
             ->map(fn ($rows) => $rows->pluck('pay_month')->sort()->values()->all());
 
-        $rows = $registrations->map(function ($r) use ($classStartYm, $payMonthsByStudent) {
+        $rows = $registrations->map(function ($r) use ($classStartYm, $classEndYm, $payMonthsByStudent) {
             $raw    = is_array($r->raw_data) ? $r->raw_data : json_decode($r->raw_data, true);
             $sid    = (int) $r->crm_student_id;
 
@@ -245,6 +248,11 @@ class CrmInsightsController extends BaseCrmController
                 default                                                  => 'ajout',
             };
 
+            // Terminé: paid the group's last month (END_DATE month), and not cancelled.
+            $finished = $r->status !== 'Annulé'
+                && $classEndYm
+                && in_array($classEndYm, $months, true);
+
             return [
                 'student_id'              => $sid,
                 'student_name'            => $raw['STUDENT_FULL_NAME'] ?? '—',
@@ -253,6 +261,7 @@ class CrmInsightsController extends BaseCrmController
                 'first_paid_month'        => $firstForClass,
                 'has_first_month_payment' => $firstForClass !== null,
                 'payment_bucket'          => $paymentBucket,
+                'finished'                => $finished,
                 'reg_start_ym'            => $regYm,
                 'registered_at'           => $r->date_creation
                     ? Carbon::parse($r->date_creation)->format('d/m/Y')
@@ -264,6 +273,7 @@ class CrmInsightsController extends BaseCrmController
             'rows'           => $rows->values(),
             'count'          => $rows->count(),
             'class_start_ym' => $classStartYm,
+            'class_end_ym'   => $classEndYm,
         ]);
     }
 }

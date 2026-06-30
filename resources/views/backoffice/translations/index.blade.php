@@ -316,9 +316,13 @@
                                 @if($scans->isNotEmpty())
                                     <div class="d-flex flex-wrap gap-1 mt-2">
                                         @foreach($scans as $media)
-                                            <a href="{{ $media->getUrl() }}" target="_blank" rel="noopener"
-                                               class="badge bg-light text-dark border text-decoration-none d-inline-flex align-items-center gap-1">
-                                                <i class="ti {{ str_contains($media->mime_type, 'pdf') ? 'ti-file-type-pdf text-danger' : 'ti-photo text-info' }}"></i>
+                                            @php $isPdf = str_contains($media->mime_type, 'pdf'); @endphp
+                                            <a href="{{ $media->getUrl() }}"
+                                               @if($isPdf) target="_blank" rel="noopener"
+                                               @else data-img-preview="{{ $media->getUrl() }}" data-img-name="{{ $media->file_name }}" @endif
+                                               class="badge bg-light text-dark border text-decoration-none d-inline-flex align-items-center gap-1"
+                                               style="cursor:pointer">
+                                                <i class="ti {{ $isPdf ? 'ti-file-type-pdf text-danger' : 'ti-photo text-info' }}"></i>
                                                 <span class="text-truncate" style="max-width:160px">{{ $media->file_name }}</span>
                                             </a>
                                         @endforeach
@@ -350,6 +354,30 @@
         </div>
     @endforeach
 
+    {{-- IMAGE LIGHTBOX (shared) --}}
+    <style>
+        /* Keep the lightbox above the create/edit modals it can be opened from. */
+        #scanLightbox { z-index: 1085; }
+    </style>
+    <div class="modal fade" id="scanLightbox" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark border-0">
+                <div class="modal-header border-0 py-2">
+                    <span class="modal-title text-white small text-truncate" id="scanLightboxTitle"></span>
+                    <div class="ms-auto d-flex gap-2">
+                        <a href="#" id="scanLightboxOpen" target="_blank" rel="noopener" class="btn btn-sm btn-outline-light" title="Ouvrir dans un onglet">
+                            <i class="ti ti-external-link"></i>
+                        </a>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                </div>
+                <div class="modal-body text-center p-2">
+                    <img id="scanLightboxImg" src="" alt="" style="max-width:100%;max-height:75vh;border-radius:6px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('scripts')
@@ -370,6 +398,43 @@
                 const em = document.getElementById('editTranslationModal-{{ $editId }}');
                 if (em) (new bootstrap.Modal(em)).show();
             @endif
+
+            // --- Shared image lightbox ---------------------------------------
+            const lbEl    = document.getElementById('scanLightbox');
+            const lb      = bootstrap.Modal.getOrCreateInstance(lbEl);
+            const lbImg   = document.getElementById('scanLightboxImg');
+            const lbTitle = document.getElementById('scanLightboxTitle');
+            const lbOpen  = document.getElementById('scanLightboxOpen');
+
+            document.addEventListener('click', function (e) {
+                const trigger = e.target.closest('[data-img-preview]');
+                if (!trigger) return;
+                e.preventDefault();
+                const url  = trigger.getAttribute('data-img-preview');
+                const name = trigger.getAttribute('data-img-name') || '';
+                lbImg.src        = url;
+                lbImg.alt        = name;
+                lbTitle.textContent = name;
+                lbOpen.href      = url;
+                lb.show();
+            });
+
+            // When opened on top of another modal, lift its backdrop above that modal.
+            lbEl.addEventListener('shown.bs.modal', function () {
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                const last = backdrops[backdrops.length - 1];
+                if (last) last.style.zIndex = '1084';
+            });
+
+            // Free the object URL / image when the lightbox closes.
+            lbEl.addEventListener('hidden.bs.modal', function () {
+                lbImg.src = '';
+                // If a parent modal is still open, Bootstrap removes the scroll lock;
+                // restore it so the underlying modal stays scrollable.
+                if (document.querySelector('.modal.show')) {
+                    document.body.classList.add('modal-open');
+                }
+            });
         });
     </script>
 @endsection

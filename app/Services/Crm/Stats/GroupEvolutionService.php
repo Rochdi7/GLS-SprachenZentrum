@@ -105,6 +105,7 @@ class GroupEvolutionService
                 'debuts'      => $r->debuts,
                 'ajouts'      => $r->ajouts,
                 'quittants'   => $r->quittants,
+                'termines'    => $r->termines,
                 'changements' => $r->changements,
                 'actifs'      => $r->actifs,
             ])->toArray();
@@ -115,6 +116,7 @@ class GroupEvolutionService
                     'debuts'      => array_sum(array_column($groups, 'debuts')),
                     'ajouts'      => array_sum(array_column($groups, 'ajouts')),
                     'quittants'   => array_sum(array_column($groups, 'quittants')),
+                    'termines'    => array_sum(array_column($groups, 'termines')),
                     'changements' => array_sum(array_column($groups, 'changements')),
                     'actifs'      => array_sum(array_column($groups, 'actifs')),
                     'groups'      => count($groups),
@@ -133,7 +135,7 @@ class GroupEvolutionService
     {
         return [
             'groups' => [],
-            'totals' => ['debuts' => 0, 'ajouts' => 0, 'quittants' => 0, 'changements' => 0, 'actifs' => 0, 'groups' => 0],
+            'totals' => ['debuts' => 0, 'ajouts' => 0, 'quittants' => 0, 'termines' => 0, 'changements' => 0, 'actifs' => 0, 'groups' => 0],
             'range'  => ['start' => $startDate, 'end' => $endDate],
             'diag'   => [
                 'source'        => 'empty',

@@ -106,6 +106,7 @@ class BuildGroupEvolutionCommand extends Command
         // crm_registrations.crm_class_id = LEVEL_SESSION_ID ?? CLASS_ID, and LEVEL_SESSION_ID
         // equals raw_data.ID on the class record (e.g. 9363), NOT the CLASS_ID column (e.g. 9948).
         $classStartMonths = []; // [raw_data.ID => 'YYYY-MM']
+        $classEndMonths = [];   // [raw_data.ID => 'YYYY-MM'] — group's last (END_DATE) month
         $rawIdByClassId = []; // [CLASS_ID => raw_data.ID] for upsert lookup
         foreach ($classes as $class) {
             $raw = $class->raw_data ?? [];
@@ -114,6 +115,7 @@ class BuildGroupEvolutionCommand extends Command
                 continue;
             }
             $classStartMonths[$rawId] = isset($raw['START_DATE']) ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m') : null;
+            $classEndMonths[$rawId] = isset($raw['END_DATE']) ? Carbon::parse($raw['END_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m') : null;
             $rawIdByClassId[(int) $class->class_id] = $rawId;
         }
 
@@ -143,6 +145,7 @@ class BuildGroupEvolutionCommand extends Command
         $debutsByGroup = [];
         $ajoutsByGroup = [];
         $quittantsByGroup = [];
+        $terminesByGroup = [];
         $changementsByGroup = [];
 
         foreach ($registrations as $reg) {
@@ -150,6 +153,7 @@ class BuildGroupEvolutionCommand extends Command
             $cid = (int) $reg->crm_class_id;
             $status = $reg->status;
             $classYm = $classStartMonths[$cid] ?? null;
+            $classEndYm = $classEndMonths[$cid] ?? null;
             $raw = is_array($reg->raw_data) ? $reg->raw_data : json_decode($reg->raw_data, true);
 
             // Status buckets are independent of payment timing.
@@ -157,6 +161,17 @@ class BuildGroupEvolutionCommand extends Command
                 $quittantsByGroup[$cid][$sid] = true;
             } elseif ($status === 'Archive') {
                 $changementsByGroup[$cid][$sid] = true;
+            }
+
+            // Terminé (finished the formation): the student paid the group's LAST month
+            // (= class END_DATE month). Cancelled students are départs, not finishers,
+            // so they are excluded. A non-inscription payment in the END_DATE month is
+            // the signal that the student went all the way to the end of the formation.
+            if ($status !== 'Annulé' && $classEndYm) {
+                $months = $payMonthsByStudent->get($sid, []);
+                if (in_array($classEndYm, $months, true)) {
+                    $terminesByGroup[$cid][$sid] = true;
+                }
             }
 
             if (!$classYm) {
@@ -197,6 +212,7 @@ class BuildGroupEvolutionCommand extends Command
             $debuts = count($debutsByGroup[$rawId] ?? []);
             $ajouts = count($ajoutsByGroup[$rawId] ?? []);
             $quittants = count($quittantsByGroup[$rawId] ?? []);
+            $termines = count($terminesByGroup[$rawId] ?? []);
             $changements = count($changementsByGroup[$rawId] ?? []);
 
             // Parse ISO datetime from API (e.g. "2026-04-23T23:00:00.000Z") → plain date
@@ -213,6 +229,7 @@ class BuildGroupEvolutionCommand extends Command
                 'debuts' => $debuts,
                 'ajouts' => $ajouts,
                 'quittants' => $quittants,
+                'termines' => $termines,
                 'changements' => $changements,
                 'actifs' => (int) ($raw['CLASS_COUNT_STUDENTS_ACTIVE'] ?? 0),
                 'range_start' => $rangeStart,
@@ -224,7 +241,7 @@ class BuildGroupEvolutionCommand extends Command
         }
 
         foreach (array_chunk($upserts, 100) as $chunk) {
-            CrmGroupEvolutionSnapshot::upsert($chunk, ['crm_store_id', 'class_id', 'range_start', 'range_end'], ['class_name', 'class_start_date', 'class_end_date', 'class_start_month', 'debuts', 'ajouts', 'quittants', 'changements', 'actifs', 'computed_at', 'updated_at']);
+            CrmGroupEvolutionSnapshot::upsert($chunk, ['crm_store_id', 'class_id', 'range_start', 'range_end'], ['class_name', 'class_start_date', 'class_end_date', 'class_start_month', 'debuts', 'ajouts', 'quittants', 'termines', 'changements', 'actifs', 'computed_at', 'updated_at']);
         }
 
         return count($upserts);

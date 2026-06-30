@@ -21,6 +21,7 @@
         { key: 'debuts',      label: 'Début',      color: '#6f42c1' },
         { key: 'ajouts',      label: 'Ajouts',     color: '#28a745' },
         { key: 'quittants',   label: 'Quittant',   color: '#dc3545' },
+        { key: 'termines',    label: 'Terminé',    color: '#0d9488' },
         { key: 'changements', label: 'Changement', color: '#fd7e14' },
         { key: 'actifs',      label: 'Actifs',     color: '#2196f3' },
     ];

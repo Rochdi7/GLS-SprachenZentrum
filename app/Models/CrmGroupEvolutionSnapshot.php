@@ -37,6 +37,7 @@ class CrmGroupEvolutionSnapshot extends Model
         'debuts',
         'ajouts',
         'quittants',
+        'termines',
         'changements',
         'actifs',
         'range_start',

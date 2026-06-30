@@ -119,9 +119,13 @@
                             @if($scans->isNotEmpty())
                                 <div class="existing-scans d-flex flex-wrap gap-1 mt-1">
                                     @foreach($scans as $media)
+                                        @php $isPdf = str_contains($media->mime_type, 'pdf'); @endphp
                                         <span class="badge bg-light text-dark border d-inline-flex align-items-center gap-1" data-media="{{ $media->id }}">
-                                            <i class="ti {{ str_contains($media->mime_type, 'pdf') ? 'ti-file-type-pdf text-danger' : 'ti-photo text-info' }}"></i>
-                                            <a href="{{ $media->getUrl() }}" target="_blank" class="text-decoration-none text-dark text-truncate" style="max-width:140px">{{ $media->file_name }}</a>
+                                            <i class="ti {{ $isPdf ? 'ti-file-type-pdf text-danger' : 'ti-photo text-info' }}"></i>
+                                            <a href="{{ $media->getUrl() }}"
+                                               @if($isPdf) target="_blank" rel="noopener"
+                                               @else data-img-preview="{{ $media->getUrl() }}" data-img-name="{{ $media->file_name }}" @endif
+                                               class="text-decoration-none text-dark text-truncate" style="max-width:140px;cursor:pointer">{{ $media->file_name }}</a>
                                             <button type="button" class="btn-close btn-close-sm ms-1 btn-remove-scan" data-media="{{ $media->id }}" title="Supprimer ce scan" style="font-size:.55rem"></button>
                                         </span>
                                     @endforeach
@@ -272,12 +276,20 @@
             const url   = URL.createObjectURL(f);
             const chip  = document.createElement('a');
             chip.href = url;
-            chip.target = '_blank';
-            chip.rel = 'noopener';
             chip.dataset.objurl = '1';
             chip.title = 'Cliquer pour voir « ' + f.name + ' »';
             chip.className = 'badge bg-primary-subtle text-primary border d-inline-flex align-items-center gap-1 text-decoration-none';
-            chip.innerHTML = `<i class="ti ${isPdf ? 'ti-file-type-pdf' : 'ti-photo'}"></i><span class="text-truncate" style="max-width:140px">${f.name}</span><i class="ti ti-external-link"></i>`;
+            chip.style.cursor = 'pointer';
+            if (isPdf) {
+                // PDFs can't render in the lightbox → open in a new tab.
+                chip.target = '_blank';
+                chip.rel = 'noopener';
+            } else {
+                // Images → open in the shared in-page lightbox.
+                chip.dataset.imgPreview = url;
+                chip.dataset.imgName = f.name;
+            }
+            chip.innerHTML = `<i class="ti ${isPdf ? 'ti-file-type-pdf' : 'ti-photo'}"></i><span class="text-truncate" style="max-width:140px">${f.name}</span><i class="ti ${isPdf ? 'ti-external-link' : 'ti-zoom-in'}"></i>`;
             wrap.appendChild(chip);
         });
     }

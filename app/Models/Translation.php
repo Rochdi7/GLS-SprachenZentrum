@@ -92,11 +92,13 @@ class Translation extends Model
      */
     public function whatsappReadyMessage(): string
     {
-        $name = trim($this->student_name) ?: 'cher étudiant';
+        $name   = trim($this->student_name) ?: 'cher étudiant';
+        $amount = number_format((int) $this->total_cost, 0, ',', ' ');
 
         return "Bonjour {$name},\n\n"
             . "Bonne nouvelle ! La traduction de vos documents est terminée et vos papiers sont prêts à être récupérés chez GLS Sprachenzentrum.\n\n"
-            . "N'hésitez pas à passer à nos bureaux pour les retirer.\n\n"
+            . "Montant total à régler : {$amount} DH.\n\n"
+            . "Merci de prévoir ce montant lors du retrait de vos documents.\n\n"
             . 'Cordialement,
 L\'équipe GLS Sprachenzentrum';
     }
