@@ -171,8 +171,9 @@ class SyncCrmRegistrationsCommand extends Command
             }
         }
 
-        // Final attempt after all backoffs
-        return $crm->registrations()->list(
+        // Final attempt after all backoffs — stay on the bulk endpoint
+        // (the non-bulk endpoint caps size at 25 and would reject PAGE_SIZE=500).
+        return $crm->registrations()->bulkList(
             page: $page,
             size: self::PAGE_SIZE,
             includeTotal: false,

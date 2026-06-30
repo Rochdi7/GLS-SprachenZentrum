@@ -93,8 +93,8 @@ class CrmSyncAllCommand extends Command
         ],
         'allocations'      => [
             'crm:sync-payment-allocations',
-            '--all --months=6 --delay=1000',
-            'Mirror payment allocations — NEW, eliminates live API on group-evolution',
+            '--all --months=12 --delay=1000',
+            'Mirror payment allocations — feeds group-evolution + finished-group Terminé (12-month lookback covers finished groups)',
         ],
         'presence_summary' => [
             'crm:build-presence-summary',

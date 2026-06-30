@@ -59,4 +59,47 @@ class Expenses extends Resource
             'endDate'          => $endDate,
         ], fn ($v) => $v !== null));
     }
+
+    /**
+     * GET /api/external/v1/bulk/expenses — Bulk list expenses (size up to 500)
+     *
+     * Same SQL, filters, security, scopes and response model as list(), but the
+     * page size cap is 500 instead of 25. Use this for syncs/exports — 20× fewer
+     * requests. Required scope: expenses:read.
+     */
+    public function bulkList(
+        int $page = 0,
+        int $size = 500,
+        bool $includeTotal = false,
+        ?int $strStoreId = null,
+        ?int $schoolYearId = null,
+        ?int $id = null,
+        ?int $expenseStatusId = null,
+        ?int $expenseTypeId = null,
+        ?int $cashBoxId = null,
+        ?int $levelSessionId = null,
+        ?int $paymentMethodId = null,
+        ?string $reference = null,
+        ?string $invoiceReference = null,
+        ?string $startDate = null,
+        ?string $endDate = null,
+    ): array {
+        return $this->client->get('/api/external/v1/bulk/expenses', array_filter([
+            'page'             => $page,
+            'size'             => min($size, 500),
+            'includeTotal'     => $includeTotal ? 'true' : 'false',
+            'strStoreId'       => $strStoreId,
+            'schoolYearId'     => $schoolYearId,
+            'id'               => $id,
+            'expenseStatusId'  => $expenseStatusId,
+            'expenseTypeId'    => $expenseTypeId,
+            'cashBoxId'        => $cashBoxId,
+            'levelSessionId'   => $levelSessionId,
+            'paymentMethodId'  => $paymentMethodId,
+            'reference'        => $reference,
+            'invoiceReference' => $invoiceReference,
+            'startDate'        => $startDate,
+            'endDate'          => $endDate,
+        ], fn ($v) => $v !== null));
+    }
 }

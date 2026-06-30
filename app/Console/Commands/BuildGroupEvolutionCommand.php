@@ -127,21 +127,21 @@ class BuildGroupEvolutionCommand extends Command
         $this->line('   ' . $registrations->count() . ' registrations loaded from local DB');
 
         // ── All non-inscription monthly payment months per student (store-wide) ──
-        // crm_payment_snapshots has no class_id, so we fetch all months per student
-        // and then filter per-registration using the registration START_DATE as a floor:
-        // "first payment for this class" = earliest payment month >= registration START_DATE.
-        // This excludes payments made for previous groups before the student joined this one.
+        // Source: crm_payment_allocations (full lookback) rather than crm_payment_snapshots
+        // (2-month rolling window) — the snapshot misses finished groups that ended months
+        // ago, which zeroed their Début/Ajout/Terminé. Allocations carry allocation_month
+        // and is_inscription, so we get the same per-student month list with full history.
         $allStudentIds = $registrations->pluck('crm_student_id')->unique()->values()->all();
 
-        $payMonthsByStudent = DB::table('crm_payment_snapshots')
+        $payMonthsByStudent = DB::table('crm_payment_allocations')
             ->where('crm_store_id', $storeId)
+            ->where('is_inscription', 0)
             ->whereIn('student_id', $allStudentIds)
-            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(payload, '$.ITEMS_NAME')) NOT LIKE '%inscription%'")
-            ->selectRaw('student_id, DATE_FORMAT(effective_date, "%Y-%m") as pay_month')
+            ->select('student_id', 'allocation_month')
             ->distinct()
             ->get()
-            ->groupBy('student_id') // [student_id => Collection<{pay_month}>]
-            ->map(fn($rows) => $rows->pluck('pay_month')->sort()->values()->all());
+            ->groupBy('student_id') // [student_id => Collection<{allocation_month}>]
+            ->map(fn($rows) => $rows->pluck('allocation_month')->filter()->sort()->values()->all());
 
         $this->line('   ' . $payMonthsByStudent->count() . ' students with payment records');
 
@@ -154,9 +154,13 @@ class BuildGroupEvolutionCommand extends Command
         foreach ($registrations as $reg) {
             $sid = (int) $reg->crm_student_id;
             $cid = (int) $reg->crm_class_id;
+            // Registrations key on LEVEL_SESSION_ID (= raw_data.ID = our bucket key).
+            // Some carry the CLASS_ID instead — translate those back to the raw_data.ID.
+            if (!isset($classStartMonths[$cid]) && isset($rawIdByClassId[$cid])) {
+                $cid = $rawIdByClassId[$cid];
+            }
             $status = $reg->status;
             $classYm = $classStartMonths[$cid] ?? null;
-            $classEndYm = $classEndMonths[$cid] ?? null;
             $raw = is_array($reg->raw_data) ? $reg->raw_data : json_decode($reg->raw_data, true);
 
             // Status buckets are independent of payment timing.
@@ -166,16 +170,9 @@ class BuildGroupEvolutionCommand extends Command
                 $changementsByGroup[$cid][$sid] = true;
             }
 
-            // Terminé (finished the formation): the student paid the group's LAST month
-            // (= class END_DATE month). Cancelled students are départs, not finishers,
-            // so they are excluded. A non-inscription payment in the END_DATE month is
-            // the signal that the student went all the way to the end of the formation.
-            if ($status !== 'Annulé' && $classEndYm) {
-                $months = $payMonthsByStudent->get($sid, []);
-                if (in_array($classEndYm, $months, true)) {
-                    $terminesByGroup[$cid][$sid] = true;
-                }
-            }
+            // NB: Terminé is computed below from crm_payment_allocations (full history,
+            // keyed by CLASS_ID), NOT from the 2-month crm_payment_snapshots window —
+            // finished groups ended months ago, outside that window.
 
             if (!$classYm) {
                 continue;
@@ -201,6 +198,61 @@ class BuildGroupEvolutionCommand extends Command
             } else {
                 $ajoutsByGroup[$cid][$sid] = true;
             }
+        }
+
+        // ── Terminé: paid the group's LAST month (class END_DATE month) ──
+        // Source: crm_payment_allocations (full history, joined directly on CLASS_ID),
+        // not crm_payment_snapshots (2-month rolling window). Finished groups ended
+        // months ago, so their last-month payments are only in the allocations table.
+        //
+        // crm_payment_allocations.class_id = API CLASS_ID = crm_classes.class_id column.
+        // The bucket key everywhere else is raw_data.ID ($rawId), so we translate the
+        // CLASS_ID back to $rawId via $rawIdByClassId before storing.
+        //
+        // END month is keyed by $rawId in $classEndMonths; build a CLASS_ID → END-month
+        // map so we can match allocations directly.
+        $endMonthByClassId = [];        // [CLASS_ID => 'YYYY-MM']
+        foreach ($rawIdByClassId as $classIdCol => $rawId) {
+            if (!empty($classEndMonths[$rawId])) {
+                $endMonthByClassId[$classIdCol] = $classEndMonths[$rawId];
+            }
+        }
+
+        // Cancelled (student, class) pairs are départs, not finishers — exclude them.
+        // $quittantsByGroup is keyed by $rawId; flatten to a (rawId.sid) lookup.
+        $isCancelled = [];
+        foreach ($quittantsByGroup as $rawIdKey => $students) {
+            foreach ($students as $sidKey => $_) {
+                $isCancelled["{$rawIdKey}.{$sidKey}"] = true;
+            }
+        }
+
+        if (!empty($endMonthByClassId)) {
+            DB::table('crm_payment_allocations')
+                ->where('crm_store_id', $storeId)
+                ->where('is_inscription', 0)
+                ->whereIn('class_id', array_keys($endMonthByClassId))
+                ->select('student_id', 'class_id', 'allocation_month')
+                ->distinct()
+                ->orderBy('class_id')
+                ->chunk(2000, function ($rows) use ($endMonthByClassId, $rawIdByClassId, $isCancelled, &$terminesByGroup) {
+                    foreach ($rows as $r) {
+                        $classIdCol = (int) $r->class_id;
+                        $endYm      = $endMonthByClassId[$classIdCol] ?? null;
+                        if (!$endYm || $r->allocation_month !== $endYm) {
+                            continue;
+                        }
+                        $rawId = $rawIdByClassId[$classIdCol] ?? null;
+                        if ($rawId === null) {
+                            continue;
+                        }
+                        $sid = (int) $r->student_id;
+                        if (!empty($isCancelled["{$rawId}.{$sid}"])) {
+                            continue; // cancelled → départ, not a finisher
+                        }
+                        $terminesByGroup[$rawId][$sid] = true;
+                    }
+                });
         }
 
         $now = now();

@@ -250,24 +250,28 @@ class CrmInsightsController extends BaseCrmController
         $storeId = $classRecord?->site_id;
         $crmId   = $classRecord?->crm_id ?? $classId;
 
-        $registrations = CrmRegistration::where('crm_class_id', $crmId)
+        // Registrations store crm_class_id = LEVEL_SESSION_ID ?? CLASS_ID. Most match the
+        // class's crm_id (= raw_data.ID = LEVEL_SESSION_ID), but some carry the CLASS_ID
+        // instead — match on either so finished/historical groups aren't dropped.
+        $registrations = CrmRegistration::whereIn('crm_class_id', array_unique([$crmId, $classId]))
             ->orderBy('status')
             ->get(['crm_student_id', 'status', 'date_creation', 'raw_data']);
 
         // All non-inscription monthly payment months per student in this store.
-        // We use registration START_DATE as a floor so payments made for prior groups
-        // don't pollute the first-payment-for-this-class calculation.
+        // Source: crm_payment_allocations (full history) rather than crm_payment_snapshots
+        // (2-month window) so finished groups — which ended months ago — still resolve
+        // their Début/Ajout buckets and the Terminé (END_DATE month) flag.
         $studentIds = $registrations->pluck('crm_student_id')->unique()->values()->all();
 
-        $payMonthsByStudent = DB::table('crm_payment_snapshots')
+        $payMonthsByStudent = DB::table('crm_payment_allocations')
             ->where('crm_store_id', $storeId)
+            ->where('is_inscription', 0)
             ->whereIn('student_id', $studentIds)
-            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(payload, '$.ITEMS_NAME')) NOT LIKE '%inscription%'")
-            ->selectRaw('student_id, DATE_FORMAT(effective_date, "%Y-%m") as pay_month')
+            ->select('student_id', 'allocation_month')
             ->distinct()
             ->get()
             ->groupBy('student_id')
-            ->map(fn ($rows) => $rows->pluck('pay_month')->sort()->values()->all());
+            ->map(fn ($rows) => $rows->pluck('allocation_month')->filter()->sort()->values()->all());
 
         $rows = $registrations->map(function ($r) use ($classStartYm, $classEndYm, $payMonthsByStudent) {
             $raw    = is_array($r->raw_data) ? $r->raw_data : json_decode($r->raw_data, true);
