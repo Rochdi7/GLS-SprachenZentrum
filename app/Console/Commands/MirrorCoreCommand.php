@@ -54,15 +54,33 @@ class MirrorCoreCommand extends Command
     protected function syncClasses()
     {
         $this->info('Syncing Classes...');
+
+        // Two passes: active groups (history=N, default) and historical/finished
+        // groups (history=Y). Historical groups power the "Groupes terminés" tab.
+        // We pass history=Y explicitly on the second pass; the API returns the
+        // closed/past groups that the default call omits.
+        $this->syncClassesPass(null);   // active / current
+        $this->syncClassesPass('Y');    // include finished / historical
+    }
+
+    /**
+     * Page-walk /bulk/groups/classes for one history mode and upsert each row.
+     * $history = null → active only (API default); 'Y' → include finished groups.
+     */
+    protected function syncClassesPass(?string $history): void
+    {
         $page = 0;
         $size = 100;
 
         do {
-            $this->comment("Fetching classes page {$page}...");
-            $response = $this->crm->groups()->bulkClasses($page, $size);
-            
-            if (!$response['success']) {
-                $this->error('Failed to fetch classes from API');
+            $label = $history === 'Y' ? 'history' : 'active';
+            $this->comment("Fetching classes ({$label}) page {$page}...");
+            $response = $this->crm->groups()->bulkClasses($page, $size, extra: array_filter([
+                'history' => $history,
+            ], fn ($v) => $v !== null));
+
+            if (!($response['success'] ?? false)) {
+                $this->error("Failed to fetch classes ({$label}) from API");
                 break;
             }
 

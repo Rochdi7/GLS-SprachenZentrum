@@ -108,6 +108,7 @@ class GroupEvolutionService
                 'termines'    => $r->termines,
                 'changements' => $r->changements,
                 'actifs'      => $r->actifs,
+                'is_finished' => (bool) $r->is_finished,
             ])->toArray();
 
             return [

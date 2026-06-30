@@ -40,6 +40,7 @@ class CrmGroupEvolutionSnapshot extends Model
         'termines',
         'changements',
         'actifs',
+        'is_finished',
         'range_start',
         'range_end',
         'computed_at',
@@ -48,6 +49,7 @@ class CrmGroupEvolutionSnapshot extends Model
     protected $casts = [
         'class_start_date' => 'date',
         'class_end_date'   => 'date',
+        'is_finished'      => 'boolean',
         'range_start'      => 'date',
         'range_end'        => 'date',
         'computed_at'      => 'datetime',

@@ -111,7 +111,9 @@
         </div>
     @endif
 
-    @if(empty($groups))
+    @php $finishedGroups = $finishedGroups ?? []; @endphp
+
+    @if(empty($groups) && empty($finishedGroups))
         <div class="alert alert-info border-0 shadow-sm">
             <i class="ti ti-info-circle me-1"></i>
             @if($rateLimited)
@@ -127,6 +129,31 @@
         </div>
     @else
 
+    {{-- ── Tabs: groupes actifs vs groupes terminés ── --}}
+    <ul class="nav nav-tabs mb-3" id="geTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="ge-active-tab" data-bs-toggle="tab" data-bs-target="#ge-active-pane" type="button" role="tab">
+                <i class="ti ti-users me-1"></i> Groupes actifs
+                <span class="badge bg-primary ms-1">{{ $totals['groups'] ?? count($groups) }}</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="ge-finished-tab" data-bs-toggle="tab" data-bs-target="#ge-finished-pane" type="button" role="tab">
+                <i class="ti ti-circle-check me-1"></i> Groupes terminés
+                <span class="badge ms-1" style="background:#0d9488;">{{ count($finishedGroups) }}</span>
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+    {{-- ════════════ Active groups pane ════════════ --}}
+    <div class="tab-pane fade show active" id="ge-active-pane" role="tabpanel">
+    @if(empty($groups))
+        <div class="alert alert-info border-0 shadow-sm">
+            <i class="ti ti-info-circle me-1"></i>
+            Aucun groupe actif à afficher. Consultez l'onglet « Groupes terminés ».
+        </div>
+    @else
         <div class="row g-3">
             {{-- Detail table card --}}
             <div class="col-12">
@@ -309,6 +336,111 @@
                 </div>
             </div>
         @endif
+    @endif
+    </div>{{-- /#ge-active-pane --}}
+
+    {{-- ════════════ Finished groups pane ════════════ --}}
+    <div class="tab-pane fade" id="ge-finished-pane" role="tabpanel">
+        @if(empty($finishedGroups))
+            <div class="alert alert-info border-0 shadow-sm">
+                <i class="ti ti-info-circle me-1"></i>
+                Aucun groupe terminé pour ce centre.
+            </div>
+        @else
+            {{-- Summary KPI strip --}}
+            <div class="row g-3 mb-3">
+                <div class="col-6 col-md-3">
+                    <div class="card shadow-sm ge-kpi-card h-100"><div class="card-body text-center">
+                        <span class="ge-icon" style="background:#f3e5f5; color:#7b1fa2;"><i class="ti ti-school"></i></span>
+                        <div class="small fw-semibold mt-2" style="color:#7b1fa2;">Groupes terminés</div>
+                        <div class="h2 mb-0 mt-1" style="color:#7b1fa2;">{{ count($finishedGroups) }}</div>
+                    </div></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card shadow-sm ge-kpi-card h-100"><div class="card-body text-center">
+                        <span class="ge-icon" style="background:#e3f2fd; color:#2196f3;"><i class="ti ti-users"></i></span>
+                        <div class="small text-primary fw-semibold mt-2">Total inscrits</div>
+                        <div class="h2 mb-0 mt-1 text-primary">{{ $finishedTotals['enrolled'] ?? 0 }}</div>
+                        <div class="ge-help">Début + Ajouts</div>
+                    </div></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card shadow-sm ge-kpi-card h-100"><div class="card-body text-center">
+                        <span class="ge-icon" style="background:#e6f7f4; color:#0d9488;"><i class="ti ti-circle-check"></i></span>
+                        <div class="small fw-semibold mt-2" style="color:#0d9488;">Total terminés</div>
+                        <div class="h2 mb-0 mt-1" style="color:#0d9488;">{{ $finishedTotals['termines'] ?? 0 }}</div>
+                        <div class="ge-help">Ont payé le dernier mois</div>
+                    </div></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card shadow-sm ge-kpi-card h-100"><div class="card-body text-center">
+                        <span class="ge-icon" style="background:#e8f5e9; color:#28a745;"><i class="ti ti-percentage"></i></span>
+                        <div class="small text-success fw-semibold mt-2">Taux de complétion</div>
+                        <div class="h2 mb-0 mt-1 text-success">{{ $finishedTotals['completion_rate'] !== null ? $finishedTotals['completion_rate'] . '%' : '—' }}</div>
+                        <div class="ge-help">Terminés / Inscrits</div>
+                    </div></div>
+                </div>
+            </div>
+
+            {{-- Finished groups table --}}
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="text-center ge-card-title mb-3" style="color:#0d9488;">GROUPES TERMINÉS — TAUX DE COMPLÉTION</h5>
+                    <div class="table-responsive" style="max-height: 520px;">
+                        <table class="table table-sm ge-table align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Groupe</th>
+                                    <th class="text-center">Début</th>
+                                    <th class="text-center">Fin</th>
+                                    <th class="text-center text-primary">Inscrits</th>
+                                    <th class="text-center" style="color:#0d9488;">Terminés</th>
+                                    <th class="text-center text-danger">Quittant</th>
+                                    <th style="min-width:160px;">Taux de complétion</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($finishedGroups as $i => $g)
+                                    @php
+                                        $rate = $g['completion_rate'];
+                                        $rateColor = $rate === null ? '#adb5bd' : ($rate >= 70 ? '#28a745' : ($rate >= 40 ? '#fd7e14' : '#dc3545'));
+                                    @endphp
+                                    <tr class="ge-drill-row" style="cursor:pointer;"
+                                        data-class-id="{{ $g['class_id'] }}"
+                                        data-class-name="{{ $g['name'] }}"
+                                        title="Cliquer pour voir les étudiants">
+                                        <td class="text-center text-muted">{{ $i + 1 }}</td>
+                                        <td>
+                                            {{ $g['name'] }}
+                                            <i class="ph-duotone ph-eye ms-1 text-muted" style="font-size:.8rem;opacity:.5;"></i>
+                                        </td>
+                                        <td class="text-center"><small class="text-muted">{{ $g['start_date'] ?? '—' }}</small></td>
+                                        <td class="text-center"><small class="text-muted">{{ $g['end_date'] ?? '—' }}</small></td>
+                                        <td class="text-center text-primary">{{ $g['enrolled'] }}</td>
+                                        <td class="text-center" style="color:#0d9488;">{{ $g['termines'] }}</td>
+                                        <td class="text-center text-danger">{{ $g['quittants'] }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="progress flex-grow-1" style="height:8px;border-radius:4px;">
+                                                    <div class="progress-bar" role="progressbar"
+                                                         style="width:{{ $rate ?? 0 }}%;background:{{ $rateColor }};"></div>
+                                                </div>
+                                                <span class="fw-semibold small" style="color:{{ $rateColor }};min-width:42px;text-align:right;">
+                                                    {{ $rate !== null ? $rate . '%' : '—' }}
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        @endif
+    </div>{{-- /#ge-finished-pane --}}
+    </div>{{-- /.tab-content --}}
 
     @endif
 </div>

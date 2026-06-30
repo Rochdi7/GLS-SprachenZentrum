@@ -84,10 +84,18 @@ class BuildGroupEvolutionCommand extends Command
 
     private function computeForStore(int $storeId, string $rangeStart, string $rangeEnd): int
     {
-        // Load classes from the local mirror — zero API calls
+        $today = Carbon::today('Africa/Casablanca')->toDateString();
+
+        // Load classes from the local mirror — zero API calls.
+        // Include the active statuses AND any group whose END_DATE has already
+        // passed (a finished group), regardless of its CRM status. Finished
+        // groups (mirrored via history=Y) power the "Groupes terminés" tab.
         $classes = CrmClass::where('site_id', $storeId)
             ->whereNotNull('class_id')
-            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.STATUS_NAME')) IN ('En formation', 'En Préparation')")
+            ->where(function ($q) use ($today) {
+                $q->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.STATUS_NAME')) IN ('En formation', 'En Préparation')")
+                  ->orWhereRaw("DATE(JSON_UNQUOTE(JSON_EXTRACT(raw_data, '$.END_DATE'))) < ?", [$today]);
+            })
             ->get();
 
         if ($classes->isEmpty()) {
@@ -219,6 +227,9 @@ class BuildGroupEvolutionCommand extends Command
             $classStartDate = isset($raw['START_DATE']) ? Carbon::parse($raw['START_DATE'])->setTimezone('Africa/Casablanca')->toDateString() : null;
             $classEndDate = isset($raw['END_DATE']) ? Carbon::parse($raw['END_DATE'])->setTimezone('Africa/Casablanca')->toDateString() : null;
 
+            // A group is finished once its scheduled END_DATE is in the past.
+            $isFinished = $classEndDate !== null && $classEndDate < $today;
+
             $upserts[] = [
                 'crm_store_id' => $storeId,
                 'class_id' => $cid,
@@ -232,6 +243,7 @@ class BuildGroupEvolutionCommand extends Command
                 'termines' => $termines,
                 'changements' => $changements,
                 'actifs' => (int) ($raw['CLASS_COUNT_STUDENTS_ACTIVE'] ?? 0),
+                'is_finished' => $isFinished,
                 'range_start' => $rangeStart,
                 'range_end' => $rangeEnd,
                 'computed_at' => $now,
@@ -241,7 +253,7 @@ class BuildGroupEvolutionCommand extends Command
         }
 
         foreach (array_chunk($upserts, 100) as $chunk) {
-            CrmGroupEvolutionSnapshot::upsert($chunk, ['crm_store_id', 'class_id', 'range_start', 'range_end'], ['class_name', 'class_start_date', 'class_end_date', 'class_start_month', 'debuts', 'ajouts', 'quittants', 'termines', 'changements', 'actifs', 'computed_at', 'updated_at']);
+            CrmGroupEvolutionSnapshot::upsert($chunk, ['crm_store_id', 'class_id', 'range_start', 'range_end'], ['class_name', 'class_start_date', 'class_end_date', 'class_start_month', 'debuts', 'ajouts', 'quittants', 'termines', 'changements', 'actifs', 'is_finished', 'computed_at', 'updated_at']);
         }
 
         return count($upserts);

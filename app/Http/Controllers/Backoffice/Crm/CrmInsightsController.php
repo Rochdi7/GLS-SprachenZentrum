@@ -145,7 +145,39 @@ class CrmInsightsController extends BaseCrmController
 
         $report = $svc->build($this->scopedCrm(), $storeId, $startDate, $endDate, $bustCache);
 
-        // Snapshot the unfiltered list before mutating — feeds the multi-select.
+        // Split finished groups out of the active view — they power the
+        // "Groupes terminés" tab and must not pollute the active KPIs/totals.
+        $finishedGroups = array_values(array_filter(
+            $report['groups'],
+            fn ($g) => !empty($g['is_finished']),
+        ));
+        $report['groups'] = array_values(array_filter(
+            $report['groups'],
+            fn ($g) => empty($g['is_finished']),
+        ));
+        // Recompute active totals from the active-only slice.
+        $report['totals'] = $this->sumGroupTotals($report['groups']);
+
+        // Per finished group: completion rate = terminés / (débuts + ajouts).
+        $finishedGroups = array_map(function ($g) {
+            $enrolled = ($g['debuts'] ?? 0) + ($g['ajouts'] ?? 0);
+            $g['enrolled']        = $enrolled;
+            $g['completion_rate'] = $enrolled > 0
+                ? round(($g['termines'] / $enrolled) * 100, 1)
+                : null;
+            return $g;
+        }, $finishedGroups);
+        // Most recently ended first.
+        usort($finishedGroups, fn ($a, $b) => ($b['end_date'] ?? '') <=> ($a['end_date'] ?? ''));
+
+        $finishedTotals = $this->sumGroupTotals($finishedGroups);
+        $finishedEnrolled = array_sum(array_column($finishedGroups, 'enrolled'));
+        $finishedTotals['enrolled']        = $finishedEnrolled;
+        $finishedTotals['completion_rate'] = $finishedEnrolled > 0
+            ? round(($finishedTotals['termines'] / $finishedEnrolled) * 100, 1)
+            : null;
+
+        // Snapshot the unfiltered active list before mutating — feeds the multi-select.
         $allGroupsForFilter = $report['groups'];
 
         $selectedClassIds = collect(explode(',', (string) $r->query('classIds', '')))
@@ -161,14 +193,7 @@ class CrmInsightsController extends BaseCrmController
                 fn($g) => isset($allow[$g['class_id']]),
             ));
             // Recompute totals from the visible slice so KPI cards stay coherent.
-            $report['totals'] = [
-                'debuts'      => array_sum(array_column($filteredGroups, 'debuts')),
-                'ajouts'      => array_sum(array_column($filteredGroups, 'ajouts')),
-                'quittants'   => array_sum(array_column($filteredGroups, 'quittants')),
-                'changements' => array_sum(array_column($filteredGroups, 'changements')),
-                'actifs'      => array_sum(array_column($filteredGroups, 'actifs')),
-                'groups'      => count($filteredGroups),
-            ];
+            $report['totals'] = $this->sumGroupTotals($filteredGroups);
             $report['groups'] = $filteredGroups;
         }
 
@@ -178,7 +203,23 @@ class CrmInsightsController extends BaseCrmController
             'endDate'          => $endDate,
             'allGroups'        => $allGroupsForFilter,
             'selectedClassIds' => $selectedClassIds,
+            'finishedGroups'   => $finishedGroups,
+            'finishedTotals'   => $finishedTotals,
         ]);
+    }
+
+    /** Sum the evolution buckets across a list of group rows. */
+    private function sumGroupTotals(array $groups): array
+    {
+        return [
+            'debuts'      => array_sum(array_column($groups, 'debuts')),
+            'ajouts'      => array_sum(array_column($groups, 'ajouts')),
+            'quittants'   => array_sum(array_column($groups, 'quittants')),
+            'termines'    => array_sum(array_column($groups, 'termines')),
+            'changements' => array_sum(array_column($groups, 'changements')),
+            'actifs'      => array_sum(array_column($groups, 'actifs')),
+            'groups'      => count($groups),
+        ];
     }
 
     /**
