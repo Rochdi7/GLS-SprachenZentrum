@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backoffice\Crm;
 
 use App\Models\CrmClass;
 use App\Models\CrmRegistration;
+use App\Models\CrmStudent;
 use App\Services\Crm\Stats\AdvancePaymentsService;
 use App\Services\Crm\Stats\GroupEvolutionService;
 use App\Services\Crm\Stats\InsightsService;
@@ -317,6 +318,110 @@ class CrmInsightsController extends BaseCrmController
         return response()->json([
             'rows'           => $rows->values(),
             'count'          => $rows->count(),
+            'class_start_ym' => $classStartYm,
+            'class_end_ym'   => $classEndYm,
+        ]);
+    }
+
+    /**
+     * AJAX drill for FINISHED groups — a per-student monthly payment grid.
+     *
+     * Finished/archived groups follow a different logic from active ones: the CRM
+     * archives and cancels the students but KEEPS the months they paid. So instead
+     * of Début/Ajout buckets, we show exactly which months each student paid
+     * (the same "Statistique de groupe" grid the CRM shows).
+     *
+     * Source is crm_payment_allocations (full history, keyed on CLASS_ID), so every
+     * student who ever paid into this class appears — even if their registration was
+     * later cancelled/archived. The "Terminé" flag = paid the class END_DATE month.
+     */
+    public function groupEvolutionFinishedDrill(Request $request): JsonResponse
+    {
+        $classId = (int) $request->query('classId');
+        if (!$classId) {
+            return response()->json(['rows' => [], 'count' => 0, 'months' => []]);
+        }
+
+        $classRecord = CrmClass::where('class_id', $classId)->first(['site_id', 'raw_data']);
+        $classRaw    = $classRecord
+            ? (is_array($classRecord->raw_data) ? $classRecord->raw_data : json_decode($classRecord->raw_data, true))
+            : [];
+        $classStartYm = isset($classRaw['START_DATE'])
+            ? Carbon::parse($classRaw['START_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
+            : null;
+        $classEndYm = isset($classRaw['END_DATE'])
+            ? Carbon::parse($classRaw['END_DATE'])->setTimezone('Africa/Casablanca')->format('Y-m')
+            : null;
+        $storeId = $classRecord?->site_id;
+
+        // All allocations for this class (every student who paid, archived or not).
+        $allocs = DB::table('crm_payment_allocations')
+            ->where('class_id', $classId)
+            ->when($storeId, fn ($q) => $q->where('crm_store_id', $storeId))
+            ->select('student_id', 'allocation_month', 'is_inscription', 'amount')
+            ->get();
+
+        if ($allocs->isEmpty()) {
+            return response()->json([
+                'rows'           => [],
+                'count'          => 0,
+                'months'         => [],
+                'class_start_ym' => $classStartYm,
+                'class_end_ym'   => $classEndYm,
+            ]);
+        }
+
+        // Build the ordered list of months that appear (non-inscription payments only).
+        $months = $allocs->where('is_inscription', 0)
+            ->pluck('allocation_month')
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
+
+        // Resolve student names from the local students mirror.
+        $studentIds = $allocs->pluck('student_id')->unique()->values()->all();
+        $names = CrmStudent::whereIn('crm_id', $studentIds)
+            ->get(['crm_id', 'first_name', 'last_name'])
+            ->mapWithKeys(fn ($s) => [(string) $s->crm_id => trim("{$s->first_name} {$s->last_name}")]);
+
+        // Pivot: per student → [month => total amount], plus inscription total.
+        $byStudent = []; // [sid => ['months' => [ym => amount], 'inscription' => amount]]
+        foreach ($allocs as $a) {
+            $sid = (string) $a->student_id;
+            $byStudent[$sid] ??= ['months' => [], 'inscription' => 0.0];
+            if ($a->is_inscription) {
+                $byStudent[$sid]['inscription'] += (float) $a->amount;
+            } elseif ($a->allocation_month) {
+                $byStudent[$sid]['months'][$a->allocation_month] =
+                    ($byStudent[$sid]['months'][$a->allocation_month] ?? 0) + (float) $a->amount;
+            }
+        }
+
+        $rows = [];
+        foreach ($byStudent as $sid => $data) {
+            $paidMonths = array_keys(array_filter($data['months'], fn ($v) => $v > 0));
+            $rows[] = [
+                'student_id'  => (int) $sid,
+                'student_name'=> $names[$sid] ?? ('#' . $sid),
+                'inscription' => $data['inscription'],
+                'months'      => $data['months'],            // [ym => amount]
+                'paid_count'  => count($paidMonths),
+                'finished'    => $classEndYm && in_array($classEndYm, $paidMonths, true),
+            ];
+        }
+
+        // Finished students first, then most months paid, then name.
+        usort($rows, function ($a, $b) {
+            return [$b['finished'], $b['paid_count'], $b['student_name']]
+                <=> [$a['finished'], $a['paid_count'], $a['student_name']];
+        });
+
+        return response()->json([
+            'rows'           => $rows,
+            'count'          => count($rows),
+            'months'         => $months,
             'class_start_ym' => $classStartYm,
             'class_end_ym'   => $classEndYm,
         ]);

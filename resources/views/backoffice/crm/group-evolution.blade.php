@@ -406,10 +406,10 @@
                                         $rate = $g['completion_rate'];
                                         $rateColor = $rate === null ? '#adb5bd' : ($rate >= 70 ? '#28a745' : ($rate >= 40 ? '#fd7e14' : '#dc3545'));
                                     @endphp
-                                    <tr class="ge-drill-row" style="cursor:pointer;"
+                                    <tr class="ge-finished-drill-row" style="cursor:pointer;"
                                         data-class-id="{{ $g['class_id'] }}"
                                         data-class-name="{{ $g['name'] }}"
-                                        title="Cliquer pour voir les étudiants">
+                                        title="Cliquer pour voir le détail des paiements">
                                         <td class="text-center text-muted">{{ $i + 1 }}</td>
                                         <td>
                                             {{ $g['name'] }}
@@ -497,6 +497,51 @@
                 <div id="geDrillEmpty" class="d-none text-center py-5 text-muted">
                     <i class="ph-duotone ph-info fs-1"></i>
                     <p class="mt-2">Aucun étudiant trouvé pour ce groupe.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Finished-group drill modal — monthly payment grid (different logic from active) --}}
+<div class="modal fade" id="geFinishedModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="ph-duotone ph-table me-2" style="color:#0d9488;"></i>
+                    <span id="geFinTitle">Statistique de groupe</span>
+                    <span class="badge ms-2" style="background:#0d9488;" id="geFinCount"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="geFinLoading" class="text-center py-5">
+                    <div class="spinner-border" style="color:#0d9488;"></div>
+                    <p class="mt-2 text-muted">Chargement...</p>
+                </div>
+                <div id="geFinContent" class="d-none">
+                    <div class="px-3 pt-2 pb-2">
+                        <input type="text" id="geFinSearch" class="form-control form-control-sm" placeholder="Rechercher par nom...">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm align-middle mb-0" style="font-size:.85rem;">
+                            <thead class="table-light sticky-top">
+                                <tr id="geFinHead">
+                                    <th style="min-width:30px;">N°</th>
+                                    <th style="min-width:180px;">Étudiant</th>
+                                    <th class="text-center">Inscription</th>
+                                    {{-- month columns injected by JS --}}
+                                    <th class="text-center" style="min-width:80px;">Terminé</th>
+                                </tr>
+                            </thead>
+                            <tbody id="geFinTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="geFinEmpty" class="d-none text-center py-5 text-muted">
+                    <i class="ph-duotone ph-info fs-1"></i>
+                    <p class="mt-2">Aucun paiement trouvé pour ce groupe.</p>
                 </div>
             </div>
         </div>
@@ -637,6 +682,117 @@
                 <td>${r.finished ? '<span class="badge" style="background:#0d9488;">Terminé</span>' : '<span class="text-muted small">—</span>'}</td>
                 <td><small class="text-muted">${r.first_paid_month || '—'}</small></td>
                 <td><small>${r.registered_at}</small></td>
+            </tr>`;
+        }).join('');
+    }
+})();
+
+// ── Finished-group drill: monthly payment grid (separate logic/modal) ──
+(function initGroupEvolutionFinishedDrill() {
+    const url = '{{ route("backoffice.crm.group-evolution.finished-drill") }}';
+    let modal = null;
+    let allRows = [];
+    let months = [];
+
+    // Format 'YYYY-MM' → short French month label, e.g. "nov. 25".
+    function monthLabel(ym) {
+        const [y, m] = ym.split('-');
+        const names = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+        return (names[parseInt(m, 10) - 1] || m) + ' ' + y.slice(2);
+    }
+    function fmtDH(v) {
+        return new Intl.NumberFormat('fr-MA').format(Math.round(v)) + ' DH';
+    }
+
+    document.querySelectorAll('.ge-finished-drill-row').forEach(row => {
+        row.addEventListener('click', function () {
+            const classId   = this.dataset.classId;
+            const className  = this.dataset.className;
+
+            document.getElementById('geFinTitle').textContent = className;
+            document.getElementById('geFinCount').textContent = '';
+            document.getElementById('geFinSubtitle')?.remove();
+            document.getElementById('geFinLoading').classList.remove('d-none');
+            document.getElementById('geFinContent').classList.add('d-none');
+            document.getElementById('geFinEmpty').classList.add('d-none');
+            document.getElementById('geFinSearch').value = '';
+
+            if (!modal) modal = new bootstrap.Modal(document.getElementById('geFinishedModal'));
+            modal.show();
+
+            fetch(url + '?classId=' + classId, {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+                .then(data => {
+                    allRows = Array.isArray(data.rows) ? data.rows : [];
+                    months  = Array.isArray(data.months) ? data.months : [];
+                    document.getElementById('geFinLoading').classList.add('d-none');
+
+                    if (data.class_start_ym || data.class_end_ym) {
+                        const sub = document.createElement('small');
+                        sub.id = 'geFinSubtitle';
+                        sub.className = 'text-muted ms-2';
+                        const parts = [];
+                        if (data.class_start_ym) parts.push('Début : ' + data.class_start_ym);
+                        if (data.class_end_ym)   parts.push('Fin : ' + data.class_end_ym);
+                        sub.textContent = parts.join(' · ');
+                        document.getElementById('geFinTitle').after(sub);
+                    }
+
+                    if (allRows.length === 0) {
+                        document.getElementById('geFinCount').textContent = '0 étudiant(s)';
+                        document.getElementById('geFinEmpty').classList.remove('d-none');
+                        return;
+                    }
+                    buildHead();
+                    document.getElementById('geFinContent').classList.remove('d-none');
+                    render(allRows);
+                    document.getElementById('geFinCount').textContent = allRows.length + ' étudiant(s)';
+                })
+                .catch(err => {
+                    document.getElementById('geFinLoading').classList.add('d-none');
+                    const empty = document.getElementById('geFinEmpty');
+                    empty.innerHTML = '<i class="ph-duotone ph-warning fs-1 text-danger"></i><p class="mt-2 text-danger">Erreur : ' + err.message + '</p>';
+                    empty.classList.remove('d-none');
+                });
+        });
+    });
+
+    document.getElementById('geFinSearch')?.addEventListener('input', function () {
+        const q = this.value.toLowerCase();
+        render(allRows.filter(r => (r.student_name || '').toLowerCase().includes(q)));
+    });
+
+    // Rebuild the header with one column per payment month.
+    function buildHead() {
+        const head = document.getElementById('geFinHead');
+        const monthCols = months.map(m => `<th class="text-center" style="min-width:78px;">${monthLabel(m)}</th>`).join('');
+        head.innerHTML =
+            '<th style="min-width:30px;">N°</th>' +
+            '<th style="min-width:180px;">Étudiant</th>' +
+            '<th class="text-center">Inscr.</th>' +
+            monthCols +
+            '<th class="text-center" style="min-width:80px;">Terminé</th>';
+    }
+
+    function render(rows) {
+        const lastYm = months.length ? months[months.length - 1] : null;
+        document.getElementById('geFinTbody').innerHTML = rows.map((r, i) => {
+            const cells = months.map(m => {
+                const amt = r.months && r.months[m];
+                const isEnd = m === lastYm;
+                if (amt && amt > 0) {
+                    return `<td class="text-center" style="background:#c6f6d5;">${fmtDH(amt)}</td>`;
+                }
+                return `<td class="text-center" style="background:${isEnd ? '#fde2e1' : '#eceff1'};">&nbsp;</td>`;
+            }).join('');
+            return `<tr>
+                <td class="text-muted">${i + 1}</td>
+                <td><strong>${r.student_name}</strong><br><small class="text-muted">#${r.student_id}</small></td>
+                <td class="text-center">${r.inscription > 0 ? fmtDH(r.inscription) : '<span class="text-muted">—</span>'}</td>
+                ${cells}
+                <td class="text-center">${r.finished ? '<span class="badge" style="background:#0d9488;">Oui</span>' : '<span class="text-muted small">—</span>'}</td>
             </tr>`;
         }).join('');
     }

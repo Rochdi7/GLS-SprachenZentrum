@@ -67,6 +67,7 @@ Route::prefix('crm')
             Route::get('/insights/advances',                       'advances')->name('insights.advances');
             Route::get('/group-evolution',                         'groupEvolution')->name('group-evolution');
             Route::get('/group-evolution/drill',                   'groupEvolutionDrill')->name('group-evolution.drill');
+            Route::get('/group-evolution/finished-drill',          'groupEvolutionFinishedDrill')->name('group-evolution.finished-drill');
         });
 
         // Collections dashboard (Module 2).
