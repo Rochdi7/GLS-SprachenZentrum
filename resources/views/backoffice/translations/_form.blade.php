@@ -15,7 +15,7 @@
 @endphp
 
 <form action="{{ $isEdit ? route('backoffice.translations.update', $translation) : route('backoffice.translations.store') }}"
-      method="POST" id="{{ $formId }}" class="translation-form">
+      method="POST" id="{{ $formId }}" class="translation-form" enctype="multipart/form-data">
     @csrf
     @if($isEdit) @method('PUT') @endif
     <input type="hidden" name="_form_kind" value="{{ $formKind }}">
@@ -32,15 +32,22 @@
                            placeholder="AB123456"
                            value="{{ old('cin', $isEdit ? $translation->cin : '') }}">
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <label class="form-label small mb-1">Nom étudiant <span class="text-danger">*</span></label>
                     <input type="text" name="student_name" required
                            class="form-control"
                            placeholder="Ahmed Alami"
                            value="{{ old('student_name', $isEdit ? $translation->student_name : '') }}">
                 </div>
+                <div class="col-md-5">
+                    <label class="form-label small mb-1">Email <small class="text-muted">(pour la notification « prêt »)</small></label>
+                    <input type="email" name="email" class="form-control" placeholder="etudiant@email.com"
+                           value="{{ old('email', $isEdit ? $translation->email : '') }}">
+                </div>
+            </div>
+            <div class="row g-3 mt-0">
                 <div class="col-md-4">
-                    <label class="form-label small mb-1">Téléphone</label>
+                    <label class="form-label small mb-1">Téléphone <small class="text-muted">(WhatsApp)</small></label>
                     <input type="text" name="phone" class="form-control" placeholder="06…"
                            value="{{ old('phone', $isEdit ? $translation->phone : '') }}">
                 </div>
@@ -50,71 +57,88 @@
 
     {{-- DOCUMENTS (line items) --}}
     <div class="card mb-3">
-        <div class="card-header d-flex align-items-center justify-content-between">
+        <div class="card-header d-flex align-items-center justify-content-between py-2">
             <h6 class="mb-0"><i class="ti ti-files text-primary"></i> Documents à traduire</h6>
             <button type="button" class="btn btn-sm btn-outline-primary btn-add-item">
                 <i class="ti ti-plus"></i> Ajouter un document
             </button>
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table mb-0 align-middle items-table">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width:40px" class="text-center">#</th>
-                            <th>Document / Type</th>
-                            <th style="width:110px" class="text-center">Pages</th>
-                            <th style="width:140px" class="text-center">Prix / page (DH)</th>
-                            <th style="width:140px" class="text-end">Total ligne</th>
-                            <th style="width:60px" class="text-center"></th>
-                        </tr>
-                    </thead>
-                    <tbody class="items-body">
-                        @foreach($items as $idx => $item)
-                            <tr class="item-row">
-                                <td class="text-center text-muted row-index">{{ $idx + 1 }}</td>
-                                <td>
-                                    @if(!empty($item->id))
-                                        <input type="hidden" name="items[{{ $idx }}][id]" value="{{ $item->id }}">
-                                    @endif
-                                    <input type="text" name="items[{{ $idx }}][doc_type]"
-                                           class="form-control" placeholder="Ex : Bac, Relevés, Diplôme…"
-                                           value="{{ old('items.'.$idx.'.doc_type', $item->doc_type) }}">
-                                </td>
-                                <td>
-                                    <input type="number" name="items[{{ $idx }}][page_count]"
-                                           min="1" required
-                                           class="form-control text-center fw-bold item-pages"
-                                           value="{{ old('items.'.$idx.'.page_count', $item->page_count) }}">
-                                </td>
-                                <td>
-                                    <input type="number" name="items[{{ $idx }}][price_per_page]"
-                                           min="0" required
-                                           class="form-control text-center item-price"
-                                           value="{{ old('items.'.$idx.'.price_per_page', $item->price_per_page) }}">
-                                </td>
-                                <td class="text-end fw-semibold text-primary item-total">
+        <div class="card-body p-2">
+            <div class="items-body d-flex flex-column gap-2">
+                @foreach($items as $idx => $item)
+                    @php $scans = !empty($item->id) ? $item->getMedia('originals') : collect(); @endphp
+                    <div class="item-row border rounded p-2 bg-light-subtle">
+                        @if(!empty($item->id))
+                            <input type="hidden" name="items[{{ $idx }}][id]" value="{{ $item->id }}">
+                        @endif
+                        <div class="row g-2 align-items-end">
+                            <div class="col-auto text-muted small fw-bold row-index pt-4">{{ $idx + 1 }}</div>
+                            <div class="col">
+                                <label class="form-label small mb-1 text-muted">Document / Type</label>
+                                <input type="text" name="items[{{ $idx }}][doc_type]"
+                                       class="form-control form-control-sm" placeholder="Ex : Bac, Relevés, Diplôme…"
+                                       value="{{ old('items.'.$idx.'.doc_type', $item->doc_type) }}">
+                            </div>
+                            <div class="col-2" style="min-width:80px">
+                                <label class="form-label small mb-1 text-muted">Pages</label>
+                                <input type="number" name="items[{{ $idx }}][page_count]"
+                                       min="1" required
+                                       class="form-control form-control-sm text-center fw-bold item-pages"
+                                       value="{{ old('items.'.$idx.'.page_count', $item->page_count) }}">
+                            </div>
+                            <div class="col-2" style="min-width:100px">
+                                <label class="form-label small mb-1 text-muted">Prix/page</label>
+                                <input type="number" name="items[{{ $idx }}][price_per_page]"
+                                       min="0" required
+                                       class="form-control form-control-sm text-center item-price"
+                                       value="{{ old('items.'.$idx.'.price_per_page', $item->price_per_page) }}">
+                            </div>
+                            <div class="col-auto text-end" style="min-width:90px">
+                                <label class="form-label small mb-1 text-muted d-block">Total</label>
+                                <span class="fw-semibold text-primary item-total">
                                     {{ number_format((int)$item->page_count * (int)$item->price_per_page, 0, ',', ' ') }} DH
-                                </td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-link text-danger p-0 btn-remove-item" title="Supprimer">
-                                        <i class="ti ti-trash f-18"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot class="table-light">
-                        <tr>
-                            <td colspan="4" class="text-end text-uppercase small text-muted fw-bold">Total commande</td>
-                            <td class="text-end fw-bold text-primary fs-5 grand-total">0 DH</td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
-                </table>
+                                </span>
+                            </div>
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-sm btn-outline-danger btn-remove-item" title="Supprimer ce document">
+                                    <i class="ti ti-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- SCANS / originaux --}}
+                        <div class="mt-2">
+                            <label class="scan-drop d-flex align-items-center gap-2 px-2 py-1 rounded border border-dashed small text-muted mb-0" style="cursor:pointer">
+                                <i class="ti ti-paperclip"></i>
+                                <span>Joindre le(s) scan(s) de l'original — PDF, JPG, PNG (max 10 Mo)</span>
+                                <input type="file" name="items[{{ $idx }}][scans][]" class="d-none scan-input"
+                                       accept=".pdf,image/*" multiple>
+                            </label>
+                            <div class="scan-chips d-flex flex-wrap gap-1 mt-1"></div>
+
+                            @if($scans->isNotEmpty())
+                                <div class="existing-scans d-flex flex-wrap gap-1 mt-1">
+                                    @foreach($scans as $media)
+                                        <span class="badge bg-light text-dark border d-inline-flex align-items-center gap-1" data-media="{{ $media->id }}">
+                                            <i class="ti {{ str_contains($media->mime_type, 'pdf') ? 'ti-file-type-pdf text-danger' : 'ti-photo text-info' }}"></i>
+                                            <a href="{{ $media->getUrl() }}" target="_blank" class="text-decoration-none text-dark text-truncate" style="max-width:140px">{{ $media->file_name }}</a>
+                                            <button type="button" class="btn-close btn-close-sm ms-1 btn-remove-scan" data-media="{{ $media->id }}" title="Supprimer ce scan" style="font-size:.55rem"></button>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
             </div>
+
+            <div class="d-flex justify-content-end align-items-center gap-2 mt-2 px-1">
+                <span class="text-uppercase small text-muted fw-bold">Total commande</span>
+                <span class="fw-bold text-primary fs-5 grand-total">0 DH</span>
+            </div>
+
             @error('items')
-                <div class="text-danger small px-3 py-2">{{ $message }}</div>
+                <div class="text-danger small px-1">{{ $message }}</div>
             @enderror
         </div>
     </div>
@@ -178,7 +202,7 @@
     function reindexRows() {
         body.querySelectorAll('.item-row').forEach((row, i) => {
             row.querySelector('.row-index').textContent = i + 1;
-            row.querySelectorAll('input[name^="items["]').forEach(inp => {
+            row.querySelectorAll('[name^="items["]').forEach(inp => {
                 inp.name = inp.name.replace(/items\[\d+\]/, `items[${i}]`);
             });
         });
@@ -198,21 +222,64 @@
 
     function addRow() {
         const idx = body.querySelectorAll('.item-row').length;
-        const tr  = document.createElement('tr');
-        tr.className = 'item-row';
-        tr.innerHTML = `
-            <td class="text-center text-muted row-index">${idx + 1}</td>
-            <td><input type="text" name="items[${idx}][doc_type]" class="form-control" placeholder="Ex : Bac, Relevés, Diplôme…"></td>
-            <td><input type="number" name="items[${idx}][page_count]" min="1" required class="form-control text-center fw-bold item-pages" value="1"></td>
-            <td><input type="number" name="items[${idx}][price_per_page]" min="0" required class="form-control text-center item-price" value="${defaultPrice}"></td>
-            <td class="text-end fw-semibold text-primary item-total">0 DH</td>
-            <td class="text-center">
-                <button type="button" class="btn btn-sm btn-link text-danger p-0 btn-remove-item" title="Supprimer">
-                    <i class="ti ti-trash f-18"></i>
-                </button>
-            </td>`;
-        body.appendChild(tr);
+        const div = document.createElement('div');
+        div.className = 'item-row border rounded p-2 bg-light-subtle';
+        div.innerHTML = `
+            <div class="row g-2 align-items-end">
+                <div class="col-auto text-muted small fw-bold row-index pt-4">${idx + 1}</div>
+                <div class="col">
+                    <label class="form-label small mb-1 text-muted">Document / Type</label>
+                    <input type="text" name="items[${idx}][doc_type]" class="form-control form-control-sm" placeholder="Ex : Bac, Relevés, Diplôme…">
+                </div>
+                <div class="col-2" style="min-width:80px">
+                    <label class="form-label small mb-1 text-muted">Pages</label>
+                    <input type="number" name="items[${idx}][page_count]" min="1" required class="form-control form-control-sm text-center fw-bold item-pages" value="1">
+                </div>
+                <div class="col-2" style="min-width:100px">
+                    <label class="form-label small mb-1 text-muted">Prix/page</label>
+                    <input type="number" name="items[${idx}][price_per_page]" min="0" required class="form-control form-control-sm text-center item-price" value="${defaultPrice}">
+                </div>
+                <div class="col-auto text-end" style="min-width:90px">
+                    <label class="form-label small mb-1 text-muted d-block">Total</label>
+                    <span class="fw-semibold text-primary item-total">0 DH</span>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-sm btn-outline-danger btn-remove-item" title="Supprimer ce document">
+                        <i class="ti ti-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="mt-2">
+                <label class="scan-drop d-flex align-items-center gap-2 px-2 py-1 rounded border border-dashed small text-muted mb-0" style="cursor:pointer">
+                    <i class="ti ti-paperclip"></i>
+                    <span>Joindre le(s) scan(s) de l'original — PDF, JPG, PNG (max 10 Mo)</span>
+                    <input type="file" name="items[${idx}][scans][]" class="d-none scan-input" accept=".pdf,image/*" multiple>
+                </label>
+                <div class="scan-chips d-flex flex-wrap gap-1 mt-1"></div>
+            </div>`;
+        body.appendChild(div);
         recompute();
+    }
+
+    function renderChips(input) {
+        const wrap = input.closest('.item-row').querySelector('.scan-chips');
+        if (!wrap) return;
+        // Revoke any object URLs from a previous selection to avoid leaks.
+        wrap.querySelectorAll('a[data-objurl]').forEach(a => URL.revokeObjectURL(a.href));
+        wrap.innerHTML = '';
+        Array.from(input.files).forEach(f => {
+            const isPdf = /pdf$/i.test(f.type) || /\.pdf$/i.test(f.name);
+            const url   = URL.createObjectURL(f);
+            const chip  = document.createElement('a');
+            chip.href = url;
+            chip.target = '_blank';
+            chip.rel = 'noopener';
+            chip.dataset.objurl = '1';
+            chip.title = 'Cliquer pour voir « ' + f.name + ' »';
+            chip.className = 'badge bg-primary-subtle text-primary border d-inline-flex align-items-center gap-1 text-decoration-none';
+            chip.innerHTML = `<i class="ti ${isPdf ? 'ti-file-type-pdf' : 'ti-photo'}"></i><span class="text-truncate" style="max-width:140px">${f.name}</span><i class="ti ti-external-link"></i>`;
+            wrap.appendChild(chip);
+        });
     }
 
     btnAdd.addEventListener('click', addRow);
@@ -221,7 +288,24 @@
         if (e.target.matches('.item-pages, .item-price')) recompute();
     });
 
+    body.addEventListener('change', e => {
+        if (e.target.matches('.scan-input')) renderChips(e.target);
+    });
+
     body.addEventListener('click', e => {
+        // Remove an existing (already saved) scan → flag it for server-side deletion.
+        const rm = e.target.closest('.btn-remove-scan');
+        if (rm) {
+            const id = rm.dataset.media;
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'remove_scans[]';
+            hidden.value = id;
+            form.appendChild(hidden);
+            rm.closest('[data-media]').remove();
+            return;
+        }
+
         const btn = e.target.closest('.btn-remove-item');
         if (!btn) return;
         if (body.querySelectorAll('.item-row').length <= 1) {

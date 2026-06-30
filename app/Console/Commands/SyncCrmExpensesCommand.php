@@ -169,6 +169,7 @@ class SyncCrmExpensesCommand extends Command
     {
         $now     = now()->toDateTimeString();
         $upserts = [];
+        $skipped = [];   // crm_expense_ids of transfer rows to purge if previously synced
 
         foreach ($rows as $row) {
             $crmId = (string) ($row['ID'] ?? '');
@@ -191,7 +192,16 @@ class SyncCrmExpensesCommand extends Command
 
             // EXPENSE_TYPE_NAME → our normalised type key
             $rawType = (string) ($row['EXPENSE_TYPE_NAME'] ?? 'autre');
-            $type    = SiteExpense::normalizeType($rawType);
+
+            // Skip "Transfert à une autre caisse" (CRM expenseTypeId 2611) — it's an
+            // internal cash-box transfer, not a real expense, so it must not count.
+            $typeId = (int) ($row['EXPENSE_TYPE_ID'] ?? 0);
+            if ($typeId === 2611 || mb_strtolower(trim($rawType)) === 'transfert à une autre caisse') {
+                $skipped[] = $crmId;
+                continue;
+            }
+
+            $type = SiteExpense::normalizeType($rawType);
 
             $upserts[] = [
                 'crm_expense_id'  => $crmId,
@@ -213,6 +223,13 @@ class SyncCrmExpensesCommand extends Command
                 'created_at'      => $now,
                 'updated_at'      => $now,
             ];
+        }
+
+        // Purge any transfer rows that were synced before this filter existed.
+        if (!empty($skipped)) {
+            SiteExpense::where('crm_source', 'wimschool')
+                ->whereIn('crm_expense_id', $skipped)
+                ->delete();
         }
 
         if (empty($upserts)) return;

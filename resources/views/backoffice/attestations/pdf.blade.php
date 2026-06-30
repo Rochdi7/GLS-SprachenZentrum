@@ -51,7 +51,7 @@
     <title>Teilnahmebestätigung — {{ $attestation->last_name }} {{ $attestation->first_name }}</title>
 
     <style>
-        @page { size: A4 portrait; margin: 35px 40px 95px 40px; }
+        @page { size: A4 portrait; margin: 35px 40px 20px 40px; }
         * { box-sizing: border-box; }
 
         body {
@@ -71,9 +71,9 @@
             table-layout: fixed;
         }
         table.header td { vertical-align: middle; padding: 0; }
-        table.header td.logo-cell { width: 140px; }
-        table.header td.title-cell { padding-left: 22px; text-align: left; }
-        .header-logo { width: 120px; height: auto; display: block; }
+        table.header td.logo-cell { width: 160px; }
+        table.header td.title-cell { padding-right: 40px; text-align: center; }
+        .header-logo { width: 120px; height: auto; display: block; margin-left: 20px; }
         .header-title {
             font-size: 21pt;
             font-weight: bold;
@@ -236,7 +236,7 @@
         .footer {
             position: fixed;
             left: 40px; right: 40px;
-            bottom: 25px;
+            bottom: 0;
             text-align: center;
             font-size: 8pt;
             color: #444;

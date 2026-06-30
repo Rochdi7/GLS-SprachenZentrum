@@ -37,11 +37,14 @@ class CrmExpensesController extends BaseCrmController
             $chartMonths->push(Carbon::now('Africa/Casablanca')->subMonths($i)->format('Y-m'));
         }
 
-        $rawTotals = SiteExpense::where('crm_source', 'wimschool')
+        $rawTotalsQ = SiteExpense::where('crm_source', 'wimschool')
             ->selectRaw("DATE_FORMAT(month, '%Y-%m') as ym, site_id, SUM(amount) as total")
             ->whereIn(DB::raw("DATE_FORMAT(month, '%Y-%m')"), $chartMonths->toArray())
-            ->groupBy('ym', 'site_id')
-            ->get();
+            ->groupBy('ym', 'site_id');
+        if ($siteId)  $rawTotalsQ->where('site_id', $siteId);
+        if ($typeKey) $rawTotalsQ->where('type', $typeKey);
+
+        $rawTotals = $rawTotalsQ->get();
 
         $seriesMap = [];
         foreach ($rawTotals as $row) {
@@ -64,7 +67,9 @@ class CrmExpensesController extends BaseCrmController
             ->selectRaw('sites.name as site_name, COUNT(*) as count, SUM(amount) as total')
             ->groupBy('sites.name')
             ->orderByDesc('total');
-        if ($month) $summaryQuery->where('month', $month . '-01');
+        if ($siteId)  $summaryQuery->where('site_expenses.site_id', $siteId);
+        if ($typeKey) $summaryQuery->where('site_expenses.type', $typeKey);
+        if ($month)   $summaryQuery->where('site_expenses.month', $month . '-01');
 
         $centerSummary = $summaryQuery->get();
         $maxTotal      = $centerSummary->max('total') ?: 1;

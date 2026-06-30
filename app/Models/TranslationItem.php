@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class TranslationItem extends Model
+class TranslationItem extends Model implements HasMedia
 {
+    use InteractsWithMedia;
+
     protected $fillable = [
         'translation_id',
         'doc_type',
@@ -39,5 +43,11 @@ class TranslationItem extends Model
     public function translation(): BelongsTo
     {
         return $this->belongsTo(Translation::class);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('originals')
+            ->acceptsMimeTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp']);
     }
 }

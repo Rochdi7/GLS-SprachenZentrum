@@ -169,18 +169,19 @@
         }
 
         table.header td.logo-cell {
-            width: 140px;
+            width: 160px;
         }
 
         table.header td.title-cell {
-            padding-left: 22px;
-            text-align: left;
+            padding-right: 40px;
+            text-align: center;
         }
 
         .header-logo {
             width: 120px;
             height: auto;
             display: block;
+            margin-left: 20px;
         }
 
         .header-title {
@@ -434,7 +435,7 @@
             position: fixed;
             left: 40px;
             right: 40px;
-            bottom: 25px;
+            bottom: 0;
             text-align: center;
             font-size: 8pt;
             color: #444;

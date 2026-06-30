@@ -101,7 +101,7 @@
                             <th>Dépôt</th>
                             <th style="width:170px">Date Remise</th>
                             <th class="text-center" style="width:200px">Statut</th>
-                            <th class="text-center" style="width:140px">Actions</th>
+                            <th class="text-center" style="width:180px">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -156,6 +156,16 @@
                                     @endcan
                                 </td>
                                 <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-link text-info p-1"
+                                            data-bs-toggle="modal" data-bs-target="#showTranslationModal-{{ $t->id }}" title="Voir les détails">
+                                        <i class="ti ti-eye f-18"></i>
+                                    </button>
+                                    @if($t->whatsappReadyUrl())
+                                    <a href="{{ $t->whatsappReadyUrl() }}" target="_blank" rel="noopener"
+                                       class="btn btn-sm btn-link text-success p-1" title="Envoyer le message « prêt » sur WhatsApp">
+                                        <i class="ti ti-brand-whatsapp f-18"></i>
+                                    </a>
+                                    @endif
                                     @can('translations.edit')
                                     <button type="button" class="btn btn-sm btn-link text-secondary p-1"
                                             data-bs-toggle="modal" data-bs-target="#editTranslationModal-{{ $t->id }}" title="Éditer">
@@ -194,7 +204,7 @@
     {{-- CREATE MODAL --}}
     @can('translations.create')
         <div class="modal fade" id="createTranslationModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-            <div class="modal-dialog modal-xl">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title"><i class="ti ti-plus-circle text-primary"></i> Nouvelle commande de traduction</h5>
@@ -216,7 +226,7 @@
     @can('translations.edit')
         @foreach($translations as $t)
             <div class="modal fade" id="editTranslationModal-{{ $t->id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-                <div class="modal-dialog modal-xl">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">
@@ -237,6 +247,108 @@
             </div>
         @endforeach
     @endcan
+
+    {{-- SHOW (read-only) MODALS --}}
+    @foreach($translations as $t)
+        <div class="modal fade" id="showTranslationModal-{{ $t->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="ti ti-file-text text-info"></i>
+                            {{ $t->student_name }}
+                            <span class="status-pill status-{{ $t->status }} ms-2">{{ $t->statusLabel() }}</span>
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        {{-- Étudiant --}}
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-3">
+                                <div class="text-muted small text-uppercase">CIN</div>
+                                <div class="fw-semibold"><code class="text-dark">{{ $t->cin }}</code></div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-muted small text-uppercase">Téléphone</div>
+                                <div class="fw-semibold">{{ $t->phone ?: '—' }}</div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="text-muted small text-uppercase">Email</div>
+                                <div class="fw-semibold">{{ $t->email ?: '—' }}</div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-muted small text-uppercase">Date dépôt</div>
+                                <div class="fw-semibold">{{ optional($t->date_received)->format('d/m/Y') ?: '—' }}</div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-muted small text-uppercase">Date remise</div>
+                                <div class="fw-semibold">{{ optional($t->date_handed_over)->format('d/m/Y') ?: '—' }}</div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-muted small text-uppercase">Total pages</div>
+                                <div class="fw-semibold">{{ $t->totalPages() }}</div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-muted small text-uppercase">Total commande</div>
+                                <div class="fw-bold text-primary">{{ number_format($t->total_cost, 0, ',', ' ') }} DH</div>
+                            </div>
+                        </div>
+
+                        @if($t->notes)
+                            <div class="alert alert-light border small mb-3">
+                                <i class="ti ti-note text-muted"></i> {{ $t->notes }}
+                            </div>
+                        @endif
+
+                        {{-- Documents + scans --}}
+                        <h6 class="text-uppercase small text-muted fw-bold mb-2"><i class="ti ti-files"></i> Documents</h6>
+                        @forelse($t->items as $it)
+                            @php $scans = $it->getMedia('originals'); @endphp
+                            <div class="border rounded p-2 mb-2">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <div class="fw-semibold">{{ $it->doc_type }}</div>
+                                    <div class="text-muted small">
+                                        {{ $it->page_count }} p × {{ $it->price_per_page }} DH =
+                                        <strong class="text-primary">{{ number_format($it->line_total, 0, ',', ' ') }} DH</strong>
+                                    </div>
+                                </div>
+                                @if($scans->isNotEmpty())
+                                    <div class="d-flex flex-wrap gap-1 mt-2">
+                                        @foreach($scans as $media)
+                                            <a href="{{ $media->getUrl() }}" target="_blank" rel="noopener"
+                                               class="badge bg-light text-dark border text-decoration-none d-inline-flex align-items-center gap-1">
+                                                <i class="ti {{ str_contains($media->mime_type, 'pdf') ? 'ti-file-type-pdf text-danger' : 'ti-photo text-info' }}"></i>
+                                                <span class="text-truncate" style="max-width:160px">{{ $media->file_name }}</span>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div class="small text-warning mt-1"><i class="ti ti-alert-triangle"></i> Aucun scan de l'original</div>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="text-muted fst-italic small">Aucun document.</div>
+                        @endforelse
+                    </div>
+                    <div class="modal-footer">
+                        @if($t->whatsappReadyUrl())
+                            <a href="{{ $t->whatsappReadyUrl() }}" target="_blank" rel="noopener" class="btn btn-success">
+                                <i class="ti ti-brand-whatsapp"></i> Message WhatsApp « prêt »
+                            </a>
+                        @endif
+                        @can('translations.edit')
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                                    data-bs-toggle="modal" data-bs-target="#editTranslationModal-{{ $t->id }}">
+                                <i class="ti ti-edit"></i> Éditer
+                            </button>
+                        @endcan
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Fermer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 
 @endsection
 
