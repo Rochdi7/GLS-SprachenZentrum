@@ -148,7 +148,6 @@ class BuildGroupEvolutionCommand extends Command
         $debutsByGroup = [];
         $ajoutsByGroup = [];
         $quittantsByGroup = [];
-        $terminesByGroup = [];
         $changementsByGroup = [];
 
         foreach ($registrations as $reg) {
@@ -205,25 +204,17 @@ class BuildGroupEvolutionCommand extends Command
         // not crm_payment_snapshots (2-month rolling window). Finished groups ended
         // months ago, so their last-month payments are only in the allocations table.
         //
-        // crm_payment_allocations.class_id = API CLASS_ID = crm_classes.class_id column.
-        // The bucket key everywhere else is raw_data.ID ($rawId), so we translate the
-        // CLASS_ID back to $rawId via $rawIdByClassId before storing.
+        // IMPORTANT: keyed by CLASS_ID (not $rawId) so it matches the finished-group
+        // drill popup exactly — both count distinct students who paid the class's
+        // END_DATE month in THAT specific class. Keying by $rawId could merge two
+        // CLASS_IDs that map to the same level-session and inflate the count.
         //
-        // END month is keyed by $rawId in $classEndMonths; build a CLASS_ID → END-month
-        // map so we can match allocations directly.
+        // END month is keyed by $rawId in $classEndMonths; build a CLASS_ID → END-month map.
+        $terminesByClassId = [];        // [CLASS_ID => [student_id => true]]
         $endMonthByClassId = [];        // [CLASS_ID => 'YYYY-MM']
         foreach ($rawIdByClassId as $classIdCol => $rawId) {
             if (!empty($classEndMonths[$rawId])) {
                 $endMonthByClassId[$classIdCol] = $classEndMonths[$rawId];
-            }
-        }
-
-        // Cancelled (student, class) pairs are départs, not finishers — exclude them.
-        // $quittantsByGroup is keyed by $rawId; flatten to a (rawId.sid) lookup.
-        $isCancelled = [];
-        foreach ($quittantsByGroup as $rawIdKey => $students) {
-            foreach ($students as $sidKey => $_) {
-                $isCancelled["{$rawIdKey}.{$sidKey}"] = true;
             }
         }
 
@@ -235,22 +226,14 @@ class BuildGroupEvolutionCommand extends Command
                 ->select('student_id', 'class_id', 'allocation_month')
                 ->distinct()
                 ->orderBy('class_id')
-                ->chunk(2000, function ($rows) use ($endMonthByClassId, $rawIdByClassId, $isCancelled, &$terminesByGroup) {
+                ->chunk(2000, function ($rows) use ($endMonthByClassId, &$terminesByClassId) {
                     foreach ($rows as $r) {
                         $classIdCol = (int) $r->class_id;
                         $endYm      = $endMonthByClassId[$classIdCol] ?? null;
                         if (!$endYm || $r->allocation_month !== $endYm) {
                             continue;
                         }
-                        $rawId = $rawIdByClassId[$classIdCol] ?? null;
-                        if ($rawId === null) {
-                            continue;
-                        }
-                        $sid = (int) $r->student_id;
-                        if (!empty($isCancelled["{$rawId}.{$sid}"])) {
-                            continue; // cancelled → départ, not a finisher
-                        }
-                        $terminesByGroup[$rawId][$sid] = true;
+                        $terminesByClassId[$classIdCol][(int) $r->student_id] = true;
                     }
                 });
         }
@@ -267,7 +250,7 @@ class BuildGroupEvolutionCommand extends Command
             $debuts = count($debutsByGroup[$rawId] ?? []);
             $ajouts = count($ajoutsByGroup[$rawId] ?? []);
             $quittants = count($quittantsByGroup[$rawId] ?? []);
-            $termines = count($terminesByGroup[$rawId] ?? []);
+            $termines = count($terminesByClassId[$cid] ?? []); // keyed by CLASS_ID, matches popup
             $changements = count($changementsByGroup[$rawId] ?? []);
 
             // Parse ISO datetime from API (e.g. "2026-04-23T23:00:00.000Z") → plain date
