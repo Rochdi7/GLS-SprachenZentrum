@@ -8,7 +8,7 @@
                 <th>Centre</th>
                 <th>Niveau</th>
                 <th>Période niveau</th>
-                <th>Unités 45 min</th>
+                <th>Unités min</th>
                 <th>N° attestation</th>
                 <th>Actions</th>
             </tr>
