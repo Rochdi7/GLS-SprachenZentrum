@@ -285,10 +285,6 @@
         </div>
     </div>
 </div>
-
-{{-- ── LIFECYCLE PANEL (stepper, transitions, payment, audit) — moved to bottom ── --}}
-@include('backoffice.payroll.crm.imports.partials._lifecycle', ['import' => $import, 'group' => $group])
-
 @endsection
 
 @section('scripts')
