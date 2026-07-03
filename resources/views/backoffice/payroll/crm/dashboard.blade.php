@@ -177,7 +177,7 @@
     @endif
 
     {{-- ── Calendrier des paiements ─────────────────────────────────────── --}}
-    <div class="card border-0 shadow-sm mb-4">
+    {{-- <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-transparent d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h6 class="mb-0"><i class="ph-duotone ph-calendar-blank text-primary me-2"></i>Historique des paiements — Calendrier</h6>
             <div class="d-flex align-items-center gap-2">
@@ -205,7 +205,7 @@
                 <span><span class="dot" style="background:#2b2f38"></span> Verrouillé</span>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     {{-- ── Groupes ──────────────────────────────────────────────────────── --}}
     <div class="card border-0 shadow-sm">
