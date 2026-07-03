@@ -12,6 +12,7 @@ class PresencePaymentSummary extends Model
 {
     protected $fillable = [
         'presence_import_id',
+        'payment_mode',
         'base_price',
         'count_full',
         'count_three_quarter',
@@ -25,6 +26,13 @@ class PresencePaymentSummary extends Model
         'total_payment',
         'approved_by',
         'approved_at',
+        // Period mode
+        'period_unit_amount',
+        'count_tier_full',
+        'count_tier_partial',
+        'count_tier_zero',
+        // Hourly mode
+        'hourly_final_total',
     ];
 
     protected $casts = [
@@ -32,6 +40,8 @@ class PresencePaymentSummary extends Model
         'weekly_unit_amount' => 'decimal:2',
         'total_payment' => 'decimal:2',
         'approved_at' => 'datetime',
+        'period_unit_amount' => 'decimal:2',
+        'hourly_final_total' => 'decimal:2',
     ];
 
     public function presenceImport()

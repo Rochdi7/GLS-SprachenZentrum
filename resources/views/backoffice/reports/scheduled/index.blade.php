@@ -10,7 +10,7 @@
         <div>
             <h4 class="mb-0 fw-bold">Rapports automatiques</h4>
             <p class="text-muted small mb-0">
-                Envoi automatique chaque vendredi à minuit ({{ $timezone }})
+                Envoi automatique — hebdomadaire chaque vendredi, mensuel le 1er du mois ({{ $timezone }})
                 @if($autoSendEnabled)
                     <span class="badge bg-success ms-1">Actif</span>
                 @else
@@ -129,20 +129,27 @@
             </div>
         </div>
 
-        {{-- ─── Monthly Revenue Report ──────────────────────────────────── --}}
+        {{-- ─── Monthly Reports ────────────────────────────────────────── --}}
         <div class="col-12 col-lg-5">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-bottom">
                     <h5 class="mb-0 fw-semibold">
                         <i class="bi bi-calendar-month me-2 text-warning"></i>
-                        Rapport mensuel — Revenus
+                        Rapports mensuels
                     </h5>
-                    <small class="text-muted">Génération manuelle uniquement. Un seul mois à la fois.</small>
+                    <small class="text-muted">Envoi automatique le 1er du mois, ou génération manuelle. Un seul mois à la fois.</small>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('backoffice.reports.scheduled.send-monthly') }}">
                         @csrf
                         <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Type de rapport</label>
+                                <select name="type" class="form-select" required>
+                                    <option value="monthly-revenue">Revenus</option>
+                                    <option value="monthly-prof-payment">Paiements professeurs</option>
+                                </select>
+                            </div>
                             <div class="col-6">
                                 <label class="form-label fw-semibold">Mois</label>
                                 <select name="month" class="form-select" required>
@@ -222,8 +229,13 @@
                             </tr>
                             <tr>
                                 <td>Revenus mensuel</td>
-                                <td><span class="badge bg-warning text-dark">Manuel</span></td>
-                                <td>—</td>
+                                <td><span class="badge bg-warning text-dark">Mensuel</span></td>
+                                <td>1er du mois 00:00</td>
+                            </tr>
+                            <tr>
+                                <td>Paiements professeurs (mensuel)</td>
+                                <td><span class="badge bg-warning text-dark">Mensuel</span></td>
+                                <td>1er du mois 00:00</td>
                             </tr>
                         </tbody>
                     </table>

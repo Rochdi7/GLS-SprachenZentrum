@@ -1,0 +1,1534 @@
+/* ==========================================================================
+   GLS Landing Page — TikTok Ads
+   Same structure as lp-meta.css. Only the color palette differs.
+   Scoped under `.lp-tiktok-scope`. Palette: TikTok black / cyan / red.
+   ========================================================================== */
+
+.lp-tiktok-scope {
+    --m-primary: #010101;         /* TikTok black */
+    --m-primary-dark: #000000;    /* pure black for hover */
+    --m-red: #fe2c55;             /* TikTok red — required asterisks / accents */
+    --m-accent: #25f4ee;          /* TikTok cyan accent */
+    --m-green: #16a34a;           /* trust ticks only */
+    --m-grad: linear-gradient(135deg, #25f4ee 0%, #010101 45%, #fe2c55 100%);
+    --m-grad-soft: linear-gradient(180deg, #eafeff 0%, #ffffff 55%, #ffeef2 100%);
+    --ink: #010101;
+    --ink-soft: #4b5563;
+    --line: #e5e7eb;
+    --card: #ffffff;
+    --radius: 22px;
+    --shadow-lg: 0 30px 60px -25px rgba(1, 1, 1, 0.24);
+    --shadow-sm: 0 4px 16px -6px rgba(1, 1, 1, 0.12);
+    background: #ffffff;
+    min-height: 100vh;
+    padding: clamp(40px, 6vw, 90px) 0 0;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Now', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.lp-tiktok-scope h1,
+.lp-tiktok-scope h2,
+.lp-tiktok-scope h3,
+.lp-tiktok-scope h4,
+.lp-tiktok-scope p,
+.lp-tiktok-scope span,
+.lp-tiktok-scope a,
+.lp-tiktok-scope b,
+.lp-tiktok-scope strong,
+.lp-tiktok-scope label,
+.lp-tiktok-scope button,
+.lp-tiktok-scope input,
+.lp-tiktok-scope select {
+    font-family: inherit;
+}
+
+.lp-tiktok-scope::before,
+.lp-tiktok-scope::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.lp-tiktok-scope::before {
+    top: -120px;
+    left: -120px;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, var(--m-primary), transparent 60%);
+    opacity: 0.10;
+}
+
+.lp-tiktok-scope::after {
+    top: 30%;
+    right: -160px;
+    width: 360px;
+    height: 360px;
+    background: radial-gradient(circle, var(--m-accent), transparent 60%);
+    opacity: 0.10;
+}
+
+.lp-tiktok-scope .lp-container {
+    position: relative;
+    z-index: 1;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ============== HERO (text left, video right) ============== */
+.lp-tiktok-scope .lp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: 48px;
+    align-items: start;
+}
+
+@media (max-width: 960px) {
+    .lp-tiktok-scope .lp-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+}
+
+.lp-tiktok-scope .lp-hero {
+    color: var(--ink);
+    padding-top: 12px;
+}
+
+.lp-tiktok-scope .lp-source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--m-primary-dark);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 24px;
+}
+
+.lp-tiktok-scope .lp-source-badge svg {
+    width: 16px;
+    height: 16px;
+}
+
+.lp-tiktok-scope .lp-title {
+    font-size: clamp(34px, 4.6vw, 56px);
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 18px;
+}
+
+.lp-tiktok-scope .lp-title .accent {
+    background: var(--m-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.lp-tiktok-scope .lp-subtitle {
+    font-size: clamp(16px, 1.5vw, 19px);
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0 0 28px;
+    max-width: 520px;
+}
+
+.lp-tiktok-scope .lp-features {
+    display: grid;
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.lp-tiktok-scope .lp-feature {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    padding: 14px 16px;
+    border-radius: 16px;
+}
+
+.lp-tiktok-scope .lp-feature-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: var(--m-grad);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 8px 20px -8px rgba(126, 34, 206, 0.55);
+}
+
+.lp-tiktok-scope .lp-feature-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.lp-tiktok-scope .lp-feature-text strong {
+    display: block;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 15px;
+    margin-bottom: 2px;
+}
+
+.lp-tiktok-scope .lp-feature-text span {
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    line-height: 1.45;
+}
+
+.lp-tiktok-scope .lp-proof {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.lp-tiktok-scope .lp-stars {
+    display: flex;
+    gap: 2px;
+    color: #fbbf24;
+}
+
+.lp-tiktok-scope .lp-stars svg {
+    width: 18px;
+    height: 18px;
+}
+
+.lp-tiktok-scope .lp-proof-text {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+}
+
+.lp-tiktok-scope .lp-proof-text b {
+    color: var(--ink);
+}
+
+/* ============== FEATURED VIDEO (right column of hero) ============== */
+.lp-tiktok-scope .lp-video-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    position: relative;
+    max-width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+.lp-tiktok-scope .lp-video-card-top {
+    background: var(--m-grad);
+    padding: 22px 28px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.lp-tiktok-scope .lp-video-card-top h2 {
+    margin: 0 0 4px;
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 1.2;
+}
+
+.lp-tiktok-scope .lp-video-card-top p {
+    margin: 0;
+    opacity: 0.95;
+    font-size: 13px;
+}
+
+.lp-tiktok-scope .lp-video-card-top .lp-live-dot {
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.lp-tiktok-scope .lp-video-card-top .lp-live-dot::before {
+    content: "▶";
+    font-size: 9px;
+    color: #fff;
+    line-height: 1;
+}
+
+@keyframes lpPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(0.85); }
+}
+
+.lp-tiktok-scope .lp-video-frame {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    background: #000;
+}
+
+.lp-tiktok-scope .lp-video-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.lp-tiktok-scope .lp-video-foot {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--line);
+}
+
+.lp-tiktok-scope .lp-video-foot-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--m-grad);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.lp-tiktok-scope .lp-video-foot-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.lp-tiktok-scope .lp-video-foot-text {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+}
+
+.lp-tiktok-scope .lp-video-foot-text b {
+    color: var(--ink);
+    display: block;
+}
+
+/* ============== HOW IT WORKS (3 STEP CARDS) ============== */
+.lp-tiktok-scope .lp-how {
+    margin-top: 70px;
+    position: relative;
+    z-index: 1;
+}
+
+.lp-tiktok-scope .lp-section-head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 36px;
+}
+
+.lp-tiktok-scope .lp-section-eyebrow {
+    display: inline-block;
+    background: var(--m-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+}
+
+.lp-tiktok-scope .lp-section-title-big {
+    font-size: clamp(26px, 3.2vw, 36px);
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 0 0 10px;
+}
+
+.lp-tiktok-scope .lp-section-subtitle {
+    color: var(--ink-soft);
+    font-size: 15.5px;
+    line-height: 1.55;
+    margin: 0;
+}
+
+.lp-tiktok-scope .lp-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    position: relative;
+}
+
+@media (max-width: 820px) {
+    .lp-tiktok-scope .lp-steps {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+.lp-tiktok-scope .lp-step {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.lp-tiktok-scope .lp-step:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.lp-tiktok-scope .lp-step-num-big {
+    position: absolute;
+    top: -14px;
+    right: 22px;
+    font-size: 56px;
+    font-weight: 900;
+    line-height: 1;
+    background: var(--m-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0.15;
+}
+
+.lp-tiktok-scope .lp-step-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--m-grad);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    box-shadow: 0 10px 24px -10px rgba(126, 34, 206, 0.55);
+}
+
+.lp-tiktok-scope .lp-step-icon svg {
+    width: 26px;
+    height: 26px;
+}
+
+.lp-tiktok-scope .lp-step h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 8px;
+}
+
+.lp-tiktok-scope .lp-step p {
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.55;
+    margin: 0;
+}
+
+/* ============== VIDEO GALLERY ============== */
+.lp-tiktok-scope .lp-gallery {
+    margin-top: 70px;
+}
+
+.lp-tiktok-scope .lp-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+    .lp-tiktok-scope .lp-gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 560px;
+    }
+}
+
+/* MOBILE CAROUSEL — at <=900px, gallery becomes horizontally scrollable */
+@media (max-width: 900px) {
+    .lp-tiktok-scope .lp-gallery-scroller {
+        margin-left: -20px;
+        margin-right: -20px;
+        padding: 4px 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    .lp-tiktok-scope .lp-gallery-scroller::-webkit-scrollbar { display: none; }
+
+    .lp-tiktok-scope .lp-gallery-grid {
+        display: flex;
+        grid-template-columns: none;
+        gap: 14px;
+        padding: 0 20px;
+        width: max-content;
+        max-width: none;
+        margin: 0;
+    }
+
+    .lp-tiktok-scope .lp-gallery-item {
+        flex: 0 0 62vw;
+        max-width: 260px;
+        scroll-snap-align: center;
+    }
+}
+
+.lp-tiktok-scope .lp-gallery-item {
+    background: var(--card);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.lp-tiktok-scope .lp-gallery-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.lp-tiktok-scope .lp-gallery-video {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    background: #000;
+}
+
+
+.lp-tiktok-scope .lp-gallery-video iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.lp-tiktok-scope .lp-gallery-meta {
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lp-tiktok-scope .lp-gallery-meta-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.lp-tiktok-scope .lp-gallery-meta-dot.blue { background: var(--m-primary); }
+.lp-tiktok-scope .lp-gallery-meta-dot.green { background: var(--m-green); }
+.lp-tiktok-scope .lp-gallery-meta-dot.yellow { background: var(--m-accent); }
+.lp-tiktok-scope .lp-gallery-meta-dot.red { background: var(--m-red); }
+.lp-tiktok-scope .lp-gallery-meta-dot.purple { background: #9767f8; }
+
+.lp-tiktok-scope .lp-gallery-meta b {
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.lp-tiktok-scope .lp-gallery-meta span {
+    color: var(--ink-soft);
+    font-size: 12.5px;
+}
+
+/* ============== FORM SECTION (full width, below the gallery) ============== */
+.lp-tiktok-scope .lp-form-section {
+    margin-top: 70px;
+}
+
+.lp-tiktok-scope .lp-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    position: relative;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.lp-tiktok-scope .lp-card-top {
+    background: var(--m-grad);
+    padding: 26px 32px;
+    color: white;
+    text-align: center;
+}
+
+.lp-tiktok-scope .lp-card-top h2 {
+    margin: 0 0 6px;
+    font-weight: 700;
+    font-size: 22px;
+    color: #ffffff;
+}
+
+.lp-tiktok-scope .lp-card-top p {
+    margin: 0;
+    opacity: 0.95;
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.lp-tiktok-scope .lp-form {
+    padding: 32px;
+}
+
+.lp-tiktok-scope .lp-section-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--m-primary-dark);
+    font-weight: 700;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.lp-tiktok-scope .lp-section-title::before {
+    content: "";
+    width: 24px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--m-grad);
+}
+
+.lp-tiktok-scope .lp-section + .lp-section {
+    margin-top: 26px;
+    padding-top: 22px;
+    border-top: 1px dashed var(--line);
+}
+
+.lp-tiktok-scope .lp-field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+@media (max-width: 540px) {
+    .lp-tiktok-scope .lp-field-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .lp-tiktok-scope .lp-form {
+        padding: 24px 18px;
+    }
+
+    .lp-tiktok-scope .lp-section + .lp-section {
+        margin-top: 22px;
+        padding-top: 22px;
+    }
+
+    .lp-tiktok-scope .lp-checkbox {
+        margin-top: 18px;
+        padding-top: 14px;
+        border-top: 1px dashed var(--line);
+    }
+}
+
+.lp-tiktok-scope .lp-field {
+    margin-bottom: 14px;
+}
+
+.lp-tiktok-scope .lp-field:last-child {
+    margin-bottom: 0;
+}
+
+.lp-tiktok-scope .lp-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+}
+
+.lp-tiktok-scope .lp-field .required {
+    color: var(--m-red);
+}
+
+.lp-tiktok-scope .lp-field input,
+.lp-tiktok-scope .lp-field select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    font-size: 14.5px;
+    background: #fbf8ff;
+    color: var(--ink);
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    font-family: inherit;
+}
+
+.lp-tiktok-scope .lp-field input:focus,
+.lp-tiktok-scope .lp-field select:focus {
+    outline: none;
+    border-color: var(--m-primary-dark);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(126, 34, 206, 0.18);
+}
+
+.lp-tiktok-scope .lp-field input::placeholder {
+    color: #94a3b8;
+}
+
+.lp-tiktok-scope .lp-checkbox {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.lp-tiktok-scope .lp-checkbox input {
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    accent-color: var(--m-primary-dark);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.lp-tiktok-scope .lp-checkbox a {
+    color: var(--m-primary-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.lp-tiktok-scope .lp-submit {
+    margin-top: 22px;
+    width: 100%;
+    padding: 13px 28px;
+    background: var(--m-grad);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 15.5px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 18px 36px -14px rgba(126, 34, 206, 0.6);
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.lp-tiktok-scope .lp-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 44px -14px rgba(126, 34, 206, 0.65);
+    filter: brightness(1.04);
+}
+
+.lp-tiktok-scope .lp-submit:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.lp-tiktok-scope .lp-submit svg {
+    width: 18px;
+    height: 18px;
+}
+
+.lp-tiktok-scope .lp-error {
+    display: none;
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    padding: 12px 14px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.lp-tiktok-scope .lp-error.active {
+    display: block;
+    animation: lpShake 0.32s ease;
+}
+
+@keyframes lpShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+}
+
+.lp-tiktok-scope .lp-success {
+    display: none;
+    text-align: center;
+    padding: 40px 28px;
+}
+
+.lp-tiktok-scope .lp-success-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: var(--m-grad);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lp-tiktok-scope .lp-success-icon svg {
+    width: 38px;
+    height: 38px;
+}
+
+.lp-tiktok-scope .lp-success h3 {
+    font-size: 22px;
+    margin: 0 0 8px;
+    color: var(--ink);
+}
+
+.lp-tiktok-scope .lp-success p {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+}
+
+.lp-tiktok-scope .lp-trust {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 20px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    flex-wrap: wrap;
+}
+
+.lp-tiktok-scope .lp-trust span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.lp-tiktok-scope .lp-trust svg {
+    width: 14px;
+    height: 14px;
+    color: var(--m-green);
+}
+
+/* ==========================================================================
+   CITIES MARQUEE  (auto-scrolling, continuous loop)
+   ========================================================================== */
+.lp-tiktok-scope .lp-cities-marquee {
+    margin-top: clamp(56px, 7vw, 90px);
+    position: relative;
+    overflow: hidden;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding: 8px 0 12px;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 80px, #000 calc(100% - 80px), transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 80px, #000 calc(100% - 80px), transparent 100%);
+}
+
+.lp-tiktok-scope .lp-cities-track {
+    display: flex;
+    gap: 22px;
+    width: max-content;
+    animation: lpMarqueeScroll 40s linear infinite;
+    will-change: transform;
+}
+
+.lp-tiktok-scope .lp-cities-marquee:hover .lp-cities-track {
+    animation-play-state: paused;
+}
+
+@keyframes lpMarqueeScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+.lp-tiktok-scope .lp-city-card {
+    position: relative;
+    flex: 0 0 auto;
+    width: clamp(260px, 32vw, 380px);
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    box-shadow: var(--shadow-lg);
+    background: #111;
+    -webkit-user-drag: none;
+}
+
+.lp-tiktok-scope .lp-city-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+    transition: transform .6s ease;
+}
+.lp-tiktok-scope .lp-city-card:hover img { transform: scale(1.06); }
+
+.lp-tiktok-scope .lp-city-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: 20px 24px;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.6) 100%);
+}
+.lp-tiktok-scope .lp-city-overlay h3 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(18px, 1.9vw, 24px);
+    font-weight: 800;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 12px rgba(0,0,0,.55);
+}
+
+/* ==========================================================================
+   FULL-WIDTH MAP at the bottom
+   ========================================================================== */
+.lp-tiktok-scope .lp-map-section {
+    margin-top: clamp(56px, 7vw, 90px);
+}
+
+.lp-tiktok-scope .lp-map-wrap {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: #fafafa;
+    box-shadow: var(--shadow-lg);
+    height: clamp(360px, 55vw, 560px);
+    margin-top: clamp(24px, 3vw, 36px);
+}
+.lp-tiktok-scope #lpCentresMap {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.lp-tiktok-scope .lp-map-legend {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    z-index: 401;
+    list-style: none;
+    margin: 0;
+    padding: 12px 14px;
+    background: rgba(255,255,255,.96);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+}
+.lp-tiktok-scope .lp-map-legend li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color .2s ease;
+}
+.lp-tiktok-scope .lp-map-legend li:hover { color: var(--m-primary); }
+.lp-tiktok-scope .lp-map-legend .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.lp-tiktok-scope .gls-pin-icon { background: none !important; border: none !important; }
+.lp-tiktok-scope .gls-pin-wrap {
+    position: relative;
+    display: inline-block;
+    transform: translate(-50%, -100%);
+}
+.lp-tiktok-scope .gls-pin {
+    width: 22px;
+    height: 22px;
+    border-radius: 50% 50% 50% 0;
+    background: var(--pin-color, var(--m-primary));
+    transform: rotate(-45deg);
+    box-shadow: 0 4px 10px rgba(0,0,0,.25);
+    border: 2px solid #fff;
+}
+
+@media (max-width: 640px) {
+    .lp-tiktok-scope .lp-cities-track { animation-duration: 28s; }
+    .lp-tiktok-scope .lp-city-card { width: 72vw; aspect-ratio: 5 / 4; }
+    .lp-tiktok-scope .lp-map-legend {
+        font-size: 12px;
+        padding: 10px 12px;
+        left: 10px;
+        bottom: 10px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .lp-tiktok-scope .lp-cities-track { animation: none; }
+}
+
+/* ==========================================================================
+   OUR GLS CENTRES — auto-scrolling horizontal carousel
+   ========================================================================== */
+.lp-tiktok-scope .lp-sites {
+    margin-top: clamp(56px, 7vw, 90px);
+    position: relative;
+    z-index: 1;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 80px, #000 calc(100% - 80px), transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 80px, #000 calc(100% - 80px), transparent 100%);
+}
+
+.lp-tiktok-scope .lp-sites .lp-section-head {
+    padding: 0 20px;
+    -webkit-mask-image: none;
+            mask-image: none;
+}
+
+.lp-tiktok-scope .lp-sites-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 22px;
+    width: max-content;
+    padding: 8px 20px 12px;
+    animation: lpMetaSitesAutoScroll 38s linear infinite alternate;
+    will-change: transform;
+}
+
+.lp-tiktok-scope .lp-sites-grid:hover { animation-play-state: paused; }
+
+@keyframes lpMetaSitesAutoScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(calc(-100% + 100vw - 40px)); }
+}
+
+.lp-tiktok-scope .lp-site-card {
+    position: relative;
+    flex: 0 0 auto;
+    display: block;
+    width: clamp(240px, 28vw, 340px);
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    background: transparent;
+    box-shadow: var(--shadow-lg);
+    isolation: isolate;
+    -webkit-user-drag: none;
+}
+
+.lp-tiktok-scope .lp-site-card.wide {
+    width: clamp(340px, 40vw, 480px);
+    aspect-ratio: 16 / 10;
+}
+
+.lp-tiktok-scope .lp-site-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+}
+
+.lp-tiktok-scope .lp-site-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: 18px 22px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, .65) 100%);
+}
+
+.lp-tiktok-scope .lp-site-overlay h3 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(16px, 1.6vw, 22px);
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .55);
+}
+
+@media (max-width: 640px) {
+    .lp-tiktok-scope .lp-sites-grid { animation-duration: 26s; }
+    .lp-tiktok-scope .lp-site-card { width: 72vw; aspect-ratio: 5 / 4; }
+    .lp-tiktok-scope .lp-site-card.wide { width: 84vw; aspect-ratio: 16 / 10; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lp-tiktok-scope .lp-sites-grid {
+        animation: none;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+    }
+    .lp-tiktok-scope .lp-site-card { scroll-snap-align: center; }
+}
+
+/* ==========================================================================
+   CONTACT + INTERACTIVE MAP (left dark card + right map)
+   ========================================================================== */
+.lp-tiktok-scope .lp-contact {
+    margin-top: clamp(56px, 7vw, 90px);
+    padding-bottom: clamp(40px, 6vw, 80px);
+    position: relative;
+    z-index: 1;
+}
+
+.lp-tiktok-scope .lp-contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: 22px;
+    align-items: stretch;
+}
+
+@media (max-width: 900px) {
+    .lp-tiktok-scope .lp-contact-grid { grid-template-columns: 1fr; }
+}
+
+.lp-tiktok-scope .lp-contact-card {
+    background: var(--m-primary);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: clamp(20px, 2.4vw, 32px);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: relative;
+    overflow: hidden;
+}
+
+.lp-tiktok-scope .lp-contact-card::after {
+    content: "";
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--m-accent), transparent 65%);
+    opacity: .35;
+    pointer-events: none;
+}
+
+.lp-tiktok-scope .lp-contact-title {
+    font-size: clamp(22px, 2.4vw, 28px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: #fff;
+    position: relative;
+}
+
+.lp-tiktok-scope .lp-contact-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 24px;
+    align-items: start;
+}
+
+@media (max-width: 560px) {
+    .lp-tiktok-scope .lp-contact-links {
+        grid-template-columns: 1fr;
+    }
+}
+
+.lp-tiktok-scope .lp-contact-link {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: #fff;
+    text-decoration: none;
+    padding: 4px 0;
+    transition: color .2s ease, transform .2s ease;
+}
+
+.lp-tiktok-scope .lp-contact-link:hover {
+    color: #c9c4c0;
+    transform: translateX(2px);
+}
+
+.lp-tiktok-scope .lp-contact-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #d3d3d3;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.lp-tiktok-scope .lp-contact-value {
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.45;
+    color: #fff;
+}
+
+.lp-tiktok-scope .lp-contact-link--phones {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px;
+    padding: 4px 0;
+    width: 100%;
+}
+
+.lp-tiktok-scope .lp-contact-link--phones > * {
+    display: block;
+    width: 100%;
+}
+
+.lp-tiktok-scope .lp-contact-link--phones a.lp-contact-value {
+    text-decoration: none;
+    color: #fff;
+    transition: color .2s ease, transform .2s ease;
+}
+
+.lp-tiktok-scope .lp-contact-link--phones a.lp-contact-value:hover {
+    color: #c9c4c0;
+    transform: translateX(2px);
+}
+
+.lp-tiktok-scope .lp-contact-visit {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lp-tiktok-scope .lp-contact-addresses {
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: #fff;
+}
+
+/* Centers accordion → click to expand, address links to Google Maps */
+.lp-tiktok-scope .gls-address-list {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.lp-tiktok-scope .gls-address-row + .gls-address-row {
+    border-top: 1px solid rgba(255, 255, 255, .12);
+}
+
+.lp-tiktok-scope .gls-address-details { width: 100%; }
+
+.lp-tiktok-scope .gls-address-summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #fff;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.lp-tiktok-scope .gls-address-summary::-webkit-details-marker { display: none; }
+.lp-tiktok-scope .gls-address-summary::marker { content: ''; }
+
+.lp-tiktok-scope .gls-address-city {
+    flex: 1;
+    line-height: 1.4;
+    color: #fff;
+}
+
+.lp-tiktok-scope .gls-address-branch {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, .7);
+    background: rgba(255, 255, 255, .08);
+    border-radius: 999px;
+    vertical-align: middle;
+}
+
+.lp-tiktok-scope .gls-address-chevron {
+    flex-shrink: 0;
+    transition: transform .25s ease;
+    opacity: .6;
+}
+
+.lp-tiktok-scope .gls-address-details[open] > .gls-address-summary .gls-address-chevron {
+    transform: rotate(180deg);
+    opacity: 1;
+}
+
+.lp-tiktok-scope .gls-address-body {
+    padding: 0 0 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: lpMetaAddressSlide .25s ease-out;
+}
+
+@keyframes lpMetaAddressSlide {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.lp-tiktok-scope .lp-address-link {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+        "label arrow"
+        "text arrow";
+    column-gap: 10px;
+    row-gap: 2px;
+    padding: 10px 12px;
+    text-decoration: none;
+    color: rgba(255, 255, 255, .85);
+    background: rgba(255, 255, 255, .04);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, .06);
+    transition: background .2s ease, border-color .2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.lp-tiktok-scope .gls-address-branch-label {
+    grid-area: label;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, .55);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.lp-tiktok-scope .lp-address-link .gls-address-text {
+    grid-area: text;
+    font-size: 0.92rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, .82);
+}
+
+.lp-tiktok-scope .lp-address-link .gls-address-arrow {
+    grid-area: arrow;
+    align-self: center;
+    color: rgba(255, 255, 255, .55);
+    opacity: .7;
+    transition: opacity .2s ease, transform .2s ease, color .2s ease;
+}
+
+.lp-tiktok-scope .lp-address-link:hover {
+    background: rgba(255, 255, 255, .07);
+    border-color: rgba(255, 255, 255, .12);
+}
+
+.lp-tiktok-scope .lp-address-link:hover .gls-address-arrow {
+    opacity: 1;
+    color: #fff;
+    transform: translate(1px, -1px);
+}
+
+.lp-tiktok-scope .lp-address-link:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, .35);
+    outline-offset: 2px;
+}
+
+[dir="rtl"] .lp-tiktok-scope .gls-address-arrow { transform: scaleX(-1); }
+[dir="rtl"] .lp-tiktok-scope .lp-address-link:hover .gls-address-arrow { transform: translate(-1px, -1px) scaleX(-1); }
+
+.lp-tiktok-scope .lp-contact-social {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.lp-tiktok-scope .lp-contact-social-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.lp-tiktok-scope .lp-social-link {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+    font-size: 16px;
+    text-decoration: none;
+    transition: background .2s ease, transform .2s ease, color .2s ease;
+}
+
+.lp-tiktok-scope .lp-social-link:hover {
+    background: var(--m-grad);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.lp-tiktok-scope .lp-contact.rtl { direction: rtl; }
+.lp-tiktok-scope .lp-contact.rtl .lp-contact-link:hover { transform: translateX(-2px); }
+
+.lp-tiktok-scope .lp-contact-map {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: #f8f8f8;
+    box-shadow: var(--shadow-lg);
+    /* Match the contact card's height — both grid children stretch */
+    height: 100%;
+    min-height: 380px;
+}
+
+@media (max-width: 900px) {
+    .lp-tiktok-scope .lp-contact-map {
+        height: auto;
+        aspect-ratio: 4 / 3;
+        min-height: 360px;
+        max-height: 460px;
+    }
+}
+
+@media (max-width: 560px) {
+    .lp-tiktok-scope .lp-contact-map {
+        aspect-ratio: 5 / 6;
+        min-height: 420px;
+        max-height: 520px;
+    }
+}
+
+.lp-tiktok-scope .lp-contact-map #glsCentresMap {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.lp-tiktok-scope .lp-contact-map-legend {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    z-index: 401;
+    list-style: none;
+    margin: 0;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, .96);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.lp-tiktok-scope .lp-contact-map-legend li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color .2s ease;
+}
+
+.lp-tiktok-scope .lp-contact-map-legend li:hover { color: var(--m-primary); }
+
+.lp-tiktok-scope .lp-contact-map-legend .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+@media (max-width: 900px) {
+    .lp-tiktok-scope .lp-contact-grid { gap: 14px; }
+    .lp-tiktok-scope .lp-contact { padding-bottom: 24px; }
+}
+
+@media (max-width: 640px) {
+    .lp-tiktok-scope .lp-contact-map-legend {
+        font-size: 11.5px;
+        padding: 8px 10px;
+        gap: 2px 12px;
+        left: 8px;
+        bottom: 8px;
+        max-width: calc(100% - 16px);
+    }
+    .lp-tiktok-scope .lp-contact-map-legend .dot {
+        width: 8px;
+        height: 8px;
+    }
+    .lp-tiktok-scope .lp-contact-grid { gap: 12px; }
+    .lp-tiktok-scope .lp-contact { padding-bottom: 16px; }
+    .lp-tiktok-scope { padding-bottom: 0; }
+}
+
+/* Leaflet pin styling (shared from home page) */
+.lp-tiktok-scope .gls-pin-icon { background: none !important; border: none !important; }
+.lp-tiktok-scope .gls-pin-wrap {
+    position: relative;
+    display: inline-block;
+    transform: translate(-50%, -100%);
+}
+.lp-tiktok-scope .gls-pin {
+    width: 22px;
+    height: 22px;
+    border-radius: 50% 50% 50% 0;
+    background: var(--pin-color, var(--m-primary));
+    transform: rotate(-45deg);
+    box-shadow: 0 4px 10px rgba(0,0,0,.25);
+    border: 2px solid #fff;
+}

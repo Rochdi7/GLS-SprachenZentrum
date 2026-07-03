@@ -82,6 +82,13 @@
                 'modules' => ['crm', 'crm_prof_payment'],
                 'viewOnly' => true,
             ],
+            [
+                'label' => 'Compte du partenaire tiers',
+                'icon'  => 'ph-duotone ph-fingerprint',
+                'color' => 'info',
+                'modules' => ['hikvision'],
+                'viewOnly' => true,
+            ],
         ];
 
         $moduleLabels = [
@@ -109,6 +116,7 @@
             'schedules'              => 'Planning',
             'crm'                    => 'CRM — Accès général',
             'crm_prof_payment'       => 'Paiement Professeurs',
+            'hikvision'              => 'Hikvision',
         ];
 
         $actions      = ['view', 'create', 'edit', 'delete'];

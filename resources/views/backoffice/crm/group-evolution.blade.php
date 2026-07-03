@@ -169,7 +169,6 @@
                                         <th class="text-center" style="color:#6f42c1;">Début</th>
                                         <th class="text-center text-success">Ajouts</th>
                                         <th class="text-center text-danger">Quittant</th>
-                                        <th class="text-center" style="color:#0d9488;">Terminé</th>
                                         <th class="text-center" style="color:#fd7e14;">Changement</th>
                                         <th class="text-center text-primary">Actifs</th>
                                     </tr>
@@ -188,7 +187,6 @@
                                             <td class="text-center ge-cell-debut">{{ $g['debuts'] ?? 0 }}</td>
                                             <td class="text-center ge-cell-ajout">{{ $g['ajouts'] }}</td>
                                             <td class="text-center ge-cell-quittant">{{ $g['quittants'] }}</td>
-                                            <td class="text-center ge-cell-termine" style="color:#0d9488;">{{ $g['termines'] ?? 0 }}</td>
                                             <td class="text-center ge-cell-changement">{{ $g['changements'] }}</td>
                                             <td class="text-center ge-cell-actif">{{ $g['actifs'] }}</td>
                                         </tr>
@@ -200,7 +198,6 @@
                                         <td class="text-center ge-cell-debut">{{ $totals['debuts'] ?? 0 }}</td>
                                         <td class="text-center ge-cell-ajout">{{ $totals['ajouts'] }}</td>
                                         <td class="text-center ge-cell-quittant">{{ $totals['quittants'] }}</td>
-                                        <td class="text-center ge-cell-termine" style="color:#0d9488;">{{ $totals['termines'] ?? 0 }}</td>
                                         <td class="text-center ge-cell-changement">{{ $totals['changements'] }}</td>
                                         <td class="text-center ge-cell-actif">{{ $totals['actifs'] }}</td>
                                     </tr>
@@ -244,14 +241,6 @@
                     <div class="small text-danger fw-semibold mt-2">Total des départs définitifs<br>(Quittant)</div>
                     <div class="h2 mb-0 mt-1 text-danger">{{ $totals['quittants'] }}</div>
                     <div class="ge-help">Élèves ayant quitté la formation</div>
-                </div></div>
-            </div>
-            <div class="col-6 col-md-4 col-xl">
-                <div class="card shadow-sm ge-kpi-card h-100"><div class="card-body text-center">
-                    <span class="ge-icon" style="background:#e6f7f4; color:#0d9488;"><i class="ti ti-circle-check"></i></span>
-                    <div class="small fw-semibold mt-2" style="color:#0d9488;">Total des formations terminées<br>(Terminé)</div>
-                    <div class="h2 mb-0 mt-1" style="color:#0d9488;">{{ $totals['termines'] ?? 0 }}</div>
-                    <div class="ge-help">Élèves ayant payé le dernier mois du groupe</div>
                 </div></div>
             </div>
             <div class="col-6 col-md-4 col-xl">
@@ -474,7 +463,6 @@
                         <button type="button" class="btn btn-sm btn-outline-success ge-bucket-tab" data-bucket="ajout" data-status="">Ajouts</button>
                         <button type="button" class="btn btn-sm btn-outline-secondary ge-bucket-tab" data-bucket="unpaid" data-status="">Non payé</button>
                         <button type="button" class="btn btn-sm btn-outline-danger ge-bucket-tab" data-bucket="" data-status="Annulé">Annulé</button>
-                        <button type="button" class="btn btn-sm ge-bucket-tab" data-bucket="" data-status="" data-finished="1" style="color:#0d9488;border:1px solid #0d9488;background:transparent;">Terminé</button>
                         <button type="button" class="btn btn-sm ge-bucket-tab" data-bucket="" data-status="Archive" style="color:#fd7e14;border:1px solid #fd7e14;background:transparent;">Archive</button>
                     </div>
                     <div class="table-responsive">
@@ -485,7 +473,6 @@
                                     <th>Nom étudiant</th>
                                     <th>Statut</th>
                                     <th>Bucket</th>
-                                    <th>Terminé</th>
                                     <th>1er paiement</th>
                                     <th>Date inscr.</th>
                                 </tr>
@@ -561,7 +548,6 @@
     let allRows        = [];
     let activeBucket   = '';
     let activeStatus   = '';
-    let activeFinished = false;
 
     document.querySelectorAll('.ge-drill-row').forEach(row => {
         row.addEventListener('click', function () {
@@ -579,7 +565,6 @@
             document.getElementById('geDrillSearch').value = '';
             activeBucket = '';
             activeStatus = '';
-            activeFinished = false;
             document.querySelectorAll('.ge-bucket-tab').forEach(b => b.classList.remove('active', 'btn-primary'));
             const allTab = document.querySelector('.ge-bucket-tab[data-bucket=""][data-status=""]');
             if (allTab) { allTab.classList.add('active', 'btn-primary'); }
@@ -632,7 +617,6 @@
         btn.addEventListener('click', function () {
             activeBucket = this.dataset.bucket;
             activeStatus = this.dataset.status;
-            activeFinished = this.dataset.finished === '1';
             document.querySelectorAll('.ge-bucket-tab').forEach(b => {
                 b.classList.remove('active', 'btn-primary', 'btn-secondary', 'btn-success', 'btn-danger');
             });
@@ -647,11 +631,10 @@
             const matchName     = (r.student_name || '').toLowerCase().includes(q);
             const matchBucket   = !activeBucket || r.payment_bucket === activeBucket;
             const matchStatus   = !activeStatus || r.status === activeStatus;
-            const matchFinished = !activeFinished || r.finished === true;
-            return matchName && matchBucket && matchStatus && matchFinished;
+            return matchName && matchBucket && matchStatus;
         });
         const countEl = document.getElementById('geDrillCount');
-        const label = activeFinished ? 'Terminé' : (activeBucket ? bucketLabel(activeBucket) : (activeStatus || ''));
+        const label = activeBucket ? bucketLabel(activeBucket) : (activeStatus || '');
         countEl.textContent = filtered.length + ' étudiant(s)' + (label ? ' · ' + label : '');
         renderRows(filtered);
     }
@@ -682,7 +665,6 @@
                 <td><strong>${r.student_name}</strong><br><small class="text-muted">#${r.student_id}</small></td>
                 <td><span class="badge ${badge}">${r.status}</span></td>
                 <td>${bucketBadge(r.payment_bucket)}</td>
-                <td>${r.finished ? '<span class="badge" style="background:#0d9488;">Terminé</span>' : '<span class="text-muted small">—</span>'}</td>
                 <td><small class="text-muted">${r.first_paid_month || '—'}</small></td>
                 <td><small>${r.registered_at}</small></td>
             </tr>`;

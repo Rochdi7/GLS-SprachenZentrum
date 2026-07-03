@@ -72,6 +72,25 @@ class Teacher extends Model implements HasMedia
         return $this->hasMany(Group::class);
     }
 
+    /**
+     * The user account (professor login) linked to this teacher, if any.
+     */
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
+
+    /**
+     * All presence/payment imports belonging to this teacher's groups.
+     */
+    public function presenceImports()
+    {
+        return \App\Models\PresenceImport::whereIn(
+            'group_id',
+            $this->groups()->select('id')
+        );
+    }
+
     public function weeklyReports()
     {
         return $this->hasMany(WeeklyReport::class);

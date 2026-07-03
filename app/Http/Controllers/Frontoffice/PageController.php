@@ -204,4 +204,9 @@ class PageController extends Controller
     {
         return view('frontoffice.landing.google');
     }
+
+    public function lpTiktok()
+    {
+        return view('frontoffice.landing.tiktok');
+    }
 }

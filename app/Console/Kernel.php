@@ -136,6 +136,25 @@ class Kernel extends ConsoleKernel
                 ->when(fn () => (bool) config('reports.auto_send_enabled', false))
                 ->appendOutputTo(storage_path("logs/report-{$type}.log"));
         }
+
+        // ── Monthly reports — 1st of each month (Casablanca) ─────────────────
+        // Controlled by REPORTS_AUTO_SEND_ENABLED=true in .env (same flag as weekly)
+        $monthlyDay  = config('reports.monthly_send_day', 1);
+        $monthlyTime = config('reports.monthly_send_time', '00:00');
+
+        $monthlyReports = [
+            'monthly-revenue',
+            'monthly-prof-payment',
+        ];
+
+        foreach ($monthlyReports as $type) {
+            $schedule->command("reports:send {$type}")
+                ->monthlyOn($monthlyDay, $monthlyTime)
+                ->timezone($tz)
+                ->withoutOverlapping()
+                ->when(fn () => (bool) config('reports.auto_send_enabled', false))
+                ->appendOutputTo(storage_path("logs/report-{$type}.log"));
+        }
     }
 
     /**

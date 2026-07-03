@@ -6,6 +6,35 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ URL::asset('build/css/plugins/style.css') }}">
+    <style>
+        .pc-cal-nav-btn { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; }
+        .pc-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+        .pc-cal-dow { text-align: center; font-size: 0.72rem; font-weight: 700; letter-spacing: .03em; color: #8a94a6; text-transform: uppercase; padding-bottom: 4px; }
+        .pc-cal-day {
+            min-height: 92px; border-radius: 10px; border: 1px solid #eef0f4; background: #fff;
+            padding: 6px 6px 8px; cursor: pointer; transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease;
+            display: flex; flex-direction: column; gap: 4px;
+        }
+        .pc-cal-day:hover { box-shadow: 0 4px 14px rgba(20, 20, 40, .08); transform: translateY(-1px); border-color: #d8dcE4; }
+        .pc-cal-day.pc-empty { background: transparent; border: none; cursor: default; box-shadow: none; }
+        .pc-cal-day.pc-empty:hover { transform: none; box-shadow: none; }
+        .pc-cal-day-num { font-size: 0.8rem; font-weight: 600; color: #4a5468; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .pc-cal-day.pc-today { border-color: #6f42c1; background: #f7f4ff; }
+        .pc-cal-day.pc-today .pc-cal-day-num { background: #6f42c1; color: #fff; }
+        .pc-cal-chip { font-size: 0.66rem; font-weight: 600; padding: 2px 6px; border-radius: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pc-cal-chip.st-draft { background: #eceef2; color: #5a6472; }
+        .pc-cal-chip.st-validated { background: #dbeeff; color: #1367c6; }
+        .pc-cal-chip.st-paid { background: #dcf6e6; color: #16824a; }
+        .pc-cal-chip.st-locked { background: #2b2f38; color: #fff; }
+        .pc-cal-more { font-size: 0.66rem; color: #8a94a6; font-weight: 600; }
+        .pc-cal-day-total { margin-top: auto; font-size: 0.68rem; font-weight: 700; color: #16824a; }
+        .pc-cal-legend span { display: inline-flex; align-items: center; gap: 5px; font-size: 0.75rem; color: #6b7280; }
+        .pc-cal-legend .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+        @media (max-width: 767px) {
+            .pc-cal-day { min-height: 64px; }
+            .pc-cal-chip, .pc-cal-day-total { display: none; }
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -44,7 +73,7 @@
             <h4 class="mb-1"><i class="ph-duotone ph-chalkboard-teacher text-primary me-2"></i>Paiement Professeurs</h4>
             <small class="text-muted">Suivi des paiements par groupe et professeur</small>
         </div>
-        <a href="{{ route('backoffice.payroll.crm.legacy.import.create') }}" class="btn btn-success">
+        <a href="{{ route('backoffice.payroll.crm.legacy.import.create-modes') }}" class="btn btn-success">
             <i class="ph-duotone ph-plus-circle me-1"></i> Ajouter un paiement
         </a>
     </div>
@@ -147,7 +176,38 @@
     </div>
     @endif
 
-    {{-- ── Table ────────────────────────────────────────────────────────── --}}
+    {{-- ── Calendrier des paiements ─────────────────────────────────────── --}}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-transparent d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h6 class="mb-0"><i class="ph-duotone ph-calendar-blank text-primary me-2"></i>Historique des paiements — Calendrier</h6>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" id="pc-cal-prev" class="btn btn-light btn-sm pc-cal-nav-btn"><i class="ph-duotone ph-caret-left"></i></button>
+                <div id="pc-cal-label" class="fw-semibold" style="min-width:150px;text-align:center"></div>
+                <button type="button" id="pc-cal-next" class="btn btn-light btn-sm pc-cal-nav-btn"><i class="ph-duotone ph-caret-right"></i></button>
+                <button type="button" id="pc-cal-today" class="btn btn-outline-secondary btn-sm ms-1">Aujourd'hui</button>
+            </div>
+        </div>
+        <div class="card-body pt-3">
+            <div class="pc-cal-grid mb-2">
+                <div class="pc-cal-dow">Lun</div>
+                <div class="pc-cal-dow">Mar</div>
+                <div class="pc-cal-dow">Mer</div>
+                <div class="pc-cal-dow">Jeu</div>
+                <div class="pc-cal-dow">Ven</div>
+                <div class="pc-cal-dow">Sam</div>
+                <div class="pc-cal-dow">Dim</div>
+            </div>
+            <div id="pc-cal-grid" class="pc-cal-grid"></div>
+            <div class="pc-cal-legend d-flex flex-wrap gap-3 mt-3">
+                <span><span class="dot" style="background:#5a6472"></span> Brouillon</span>
+                <span><span class="dot" style="background:#1367c6"></span> Validé</span>
+                <span><span class="dot" style="background:#16824a"></span> Payé</span>
+                <span><span class="dot" style="background:#2b2f38"></span> Verrouillé</span>
+            </div>
+        </div>
+    </div>
+
+    {{-- ── Groupes ──────────────────────────────────────────────────────── --}}
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
             <h6 class="mb-0"><i class="ph-duotone ph-list text-primary me-2"></i>Groupes — Paiement Professeurs</h6>
@@ -248,7 +308,7 @@
                                 <td colspan="8" class="text-center text-muted py-5">
                                     <i class="ph-duotone ph-folder-open fs-1 d-block mb-2"></i>
                                     Aucun groupe lié pour le moment.
-                                    <br><a href="{{ route('backoffice.payroll.crm.legacy.import.create') }}" class="btn btn-success btn-sm mt-2">Ajouter un paiement</a>
+                                    <br><a href="{{ route('backoffice.payroll.crm.legacy.import.create-modes') }}" class="btn btn-success btn-sm mt-2">Ajouter un paiement</a>
                                 </td>
                             </tr>
                         @endforelse
@@ -284,4 +344,103 @@
     window.dt = new DataTable('#pc-dt-simple');
 </script>
 <script src="{{ URL::asset('assets/js/backoffice/payroll-crm-dashboard.js') }}"></script>
+<script>
+(function () {
+    const EVENTS_URL = '{{ route("backoffice.payroll.crm.legacy.calendar-events") }}';
+    const DAY_URL     = '{{ route("backoffice.payroll.crm.legacy.day") }}';
+    const MONTH_NAMES = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+    const grid  = document.getElementById('pc-cal-grid');
+    const label = document.getElementById('pc-cal-label');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let cursor = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    function fmt(d) {
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    function statusClass(status) {
+        return ({ draft: 'st-draft', validated: 'st-validated', paid: 'st-paid', locked: 'st-locked' })[status] || 'st-draft';
+    }
+
+    async function render() {
+        label.textContent = MONTH_NAMES[cursor.getMonth()] + ' ' + cursor.getFullYear();
+        grid.innerHTML = '<div class="text-center text-muted py-4" style="grid-column:1/-1">Chargement…</div>';
+
+        const monthStart = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
+        const monthEnd   = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0);
+
+        // Grid always starts Monday and ends Sunday, covering the full month.
+        const gridStart = new Date(monthStart);
+        gridStart.setDate(gridStart.getDate() - ((gridStart.getDay() + 6) % 7));
+        const gridEnd = new Date(monthEnd);
+        gridEnd.setDate(gridEnd.getDate() + (7 - ((gridEnd.getDay() + 6) % 7) - 1));
+
+        let events = [];
+        try {
+            const res = await fetch(`${EVENTS_URL}?start=${fmt(gridStart)}&end=${fmt(gridEnd)}`, {
+                headers: { Accept: 'application/json' },
+                credentials: 'same-origin',
+            });
+            events = res.ok ? await res.json() : [];
+        } catch (e) {
+            events = [];
+        }
+
+        const byDate = {};
+        events.forEach((ev) => {
+            (byDate[ev.date] ||= []).push(ev);
+        });
+
+        const cells = [];
+        for (let d = new Date(gridStart); d <= gridEnd; d.setDate(d.getDate() + 1)) {
+            const dateStr   = fmt(d);
+            const inMonth   = d.getMonth() === cursor.getMonth();
+            const isToday   = d.getTime() === today.getTime();
+            const dayEvents = byDate[dateStr] || [];
+            const total     = dayEvents.reduce((s, e) => s + (e.amount || 0), 0);
+            const visible   = dayEvents.slice(0, 2);
+            const extra     = dayEvents.length - visible.length;
+
+            const chips = visible.map((e) =>
+                `<span class="pc-cal-chip ${statusClass(e.status)}" title="${e.group_name} — ${e.status_label}">${e.group_name}</span>`
+            ).join('');
+
+            cells.push(`
+                <div class="pc-cal-day ${isToday ? 'pc-today' : ''}" style="${inMonth ? '' : 'opacity:.4'}" data-date="${dateStr}">
+                    <div class="pc-cal-day-num">${d.getDate()}</div>
+                    ${chips}
+                    ${extra > 0 ? `<div class="pc-cal-more">+${extra} autre(s)</div>` : ''}
+                    ${total > 0 ? `<div class="pc-cal-day-total">${total.toLocaleString('fr-FR')} DH</div>` : ''}
+                </div>
+            `);
+        }
+
+        grid.innerHTML = cells.join('');
+
+        grid.querySelectorAll('.pc-cal-day').forEach((cell) => {
+            cell.addEventListener('click', () => {
+                window.location.href = `${DAY_URL}?date=${cell.dataset.date}`;
+            });
+        });
+    }
+
+    document.getElementById('pc-cal-prev').addEventListener('click', () => {
+        cursor = new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1);
+        render();
+    });
+    document.getElementById('pc-cal-next').addEventListener('click', () => {
+        cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+        render();
+    });
+    document.getElementById('pc-cal-today').addEventListener('click', () => {
+        cursor = new Date(today.getFullYear(), today.getMonth(), 1);
+        render();
+    });
+
+    render();
+})();
+</script>
 @endsection

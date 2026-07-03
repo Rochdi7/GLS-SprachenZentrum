@@ -37,6 +37,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'location',
         'bio',
         'site_id',
+        'teacher_id',
         'staff_role',
         'hired_at',
         'is_active',
@@ -71,6 +72,23 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     public function site(): BelongsTo
     {
         return $this->belongsTo(Site::class);
+    }
+
+    /**
+     * The teacher this user account represents (professor logins). Null for
+     * staff/admin accounts.
+     */
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(Teacher::class);
+    }
+
+    /**
+     * True when this account is a professor login linked to a teacher.
+     */
+    public function isProfessor(): bool
+    {
+        return $this->teacher_id !== null && $this->hasRole('Professeur');
     }
 
     /**

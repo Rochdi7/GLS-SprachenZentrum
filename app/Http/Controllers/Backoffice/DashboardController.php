@@ -35,6 +35,13 @@ class DashboardController extends Controller
         //     centre-scoped dashboard. Admin gets a management variant, other
         //     staff a front-desk variant — both limited to their centre(s).
         $auth = auth()->user();
+
+        // Professors have no backoffice dashboard — send them straight to their
+        // own read-only payroll history.
+        if ($auth && $auth->isProfessor()) {
+            return redirect()->route('backoffice.payroll.professor.index');
+        }
+
         if ($auth && ! $auth->hasRole('Super Admin')) {
             return redirect()->route('backoffice.dashboard.staff');
         }

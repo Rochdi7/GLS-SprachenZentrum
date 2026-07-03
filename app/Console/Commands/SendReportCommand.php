@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\Reports\MonthlyProfPaymentReportMail;
 use App\Mail\Reports\MonthlyRevenueReportMail;
 use App\Mail\Reports\WeeklyCenterPerformanceReportMail;
 use App\Mail\Reports\WeeklyGroupPerformanceReportMail;
@@ -15,7 +16,6 @@ use App\Services\Reports\Weekly\WeeklyGroupPerformanceReportService;
 use App\Services\Reports\Weekly\WeeklyPresenceReportService;
 use App\Services\Reports\Weekly\WeeklyProfPaymentReportService;
 use App\Services\Reports\Weekly\WeeklyUnpaidStudentsReportService;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 
@@ -34,11 +34,12 @@ use Illuminate\Support\Facades\Mail;
  *
  * Monthly report (requires --year and --month):
  *   php artisan reports:send monthly-revenue --year=2026 --month=5
+ *   php artisan reports:send monthly-prof-payment --year=2026 --month=5
  */
 class SendReportCommand extends Command
 {
     protected $signature = 'reports:send
-        {type : Report type: weekly-presence | weekly-prof-payment | weekly-unpaid-students | weekly-group-performance | weekly-center-performance | monthly-revenue}
+        {type : Report type: weekly-presence | weekly-prof-payment | weekly-unpaid-students | weekly-group-performance | weekly-center-performance | monthly-revenue | monthly-prof-payment}
         {--from=   : Custom start date (Y-m-d). Weekly only.}
         {--to=     : Custom end date (Y-m-d). Weekly only.}
         {--year=   : Year for monthly report.}
@@ -109,6 +110,10 @@ class SendReportCommand extends Command
             'monthly-revenue' => [
                 app(MonthlyRevenueReportService::class)->generate(...$this->monthlyPeriod($resolver)),
                 MonthlyRevenueReportMail::class,
+            ],
+            'monthly-prof-payment' => [
+                app(WeeklyProfPaymentReportService::class)->generate(...$this->monthlyPeriod($resolver)),
+                MonthlyProfPaymentReportMail::class,
             ],
             default => throw new \InvalidArgumentException("Unknown report type: [{$type}]"),
         };

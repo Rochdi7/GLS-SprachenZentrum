@@ -32,6 +32,7 @@ class ReportSendLog extends Model
             'weekly-group-performance'  => 'Perf. groupes',
             'weekly-center-performance' => 'Perf. centres',
             'monthly-revenue'           => 'Revenus mensuel',
+            'monthly-prof-payment'      => 'Paiements profs (mensuel)',
             default                     => $type,
         };
     }

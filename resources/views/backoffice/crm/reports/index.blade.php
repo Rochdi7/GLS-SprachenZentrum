@@ -6,13 +6,19 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ URL::asset('build/css/plugins/style.css') }}">
+    <style>
+        .rc-tabs { border-bottom: none; gap: .25rem; }
+        .rc-tabs .nav-link {
+            border: none; border-radius: 10px 10px 0 0; color: #6b7280; font-weight: 600;
+            padding: .65rem 1.1rem; background: transparent;
+        }
+        .rc-tabs .nav-link.active { background: #fff; color: var(--bs-primary); box-shadow: 0 -2px 8px rgba(20,20,40,.04); }
+        .rc-card-body { border-top-left-radius: 0; }
+        .rc-trend-empty { min-height: 220px; display: flex; align-items: center; justify-content: center; color: #9ca3af; }
+    </style>
 @endsection
 
 @section('content')
-
-    <div class="d-flex justify-content-end mb-2">
-        @include('backoffice.crm.partials._sync_badge')
-    </div>
 
     @if (session('success') || session('error'))
         <div class="position-fixed top-0 end-0 p-3" style="z-index: 99999">
@@ -28,46 +34,95 @@
         </div>
     @endif
 
-    {{-- Summary cards --}}
+    {{-- ── Header ─────────────────────────────────────────────────────── --}}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div>
+            <h4 class="mb-1"><i class="ph-duotone ph-chart-bar text-primary me-2"></i>Rapports CEO</h4>
+            <small class="text-muted">Synthèse quotidienne et hebdomadaire envoyée par email</small>
+        </div>
+        @include('backoffice.crm.partials._sync_badge')
+    </div>
+
+    {{-- ── KPI Cards ────────────────────────────────────────────────────── --}}
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
-            <div class="card h-100">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <h6 class="text-muted mb-1">Rapports quotidiens</h6>
-                    <h3 class="mb-0">{{ $reports->count() }}</h3>
-                    <small class="text-muted">affichés</small>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                            <i class="ph-duotone ph-sun text-primary fs-4"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Rapports quotidiens</div>
+                            <div class="h3 mb-0 fw-bold">{{ $reports->count() }}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="card h-100">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <h6 class="text-muted mb-1">Dernier quotidien</h6>
-                    <h3 class="mb-0">{{ $reports->first()?->report_date?->format('d/m/Y') ?? '—' }}</h3>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-info bg-opacity-10 p-3">
+                            <i class="ph-duotone ph-calendar-check text-info fs-4"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Dernier quotidien</div>
+                            <div class="h5 mb-0 fw-bold">{{ $reports->first()?->report_date?->format('d/m/Y') ?? '—' }}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="card h-100">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <h6 class="text-muted mb-1">Rapports hebdo</h6>
-                    <h3 class="mb-0">{{ $weeklyReports->count() }}</h3>
-                    <small class="text-muted">affichés</small>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3">
+                            <i class="ph-duotone ph-calendar-blank text-success fs-4"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Rapports hebdo</div>
+                            <div class="h3 mb-0 fw-bold">{{ $weeklyReports->count() }}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="card h-100">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <h6 class="text-muted mb-1">Dernier hebdo</h6>
-                    <h3 class="mb-0 fs-6">{{ $weeklyReports->first()?->week_label ?? '—' }}</h3>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-warning bg-opacity-10 p-3">
+                            <i class="ph-duotone ph-clock-counter-clockwise text-warning fs-4"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Dernier hebdo</div>
+                            <div class="h6 mb-0 fw-bold">{{ $weeklyReports->first()?->week_label ?? '—' }}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    {{-- ── Revenue trend chart ─────────────────────────────────────────── --}}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-transparent border-0 pb-0">
+            <h6 class="mb-0"><i class="ph-duotone ph-trend-up text-primary me-2"></i>Tendance — encaissement quotidien</h6>
+        </div>
+        <div class="card-body">
+            @if($reports->count() > 0)
+                <div id="revenueTrendChart" style="min-height:220px"></div>
+            @else
+                <div class="rc-trend-empty">Aucune donnée à afficher pour la période sélectionnée.</div>
+            @endif
+        </div>
+    </div>
+
     {{-- Date filter (standalone form — NO nested forms) --}}
-    <div class="card mb-3">
+    <div class="card border-0 shadow-sm mb-3">
         <div class="card-body py-3">
             <div class="d-flex flex-wrap align-items-end gap-2">
                 {{-- Filter form --}}
@@ -102,31 +157,31 @@
     </div>
 
     {{-- Tabs --}}
-    <ul class="nav nav-tabs mb-0" id="reportTabs" role="tablist">
+    <ul class="nav nav-tabs rc-tabs" id="reportTabs" role="tablist">
         <li class="nav-item">
             <a class="nav-link {{ $tab === 'daily' ? 'active' : '' }}"
                href="{{ route('backoffice.crm.reports.index', array_merge(request()->only('from','to'), ['tab' => 'daily'])) }}">
                 <i class="ph-duotone ph-sun me-1"></i> Quotidiens
-                <span class="badge bg-light-primary ms-1">{{ $reports->count() }}</span>
+                <span class="badge bg-light-primary text-primary ms-1">{{ $reports->count() }}</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link {{ $tab === 'weekly' ? 'active' : '' }}"
                href="{{ route('backoffice.crm.reports.index', array_merge(request()->only('from','to'), ['tab' => 'weekly'])) }}">
                 <i class="ph-duotone ph-calendar-blank me-1"></i> Hebdomadaires
-                <span class="badge bg-light-success ms-1">{{ $weeklyReports->count() }}</span>
+                <span class="badge bg-light-success text-success ms-1">{{ $weeklyReports->count() }}</span>
             </a>
         </li>
     </ul>
 
-    <div class="card table-card" style="border-top-left-radius:0; border-top-right-radius:0;">
-        <div class="card-body pt-3">
+    <div class="card border-0 shadow-sm table-card">
+        <div class="card-body rc-card-body pt-3">
 
             {{-- ── DAILY TAB ──────────────────────────────────────────────── --}}
             @if($tab === 'daily')
                 <div class="table-responsive">
-                    <table class="table table-hover" id="reports-table">
-                        <thead>
+                    <table class="table table-hover align-middle" id="reports-table">
+                        <thead class="table-light">
                             <tr>
                                 <th>Date</th>
                                 <th class="text-end">Revenue J-1</th>
@@ -233,8 +288,8 @@
             {{-- ── WEEKLY TAB ─────────────────────────────────────────────── --}}
             @if($tab === 'weekly')
                 <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
                             <tr>
                                 <th>Semaine</th>
                                 <th>Période</th>
@@ -394,6 +449,31 @@
 @endsection
 
 @section('scripts')
+@if($reports->count() > 0)
+<script type="application/json" id="revenue-trend-data">
+{
+    "labels":  @json($reports->sortBy('report_date')->map(fn($r) => $r->report_date->format('d/m'))->values()),
+    "amounts": @json($reports->sortBy('report_date')->map(fn($r) => (float) ($r->revenue_yesterday ?? 0))->values())
+}
+</script>
+<script src="{{ URL::asset('build/js/plugins/apexcharts.min.js') }}"></script>
+<script>
+    (function () {
+        const data = JSON.parse(document.getElementById('revenue-trend-data').textContent);
+        new ApexCharts(document.querySelector('#revenueTrendChart'), {
+            chart: { type: 'area', height: 220, toolbar: { show: false }, fontFamily: 'inherit' },
+            series: [{ name: 'Encaissement', data: data.amounts }],
+            xaxis: { categories: data.labels, labels: { style: { fontSize: '11px' } } },
+            yaxis: { labels: { formatter: (v) => v.toLocaleString('fr-FR') + ' MAD' } },
+            colors: ['#28a745'],
+            fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.05 } },
+            stroke: { curve: 'smooth', width: 2 },
+            dataLabels: { enabled: false },
+            grid: { borderColor: '#f1f1f1' },
+        }).render();
+    })();
+</script>
+@endif
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const toastEl = document.getElementById('liveToast');

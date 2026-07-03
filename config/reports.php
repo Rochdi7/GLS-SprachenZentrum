@@ -29,6 +29,8 @@ return [
     */
     'weekly_send_day'  => (int) env('REPORTS_WEEKLY_SEND_DAY', 5),   // Friday
     'weekly_send_time' => env('REPORTS_WEEKLY_SEND_TIME', '00:00'),
+    'monthly_send_day'  => (int) env('REPORTS_MONTHLY_SEND_DAY', 1),   // 1st of month
+    'monthly_send_time' => env('REPORTS_MONTHLY_SEND_TIME', '00:00'),
     'timezone'         => env('REPORTS_TIMEZONE', 'Africa/Casablanca'),
 
     /*

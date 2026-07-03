@@ -43,6 +43,8 @@ class RolePermissionSeeder extends Seeder
             'newsletter_subscribers' => ['view', 'delete'],
             'crm'              => ['view', 'create', 'edit', 'delete'],
             'crm_prof_payment' => ['view', 'create', 'edit', 'delete'],
+            'hikvision'        => ['view'],
+            'prof_payment_self' => ['view'], // professor: read-only, own payroll only
             'encaissements'    => ['view', 'create', 'edit', 'delete'],
         ];
 
@@ -116,5 +118,15 @@ class RolePermissionSeeder extends Seeder
             'encaissements.view',
         ];
         $reception->syncPermissions($receptionPermissions);
+
+        /*
+        |----------------------------------------------------------------------
+        | Professeur — read-only access to their OWN payroll history only.
+        | No backoffice management. Scoping is enforced by teacher_id +
+        | PresenceImportPolicy, this permission just gates the professor pages.
+        |----------------------------------------------------------------------
+        */
+        $professor = Role::firstOrCreate(['name' => 'Professeur', 'guard_name' => 'web']);
+        $professor->syncPermissions(['prof_payment_self.view']);
     }
 }

@@ -42,6 +42,13 @@ class PresenceImportStudent extends Model
         'row_color',
         'raw_data',
         'crm_student_id',
+        // Period mode + override audit
+        'period_presence_count',
+        'period_auto_amount',
+        'period_amount_override',
+        'override_reason',
+        'override_by',
+        'override_at',
     ];
 
     protected $casts = [
@@ -55,6 +62,9 @@ class PresenceImportStudent extends Model
         'week_3_amount_override' => 'decimal:2',
         'week_4_amount_override' => 'decimal:2',
         'raw_data' => 'array',
+        'period_auto_amount' => 'decimal:2',
+        'period_amount_override' => 'decimal:2',
+        'override_at' => 'datetime',
     ];
 
     /* ------------------------------------------------------------------ */
@@ -99,6 +109,28 @@ class PresenceImportStudent extends Model
     public function records()
     {
         return $this->hasMany(PresenceRecord::class)->orderBy('date');
+    }
+
+    public function overriddenBy()
+    {
+        return $this->belongsTo(User::class, 'override_by');
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Period-mode helpers                                                */
+    /* ------------------------------------------------------------------ */
+
+    public function isPeriodOverridden(): bool
+    {
+        return $this->period_amount_override !== null;
+    }
+
+    /** Override wins over the auto amount when set. */
+    public function getPeriodEffectiveAmount(): float
+    {
+        return $this->period_amount_override !== null
+            ? (float) $this->period_amount_override
+            : (float) ($this->period_auto_amount ?? 0);
     }
 
     /* ------------------------------------------------------------------ */

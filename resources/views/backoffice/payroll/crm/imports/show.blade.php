@@ -288,7 +288,6 @@ tfoot .sc-total { z-index: 11; background: #fff3cd !important; }
             <i class="ph-duotone ph-table me-1"></i>
             Détail de présence — <span class="text-primary">{{ $import->students->count() }} étudiants</span>
         </h6>
-        <small class="text-muted fst-italic">Cliquer sur SEM 1–4 pour ajuster le montant</small>
     </div>
     <div class="card-body p-0">
         <div class="att-wrap">
@@ -312,16 +311,11 @@ tfoot .sc-total { z-index: 11; background: #fff3cd !important; }
                         <th class="sc-p">P</th>
                         <th class="sc-a">A</th>
 
-                        {{-- Week headers --}}
-                        @for ($w = 1; $w <= $numWeeks; $w++)
-                            <th class="wk-cell text-center">SEM {{ $w }}</th>
-                        @endfor
-
                         <th class="sc-total">TOTAL</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @php $colTotals = array_fill(1, $numWeeks, 0); $grandTotal = 0; @endphp
+                    @php $grandTotal = 0; @endphp
                     @foreach ($import->students as $student)
                         @php
                             $byDate   = $student->records->keyBy(fn($r) => (string)$r->date);
@@ -348,35 +342,6 @@ tfoot .sc-total { z-index: 11; background: #fff3cd !important; }
                             <td class="sc-p">{{ $student->total_present }}</td>
                             <td class="sc-a">{{ $student->total_absent }}</td>
 
-                            {{-- Week cells --}}
-                            @for ($w = 1; $w <= $numWeeks; $w++)
-                                @php
-                                    $presence  = (int)$student->{"week_{$w}_presence"};
-                                    $auto      = (float)$student->{"week_{$w}_amount"};
-                                    $override  = $student->{"week_{$w}_amount_override"};
-                                    $effective = $override !== null ? (float)$override : $auto;
-                                    $qualified = $presence >= $weekThreshold;
-                                    $colTotals[$w] += $effective;
-                                @endphp
-                                <td class="wk-cell">
-                                    <div class="d-flex flex-column align-items-center gap-1">
-                                        <span class="wk-badge {{ $qualified ? 'qual' : 'unqual' }}">
-                                            {{ $presence }}j {{ $qualified ? '✓' : '✗' }}
-                                        </span>
-                                        <div class="d-flex align-items-center gap-1">
-                                            <input type="number"
-                                                class="wk-input {{ $override !== null ? 'overridden' : '' }}"
-                                                data-student="{{ $student->id }}"
-                                                data-week="{{ $w }}"
-                                                data-auto="{{ $auto }}"
-                                                value="{{ number_format($effective, 2, '.', '') }}"
-                                                step="0.01" min="0">
-                                            <span class="text-muted" style="font-size:.68rem">DH</span>
-                                        </div>
-                                    </div>
-                                </td>
-                            @endfor
-
                             <td class="sc-total">{{ number_format($rowTotal, 2) }} DH</td>
                         </tr>
                     @endforeach
@@ -388,11 +353,6 @@ tfoot .sc-total { z-index: 11; background: #fff3cd !important; }
                         @foreach ($allDates as $date) <td class="pc"></td> @endforeach
                         <td class="sc-p">—</td>
                         <td class="sc-a"></td>
-                        @for ($w = 1; $w <= $numWeeks; $w++)
-                            <td class="wk-cell text-center fw-bold" id="col-total-{{ $w }}">
-                                {{ number_format($colTotals[$w], 2) }} DH
-                            </td>
-                        @endfor
                         <td class="sc-total" id="grand-total">{{ number_format($grandTotal, 2) }} DH</td>
                     </tr>
                 </tfoot>
@@ -436,76 +396,6 @@ tfoot .sc-total { z-index: 11; background: #fff3cd !important; }
 document.addEventListener('DOMContentLoaded', function () {
     const toastEl = document.getElementById('liveToast');
     if (toastEl) new bootstrap.Toast(toastEl).show();
-
-    const CSRF = '{{ csrf_token() }}';
-    const timers = {};
-
-    function updateRowTotal(row) {
-        let t = 0;
-        row.querySelectorAll('.wk-input').forEach(i => t += parseFloat(i.value) || 0);
-        const el = row.querySelector('.sc-total');
-        if (el) el.textContent = t.toFixed(2) + ' DH';
-    }
-
-    function updateColTotal(week) {
-        let t = 0;
-        document.querySelectorAll(`.wk-input[data-week="${week}"]`).forEach(i => t += parseFloat(i.value) || 0);
-        const el = document.getElementById(`col-total-${week}`);
-        if (el) el.textContent = t.toFixed(2) + ' DH';
-    }
-
-    function updateGrandTotal() {
-        let t = 0;
-        document.querySelectorAll('#presence-table tbody .sc-total').forEach(td => t += parseFloat(td.textContent) || 0);
-        const el = document.getElementById('grand-total');
-        if (el) el.textContent = t.toFixed(2) + ' DH';
-        // sync KPI card
-        const kpi = document.getElementById('kpi-total-paiement');
-        if (kpi) kpi.textContent = t.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' DH';
-    }
-
-    function save(input) {
-        const sid  = input.dataset.student;
-        const week = input.dataset.week;
-        const auto = parseFloat(input.dataset.auto);
-        const val  = input.value.trim() === '' ? null : parseFloat(input.value);
-
-        input.style.borderColor = '#ffc107';
-
-        fetch(`/backoffice/payroll/presence/student/${sid}/week`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
-            body: JSON.stringify({ student_id: sid, week, amount: val })
-        })
-        .then(r => r.json())
-        .then(d => {
-            if (d.success) {
-                input.classList.toggle('overridden', val !== null && val !== auto);
-                input.style.borderColor = '#198754';
-                setTimeout(() => input.style.borderColor = '', 700);
-            } else {
-                input.style.borderColor = '#dc3545';
-            }
-        })
-        .catch(() => input.style.borderColor = '#dc3545');
-    }
-
-    document.querySelectorAll('.wk-input').forEach(inp => {
-        const key = inp.dataset.student + '_' + inp.dataset.week;
-
-        inp.addEventListener('input', function () {
-            updateRowTotal(this.closest('tr'));
-            updateColTotal(this.dataset.week);
-            updateGrandTotal();
-            clearTimeout(timers[key]);
-            timers[key] = setTimeout(() => save(this), 600);
-        });
-
-        inp.addEventListener('change', function () {
-            clearTimeout(timers[key]);
-            save(this);
-        });
-    });
 });
 </script>
 @endsection

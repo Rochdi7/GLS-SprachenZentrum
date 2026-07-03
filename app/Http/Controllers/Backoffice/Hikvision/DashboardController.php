@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Http\Controllers\Backoffice\Hikvision;
+
+use App\Http\Controllers\Controller;
+use App\Services\Hikvision\HikvisionOverviewService;
+
+class DashboardController extends Controller
+{
+    public function __construct(private readonly HikvisionOverviewService $overviewService) {}
+
+    public function index()
+    {
+        return view('backoffice.hikvision.dashboard', $this->overviewService->dashboardPayload());
+    }
+}

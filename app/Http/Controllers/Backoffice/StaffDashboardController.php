@@ -38,6 +38,13 @@ class StaffDashboardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+
+        // Professors never see the staff dashboard — redirect to their own
+        // read-only payroll history.
+        if ($user->isProfessor()) {
+            return redirect()->route('backoffice.payroll.professor.index');
+        }
+
         $isAdmin = $user->hasRole('Admin');
 
         // Centre scoping. Super Admin sees all; Admin and others are scoped to

@@ -45,6 +45,8 @@ use App\Http\Controllers\Backoffice\Payroll\GroupImportController;
 use App\Http\Controllers\Backoffice\Payroll\GroupAnalysisController;
 use App\Http\Controllers\Backoffice\Payroll\PresenceImportController;
 use App\Http\Controllers\Backoffice\Payroll\CrmPayrollController;
+use App\Http\Controllers\Backoffice\Payroll\PeriodHourlyPayrollController;
+use App\Http\Controllers\Backoffice\Payroll\ProfessorPayrollController;
 use App\Http\Controllers\Backoffice\Payroll\WimschoolPayrollController;
 
 // Encaissement / Rentabilité
@@ -462,6 +464,8 @@ Route::prefix('backoffice')
 
                         // Legacy CRM API imports
                         Route::get('/legacy', [CrmPayrollController::class, 'dashboard'])->middleware('permission:crm_prof_payment.view')->name('legacy.dashboard');
+                        Route::get('/legacy/calendar-events', [CrmPayrollController::class, 'calendarEvents'])->middleware('permission:crm_prof_payment.view')->name('legacy.calendar-events');
+                        Route::get('/legacy/day', [CrmPayrollController::class, 'dayHistory'])->middleware('permission:crm_prof_payment.view')->name('legacy.day');
                         Route::get('/legacy/import/create', [CrmPayrollController::class, 'create'])->middleware('permission:crm_prof_payment.create')->name('legacy.import.create');
                         Route::post('/legacy/import', [CrmPayrollController::class, 'store'])->middleware('permission:crm_prof_payment.create')->name('legacy.import.store');
                         Route::get('/legacy/group/{group}/imports', [CrmPayrollController::class, 'index'])->middleware('permission:crm_prof_payment.view')->name('legacy.group.imports');
@@ -469,6 +473,38 @@ Route::prefix('backoffice')
                         Route::get('/legacy/group/{group}/import/{import}/pdf', [CrmPayrollController::class, 'pdf'])->middleware('permission:crm_prof_payment.view')->name('legacy.import.pdf');
                         Route::post('/legacy/group/{group}/import/{import}/recalculate', [CrmPayrollController::class, 'recalculate'])->middleware('permission:crm_prof_payment.edit')->name('legacy.import.recalculate');
                         Route::delete('/legacy/group/{group}/import/{import}', [CrmPayrollController::class, 'destroy'])->middleware('permission:crm_prof_payment.delete')->name('legacy.import.destroy');
+
+                        /*
+                        |------------------------------------------------------
+                        | PERIOD / HOURLY PAYMENT MODES (new)
+                        |------------------------------------------------------
+                        */
+                        // Mode-picker create form
+                        Route::get('/legacy/import/create-modes', [PeriodHourlyPayrollController::class, 'create'])->middleware('permission:crm_prof_payment.create')->name('legacy.import.create-modes');
+                        // Store — period / hourly
+                        Route::post('/legacy/import/period', [PeriodHourlyPayrollController::class, 'storePeriod'])->middleware('permission:crm_prof_payment.create')->name('legacy.import.store-period');
+                        Route::post('/legacy/import/hourly', [PeriodHourlyPayrollController::class, 'storeHourly'])->middleware('permission:crm_prof_payment.create')->name('legacy.import.store-hourly');
+                        // Period — per-student override (AJAX) + recalculate
+                        Route::patch('/legacy/student/{student}/period-override', [PeriodHourlyPayrollController::class, 'overridePeriodStudent'])->middleware('permission:crm_prof_payment.edit')->name('legacy.student.period-override');
+                        Route::post('/legacy/group/{group}/import/{import}/recalculate-period', [PeriodHourlyPayrollController::class, 'recalculatePeriod'])->middleware('permission:crm_prof_payment.edit')->name('legacy.import.recalculate-period');
+                        // Payment info (optional — editable anytime, no status lifecycle)
+                        Route::post('/legacy/group/{group}/import/{import}/payment-info', [PeriodHourlyPayrollController::class, 'savePaymentInfo'])->middleware('permission:crm_prof_payment.edit')->name('legacy.import.payment-info');
+                    });
+
+                /*
+                |--------------------------------------------------------------
+                | PROFESSOR — read-only, own payroll history only
+                |--------------------------------------------------------------
+                | Guarded by prof_payment_self.view; ownership additionally
+                | enforced per-import by PresenceImportPolicy@view.
+                */
+                Route::prefix('professor')
+                    ->name('professor.')
+                    ->middleware('permission:prof_payment_self.view')
+                    ->group(function () {
+                        Route::get('/', [ProfessorPayrollController::class, 'index'])->name('index');
+                        Route::get('/import/{import}', [ProfessorPayrollController::class, 'show'])->name('show');
+                        Route::get('/import/{import}/pdf', [ProfessorPayrollController::class, 'pdf'])->name('pdf');
                     });
             });
 
@@ -809,6 +845,13 @@ Route::prefix('backoffice')
         |--------------------------------------------------------------------------
         */
         require __DIR__ . '/crmapi.php';
+
+        /*
+        |--------------------------------------------------------------------------
+        | Hikvision mirror module
+        |--------------------------------------------------------------------------
+        */
+        require __DIR__ . '/hikvision.php';
     });
 
 /*

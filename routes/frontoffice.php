@@ -84,6 +84,7 @@ Route::middleware(CacheResponse::class)->group(function () {
 */
 Route::get('/lp/meta', [PageController::class, 'lpMeta'])->name('front.lp.meta');
 Route::get('/lp/google', [PageController::class, 'lpGoogle'])->name('front.lp.google');
+Route::get('/lp/tiktok', [PageController::class, 'lpTiktok'])->name('front.lp.tiktok');
 
 /*
 |--------------------------------------------------------------------------

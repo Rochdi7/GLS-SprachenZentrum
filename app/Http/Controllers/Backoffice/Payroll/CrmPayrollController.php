@@ -40,6 +40,54 @@ class CrmPayrollController extends BaseCrmController
     }
 
     /**
+     * JSON feed of payroll activity (imports) grouped by day, for the dashboard calendar.
+     * One "event" per import, keyed by its creation date.
+     */
+    public function calendarEvents(Request $request)
+    {
+        $request->validate(['start' => 'required|date', 'end' => 'required|date']);
+
+        $imports = PresenceImport::with('group')
+            ->whereHas('group', fn ($q) => $q->whereNotNull('crm_class_id'))
+            ->whereBetween('created_at', [
+                Carbon::parse($request->start)->startOfDay(),
+                Carbon::parse($request->end)->endOfDay(),
+            ])
+            ->orderBy('created_at')
+            ->get()
+            ->map(fn (PresenceImport $import) => [
+                'id'           => $import->id,
+                'date'         => $import->created_at->format('Y-m-d'),
+                'group_id'     => $import->group_id,
+                'group_name'   => $import->group?->name ?? '—',
+                'teacher_name' => $import->crm_teacher_name ?? $import->group?->teacher?->name ?? '—',
+                'status'       => $import->status,
+                'status_label' => $import->statusLabel(),
+                'amount'       => (float) ($import->paymentSummary?->total_payment ?? $import->final_total ?? 0),
+            ]);
+
+        return response()->json($imports);
+    }
+
+    /**
+     * Detail page for a single day — all payroll imports created that day.
+     */
+    public function dayHistory(Request $request)
+    {
+        $request->validate(['date' => 'required|date']);
+
+        $date = Carbon::parse($request->date);
+
+        $imports = PresenceImport::with(['group.teacher', 'paymentSummary'])
+            ->whereHas('group', fn ($q) => $q->whereNotNull('crm_class_id'))
+            ->whereBetween('created_at', [$date->copy()->startOfDay(), $date->copy()->endOfDay()])
+            ->orderBy('created_at')
+            ->get();
+
+        return $this->view('backoffice.payroll.crm.day', compact('date', 'imports'));
+    }
+
+    /**
      * Show the CRM API import form — loads classes live from the CRM API.
      */
     public function create(Request $request)
@@ -159,69 +207,74 @@ class CrmPayrollController extends BaseCrmController
     /**
      * Import history for a group (CRM API only).
      */
-    public function index(Group $group)
+    public function index(Group $group, Request $request)
     {
-        $imports = $group->presenceImports()
-            ->where('is_crm_api', true)
-            ->with(['paymentSummary', 'students.records'])
+        $query = $group->presenceImports()
+            ->with(['paymentSummary', 'validatedBy', 'paidBy', 'lockedBy'])
             ->withCount('students')
-            ->orderByDesc('version')
-            ->get();
+            ->orderByDesc('version');
 
-        return $this->view('backoffice.payroll.crm.imports.index', compact('group', 'imports'));
+        // Optional filters (mode, status, month/year, group month number)
+        if ($request->filled('mode')) {
+            $query->where('payment_mode', $request->mode);
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('attached_year')) {
+            $query->where('attached_year', $request->attached_year);
+        }
+        if ($request->filled('group_month_number')) {
+            $query->where('group_month_number', $request->group_month_number);
+        }
+
+        $imports = $query->get();
+
+        // Group by group_month_number for the "Mois 1 / Mois 2 / …" history view.
+        // Imports without a month number (legacy weekly) fall into a null bucket.
+        $byMonthNumber = $imports->groupBy(fn ($i) => $i->group_month_number)
+            ->sortKeys();
+
+        return $this->view('backoffice.payroll.crm.imports.index', compact('group', 'imports', 'byMonthNumber'));
     }
 
     /**
      * Show details of a specific CRM API import.
+     *
+     * Dispatches by payment_mode:
+     *   - weekly (legacy, default) → the original show.blade.php, unchanged
+     *   - period                    → period results table
+     *   - hourly                    → hourly summary card
      */
     public function show(Group $group, PresenceImport $import)
     {
         $import->load(['students.records', 'paymentSummary', 'importedBy']);
 
+        // Lifecycle panel needs the audit trail + who-did-what relations.
+        $lifecycleRelations = ['statusLogs.user', 'validatedBy', 'paidBy', 'lockedBy'];
+
+        if ($import->isPeriod()) {
+            $import->load(array_merge(['students.overriddenBy'], $lifecycleRelations));
+
+            return $this->view('backoffice.payroll.crm.imports.show-period', compact('group', 'import'));
+        }
+
+        if ($import->isHourly()) {
+            $import->load($lifecycleRelations);
+
+            return $this->view('backoffice.payroll.crm.imports.show-hourly', compact('group', 'import'));
+        }
+
+        // Legacy weekly path — rendered exactly as before.
         return $this->view('backoffice.payroll.crm.imports.show', compact('group', 'import'));
     }
 
     /**
      * Export import as a professional PDF to send to the professor.
      */
-    public function pdf(Group $group, PresenceImport $import)
+    public function pdf(Group $group, PresenceImport $import, \App\Services\Payroll\PayrollPdfBuilder $builder)
     {
-        $import->load(['students.records', 'paymentSummary', 'importedBy']);
-
-        $allDates      = $import->students
-            ->flatMap(fn($s) => $s->records->pluck('date')->map(fn($d) => (string) $d))
-            ->unique()->sort()->values();
-        $weekThreshold = $import->getThreshold();
-        $weeklyUnit    = $import->getWeeklyUnitAmount();
-        $dayCount      = $import->date_start->diffInDays($import->date_end) + 1;
-        $numWeeks      = min(4, max(1, (int) ceil($dayCount / 7)));
-        $profName      = $import->crm_teacher_name ?? $group->teacher?->name ?? '—';
-        $logoPath      = public_path('assets/images/logo/gls.png');
-        $logoBase64    = base64_encode(file_get_contents($logoPath));
-
-        $colTotals = array_fill(1, $numWeeks, 0);
-        $grandTotal = 0;
-        foreach ($import->students as $student) {
-            for ($w = 1; $w <= $numWeeks; $w++) {
-                $override = $student->{"week_{$w}_amount_override"};
-                $auto     = (float) $student->{"week_{$w}_amount"};
-                $colTotals[$w] += $override !== null ? (float) $override : $auto;
-            }
-            $grandTotal += (float) $student->weighted_amount;
-        }
-
-        $pdf = Pdf::loadView('backoffice.payroll.crm.imports.pdf', compact(
-            'group', 'import', 'allDates', 'weekThreshold', 'weeklyUnit',
-            'numWeeks', 'profName', 'logoBase64', 'colTotals', 'grandTotal'
-        ))
-        ->setPaper('a4', 'landscape')
-        ->set_option('isHtml5ParserEnabled', true)
-        ->set_option('isRemoteEnabled', false)
-        ->set_option('defaultFont', 'dejavu sans');
-
-        $filename = 'paiement-' . str($group->name)->slug() . '-v' . $import->version . '.pdf';
-
-        return $pdf->download($filename);
+        return $builder->build($import, $group)->download($builder->filename($import, $group));
     }
 
     /**
@@ -229,6 +282,12 @@ class CrmPayrollController extends BaseCrmController
      */
     public function destroy(Group $group, PresenceImport $import)
     {
+        // GUARD: only draft imports are deletable (Super Admin may also delete
+        // validated/paid, but never a locked one).
+        if (! $import->canDelete(auth()->user())) {
+            return back()->with('error', 'Ce paiement est ' . strtolower($import->statusLabel()) . ' et ne peut pas être supprimé.');
+        }
+
         $import->paymentSummary?->delete();
         $import->students()->each(fn($s) => $s->records()->delete() && $s->delete());
         $import->delete();

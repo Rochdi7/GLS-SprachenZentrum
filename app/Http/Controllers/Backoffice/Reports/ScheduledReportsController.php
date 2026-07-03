@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backoffice\Reports;
 
 use App\Http\Controllers\Controller;
+use App\Mail\Reports\MonthlyProfPaymentReportMail;
 use App\Mail\Reports\MonthlyRevenueReportMail;
 use App\Mail\Reports\WeeklyCenterPerformanceReportMail;
 use App\Mail\Reports\WeeklyGroupPerformanceReportMail;
@@ -69,6 +70,7 @@ class ScheduledReportsController extends Controller
     public function sendMonthly(Request $request): RedirectResponse
     {
         $validated = $request->validate([
+            'type'  => 'required|in:monthly-revenue,monthly-prof-payment',
             'year'  => 'required|integer|min:2020|max:' . (now()->year + 1),
             'month' => 'required|integer|min:1|max:12',
         ]);
@@ -76,12 +78,11 @@ class ScheduledReportsController extends Controller
         $resolver = ReportPeriodResolver::make();
         $period   = $resolver->singleMonth((int) $validated['year'], (int) $validated['month']);
 
-        $service = app(MonthlyRevenueReportService::class);
-        $data    = $service->generate($period['from'], $period['to']);
+        [$data, $mailClass] = $this->buildMonthly($validated['type'], $period['from'], $period['to']);
 
-        $this->dispatch(MonthlyRevenueReportMail::class, $data, 'monthly', 'monthly-revenue', $period['from'], $period['to']);
+        $this->dispatch($mailClass, $data, 'monthly', $validated['type'], $period['from'], $period['to']);
 
-        return back()->with('success', "Rapport mensuel envoyé pour {$data['month_label']}.");
+        return back()->with('success', "Rapport [" . ReportSendLog::typeLabel($validated['type']) . "] envoyé pour " . ($data['month_label'] ?? $resolver->label($period['from'], $period['to'])) . '.');
     }
 
     /**
@@ -90,9 +91,8 @@ class ScheduledReportsController extends Controller
     public function resend(ReportSendLog $log): RedirectResponse
     {
         if ($log->category === 'monthly') {
-            $service = app(MonthlyRevenueReportService::class);
-            $data    = $service->generate($log->period_from, $log->period_to);
-            $this->dispatch(MonthlyRevenueReportMail::class, $data, 'monthly', 'monthly-revenue', $log->period_from, $log->period_to);
+            [$data, $mailClass] = $this->buildMonthly($log->type, $log->period_from, $log->period_to);
+            $this->dispatch($mailClass, $data, 'monthly', $log->type, $log->period_from, $log->period_to);
         } else {
             [$data, $mailClass] = $this->buildWeekly($log->type, $log->period_from, $log->period_to);
             $this->dispatch($mailClass, $data, 'weekly', $log->type, $log->period_from, $log->period_to);
@@ -111,6 +111,14 @@ class ScheduledReportsController extends Controller
             'weekly-unpaid-students'    => [app(WeeklyUnpaidStudentsReportService::class)->generate($from, $to),    WeeklyUnpaidStudentsReportMail::class],
             'weekly-group-performance'  => [app(WeeklyGroupPerformanceReportService::class)->generate($from, $to),  WeeklyGroupPerformanceReportMail::class],
             'weekly-center-performance' => [app(WeeklyCenterPerformanceReportService::class)->generate($from, $to), WeeklyCenterPerformanceReportMail::class],
+        };
+    }
+
+    private function buildMonthly(string $type, $from, $to): array
+    {
+        return match ($type) {
+            'monthly-revenue'      => [app(MonthlyRevenueReportService::class)->generate($from, $to),      MonthlyRevenueReportMail::class],
+            'monthly-prof-payment' => [app(WeeklyProfPaymentReportService::class)->generate($from, $to),    MonthlyProfPaymentReportMail::class],
         };
     }
 
