@@ -97,11 +97,25 @@
         </select>
     </div>
 
-    <div class="col-md-6 mb-3">
+    <div class="col-md-3 mb-3">
+        <label class="form-label fw-bold">Niveau de départ</label>
+        @php
+            $selectedLevelFrom = old('level_from', $att->level_from ?? '');
+            $staticLevels = ['A1', 'A2', 'B1', 'B2'];
+        @endphp
+        <select name="level_from" id="att-level-from-select" class="form-select @error('level_from') is-invalid @enderror">
+            <option value="">— Aucun (niveau unique) —</option>
+            @foreach($staticLevels as $lvl)
+                <option value="{{ $lvl }}" {{ $selectedLevelFrom === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
+            @endforeach
+        </select>
+        @error('level_from') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="col-md-3 mb-3">
         <label class="form-label fw-bold">Niveau sélectionné <span class="text-danger">*</span></label>
         @php
             $selectedLevel = old('level', $att->level ?? $pr->level ?? '');
-            $staticLevels = ['A1', 'A2', 'B1', 'B2'];
         @endphp
         <select name="level" id="att-level-select" class="form-select @error('level') is-invalid @enderror" required>
             <option value="">— Sélectionner un niveau —</option>
@@ -109,7 +123,6 @@
                 <option value="{{ $lvl }}" {{ $selectedLevel === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
             @endforeach
         </select>
-        <small class="text-muted d-block">Les dates de début/fin sont récupérées automatiquement depuis le Suivi niveau du groupe sélectionné.</small>
         <small id="att-level-warning" class="text-danger d-none">
             Aucune entrée de Suivi niveau trouvée pour ce niveau dans le groupe sélectionné. Veuillez saisir les dates manuellement.
         </small>
@@ -245,18 +258,19 @@
 document.addEventListener('DOMContentLoaded', function () {
     'use strict';
 
-    const groupSelect  = document.getElementById('att-group-select');
-    const groupWrapper = document.getElementById('att-group-wrapper');
-    const siteWrapper  = document.getElementById('att-site-wrapper');
-    const siteSelect   = document.getElementById('att-site-select');
-    const legacyCheck  = document.getElementById('att-is-legacy');
-    const ongoingInput = document.getElementById('att-is-ongoing');
-    const levelSelect  = document.getElementById('att-level-select');
-    const courseStart  = document.getElementById('att-course-start');
-    const courseEnd    = document.getElementById('att-course-end');
-    const niveauStart  = document.getElementById('att-niveau-start');
-    const niveauEnd    = document.getElementById('att-niveau-end');
-    const cityInput    = document.getElementById('att-city');
+    const groupSelect     = document.getElementById('att-group-select');
+    const groupWrapper    = document.getElementById('att-group-wrapper');
+    const siteWrapper     = document.getElementById('att-site-wrapper');
+    const siteSelect      = document.getElementById('att-site-select');
+    const legacyCheck     = document.getElementById('att-is-legacy');
+    const ongoingInput    = document.getElementById('att-is-ongoing');
+    const levelSelect     = document.getElementById('att-level-select');
+    const levelFromSelect = document.getElementById('att-level-from-select');
+    const courseStart     = document.getElementById('att-course-start');
+    const courseEnd       = document.getElementById('att-course-end');
+    const niveauStart     = document.getElementById('att-niveau-start');
+    const niveauEnd       = document.getElementById('att-niveau-end');
+    const cityInput       = document.getElementById('att-city');
 
     function applyLegacyMode() {
         const isLegacy = legacyCheck.checked;
@@ -269,20 +283,12 @@ document.addEventListener('DOMContentLoaded', function () {
             groupSelect.value = '';
             if (siteWrapper) siteWrapper.style.display = '';
             if (siteSelect)  siteSelect.setAttribute('required', 'required');
-            // Strip "dates disponibles / aucune date" annotations — irrelevant in legacy mode.
-            Array.from(levelSelect.options).forEach(opt => {
-                if (!opt.value) return;
-                const baseLabel = opt.dataset.baseLabel || opt.textContent.replace(/\s*•.*$/, '');
-                opt.dataset.baseLabel = baseLabel;
-                opt.textContent = baseLabel;
-            });
             showLevelWarning(false);
         } else {
             groupWrapper.style.display = '';
             groupSelect.setAttribute('required', 'required');
             if (siteWrapper) siteWrapper.style.display = 'none';
             if (siteSelect)  siteSelect.removeAttribute('required');
-            annotateLevelOptions();
         }
     }
 
@@ -295,25 +301,10 @@ document.addEventListener('DOMContentLoaded', function () {
         levelWarning.classList.toggle('d-none', !show);
     }
 
-    function annotateLevelOptions() {
-        // Tag each <option> with whether the group has a Suivi niveau entry for it.
-        const availableSet = new Set(cachedLevels.map(l => l.level));
-        Array.from(levelSelect.options).forEach(opt => {
-            if (!opt.value) return;
-            const has = availableSet.has(opt.value);
-            const baseLabel = opt.dataset.baseLabel || opt.textContent.replace(/\s*•.*$/, '');
-            opt.dataset.baseLabel = baseLabel;
-            opt.textContent = has
-                ? baseLabel + ' • dates disponibles'
-                : baseLabel + ' • aucune date enregistrée';
-        });
-    }
-
     function fetchGroupLevels(groupId, opts) {
         opts = opts || {};
         if (!groupId) {
             cachedLevels = [];
-            annotateLevelOptions();
             return;
         }
 
@@ -325,8 +316,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(r => r.json())
             .then(data => {
                 cachedLevels = data.levels || [];
-
-                annotateLevelOptions();
 
                 // Pre-fill course (vom .. bis) from group dates if empty
                 if (!courseStart.value && data.group?.date_debut) {
@@ -356,7 +345,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function onLevelChange(keepPreselectedDates) {
-        const value = levelSelect.value;
+        const value     = levelSelect.value;
+        const fromValue = levelFromSelect ? levelFromSelect.value : '';
+
         if (!value) {
             niveauStart.value = '';
             niveauEnd.value = '';
@@ -364,9 +355,17 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        const lvl = cachedLevels.find(function (l) { return l.level === value; });
-        const start = lvl ? lvl.start_date : null;
-        const end   = lvl ? lvl.end_date   : null;
+        const endLvl = cachedLevels.find(function (l) { return l.level === value; });
+
+        // Same level (or no "niveau de départ" chosen) → use that single level's own dates.
+        // Different "from" level → span from its start_date to the end level's end_date.
+        const useRange = fromValue && fromValue !== value;
+        const startLvl = useRange
+            ? cachedLevels.find(function (l) { return l.level === fromValue; })
+            : endLvl;
+
+        const start = startLvl ? startLvl.start_date : null;
+        const end   = endLvl   ? endLvl.end_date     : null;
 
         if (keepPreselectedDates) {
             // On edit reload, prefer saved values, otherwise fall back to Suivi niveau dates.
@@ -380,12 +379,13 @@ document.addEventListener('DOMContentLoaded', function () {
             niveauEnd.value   = end   || '';
         }
 
-        showLevelWarning(!lvl);
+        showLevelWarning(!startLvl || !endLvl);
     }
 
     groupSelect.addEventListener('change', function () {
         // New group → clear level + niveau dates so they get rebuilt from the new group's Suivi niveau.
         levelSelect.value = '';
+        if (levelFromSelect) levelFromSelect.value = '';
         niveauStart.value = '';
         niveauEnd.value = '';
         // Clear course dates too, will be auto-refilled from new group's date_debut/date_fin.
@@ -402,14 +402,19 @@ document.addEventListener('DOMContentLoaded', function () {
         onLevelChange(false);
     });
 
+    if (levelFromSelect) {
+        levelFromSelect.addEventListener('change', function () {
+            if (legacyCheck.checked) return;
+            onLevelChange(false);
+        });
+    }
+
     legacyCheck.addEventListener('change', applyLegacyMode);
 
     // Initial load (edit / old() repopulation)
     applyLegacyMode();
     if (!legacyCheck.checked && groupSelect.value) {
         fetchGroupLevels(groupSelect.value, { initialLoad: true });
-    } else if (!legacyCheck.checked) {
-        annotateLevelOptions();
     }
 
 });

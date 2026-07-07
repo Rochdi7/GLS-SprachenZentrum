@@ -17,6 +17,7 @@ class Attestation extends Model
         'site_id',
         'is_legacy',
         'level',
+        'level_from',
 
         'course_start_date',
         'course_end_date',
@@ -44,18 +45,18 @@ class Attestation extends Model
     ];
 
     protected $casts = [
-        'birth_date'         => 'date',
-        'course_start_date'  => 'date',
-        'course_end_date'    => 'date',
-        'niveau_start_date'  => 'date',
-        'niveau_end_date'    => 'date',
-        'issue_date'         => 'date',
-        'units_45min'        => 'integer',
-        'hours_per_session'  => 'decimal:2',
-        'stufe_index'        => 'integer',
-        'stufe_total'        => 'integer',
-        'is_ongoing'         => 'boolean',
-        'is_legacy'          => 'boolean',
+        'birth_date' => 'date',
+        'course_start_date' => 'date',
+        'course_end_date' => 'date',
+        'niveau_start_date' => 'date',
+        'niveau_end_date' => 'date',
+        'issue_date' => 'date',
+        'units_45min' => 'integer',
+        'hours_per_session' => 'decimal:2',
+        'stufe_index' => 'integer',
+        'stufe_total' => 'integer',
+        'is_ongoing' => 'boolean',
+        'is_legacy' => 'boolean',
     ];
 
     public function group()
@@ -70,7 +71,30 @@ class Attestation extends Model
 
     public function getFullNameAttribute(): string
     {
-        return strtoupper($this->last_name) . ' ' . strtoupper($this->first_name);
+        return strtoupper($this->last_name).' '.strtoupper($this->first_name);
+    }
+
+    /**
+     * Levels to check on the PDF. When `level_from` is set, returns every level
+     * between `level_from` and `level` inclusive (e.g. A1 → B1 = [A1, A2, B1]).
+     * Otherwise, just the single `level`.
+     */
+    public function getCheckedLevelsAttribute(): array
+    {
+        $order = ['A1', 'A2', 'B1', 'B2', 'C1'];
+
+        if (empty($this->level_from) || $this->level_from === $this->level) {
+            return array_filter([$this->level]);
+        }
+
+        $fromIdx = array_search($this->level_from, $order, true);
+        $toIdx = array_search($this->level, $order, true);
+
+        if ($fromIdx === false || $toIdx === false || $fromIdx > $toIdx) {
+            return array_filter([$this->level]);
+        }
+
+        return array_slice($order, $fromIdx, $toIdx - $fromIdx + 1);
     }
 
     protected static function booted(): void
@@ -88,8 +112,8 @@ class Attestation extends Model
 
     public static function generateNumber(): string
     {
-        $prefix = 'ATT-' . now()->format('Ym');
-        $last = static::where('attestation_number', 'like', $prefix . '%')
+        $prefix = 'ATT-'.now()->format('Ym');
+        $last = static::where('attestation_number', 'like', $prefix.'%')
             ->orderByDesc('attestation_number')
             ->value('attestation_number');
 
@@ -99,6 +123,6 @@ class Attestation extends Model
             $next = $lastNum + 1;
         }
 
-        return $prefix . '-' . str_pad($next, 4, '0', STR_PAD_LEFT);
+        return $prefix.'-'.str_pad($next, 4, '0', STR_PAD_LEFT);
     }
 }

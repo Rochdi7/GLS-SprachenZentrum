@@ -25,7 +25,7 @@
             </div>
         @endif
 
-        <form action="{{ route('backoffice.attestations.update', $attestation->id) }}" method="POST" class="needs-validation" novalidate>
+        <form action="{{ route('backoffice.attestations.update', $attestation->id) }}" method="POST">
             @csrf
             @method('PUT')
 
@@ -54,22 +54,6 @@
 
 @section('scripts')
 <script>
-    (function () {
-        'use strict';
-        window.addEventListener('load', function () {
-            const forms = document.getElementsByClassName('needs-validation');
-            [...forms].forEach(form => {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                });
-            });
-        });
-    })();
-
     function rollOutCard(event, link, cardId = 'attestation-form-card') {
         event.preventDefault();
         const card = document.getElementById(cardId);

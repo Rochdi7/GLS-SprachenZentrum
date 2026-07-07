@@ -21,7 +21,7 @@
                     <td>{{ $att->group?->name ?? ($att->is_legacy ? '— (ancien)' : '—') }}</td>
                     <td>{{ $att->site?->name ?? $att->group?->site?->name ?? '—' }}</td>
                     <td>
-                        <span class="badge bg-light-primary text-primary">{{ $att->level }}</span>
+                        <span class="badge bg-light-primary text-primary">{{ $att->level_from && $att->level_from !== $att->level ? $att->level_from . ' → ' . $att->level : $att->level }}</span>
                     </td>
                     <td>
                         {{ $att->niveau_start_date?->format('d/m/Y') }}

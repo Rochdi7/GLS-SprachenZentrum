@@ -28,7 +28,8 @@
     $niveauEnd    = $attestation->is_ongoing ? 'heute' : $fmt($attestation->niveau_end_date);
 
     $erfolgList = ['Erfolg', 'mit gutem Erfolg', 'mit Erfolg', 'teilgenommen'];
-    $levels     = ['A1', 'A2', 'B1', 'B2'];
+    $levels     = ['A1', 'A2', 'B1', 'B2', 'C1'];
+    $checkedLevels = $attestation->checked_levels;
 
     $defaultMethodology = "L'appréciation des résultats obtenus en cours est faite par les enseignant(e)s. Cette attestation de présence n'est pas un diplôme. Le barème comprend 4 appréciations : très bien, bien, assez bien, participation régulière.";
     $methodologyText = trim((string) ($attestation->methodology_text ?? '')) !== ''
@@ -340,7 +341,7 @@
             <tr>
                 @foreach($levels as $lvl)
                     <td>
-                        <span class="check-box {{ $attestation->level === $lvl ? 'checked' : '' }}"></span>{{ $lvl }}
+                        <span class="check-box {{ in_array($lvl, $checkedLevels, true) ? 'checked' : '' }}"></span>{{ $lvl }}
                     </td>
                 @endforeach
             </tr>

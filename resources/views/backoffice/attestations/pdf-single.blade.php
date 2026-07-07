@@ -107,7 +107,8 @@
     ]);
 
     $erfolgList = ['Erfolg', 'mit gutem Erfolg', 'mit Erfolg', 'teilgenommen'];
-    $levels = ['A1', 'A2', 'B1', 'B2'];
+    $levels = ['A1', 'A2', 'B1', 'B2', 'C1'];
+    $checkedLevels = $attestation->checked_levels;
 
     $methodologyText =
         trim((string) ($attestation->methodology_text ?? '')) !== '' ? $attestation->methodology_text : $t['legal'];
@@ -523,7 +524,7 @@
             @foreach ($levels as $lvl)
                 <td>
                     <span
-                        class="check-box {{ $attestation->level === $lvl ? 'checked' : '' }}"></span>{{ $lvl }}
+                        class="check-box {{ in_array($lvl, $checkedLevels, true) ? 'checked' : '' }}"></span>{{ $lvl }}
                 </td>
             @endforeach
         </tr>
