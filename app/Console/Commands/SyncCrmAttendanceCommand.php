@@ -21,7 +21,8 @@ class SyncCrmAttendanceCommand extends Command
     protected $signature = 'crm:sync-attendance
         {--store=* : Ignored — bulk endpoint streams all stores in one pass}
         {--all : Ignored — bulk endpoint streams all stores in one pass}
-        {--months=2 : Number of months back to sync (default 2)}
+        {--months=2 : Number of months back to sync (default 2, ignored if --days is set)}
+        {--days= : Number of days back to sync instead of whole months (e.g. --days=2 for yesterday+today)}
         {--delay=500 : Delay between page requests in ms}
         {--max-pages=200 : Max pages per run to avoid OOM on shared hosting (default 200)}
         {--from-page=0 : Start from this page (for manual resume)}';
@@ -56,13 +57,21 @@ class SyncCrmAttendanceCommand extends Command
 
     private function sync(): int
     {
-        $months   = max(1, min(12, (int) $this->option('months')));
         $delayMs  = max(100, (int) $this->option('delay'));
         $maxPages = max(1, (int) $this->option('max-pages'));
         $fromPage = max(0, (int) $this->option('from-page'));
 
-        $dateFrom = Carbon::today('Africa/Casablanca')->subMonths($months)->startOfMonth()->toDateString();
-        $dateTo   = Carbon::today('Africa/Casablanca')->toDateString();
+        $days = $this->option('days');
+
+        if ($days !== null) {
+            $days     = max(1, (int) $days);
+            $dateFrom = Carbon::today('Africa/Casablanca')->subDays($days - 1)->toDateString();
+        } else {
+            $months   = max(1, min(12, (int) $this->option('months')));
+            $dateFrom = Carbon::today('Africa/Casablanca')->subMonths($months)->startOfMonth()->toDateString();
+        }
+
+        $dateTo = Carbon::today('Africa/Casablanca')->toDateString();
 
         $this->info("Syncing attendance {$dateFrom} → {$dateTo} (all stores, pages {$fromPage}–" . ($fromPage + $maxPages - 1) . ")");
 
