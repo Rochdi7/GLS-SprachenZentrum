@@ -10,9 +10,9 @@ class HikvisionClient
 {
     protected string $baseUrl;
 
-    protected ?string $apiKey;
+    protected ?string $username;
 
-    protected ?string $apiSecret;
+    protected ?string $password;
 
     protected int $timeout;
 
@@ -21,14 +21,14 @@ class HikvisionClient
         $config ??= config('hikvision');
 
         $this->baseUrl = rtrim((string) ($config['base_url'] ?? ''), '/');
-        $this->apiKey = $config['api_key'] ?? null;
-        $this->apiSecret = $config['api_secret'] ?? null;
+        $this->username = $config['username'] ?? null;
+        $this->password = $config['password'] ?? null;
         $this->timeout = (int) ($config['timeout'] ?? 15);
     }
 
     public function isConfigured(): bool
     {
-        return $this->baseUrl !== '' && filled($this->apiKey) && filled($this->apiSecret);
+        return $this->baseUrl !== '' && filled($this->username) && filled($this->password);
     }
 
     public function baseUrl(): string
@@ -36,14 +36,14 @@ class HikvisionClient
         return $this->baseUrl;
     }
 
-    public function apiKey(): ?string
+    public function username(): ?string
     {
-        return $this->apiKey;
+        return $this->username;
     }
 
-    public function apiSecret(): ?string
+    public function password(): ?string
     {
-        return $this->apiSecret;
+        return $this->password;
     }
 
     public function timeout(): int
@@ -55,16 +55,13 @@ class HikvisionClient
     {
         return Http::acceptJson()
             ->baseUrl($this->baseUrl)
-            ->timeout($this->timeout);
+            ->timeout($this->timeout)
+            ->withDigestAuth((string) $this->username, (string) $this->password);
     }
 
     /**
-     * Central request entrypoint for future Hikvision endpoints.
-     *
-     * Authentication is intentionally not hardcoded here because Hikvision
-     * deployments can vary (digest auth, signature headers, gateway proxy).
-     * Higher-level services should attach the correct auth material through the
-     * $headers / $options arguments while secrets remain inside config().
+     * Central request entrypoint for ISAPI endpoints (device is authenticated
+     * via Digest Auth on every request, see pendingRequest()).
      *
      * @param  array<string, mixed>  $query
      * @param  array<string, mixed>  $payload

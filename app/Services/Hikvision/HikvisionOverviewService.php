@@ -56,8 +56,8 @@ class HikvisionOverviewService
             'config' => [
                 'configured' => $this->client->isConfigured(),
                 'base_url' => $this->client->baseUrl() ?: 'Non configuree',
-                'api_key' => $this->maskValue($this->client->apiKey()),
-                'api_secret' => $this->maskValue($this->client->apiSecret()),
+                'username' => $this->maskValue($this->client->username()),
+                'password' => $this->maskValue($this->client->password()),
                 'timeout' => $this->client->timeout(),
             ],
             'logSummary' => [
@@ -94,8 +94,8 @@ class HikvisionOverviewService
         return [
             'configured' => $this->client->isConfigured(),
             'base_url' => $this->client->baseUrl() ?: 'Non configuree',
-            'api_key' => $this->maskValue($this->client->apiKey()),
-            'api_secret' => $this->maskValue($this->client->apiSecret()),
+            'username' => $this->maskValue($this->client->username()),
+            'password' => $this->maskValue($this->client->password()),
             'last_sync_status' => $lastSync?->status ?? 'pending',
             'last_sync_at' => $lastSync?->completed_at,
         ];

@@ -76,12 +76,12 @@
                         <span class="fw-semibold">{{ $apiStatus['base_url'] }}</span>
                     </div>
                     <div class="mb-3">
-                        <small class="text-muted d-block">API Key</small>
-                        <code>{{ $apiStatus['api_key'] }}</code>
+                        <small class="text-muted d-block">Utilisateur</small>
+                        <code>{{ $apiStatus['username'] }}</code>
                     </div>
                     <div class="mb-3">
-                        <small class="text-muted d-block">API Secret</small>
-                        <code>{{ $apiStatus['api_secret'] }}</code>
+                        <small class="text-muted d-block">Mot de passe</small>
+                        <code>{{ $apiStatus['password'] }}</code>
                     </div>
                     <div>
                         <small class="text-muted d-block">Derniere synchronisation</small>

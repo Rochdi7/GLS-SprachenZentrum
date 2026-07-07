@@ -31,12 +31,12 @@
                             <input type="text" class="form-control" value="{{ $config['timeout'] }} secondes" readonly>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label text-muted">HIKVISION_API_KEY</label>
-                            <input type="text" class="form-control" value="{{ $config['api_key'] }}" readonly>
+                            <label class="form-label text-muted">HIKVISION_USERNAME</label>
+                            <input type="text" class="form-control" value="{{ $config['username'] }}" readonly>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label text-muted">HIKVISION_API_SECRET</label>
-                            <input type="text" class="form-control" value="{{ $config['api_secret'] }}" readonly>
+                            <label class="form-label text-muted">HIKVISION_PASSWORD</label>
+                            <input type="text" class="form-control" value="{{ $config['password'] }}" readonly>
                         </div>
                     </div>
                     <div class="alert alert-light-primary border mt-4 mb-0">
