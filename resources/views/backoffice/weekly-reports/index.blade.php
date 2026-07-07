@@ -1323,7 +1323,7 @@
 
                         {{-- Edit CTA button --}}
                         <button class="wc-edit-btn"
-                                onclick="event.stopPropagation(); openWeekModal('{{ $fridayKey }}', '{{ addslashes($weekLabel) }}', { freshOnly: true })">
+                                onclick="event.stopPropagation(); openWeekModal('{{ $fridayKey }}', '{{ addslashes($weekLabel) }}', { freshOnly: {{ $allWeekReports->isEmpty() ? 'true' : 'false' }} })">
                             <i class="ph-duotone ph-pencil-simple"></i>
                             {{ $allWeekReports->isEmpty() ? 'Saisir le rapport' : 'Modifier' }}
                         </button>
@@ -1480,8 +1480,11 @@
     function teacherOptionsHtml(selectedId) {
         const tpl = document.getElementById('teacherOptionsTpl').innerHTML;
         if (selectedId === undefined || selectedId === null || selectedId === '') return tpl;
-        const target = `<option value="${selectedId}"`;
-        return tpl.replace(target, `${target} selected`);
+        const wrapper = document.createElement('select');
+        wrapper.innerHTML = tpl;
+        const opt = wrapper.querySelector(`option[value="${String(selectedId).replace(/"/g, '\\"')}"]`);
+        if (opt) opt.setAttribute('selected', 'selected');
+        return wrapper.innerHTML;
     }
 
     function groupOptionsHtml(teacherId, selectedGroupId) {
