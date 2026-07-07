@@ -42,11 +42,11 @@ class ConsultationController extends Controller
 
         // Admin email
         Mail::to('info@gls-sprachzentrum.ma')
-            ->send(new ConsultationAdminMail($consultation));
+            ->queue(new ConsultationAdminMail($consultation));
 
         // Client confirmation email
         Mail::to($consultation->email)
-            ->send(new ConsultationConfirmationMail($consultation));
+            ->queue(new ConsultationConfirmationMail($consultation));
 
         return response()->json([
             'status'  => 'success',

@@ -98,7 +98,7 @@ class DailyReportController extends BaseCrmController
 
         try {
             \Illuminate\Support\Facades\Mail::to($recipient)
-                ->send(new \App\Mail\Reports\DailyCeoReportMail($report));
+                ->queue(new \App\Mail\Reports\DailyCeoReportMail($report));
 
             $report->update(['email_sent_at' => now()]);
         } catch (\Throwable $e) {

@@ -43,7 +43,7 @@ class AttestationRequestController extends Controller
         $attRequest = AttestationRequest::create($validated);
 
         try {
-            Mail::to('info@gls-sprachzentrum.ma')->send(new AttestationRequestSubmittedMail($attRequest));
+            Mail::to('info@gls-sprachzentrum.ma')->queue(new AttestationRequestSubmittedMail($attRequest));
         } catch (\Throwable $e) {
             Log::error('Attestation request email failed: ' . $e->getMessage(), [
                 'request_id' => $attRequest->id,

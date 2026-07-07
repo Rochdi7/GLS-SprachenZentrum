@@ -133,7 +133,7 @@ class ScheduledReportsController extends Controller
 
         try {
             foreach ($recipients as $email) {
-                Mail::to($email)->send(new $mailClass($data));
+                Mail::to($email)->queue(new $mailClass($data));
             }
         } catch (\Throwable $e) {
             $status = 'failed';

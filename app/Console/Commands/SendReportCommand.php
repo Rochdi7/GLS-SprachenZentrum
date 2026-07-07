@@ -71,8 +71,8 @@ class SendReportCommand extends Command
         $recipients = $this->resolveRecipients();
 
         foreach ($recipients as $email) {
-            Mail::to($email)->send(new $mailable($data));
-            $this->line("  → Sent to {$email}");
+            Mail::to($email)->queue(new $mailable($data));
+            $this->line("  → Queued for {$email}");
         }
 
         $this->info("Report [{$type}] sent to " . count($recipients) . ' recipient(s).');

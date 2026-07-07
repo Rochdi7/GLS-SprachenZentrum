@@ -105,20 +105,24 @@ Route::post('/discover-your-level/answer', [LevelQuizController::class, 'answer'
 |--------------------------------------------------------------------------
 */
 Route::get('/traductions/suivi', [TranslationTrackingController::class, 'show'])
+    ->middleware('throttle:public-lookup')
     ->name('front.translations.track');
 
 /*
 |--------------------------------------------------------------------------
-| POST routes
+| POST routes — rate limited (public-form: 10 req/min per IP) to protect
+| against spam/abuse now that submissions trigger emails + CRM/Sheets sync.
 |--------------------------------------------------------------------------
 */
-Route::post('/contact', [PageController::class, 'contactPost'])->name('front.contact.post');
-Route::post('/certificate-check', [PageController::class, 'certificateCheckPost'])->name('front.certificate.check.post');
-Route::post('/online-registration', [PageController::class, 'storeOnlineRegistration'])->name('front.online-registration.store');
-Route::post('/gls-inscription', [GlsController::class, 'store'])->name('gls.inscription');
-Route::post('/demande-attestation', [AttestationRequestController::class, 'store'])->name('front.attestation-request.store');
-Route::post('/feedback', [FeedbackController::class, 'store'])->name('front.feedback.store');
-Route::post('/consultation', [ConsultationController::class, 'store'])->name('front.consultation.store');
-Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
-Route::post('/groups/apply', [GroupApplicationController::class, 'storeFromQuery'])->name('front.groups.apply');
-Route::post('/groups/{group}/apply', [GroupApplicationController::class, 'store'])->name('front.groups.apply.legacy');
+Route::middleware('throttle:public-form')->group(function () {
+    Route::post('/contact', [PageController::class, 'contactPost'])->name('front.contact.post');
+    Route::post('/certificate-check', [PageController::class, 'certificateCheckPost'])->name('front.certificate.check.post');
+    Route::post('/online-registration', [PageController::class, 'storeOnlineRegistration'])->name('front.online-registration.store');
+    Route::post('/gls-inscription', [GlsController::class, 'store'])->name('gls.inscription');
+    Route::post('/demande-attestation', [AttestationRequestController::class, 'store'])->name('front.attestation-request.store');
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('front.feedback.store');
+    Route::post('/consultation', [ConsultationController::class, 'store'])->name('front.consultation.store');
+    Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+    Route::post('/groups/apply', [GroupApplicationController::class, 'storeFromQuery'])->name('front.groups.apply');
+    Route::post('/groups/{group}/apply', [GroupApplicationController::class, 'store'])->name('front.groups.apply.legacy');
+});

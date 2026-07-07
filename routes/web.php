@@ -104,92 +104,102 @@ Route::group([
  * =============================
  * (NOT using api.php because user JS calls /api/... directly)
  */
-Route::prefix('api')->group(function () {
+Route::prefix('api')->middleware('throttle:public-lookup')->group(function () {
     Route::get('/groups/dates/{site_id}/{level}', [GroupApiController::class, 'getDates']);
 });
-
-Route::get('/debug-crm-api-centers', function () {
-    $crm = app(\App\Services\Crm\Crm::class);
-    // Use raw client to hit the lov endpoint directly
-    try {
-        $resp = $crm->client()->get('/api/external/v1/lov/sites', ['limit' => 100]);
-        return [
-            'success' => true,
-            'crm_api_url' => config('services.crm.base_url'),
-            'centers_from_crm' => $resp,
-        ];
-    } catch (\Throwable $e) {
-        return [
-            'success' => false,
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-        ];
-    }
-})->middleware('auth');
-
-Route::get('/debug-crm-token', function () {
-    $crm = app(\App\Services\Crm\Crm::class);
-    try {
-        $resp = $crm->client()->get('/api/external/v1/lov/banks', ['limit' => 1]);
-        return [
-            'success' => true,
-            'token_first_chars' => substr(config('services.crm.token'), 0, 8) . '...',
-            'can_fetch_banks' => true,
-            'response' => $resp,
-        ];
-    } catch (\Throwable $e) {
-        return [
-            'success' => false,
-            'error' => $e->getMessage(),
-        ];
-    }
-})->middleware('auth');
-
-Route::get('/debug-crm-raw-data', function () {
-    $crm = app(\App\Services\Crm\Crm::class);
-    try {
-        // Scan many classes to find all unique Store IDs
-        $resp = $crm->client()->get('/api/external/v1/groups/classes', ['page' => 0, 'size' => 500]);
-        $data = $resp['data'] ?? [];
-        $stores = [];
-
-        foreach ($data as $class) {
-            $sid = $class['STR_STORE_ID'] ?? 'MISSING';
-            if (!isset($stores[$sid])) {
-                $stores[$sid] = [
-                    'store_id' => $sid,
-                    'example_class' => $class['NAME'],
-                    'teacher' => $class['EMPLOYEE_TEACHER_FULL_NAME'] ?? 'N/A',
-                ];
-            }
-        }
-
-        return [
-            'success' => true,
-            'discovered_stores' => array_values($stores),
-            'total_scanned' => count($data)
-        ];
-    } catch (\Throwable $e) {
-        return ['success' => false, 'error' => $e->getMessage()];
-    }
-})->middleware('auth');
 
 Route::get('/certificates/download/{token}', [CertificatePublicController::class, 'download'])
     ->name('certificates.public.download');
 
 /**
  * =============================
- * TEST ERROR PAGES (REMOVE IN PRODUCTION)
+ * LOCAL-ONLY DEBUG / DIAGNOSTIC ROUTES
  * =============================
+ * CRM raw-API probes and synthetic error pages used during development.
+ * Restricted to the local environment so they never resolve on production
+ * regardless of route caching. Previously auth()-gated and reachable in
+ * production; narrowed further since they expose internal CRM responses
+ * and stack traces to any authenticated backoffice user.
  */
-Route::prefix('test-errors')->group(function () {
-    Route::get('/401', fn() => response()->view('errors.401', [], 401));
-    Route::get('/403', fn() => response()->view('errors.403', [], 403));
-    Route::get('/404', fn() => response()->view('errors.404', [], 404));
-    Route::get('/419', fn() => response()->view('errors.419', [], 419));
-    Route::get('/429', fn() => response()->view('errors.429', [], 429));
-    Route::get('/500', fn() => response()->view('errors.500', [], 500));
-    Route::get('/501', fn() => response()->view('errors.501', [], 501));
-    Route::get('/502', fn() => response()->view('errors.502', [], 502));
-    Route::get('/503', fn() => response()->view('errors.503', [], 503));
-});
+if (app()->environment('local')) {
+    Route::get('/debug-crm-api-centers', function () {
+        $crm = app(\App\Services\Crm\Crm::class);
+        // Use raw client to hit the lov endpoint directly
+        try {
+            $resp = $crm->client()->get('/api/external/v1/lov/sites', ['limit' => 100]);
+            return [
+                'success' => true,
+                'crm_api_url' => config('crm.base_url'),
+                'centers_from_crm' => $resp,
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ];
+        }
+    })->middleware('auth');
+
+    Route::get('/debug-crm-token', function () {
+        $crm = app(\App\Services\Crm\Crm::class);
+        try {
+            $resp = $crm->client()->get('/api/external/v1/lov/banks', ['limit' => 1]);
+            return [
+                'success' => true,
+                'token_first_chars' => substr((string) config('crm.token'), 0, 8) . '...',
+                'can_fetch_banks' => true,
+                'response' => $resp,
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    })->middleware('auth');
+
+    Route::get('/debug-crm-raw-data', function () {
+        $crm = app(\App\Services\Crm\Crm::class);
+        try {
+            // Scan many classes to find all unique Store IDs
+            $resp = $crm->client()->get('/api/external/v1/groups/classes', ['page' => 0, 'size' => 500]);
+            $data = $resp['data'] ?? [];
+            $stores = [];
+
+            foreach ($data as $class) {
+                $sid = $class['STR_STORE_ID'] ?? 'MISSING';
+                if (!isset($stores[$sid])) {
+                    $stores[$sid] = [
+                        'store_id' => $sid,
+                        'example_class' => $class['NAME'],
+                        'teacher' => $class['EMPLOYEE_TEACHER_FULL_NAME'] ?? 'N/A',
+                    ];
+                }
+            }
+
+            return [
+                'success' => true,
+                'discovered_stores' => array_values($stores),
+                'total_scanned' => count($data)
+            ];
+        } catch (\Throwable $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    })->middleware('auth');
+
+    /**
+     * TEST ERROR PAGES — render each error view for visual QA.
+     */
+    Route::prefix('test-errors')->group(function () {
+        Route::get('/401', fn() => response()->view('errors.401', [], 401));
+        Route::get('/403', fn() => response()->view('errors.403', [], 403));
+        Route::get('/404', fn() => response()->view('errors.404', [], 404));
+        Route::get('/419', fn() => response()->view('errors.419', [], 419));
+        Route::get('/429', fn() => response()->view('errors.429', [], 429));
+        Route::get('/500', fn() => response()->view('errors.500', [], 500));
+        Route::get('/501', fn() => response()->view('errors.501', [], 501));
+        Route::get('/502', fn() => response()->view('errors.502', [], 502));
+        Route::get('/503', fn() => response()->view('errors.503', [], 503));
+    });
+}

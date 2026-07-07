@@ -1,5 +1,13 @@
 <?php
 
+// Comma-separated list of allowed origins, e.g.
+// CORS_ALLOWED_ORIGINS="https://glssprachenzentrum.ma,https://www.glssprachenzentrum.ma"
+// Falls back to APP_URL alone when unset so this never silently defaults to "*".
+$allowedOrigins = array_values(array_filter(array_map(
+    'trim',
+    explode(',', (string) env('CORS_ALLOWED_ORIGINS', env('APP_URL', '')))
+)));
+
 return [
 
     /*
@@ -19,7 +27,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => $allowedOrigins,
 
     'allowed_origins_patterns' => [],
 

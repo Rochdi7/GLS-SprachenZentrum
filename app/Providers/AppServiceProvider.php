@@ -73,6 +73,19 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(30);
         });
 
+        // Rate limiter for public-facing forms (contact, inscription, consultation,
+        // attestation request, newsletter, group application). Keyed by IP so
+        // anonymous visitors are limited without needing an authenticated user.
+        RateLimiter::for('public-form', function (\Illuminate\Http\Request $request) {
+            return Limit::perMinute(10)->by($request->ip());
+        });
+
+        // Slightly more generous limiter for read-only public lookup endpoints
+        // (centers/groups listings) used by frontend AJAX.
+        RateLimiter::for('public-lookup', function (\Illuminate\Http\Request $request) {
+            return Limit::perMinute(60)->by($request->ip());
+        });
+
         // Use Bootstrap 5 pagination views instead of Tailwind
         Paginator::useBootstrapFive();
 

@@ -232,7 +232,7 @@ class TranslationController extends Controller
 
         try {
             $translation->loadMissing('items');
-            Mail::to($translation->email)->send(new TranslationReadyMail($translation));
+            Mail::to($translation->email)->queue(new TranslationReadyMail($translation));
             $translation->forceFill(['ready_notified_at' => now()])->saveQuietly();
 
             return true;

@@ -102,6 +102,17 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/stats-self-heal.log'));
 
+        // ── Hikvision device sync — every 15 minutes ─────────────────────────
+        // Pulls device/persons/attendance/alarms from the local access-control
+        // terminal. Previously unscheduled (manual-only via CLI), so device
+        // data never refreshed on its own. See HIKVISION_SETUP.md.
+        $schedule->command('hikvision:sync')
+            ->everyFifteenMinutes()
+            ->timezone('Africa/Casablanca')
+            ->withoutOverlapping(10)
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/hikvision-sync.log'));
+
         // ── Deep resync every 2h — pulls 3 months of history so that any data
         //    modified in Wimschool during the day (absences entered by reception,
         //    payment corrections, inscription updates) is reflected well before

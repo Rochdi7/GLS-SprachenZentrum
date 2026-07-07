@@ -69,7 +69,7 @@ class AttestationRequestController extends Controller
         ]);
 
         try {
-            Mail::to($attRequest->email)->send(new AttestationRequestAcceptedMail($attRequest));
+            Mail::to($attRequest->email)->queue(new AttestationRequestAcceptedMail($attRequest));
         } catch (\Throwable $e) {
             Log::error('Failed to send acceptance email: ' . $e->getMessage(), [
                 'request_id' => $attRequest->id,
@@ -107,7 +107,7 @@ class AttestationRequestController extends Controller
         ]);
 
         try {
-            Mail::to($attRequest->email)->send(new AttestationRequestRefusedMail($attRequest));
+            Mail::to($attRequest->email)->queue(new AttestationRequestRefusedMail($attRequest));
         } catch (\Throwable $e) {
             Log::error('Failed to send refusal email: ' . $e->getMessage(), [
                 'request_id' => $attRequest->id,

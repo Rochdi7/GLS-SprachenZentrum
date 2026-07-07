@@ -117,10 +117,10 @@ class GlsController extends Controller
         // Send emails (wrapped so email failure doesn't break the flow)
         try {
             Mail::to('info@gls-sprachzentrum.ma')
-                ->send(new GlsInscriptionMail($emailData, $centre, $group));
+                ->queue(new GlsInscriptionMail($emailData, $centre, $group));
 
             Mail::to($validated['email'])
-                ->send(new GlsInscriptionConfirmation($emailData, $centre, $group));
+                ->queue(new GlsInscriptionConfirmation($emailData, $centre, $group));
         } catch (\Throwable $e) {
             Log::error('GLS inscription email error: ' . $e->getMessage(), [
                 'inscription_id' => $inscription->id,
