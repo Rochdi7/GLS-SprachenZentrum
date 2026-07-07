@@ -10,6 +10,13 @@ implemented incrementally with production safety as the primary constraint
 (no destructive migrations, no hardcoded domains, no behavior changes where
 unique keys/semantics were unclear).
 
+> **Note:** this file documents *what to configure*, not the actual values.
+> Never paste real `.env` contents (passwords, API tokens, `APP_KEY`) into
+> this file or any other tracked/committed file — `.env` itself is
+> git-ignored specifically so secrets never enter version control. If you
+> need to record real values for reference, use a password manager or a
+> local untracked file, not a file inside this repository.
+
 ## Redis
 
 Redis is installed on the VPS but **not yet enabled** in `.env.example`'s
@@ -108,6 +115,24 @@ surfaces in `failed_jobs` instead of the original try/catch.
 **This only takes effect once `QUEUE_CONNECTION=redis` (or `database`) is
 set in production `.env`** — until then, `->queue()` still runs synchronously
 under the `sync` driver, identically to before.
+
+## CEO daily report — auto-send disabled
+
+`crm:daily-report` runs every 2 hours (directly in `Kernel.php`, and as the
+last step of `crm:sync-all`) — that's up to 12 runs/day. It used to both
+generate/store the report **and** dispatch `SendDailyReportJob` to email it
+every single run, which produced far too much email volume.
+
+`app/Console/Commands/GenerateDailyReportCommand.php` now only generates and
+stores the report by default — the automatic email dispatch was removed. The
+command gained a `--send` flag (`php artisan crm:daily-report --send`) for
+anyone who wants to trigger an email manually from the CLI, but nothing
+scheduled passes that flag, so no automatic emails go out.
+
+The backoffice "resend" button
+(`app/Http/Controllers/Backoffice/Crm/DailyReportController.php::resend`) is
+unaffected — it emails `DailyCeoReportMail` directly and still works exactly
+as before for on-demand sends.
 
 ## Rate limiting
 
@@ -301,32 +326,23 @@ modified in this pass — CRM/Hikvision sync behavior is unchanged.
 
 None of these are set automatically by pulling this code — `.env` is never
 committed, and none of these have safe defaults that make sense to force in
-code:
+code. **Set the real values directly on the server via SSH/editor — never
+paste them into a file inside this repository (see note at the top of this
+document).**
 
-```dotenv
-# Queue / cache / session — see "Redis" above
-CACHE_DRIVER=redis
-SESSION_DRIVER=redis
-QUEUE_CONNECTION=redis
-RESPONSE_CACHE_DRIVER=redis
-REDIS_CLIENT=predis
-REDIS_HOST=127.0.0.1
-REDIS_PASSWORD=<your-redis-password-or-null>
-REDIS_PORT=6379
-REDIS_CACHE_DB=1
+Keys to set (see `.env.example` for the full list with placeholder/default
+values — copy the *structure*, not real secrets, from there):
 
-# Logging
-LOG_CHANNEL=daily
-
-# CORS — set explicitly, don't rely on the APP_URL fallback in production
-CORS_ALLOWED_ORIGINS=https://glssprachenzentrum.ma,https://www.glssprachenzentrum.ma
-
-# Verify these are already correct — do not assume:
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://glssprachenzentrum.ma
-SEO_CANONICAL_HOST=glssprachenzentrum.ma
-```
+- Queue / cache / session: `CACHE_DRIVER`, `SESSION_DRIVER`,
+  `QUEUE_CONNECTION`, `RESPONSE_CACHE_DRIVER` → `redis`; `REDIS_CLIENT`,
+  `REDIS_HOST`, `REDIS_PASSWORD`, `REDIS_PORT`, `REDIS_CACHE_DB`
+- Logging: `LOG_CHANNEL=daily`
+- CORS: `CORS_ALLOWED_ORIGINS` — set explicitly, don't rely on the
+  `APP_URL` fallback in production
+- Verify these are already correct — do not assume: `APP_ENV=production`,
+  `APP_DEBUG=false` (never `true` in production — leaks stack traces and
+  environment details to visitors), `APP_URL`, `SEO_CANONICAL_HOST`
+  (both should be the real non-hyphenated production domain)
 
 Plus the one-time server-side setup that isn't `.env` at all:
 - Supervisor `gls-worker` program (see above)

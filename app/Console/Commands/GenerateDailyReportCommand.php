@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\Crm\SendDailyReportJob;
 use App\Services\Crm\Stats\DailyReportService;
 use Illuminate\Console\Command;
 
@@ -12,12 +11,13 @@ class GenerateDailyReportCommand extends Command
      * The name and signature of the console command.
      */
     protected $signature = 'crm:daily-report
-                            {--date= : Date in yyyy-mm-dd format, defaults to yesterday}';
+                            {--date= : Date in yyyy-mm-dd format, defaults to yesterday}
+                            {--send  : Also email the report via SendDailyReportJob (off by default — auto-send was disabled, too many emails)}';
 
     /**
      * The console command description.
      */
-    protected $description = 'Generate the daily CEO CRM report and dispatch the send job';
+    protected $description = 'Generate the daily CEO CRM report and store it (email disabled by default — use --send to email it)';
 
     public function handle(DailyReportService $service): int
     {
@@ -35,8 +35,10 @@ class GenerateDailyReportCommand extends Command
             $this->line("  At risk:       " . $report->students_at_risk);
             $this->line("  Best center:   " . ($report->best_center ?? '—'));
 
-            SendDailyReportJob::dispatch($report);
-            $this->info('SendDailyReportJob dispatched.');
+            if ($this->option('send')) {
+                \App\Jobs\Crm\SendDailyReportJob::dispatch($report);
+                $this->info('SendDailyReportJob dispatched.');
+            }
         } catch (\Throwable $e) {
             $this->error('Failed: ' . $e->getMessage());
             return self::FAILURE;
