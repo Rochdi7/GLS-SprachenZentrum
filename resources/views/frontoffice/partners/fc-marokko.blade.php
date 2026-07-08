@@ -11,7 +11,7 @@
     {{-- ================== HERO ================== --}}
     <section class="fcm-hero">
         <div class="fcm-hero__bg"
-            style="background-image:url('https://fc-marokko.de/storage/2025/02/475873194_1137954098118088_822180009608469424_n.avif');">
+            style="background-image:url('{{ asset('assets/images/fc-marokko/475873194_1137954098118088_822180009608469424_n.avif') }}');">
         </div>
         <div class="fcm-hero__overlay"></div>
 
@@ -325,7 +325,7 @@
                 <div class="col-12 col-lg-6 reveal delay-2">
                     <div class="fcm-story__visual reveal fcm-anim fcm-anim--tilt delay-2">
                         <div class="fcm-story__card fcm-story__card--main">
-                            <img src="https://fc-marokko.de/storage/2025/02/475873194_1137954098118088_822180009608469424_n.avif"
+                            <img src="{{ asset('assets/images/fc-marokko/475873194_1137954098118088_822180009608469424_n.avif') }}"
                                  alt="FC Marokko" loading="lazy">
                             <div class="fcm-story__card-tag">
                                 <i class="bi bi-trophy-fill"></i>

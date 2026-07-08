@@ -164,7 +164,6 @@
     @include('frontoffice.sites.partials.groups-schedule', [
         'title' => __('sites/online.groups.title'),
         'groups' => $groups ?? collect(),
-        'groupNameField' => 'name_fr',
         'labels' => [
             'morning' => __('sites/online.groups.morning'),
             'midday' => __('sites/online.groups.midday'),

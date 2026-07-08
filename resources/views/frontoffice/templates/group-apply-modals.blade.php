@@ -153,7 +153,7 @@
 {{-- Fallback data (si tu veux ouvrir via ?group=ID) --}}
 <select id="applyGroupsData" class="d-none">
     @foreach ($applyGroups as $g)
-        <option value="{{ $g->id }}" data-label="{{ $g->name_fr ?? ($g->name ?? 'Groupe #' . $g->id) }}"
+        <option value="{{ $g->id }}" data-label="{{ strtoupper($g->level ?? ($g->niveau ?? '')) . ' - ' . ($g->time_range ?? ($g->period_label ?? ($g->period ?? ''))) }}"
             data-schedule="{{ $g->period_label ?? ($g->period ?? '') }}"
             data-level="{{ $g->level ?? ($g->niveau ?? '') }}">
         </option>

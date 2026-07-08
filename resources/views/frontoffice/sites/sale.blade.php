@@ -153,9 +153,6 @@
                     'afternoon' => __('sites/sale.groups.afternoon'),
                     'evening' => __('sites/sale.groups.evening'),
                 ];
-
-                // Champ du nom du groupe à afficher (change si besoin: name / name_fr / name_en / name_ar / name_de)
-                $groupNameField = 'name_fr';
             @endphp
 
             @foreach ($periods as $key => $label)
@@ -184,14 +181,13 @@
                                     @forelse ($collection->where('status', 'active') as $group)
                                         <p class="reveal delay-1 gls-group-row">
                                             <span class="gls-group-text">
-                                                {{ data_get($group, $groupNameField) ?? $group->name }}
-                                                - {{ strtoupper($group->level) }}
+                                                {{ strtoupper($group->level) }}
                                                 - {{ $group->time_range }}
                                             </span>
 
                                             <a href="#" class="gls-apply-btn" data-bs-toggle="modal"
                                                 data-bs-target="#glsApplyGroupModal" data-group-id="{{ $group->id }}"
-                                                data-group-label="{{ $group->name_fr ?? ($group->name ?? 'Groupe #' . $group->id) }}"
+                                                data-group-label="{{ strtoupper($group->level) . ' - ' . $group->time_range }}"
                                                 data-group-level="{{ $group->level ?? ($group->niveau ?? '') }}"
                                                 data-group-schedule="{{ $group->period_label ?? ($group->period ?? '') }}">
                                                 Apply
@@ -209,14 +205,13 @@
                                     @forelse ($collection->where('status', 'upcoming') as $group)
                                         <p class="reveal delay-1 gls-group-row">
                                             <span class="gls-group-text">
-                                                {{ data_get($group, $groupNameField) ?? $group->name }}
-                                                - {{ strtoupper($group->level) }}
+                                                {{ strtoupper($group->level) }}
                                                 - {{ $group->time_range }}
                                             </span>
 
                                             <a href="#" class="gls-apply-btn" data-bs-toggle="modal"
                                                 data-bs-target="#glsApplyGroupModal" data-group-id="{{ $group->id }}"
-                                                data-group-label="{{ $group->name_fr ?? ($group->name ?? 'Groupe #' . $group->id) }}"
+                                                data-group-label="{{ strtoupper($group->level) . ' - ' . $group->time_range }}"
                                                 data-group-level="{{ $group->level ?? ($group->niveau ?? '') }}"
                                                 data-group-schedule="{{ $group->period_label ?? ($group->period ?? '') }}">
                                                 Apply

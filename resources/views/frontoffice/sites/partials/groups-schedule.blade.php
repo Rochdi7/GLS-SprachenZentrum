@@ -14,8 +14,6 @@
                 'afternoon' => __('sites/online.groups.afternoon'),
                 'evening'   => __('sites/online.groups.evening'),
             ];
-
-            $groupNameField = 'name_fr';
         @endphp
 
         @foreach ($periods as $key => $label)
@@ -47,8 +45,7 @@
 
                                 @forelse ($collection->where('status', 'active') as $group)
                                     <p class="reveal delay-1">
-                                        {{ data_get($group, $groupNameField) ?? $group->name }}
-                                        – {{ strtoupper($group->level) }}
+                                        {{ strtoupper($group->level) }}
                                         – {{ $group->time_range }}
                                     </p>
                                 @empty
@@ -65,8 +62,7 @@
 
                                 @forelse ($collection->where('status', 'upcoming') as $group)
                                     <p class="reveal delay-1">
-                                        {{ data_get($group, $groupNameField) ?? $group->name }}
-                                        – {{ strtoupper($group->level) }}
+                                        {{ strtoupper($group->level) }}
                                         – {{ $group->time_range }}
                                     </p>
                                 @empty
