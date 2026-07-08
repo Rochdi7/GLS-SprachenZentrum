@@ -26,6 +26,7 @@ class LeadController extends Controller
             ->values();
 
         // Build queries with optional centre filter
+        $consultationsQuery = Consultation::latest();
         $inscriptionsQuery = GlsInscription::with('site')->latest();
         $applicationsQuery = GroupApplication::with(['group.site'])->latest();
 
@@ -37,6 +38,11 @@ class LeadController extends Controller
                 $q->whereIn('centre', $allowedSiteIds)->orWhere('centre', 0)->orWhere('type_cours', 'en_ligne');
             });
             $applicationsQuery->whereHas('group', fn ($q) => $q->whereIn('site_id', $allowedSiteIds));
+
+            // Consultations have no site_id — only a free-text `city` field from
+            // the frontoffice form. Approximate the scope by matching city
+            // against the cities of the sites this user can access.
+            $this->scopeConsultationsToCities($consultationsQuery, $allowedSiteIds);
         }
 
         if ($centreFilter !== 'all') {
@@ -44,22 +50,25 @@ class LeadController extends Controller
                 $inscriptionsQuery->where(function ($q) {
                     $q->where('centre', 0)->orWhere('type_cours', 'en_ligne');
                 });
-                // Applications don't have online, so return empty
+                // Applications & consultations don't have an "online" concept, so return empty
                 $applicationsQuery->whereRaw('1 = 0');
+                $consultationsQuery->whereRaw('1 = 0');
             } else {
                 $resolved = $this->resolveRequestedSiteId((int) $centreFilter);
                 if ($resolved === null) {
                     // Requested a centre the user can't access → empty result
                     $inscriptionsQuery->whereRaw('1 = 0');
                     $applicationsQuery->whereRaw('1 = 0');
+                    $consultationsQuery->whereRaw('1 = 0');
                 } else {
                     $inscriptionsQuery->where('centre', $resolved);
                     $applicationsQuery->whereHas('group', fn ($q) => $q->where('site_id', $resolved));
+                    $this->scopeConsultationsToCities($consultationsQuery, [$resolved]);
                 }
             }
         }
 
-        $consultations = Consultation::latest()->get();
+        $consultations = $consultationsQuery->get();
         $inscriptions = $inscriptionsQuery->get();
         $applications = $applicationsQuery->get();
 
@@ -111,6 +120,7 @@ class LeadController extends Controller
                     $q->whereIn('centre', $allowedSiteIds)->orWhere('centre', 0)->orWhere('type_cours', 'en_ligne');
                 });
                 $appQuery->whereHas('group', fn ($q) => $q->whereIn('site_id', $allowedSiteIds));
+                $this->scopeConsultationsToCities($consQuery, $allowedSiteIds);
             }
 
             if ($centreFilter !== 'all') {
@@ -119,14 +129,17 @@ class LeadController extends Controller
                         $q->where('centre', 0)->orWhere('type_cours', 'en_ligne');
                     });
                     $appQuery->whereRaw('1 = 0');
+                    $consQuery->whereRaw('1 = 0');
                 } else {
                     $resolved = $this->resolveRequestedSiteId((int) $centreFilter);
                     if ($resolved === null) {
                         $inscQuery->whereRaw('1 = 0');
                         $appQuery->whereRaw('1 = 0');
+                        $consQuery->whereRaw('1 = 0');
                     } else {
                         $inscQuery->where('centre', $resolved);
                         $appQuery->whereHas('group', fn ($q) => $q->where('site_id', $resolved));
+                        $this->scopeConsultationsToCities($consQuery, [$resolved]);
                     }
                 }
             }
@@ -170,6 +183,27 @@ class LeadController extends Controller
             'totalConsultations',
             'totalApplications',
         ));
+    }
+
+    /**
+     * Consultations have no site_id — only a free-text `city` field from the
+     * frontoffice form. Approximate a centre scope by matching that city
+     * against the given sites' `city` column (case-insensitive).
+     */
+    private function scopeConsultationsToCities($query, array $siteIds): void
+    {
+        $cities = Site::whereIn('id', $siteIds)->pluck('city')->filter()->all();
+
+        if (empty($cities)) {
+            $query->whereRaw('1 = 0');
+            return;
+        }
+
+        $query->where(function ($q) use ($cities) {
+            foreach ($cities as $city) {
+                $q->orWhereRaw('LOWER(city) = ?', [mb_strtolower($city)]);
+            }
+        });
     }
 
     public function destroyConsultation(Consultation $consultation)

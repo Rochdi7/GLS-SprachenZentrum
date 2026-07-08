@@ -297,4 +297,53 @@
   /* RTL — flip arrow direction visually */
   [dir="rtl"] .gls-address-arrow { transform: scaleX(-1); }
   [dir="rtl"] .gls-address-link:hover .gls-address-arrow { transform: translate(-1px, -1px) scaleX(-1); }
-  
+
+  /* Per-centre phone numbers inside the dropdown */
+  .gls-address-phones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 2px;
+  }
+
+  .gls-address-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    text-decoration: none;
+    font-size: 0.86rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 255, 255, .8);
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid rgba(255, 255, 255, .06);
+    border-radius: 8px;
+    transition: background .2s ease, border-color .2s ease, color .2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .gls-address-phone-icon {
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, .5);
+    transition: color .2s ease;
+  }
+
+  .gls-address-phone:hover {
+    background: rgba(255, 255, 255, .08);
+    border-color: rgba(255, 255, 255, .14);
+    color: #fff;
+  }
+
+  .gls-address-phone:hover .gls-address-phone-icon {
+    color: #fff;
+  }
+
+  .gls-address-phone:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, .35);
+    outline-offset: 2px;
+  }
+
+  [dir="rtl"] .gls-address-phone {
+    direction: ltr;
+  }

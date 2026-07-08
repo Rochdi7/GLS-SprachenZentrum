@@ -135,7 +135,7 @@
         'Kénitra'    => 'Avenue Mohammed V, Bureaux Rania, 7ème étage, Kénitra',
         'Sale'       => 'Avenue Mohamed V, Rue Halima N°12 Diyar, Salé',
         'Salé'       => 'Avenue Mohamed V, Rue Halima N°12 Diyar, Salé',
-        'Agadir'     => 'Av. Massoude Al Wafkaoui, Place des Taxis, Hay Essalam, Agadir',
+        'Agadir'     => '2ème étage, Av. Massoude Al Wafkaoui, Agadir 80000',
     ];
     $siteCity      = $site?->city ?? '';
     $footerAddress = $addressMap[$siteCity] ?? ($site?->address ?? '');

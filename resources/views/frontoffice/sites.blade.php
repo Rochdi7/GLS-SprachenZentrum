@@ -125,7 +125,7 @@
                                     <a href="https://www.google.com/search?q=GLS+Sprachenzentrum+-+Centre+GLS+de+langue+Allemande+Agadir"
                                         target="_blank">GLS Agadir</a>
                                 </h5>
-                                <p class="reveal delay-3">Av. Massoude Al Wafkaoui, Place des taxis, Hay Essalam, Agadir</p>
+                                <p class="reveal delay-3">2ème étage, Av. Massoude Al Wafkaoui, Agadir 80000</p>
                                 <a href="https://wa.me/212606484051" class="phone reveal delay-1">
                                     <i class="bi bi-telephone-fill me-2"></i>+212 606-48 40 51
                                 </a>
