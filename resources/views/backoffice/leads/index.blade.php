@@ -146,21 +146,21 @@
                     <ul class="nav nav-tabs card-header-tabs" id="leadsTab" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link {{ $tab === 'consultations' ? 'active' : '' }}"
-                               href="{{ route('backoffice.leads.index', ['tab' => 'consultations']) }}">
+                               href="{{ route('backoffice.leads.index', ['tab' => 'consultations', 'centre' => $centreFilter]) }}">
                                 <i class="ti ti-messages me-1"></i> Consultations
                                 <span class="badge bg-info ms-1">{{ $consultations->count() }}</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab === 'inscriptions' ? 'active' : '' }}"
-                               href="{{ route('backoffice.leads.index', ['tab' => 'inscriptions']) }}">
+                               href="{{ route('backoffice.leads.index', ['tab' => 'inscriptions', 'centre' => $centreFilter]) }}">
                                 <i class="ti ti-clipboard-list me-1"></i> Inscriptions
                                 <span class="badge bg-success ms-1">{{ $inscriptions->count() }}</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab === 'applications' ? 'active' : '' }}"
-                               href="{{ route('backoffice.leads.index', ['tab' => 'applications']) }}">
+                               href="{{ route('backoffice.leads.index', ['tab' => 'applications', 'centre' => $centreFilter]) }}">
                                 <i class="ti ti-file-description me-1"></i> Applications
                                 <span class="badge bg-warning ms-1">{{ $applications->count() }}</span>
                             </a>

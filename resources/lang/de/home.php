@@ -283,6 +283,7 @@ return [
             'marrakech' => 'Marrakech',
             'sale' => 'Salé',
             'rabat' => 'Rabat',
+            'online' => 'Online',
         ],
 
         'addresses' => "
@@ -316,23 +317,26 @@ return [
 
         'centers_list' => [
             'casablanca' => [
-                ['address' => '14 Bd de Paris, 1. Stock N°8, Casablanca 20000', 'maps_url' => 'https://maps.app.goo.gl/EdqBoa3KWEYjuzoq7', 'phones' => ['+212 808 549717', '+212 651 447651']],
+                ['address' => '14 Bd de Paris, 1. Stock N°8, Casablanca 20000', 'maps_url' => 'https://maps.app.goo.gl/EdqBoa3KWEYjuzoq7', 'phones' => [['n' => '+212 808 549717', 't' => 'call'], ['n' => '+212 651 447651', 't' => 'whatsapp']]],
             ],
             'marrakech' => [
-                ['address' => 'Avenue Yacoub El Mansour, Espace Guéliz Gebäude, 3. Stock Büro 28, Marrakech', 'maps_url' => 'https://maps.app.goo.gl/krR8pGZue3DW3yyv6', 'phones' => ['+212 603 160277']],
+                ['address' => 'Avenue Yacoub El Mansour, Espace Guéliz Gebäude, 3. Stock Büro 28, Marrakech', 'maps_url' => 'https://maps.app.goo.gl/krR8pGZue3DW3yyv6', 'phones' => [['n' => '+212 603 160277', 't' => 'both']]],
             ],
             'rabat' => [
-                ['address' => 'Avenue Fal Ould Oumeir, Gebäude 77, 1. Stock Nr. 1, Rabat 10000', 'maps_url' => 'https://maps.app.goo.gl/mUnSAVYEnGToS8i2A', 'phones' => ['+212 808 573509', '+212 537 671420', '+212 660 820082']],
+                ['address' => 'Avenue Fal Ould Oumeir, Gebäude 77, 1. Stock Nr. 1, Rabat 10000', 'maps_url' => 'https://maps.app.goo.gl/mUnSAVYEnGToS8i2A', 'phones' => [['n' => '+212 808 573509', 't' => 'call'], ['n' => '+212 537 671420', 't' => 'call'], ['n' => '+212 660 820082', 't' => 'whatsapp']]],
                 ['address' => '1. Stock, 99 Av. Fal Ould Oumeir, Rabat 10000',                   'maps_url' => 'https://maps.app.goo.gl/dnXUTeupDvomfjg89'],
             ],
             'kenitra' => [
-                ['address' => 'Avenue Mohammed V, Rania Büros, 7. Stock, Kénitra', 'maps_url' => 'https://maps.app.goo.gl/pEsso9L8ygWpdSor5', 'phones' => ['+212 808 651450', '+212 669 515019']],
+                ['address' => 'Avenue Mohammed V, Rania Büros, 7. Stock, Kénitra', 'maps_url' => 'https://maps.app.goo.gl/pEsso9L8ygWpdSor5', 'phones' => [['n' => '+212 808 651450', 't' => 'call'], ['n' => '+212 628 273803', 't' => 'whatsapp']]],
             ],
             'sale' => [
-                ['address' => 'Avenue Mohamed V Rue Halima N°12 Diyar, Salé', 'maps_url' => 'https://maps.app.goo.gl/pbSW4y4tt9RThx4a7', 'phones' => ['+212 808 540625', '+212 622 996078']],
+                ['address' => 'Avenue Mohamed V Rue Halima N°12 Diyar, Salé', 'maps_url' => 'https://maps.app.goo.gl/pbSW4y4tt9RThx4a7', 'phones' => [['n' => '+212 808 540625', 't' => 'call'], ['n' => '+212 622 996078', 't' => 'whatsapp']]],
             ],
             'agadir' => [
-                ['address' => '2ème étage, Av. Massoude Al Wafkaoui, Agadir 80000', 'maps_url' => 'https://maps.app.goo.gl/VX48ZDGFyXCyxsGU7', 'phones' => ['+212 528 228430', '+212 606 484051']],
+                ['address' => '2ème étage, Av. Massoude Al Wafkaoui, Agadir 80000', 'maps_url' => 'https://maps.app.goo.gl/VX48ZDGFyXCyxsGU7', 'phones' => [['n' => '+212 528 228430', 't' => 'call'], ['n' => '+212 606 484051', 't' => 'whatsapp']]],
+            ],
+            'online' => [
+                ['phones' => [['n' => '+212 752 070838', 't' => 'both']]],
             ],
         ],
     ],

@@ -4488,12 +4488,18 @@ frontofficefrontoffice-primary:hover {
   color: rgba(255, 255, 255, .5);
   transition: color .2s ease;
 }
-.gls-address-phone:hover {
+.gls-address-phone.is-call:hover {
   background: rgba(255, 255, 255, .08);
   border-color: rgba(255, 255, 255, .14);
   color: #fff;
 }
-.gls-address-phone:hover .gls-address-phone-icon { color: #fff; }
+.gls-address-phone.is-call:hover .gls-address-phone-icon { color: #fff; }
+.gls-address-phone.is-whatsapp .gls-address-phone-icon { color: #25d366; }
+.gls-address-phone.is-whatsapp:hover {
+  background: rgba(37, 211, 102, .14);
+  border-color: rgba(37, 211, 102, .38);
+  color: #fff;
+}
 .gls-address-phone:focus-visible {
   outline: 2px solid rgba(255, 255, 255, .35);
   outline-offset: 2px;
