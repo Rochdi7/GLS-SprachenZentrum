@@ -111,13 +111,32 @@
                                         {{ __('contact.locations.labels.contact') }}
                                     </div>
 
+                                    @php
+                                        // Single source of truth: pull the centre's phones from home.contact.centers_list
+                                        $centerBranches = __('home.contact.centers_list')[$loc['key']] ?? [];
+                                        $centerPhones = $centerBranches[0]['phones'] ?? [];
+                                    @endphp
+
                                     <div class="location-links" style="display:grid; gap:8px; margin-bottom:10px;">
-                                        @if (!empty($loc['phone']))
-                                            <a href="tel:{{ preg_replace('/\s+/', '', $loc['phone']) }}"
-                                                style="display:inline-flex; align-items:center; gap:10px; text-decoration:none; color:rgba(0,0,0,.78); font-weight:600;">
-                                                <i class="bi bi-telephone"></i> {{ $loc['phone'] }}
-                                            </a>
-                                        @endif
+                                        @foreach ($centerPhones as $ph)
+                                            @php
+                                                $digits = preg_replace('/\D/', '', $ph['n']);
+                                                $waDigits = str_starts_with($digits, '212') ? $digits : (str_starts_with($digits, '0') ? '212' . substr($digits, 1) : $digits);
+                                                $ptype = $ph['t'] ?? 'call';
+                                            @endphp
+                                            @if (in_array($ptype, ['call', 'both'], true))
+                                                <a href="tel:+{{ $digits }}"
+                                                    style="display:inline-flex; align-items:center; gap:10px; text-decoration:none; color:rgba(0,0,0,.78); font-weight:600;">
+                                                    <i class="bi bi-telephone"></i> {{ $ph['n'] }}
+                                                </a>
+                                            @endif
+                                            @if (in_array($ptype, ['whatsapp', 'both'], true))
+                                                <a href="https://wa.me/{{ $waDigits }}" target="_blank" rel="noopener noreferrer"
+                                                    style="display:inline-flex; align-items:center; gap:10px; text-decoration:none; color:#128c4b; font-weight:600;">
+                                                    <i class="bi bi-whatsapp"></i> {{ $ph['n'] }}
+                                                </a>
+                                            @endif
+                                        @endforeach
 
                                         @if (!empty($loc['email']))
                                             <a href="mailto:{{ $loc['email'] }}"
