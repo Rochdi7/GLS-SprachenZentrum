@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backoffice;
 
+use App\Http\Controllers\Concerns\ScopesToUserSites;
 use App\Http\Controllers\Controller;
 use App\Mail\TranslationReadyMail;
 use App\Models\Translation;
@@ -16,6 +17,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TranslationController extends Controller
 {
+    use ScopesToUserSites;
+
     /* ------------------------------------------------------------------ */
     /*  LIST                                                              */
     /* ------------------------------------------------------------------ */
@@ -28,6 +31,16 @@ class TranslationController extends Controller
             ->with('items.media')
             ->latest('date_received')
             ->latest('id');
+
+        // Centre access scope (Super Admin: no scope; others: only their centres)
+        $this->scopeToUserSites($query);
+
+        $requestedSiteId = $this->resolveRequestedSiteId(
+            $request->filled('site_id') ? (int) $request->site_id : null
+        );
+        if ($requestedSiteId) {
+            $query->where('site_id', $requestedSiteId);
+        }
 
         if (in_array($status, [Translation::STATUS_PENDING, Translation::STATUS_TRANSLATOR, Translation::STATUS_DELIVERED], true)) {
             $query->where('status', $status);
@@ -44,24 +57,33 @@ class TranslationController extends Controller
 
         $translations = $query->get();
 
+        $countsBase = Translation::query();
+        $this->scopeToUserSites($countsBase);
+        if ($requestedSiteId) {
+            $countsBase->where('site_id', $requestedSiteId);
+        }
+
         $counts = [
-            'all'        => Translation::count(),
-            'pending'    => Translation::where('status', Translation::STATUS_PENDING)->count(),
-            'translator' => Translation::where('status', Translation::STATUS_TRANSLATOR)->count(),
-            'delivered'  => Translation::where('status', Translation::STATUS_DELIVERED)->count(),
+            'all'        => (clone $countsBase)->count(),
+            'pending'    => (clone $countsBase)->where('status', Translation::STATUS_PENDING)->count(),
+            'translator' => (clone $countsBase)->where('status', Translation::STATUS_TRANSLATOR)->count(),
+            'delivered'  => (clone $countsBase)->where('status', Translation::STATUS_DELIVERED)->count(),
         ];
 
         $grandTotal = (int) $translations->sum('total_cost');
 
         $defaultPrice = 0;
+        $sites        = $this->accessibleSites();
 
         return view('backoffice.translations.index', [
-            'translations'  => $translations,
-            'currentStatus' => $status,
-            'q'             => $q,
-            'counts'        => $counts,
-            'grandTotal'    => $grandTotal,
-            'defaultPrice'  => $defaultPrice,
+            'translations'     => $translations,
+            'currentStatus'    => $status,
+            'q'                => $q,
+            'counts'           => $counts,
+            'grandTotal'       => $grandTotal,
+            'defaultPrice'     => $defaultPrice,
+            'sites'            => $sites,
+            'requestedSiteId'  => $requestedSiteId,
         ]);
     }
 
@@ -81,6 +103,7 @@ class TranslationController extends Controller
 
         DB::transaction(function () use ($data, $request) {
             $translation = Translation::create([
+                'site_id'          => auth()->user()->site_id,
                 'cin'              => Translation::normalizeCin($data['cin']),
                 'student_name'     => $data['student_name'],
                 'phone'            => $data['phone']            ?? null,
@@ -113,6 +136,8 @@ class TranslationController extends Controller
     /* ------------------------------------------------------------------ */
     public function edit(Translation $translation)
     {
+        $this->authorizeTranslationAccess($translation);
+
         $translation->load('items.media');
 
         return view('backoffice.translations.edit', [
@@ -122,6 +147,8 @@ class TranslationController extends Controller
 
     public function update(Request $request, Translation $translation)
     {
+        $this->authorizeTranslationAccess($translation);
+
         $data = $this->validateOrder($request, creating: false);
 
         DB::transaction(function () use ($data, $translation, $request) {
@@ -196,6 +223,8 @@ class TranslationController extends Controller
     /* ------------------------------------------------------------------ */
     public function updateStatus(Translation $translation)
     {
+        $this->authorizeTranslationAccess($translation);
+
         $next = match ($translation->status) {
             Translation::STATUS_PENDING    => Translation::STATUS_TRANSLATOR,
             Translation::STATUS_TRANSLATOR => Translation::STATUS_DELIVERED,
@@ -248,6 +277,8 @@ class TranslationController extends Controller
 
     public function updateHandover(Request $request, Translation $translation)
     {
+        $this->authorizeTranslationAccess($translation);
+
         $data = $request->validate([
             'date_handed_over' => ['nullable', 'date'],
         ]);
@@ -259,9 +290,31 @@ class TranslationController extends Controller
 
     public function destroy(Translation $translation)
     {
+        $this->authorizeTranslationAccess($translation);
+
         $translation->delete();
 
         return back()->with('toast', 'Commande supprimée.');
+    }
+
+    /**
+     * Abort with 403 unless the current user can see every centre (Super
+     * Admin) or the translation belongs to one of their accessible centres.
+     * Translations without a centre (legacy rows) are only reachable by
+     * Super Admin.
+     */
+    private function authorizeTranslationAccess(Translation $translation): void
+    {
+        if ($this->userSeesAllSites()) {
+            return;
+        }
+
+        abort_unless(
+            $translation->site_id !== null
+                && in_array((int) $translation->site_id, auth()->user()->accessibleSiteIds(), true),
+            403,
+            "Vous n'avez pas accès à cette commande."
+        );
     }
 
     /* ------------------------------------------------------------------ */
@@ -269,10 +322,13 @@ class TranslationController extends Controller
     /* ------------------------------------------------------------------ */
     public function exportCsv(): StreamedResponse
     {
-        $rows = Translation::with('items')
+        $query = Translation::with('items')
             ->latest('date_received')
-            ->latest('id')
-            ->get();
+            ->latest('id');
+
+        $this->scopeToUserSites($query);
+
+        $rows = $query->get();
 
         $filename = 'GLS_Traductions_' . now()->format('Y-m-d') . '.csv';
 

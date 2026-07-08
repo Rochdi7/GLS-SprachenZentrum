@@ -69,6 +69,14 @@
                             <option value="translator" {{ $currentStatus === 'translator' ? 'selected' : '' }}>Chez Traducteur ({{ $counts['translator'] }})</option>
                             <option value="delivered"  {{ $currentStatus === 'delivered'  ? 'selected' : '' }}>Rendu ({{ $counts['delivered'] }})</option>
                         </select>
+                        @if(isset($sites) && $sites->count() > 1)
+                        <select name="site_id" class="form-select form-select-sm filter-status" onchange="this.form.submit()">
+                            <option value="">Tous les centres</option>
+                            @foreach($sites as $site)
+                                <option value="{{ $site->id }}" {{ (int) $requestedSiteId === $site->id ? 'selected' : '' }}>{{ $site->name }}</option>
+                            @endforeach
+                        </select>
+                        @endif
                         <a href="{{ route('backoffice.translations.index') }}" class="btn btn-sm btn-outline-secondary text-nowrap">
                             <i class="ti ti-refresh"></i> Reset
                         </a>
