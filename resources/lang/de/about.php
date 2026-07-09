@@ -68,7 +68,7 @@ return [
             14 Bd de Paris, 1. Stock N°8, Casablanca 20000<br>
             Avenue Yacoub El Mansour, 3. Stock Büro 28, Marrakech<br>
             Avenue Fal Ould Oumeir, 1. Stock N°1, Agdal, Rabat<br>
-            Avenue Mohammed V, Rania Büros, 7. Stock, Kénitra<br>
+            4ème étage, résidence Nezha, Av. Mohamed V, Kenitra 14000<br>
             Avenue Mohamed V Rue Halima N°12 Diyar, Salé<br>
             2ème étage, Av. Massoude Al Wafkaoui, Agadir 80000
         ',

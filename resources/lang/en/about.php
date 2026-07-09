@@ -71,7 +71,7 @@ return [
             14 Bd de Paris, 1st floor N°8, Casablanca 20000<br>
             Avenue Yacoub El Mansour, 3rd floor Office 28, Marrakech<br>
             Avenue Fal Ould Oumeir, 1st floor N°1, Agdal, Rabat<br>
-            Avenue Mohammed V, Rania Offices, 7th floor, Kénitra<br>
+            4ème étage, résidence Nezha, Av. Mohamed V, Kenitra 14000<br>
             Avenue Mohamed V Rue Halima N°12 Diyar, Salé<br>
             2ème étage, Av. Massoude Al Wafkaoui, Agadir 80000
         ',

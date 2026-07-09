@@ -39,10 +39,10 @@
     // Footer — address/phone/email resolved from site record.
     $addressMap = [
         'Casablanca' => '14 Bd de Paris, 1er étage N°8, Casablanca 20000',
-        'Marrakech'  => 'Avenue Yacoub El Mansour, Immeuble Espace Guéliz, 3ème étage, Bureau 28, Marrakech',
+        'Marrakech'  => '3ème étage Bureau 28, Immeuble Espace, Av. Yacoub El Mansour, Marrakech 40000',
         'Rabat'      => 'Avenue Fal Ould Oumeir, Immeuble 77, 1er étage N°1, Agdal, Rabat',
-        'Kenitra'    => 'Avenue Mohammed V, Bureaux Rania, 7ème étage, Kénitra',
-        'Kénitra'    => 'Avenue Mohammed V, Bureaux Rania, 7ème étage, Kénitra',
+        'Kenitra'    => '4ème étage, résidence Nezha, Av. Mohamed V, Kenitra 14000',
+        'Kénitra'    => '4ème étage, résidence Nezha, Av. Mohamed V, Kenitra 14000',
         'Sale'       => 'Avenue Mohamed V, Rue Halima N°12 Diyar, Salé',
         'Salé'       => 'Avenue Mohamed V, Rue Halima N°12 Diyar, Salé',
         'Agadir'     => '2ème étage, Av. Massoude Al Wafkaoui, Agadir 80000',

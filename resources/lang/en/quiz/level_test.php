@@ -136,9 +136,9 @@ return [
 
         'addresses' => '
             14 Bd de Paris, 1st floor N°8, Casablanca 20000<br>
-            Avenue Yacoub El Mansour, Espace Guéliz Building, 3rd floor Office 28, Marrakech<br>
+            3ème étage Bureau 28, Immeuble Espace, Av. Yacoub El Mansour, Marrakech 40000<br>
             Avenue Fal Ould Oumeir, Building 77, 1st floor N°1, Agdal, Rabat<br>
-            Avenue Mohammed V, Rania Offices, 7th floor, Kénitra<br>
+            4ème étage, résidence Nezha, Av. Mohamed V, Kenitra 14000<br>
         ',
     ],
 

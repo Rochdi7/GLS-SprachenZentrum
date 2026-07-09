@@ -74,8 +74,8 @@
                                     <a href="https://www.google.com/maps/place/GLS+Sprachenzentrum+-+Centre+de+langue+Allemande+Marrakech/"
                                         target="_blank">GLS Marrakech</a>
                                 </h5>
-                                <p class="reveal delay-3">Avenue Yacoub El Mansour, Immeuble Espace Guéliz, 3ème étage
-                                    Bureau 28</p>
+                                <p class="reveal delay-3">3ème étage Bureau 28, Immeuble Espace, Av. Yacoub El Mansour,
+                                    Marrakech 40000</p>
                                 <a href="https://wa.me/212808663983" class="phone reveal delay-1">
                                     <i class="bi bi-telephone-fill me-2"></i>+212 80-86 639 83
                                 </a>
@@ -103,7 +103,7 @@
                                     <a href="https://www.google.com/maps/place/GLS+Sprachenzentrum+-+Centre+GLS+de+langue+Allemand+K%C3%A9nitra/"
                                         target="_blank">GLS Kénitra</a>
                                 </h5>
-                                <p class="reveal delay-3">Avenue Mohammed V, Bureaux Rania, 7ème étage, Kénitra</p>
+                                <p class="reveal delay-3">4ème étage, résidence Nezha, Av. Mohamed V, Kenitra 14000</p>
                                 <a href="https://wa.me/212808651450" class="phone reveal delay-1">
                                     <i class="bi bi-telephone-fill me-2"></i>+212 80-86 514 50
                                 </a>

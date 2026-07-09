@@ -16,7 +16,7 @@ return [
         'title1' => 'Willkommen bei GLS Kénitra',
         'subtitle1' => 'Ihr Tor zur deutschen Sprache an der Avenue Mohammed V',
 
-        'p1' => "Das <strong>GLS Sprachenzentrum Kénitra</strong> ist ein modernes Zentrum, das dem Deutschlernen in einer motivierenden Umgebung gewidmet ist. Es befindet sich in der <strong>Avenue Mohammed V, Rania Offices, 7. Stock</strong> und empfängt Lernende aus der gesamten Region.",
+        'p1' => "Das <strong>GLS Sprachenzentrum Kénitra</strong> ist ein modernes Zentrum, das dem Deutschlernen in einer motivierenden Umgebung gewidmet ist. Es befindet sich in der <strong>résidence Nezha, 4. Stock, Av. Mohamed V, Kenitra</strong> und empfängt Lernende aus der gesamten Region.",
 
         'p2' => "Ob Sie in Deutschland studieren, ein <strong>Ausbildung</strong>-Projekt vorbereiten oder Ihre Karriere vorantreiben möchten – GLS Kénitra bietet <strong>strukturierte, immersive und ergebnisorientierte</strong> Programme.",
 
@@ -94,7 +94,7 @@ return [
         'call_label' => 'Rufen Sie uns an',
         'email_label' => 'Schreiben Sie uns',
         'visit_label' => 'Besuchen Sie unser Zentrum',
-        'addresses' => 'Avenue Mohammed V, Rania Offices, 7. Stock, Kénitra',
+        'addresses' => '4ème étage, résidence Nezha, Av. Mohamed V, Kenitra 14000',
         'follow_label' => 'Folgen Sie uns',
         'phone_link' => '+212669515019',
         'phone_display' => '+212 6 69 51 50 19',

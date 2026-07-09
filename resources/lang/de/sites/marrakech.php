@@ -94,7 +94,7 @@ return [
         'call_label' => 'Rufen Sie uns an',
         'email_label' => 'Schreiben Sie uns',
         'visit_label' => 'Besuchen Sie unser Zentrum',
-        'addresses' => 'Avenue Yacoub El Mansour, Espace Guéliz Gebäude, 3. Stock Büro 28, Marrakech',
+        'addresses' => '3ème étage Bureau 28, Immeuble Espace, Av. Yacoub El Mansour, Marrakech 40000',
         'follow_label' => 'Folgen Sie uns',
         'phone_link' => '+212603160277',
         'phone_display' => '+212 6 03 16 02 77',
