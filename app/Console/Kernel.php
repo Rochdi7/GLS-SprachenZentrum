@@ -113,6 +113,13 @@ class Kernel extends ConsoleKernel
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/hikvision-sync.log'));
 
+        // ── Sitemap — regenerate nightly so new blog posts / studienkollegs
+        //    appear without a manual step. Writes public/sitemap.xml.
+        $schedule->command('sitemap:generate')
+            ->dailyAt('03:00')
+            ->timezone('Africa/Casablanca')
+            ->appendOutputTo(storage_path('logs/sitemap.log'));
+
         // ── Deep resync every 2h — pulls 3 months of history so that any data
         //    modified in Wimschool during the day (absences entered by reception,
         //    payment corrections, inscription updates) is reflected well before
