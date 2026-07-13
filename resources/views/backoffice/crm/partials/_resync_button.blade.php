@@ -22,7 +22,6 @@
             data-resync-url="{{ route('backoffice.crm.resync') }}"
             data-status-url="{{ route('backoffice.crm.resync.status') }}"
             title="Resynchroniser toutes les données CRM depuis Wimschool">
-        <i class="ti ti-refresh" id="crmResyncIcon"></i>
         <span id="crmResyncLabel">Actualiser</span>
     </button>
     <span id="crmSyncBadge">@include('backoffice.crm.partials._sync_badge')</span>
@@ -37,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const btn = document.getElementById('crmResyncBtn');
     if (!btn) return;
 
-    const icon  = document.getElementById('crmResyncIcon');
     const label = document.getElementById('crmResyncLabel');
     const csrf  = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
                || document.querySelector('input[name="_token"]')?.value;
@@ -45,16 +43,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function setRunning() {
         btn.disabled = true;
-        icon.classList.add('ti-loader-2');
-        icon.classList.remove('ti-refresh');
-        icon.style.animation = 'spin 1s linear infinite';
         label.textContent = 'Sync en cours…';
     }
     function setIdle() {
         btn.disabled = false;
-        icon.classList.remove('ti-loader-2');
-        icon.classList.add('ti-refresh');
-        icon.style.animation = '';
         label.textContent = 'Actualiser';
     }
 
