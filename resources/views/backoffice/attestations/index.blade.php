@@ -42,7 +42,7 @@
 
                 <div class="card-body pt-3">
                     @if($sites->count() > 1)
-                        <form method="GET" class="row g-2 mb-3 align-items-end">
+                        <form method="GET" class="row g-2 mb-3 align-items-end px-2">
                             <div class="col-md-4">
                                 <label class="form-label fw-bold mb-1">Filtrer par centre</label>
                                 <select name="site_id" class="form-select" onchange="this.form.submit()">
