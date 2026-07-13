@@ -107,7 +107,7 @@
     ]);
 
     $erfolgList = ['Erfolg', 'mit gutem Erfolg', 'mit Erfolg', 'teilgenommen'];
-    $levels = ['A1', 'A2', 'B1', 'B2', 'C1'];
+    $levels = ['A1', 'A2', 'B1', 'B2'];
     $checkedLevels = $attestation->checked_levels;
 
     $methodologyText =
