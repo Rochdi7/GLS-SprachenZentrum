@@ -46,10 +46,6 @@
                 </select>
             </form>
         @endif
-        <a href="{{ route('backoffice.crm.statistiques', array_merge(request()->query())) }}"
-           class="btn btn-sm btn-outline-dark">
-            <i class="ph-duotone ph-arrows-clockwise"></i>
-        </a>
         @include('backoffice.crm.partials._resync_button')
     </div>
 </div>

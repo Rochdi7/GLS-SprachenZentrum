@@ -97,35 +97,63 @@
         </select>
     </div>
 
-    <div class="col-md-3 mb-3">
-        <label class="form-label fw-bold">Niveau de départ</label>
-        @php
-            $selectedLevelFrom = old('level_from', $att->level_from ?? '');
-            $staticLevels = ['A1', 'A2', 'B1', 'B2'];
-        @endphp
-        <select name="level_from" id="att-level-from-select" class="form-select @error('level_from') is-invalid @enderror">
-            <option value="">— Aucun (niveau unique) —</option>
-            @foreach($staticLevels as $lvl)
-                <option value="{{ $lvl }}" {{ $selectedLevelFrom === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
-            @endforeach
-        </select>
-        @error('level_from') <div class="invalid-feedback">{{ $message }}</div> @enderror
-    </div>
+    {{-- Niveau(x) — un seul menu multi-sélection.
+         L'ordre CEFR est A1 < A2 < B1 < B2. Le plus bas coché alimente `level_from`
+         (vide si un seul niveau), le plus haut coché alimente `level`. Les dates
+         « Début / Fin du niveau » sont auto-remplies du début du premier niveau
+         à la fin du dernier depuis le Suivi niveau. --}}
+    @php
+        $staticLevels      = ['A1', 'A2', 'B1', 'B2'];
+        $selectedLevel     = old('level', $att->level ?? $pr->level ?? '');
+        $selectedLevelFrom = old('level_from', $att->level_from ?? '');
 
-    <div class="col-md-3 mb-3">
-        <label class="form-label fw-bold">Niveau sélectionné <span class="text-danger">*</span></label>
-        @php
-            $selectedLevel = old('level', $att->level ?? $pr->level ?? '');
-        @endphp
-        <select name="level" id="att-level-select" class="form-select @error('level') is-invalid @enderror" required>
-            <option value="">— Sélectionner un niveau —</option>
-            @foreach($staticLevels as $lvl)
-                <option value="{{ $lvl }}" {{ $selectedLevel === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
-            @endforeach
-        </select>
-        <small id="att-level-warning" class="text-danger d-none">
-            Aucune entrée de Suivi niveau trouvée pour ce niveau dans le groupe sélectionné. Veuillez saisir les dates manuellement.
+        // Reconstruit la liste des niveaux cochés à partir de level_from → level.
+        $order        = ['A1', 'A2', 'B1', 'B2', 'C1'];
+        $fromIdx      = $selectedLevelFrom !== '' ? array_search($selectedLevelFrom, $order, true) : false;
+        $toIdx        = $selectedLevel !== '' ? array_search($selectedLevel, $order, true) : false;
+        if ($fromIdx !== false && $toIdx !== false && $fromIdx <= $toIdx) {
+            $checkedLevels = array_slice($order, $fromIdx, $toIdx - $fromIdx + 1);
+        } elseif ($selectedLevel !== '') {
+            $checkedLevels = [$selectedLevel];
+        } else {
+            $checkedLevels = [];
+        }
+        $checkedLabel = count($checkedLevels) ? implode(', ', $checkedLevels) : 'Sélectionner un ou plusieurs niveaux';
+    @endphp
+
+    <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Niveau(x) de l'attestation <span class="text-danger">*</span></label>
+
+        {{-- Champs réellement soumis : dérivés des cases cochées (level = plus haut, level_from = plus bas). --}}
+        <input type="hidden" name="level" id="att-level-input" value="{{ $selectedLevel }}">
+        <input type="hidden" name="level_from" id="att-level-from-input"
+               value="{{ (count($checkedLevels) > 1 && $selectedLevelFrom !== '') ? $selectedLevelFrom : '' }}">
+
+        <div class="dropdown" id="att-levels-dropdown">
+            <button class="form-select text-start @error('level') is-invalid @enderror" type="button"
+                    id="att-levels-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                <span id="att-levels-label">{{ $checkedLabel }}</span>
+            </button>
+            <ul class="dropdown-menu w-100 p-2" aria-labelledby="att-levels-toggle" style="min-width: 100%;">
+                @foreach($staticLevels as $lvl)
+                    <li>
+                        <label class="dropdown-item d-flex align-items-center gap-2 rounded" style="cursor:pointer;">
+                            <input class="form-check-input m-0 att-level-check" type="checkbox"
+                                   value="{{ $lvl }}" {{ in_array($lvl, $checkedLevels, true) ? 'checked' : '' }}>
+                            <span>{{ $lvl }}</span>
+                        </label>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+
+        <small class="text-muted d-block mt-1">
+            Cochez un seul niveau pour une attestation de ce niveau, ou plusieurs pour couvrir la période du premier au dernier niveau.
         </small>
+        <small id="att-level-warning" class="text-danger d-none">
+            Aucune entrée de Suivi niveau trouvée pour un des niveaux dans le groupe sélectionné. Veuillez saisir les dates manuellement.
+        </small>
+        @error('level') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
     </div>
 
     <div class="col-md-6 mb-3">
@@ -264,13 +292,38 @@ document.addEventListener('DOMContentLoaded', function () {
     const siteSelect      = document.getElementById('att-site-select');
     const legacyCheck     = document.getElementById('att-is-legacy');
     const ongoingInput    = document.getElementById('att-is-ongoing');
-    const levelSelect     = document.getElementById('att-level-select');
-    const levelFromSelect = document.getElementById('att-level-from-select');
+    const levelInput      = document.getElementById('att-level-input');       // hidden -> level (plus haut)
+    const levelFromInput  = document.getElementById('att-level-from-input');  // hidden -> level_from (plus bas)
+    const levelChecks     = Array.prototype.slice.call(document.querySelectorAll('.att-level-check'));
+    const levelsLabel     = document.getElementById('att-levels-label');
     const courseStart     = document.getElementById('att-course-start');
     const courseEnd       = document.getElementById('att-course-end');
     const niveauStart     = document.getElementById('att-niveau-start');
     const niveauEnd       = document.getElementById('att-niveau-end');
     const cityInput       = document.getElementById('att-city');
+
+    // Ordre CEFR : A1 < A2 < B1 < B2 (< C1). Sert à ordonner les niveaux cochés.
+    const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1'];
+
+    // Retourne les niveaux cochés, triés du plus bas au plus haut.
+    function getCheckedLevels() {
+        return levelChecks
+            .filter(function (c) { return c.checked; })
+            .map(function (c) { return c.value; })
+            .sort(function (a, b) { return LEVEL_ORDER.indexOf(a) - LEVEL_ORDER.indexOf(b); });
+    }
+
+    // Synchronise le libellé du menu + les champs cachés level / level_from.
+    function syncLevelState() {
+        const checked = getCheckedLevels();
+        levelsLabel.textContent = checked.length ? checked.join(', ') : 'Sélectionner un ou plusieurs niveaux';
+
+        const highest = checked.length ? checked[checked.length - 1] : '';
+        const lowest  = checked.length ? checked[0] : '';
+        levelInput.value = highest;
+        // level_from n'a de sens qu'avec plusieurs niveaux (sinon niveau unique).
+        levelFromInput.value = checked.length > 1 ? lowest : '';
+    }
 
     function applyLegacyMode() {
         const isLegacy = legacyCheck.checked;
@@ -332,8 +385,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     cityInput.value = data.group.site_name;
                 }
 
-                // If a level is already selected (edit / old()), auto-fill its date range from Suivi niveau.
-                if (levelSelect.value) {
+                // If levels are already checked (edit / old()), auto-fill their date range from Suivi niveau.
+                if (getCheckedLevels().length) {
                     onLevelChange(/* keepPreselectedDates */ !!opts.initialLoad);
                 } else {
                     showLevelWarning(false);
@@ -345,24 +398,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function onLevelChange(keepPreselectedDates) {
-        const value     = levelSelect.value;
-        const fromValue = levelFromSelect ? levelFromSelect.value : '';
+        // Toujours resynchroniser libellé + champs cachés à partir des cases cochées.
+        syncLevelState();
 
-        if (!value) {
+        const checked = getCheckedLevels();
+
+        if (!checked.length) {
             niveauStart.value = '';
             niveauEnd.value = '';
             showLevelWarning(false);
             return;
         }
 
-        const endLvl = cachedLevels.find(function (l) { return l.level === value; });
+        // Début = premier niveau (le plus bas), Fin = dernier niveau (le plus haut).
+        const lowest  = checked[0];
+        const highest = checked[checked.length - 1];
 
-        // Same level (or no "niveau de départ" chosen) → use that single level's own dates.
-        // Different "from" level → span from its start_date to the end level's end_date.
-        const useRange = fromValue && fromValue !== value;
-        const startLvl = useRange
-            ? cachedLevels.find(function (l) { return l.level === fromValue; })
-            : endLvl;
+        const startLvl = cachedLevels.find(function (l) { return l.level === lowest; });
+        const endLvl   = cachedLevels.find(function (l) { return l.level === highest; });
 
         const start = startLvl ? startLvl.start_date : null;
         const end   = endLvl   ? endLvl.end_date     : null;
@@ -383,9 +436,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     groupSelect.addEventListener('change', function () {
-        // New group → clear level + niveau dates so they get rebuilt from the new group's Suivi niveau.
-        levelSelect.value = '';
-        if (levelFromSelect) levelFromSelect.value = '';
+        // New group → clear levels + niveau dates so they get rebuilt from the new group's Suivi niveau.
+        levelChecks.forEach(function (c) { c.checked = false; });
+        syncLevelState();
         niveauStart.value = '';
         niveauEnd.value = '';
         // Clear course dates too, will be auto-refilled from new group's date_debut/date_fin.
@@ -396,23 +449,23 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchGroupLevels(this.value);
     });
 
-    levelSelect.addEventListener('change', function () {
-        // En mode "ancien étudiant", aucune entrée Suivi niveau à appliquer — on laisse les dates en saisie libre.
-        if (legacyCheck.checked) return;
-        onLevelChange(false);
-    });
-
-    if (levelFromSelect) {
-        levelFromSelect.addEventListener('change', function () {
-            if (legacyCheck.checked) return;
+    // Chaque case (dé)cochée recalcule level / level_from + les dates du niveau.
+    levelChecks.forEach(function (chk) {
+        chk.addEventListener('change', function () {
+            // En mode "ancien étudiant", aucune entrée Suivi niveau à appliquer — on laisse les dates en saisie libre.
+            if (legacyCheck.checked) {
+                syncLevelState();
+                return;
+            }
             onLevelChange(false);
         });
-    }
+    });
 
     legacyCheck.addEventListener('change', applyLegacyMode);
 
     // Initial load (edit / old() repopulation)
     applyLegacyMode();
+    syncLevelState(); // libellé + champs cachés cohérents dès le chargement (y compris mode ancien)
     if (!legacyCheck.checked && groupSelect.value) {
         fetchGroupLevels(groupSelect.value, { initialLoad: true });
     }
