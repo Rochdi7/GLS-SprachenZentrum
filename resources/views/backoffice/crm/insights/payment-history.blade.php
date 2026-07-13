@@ -16,7 +16,7 @@
             </h5>
         </div>
         <div class="ms-auto">
-            @include('backoffice.crm.partials._sync_badge')
+            @include('backoffice.crm.partials._resync_button')
         </div>
     </div>
 

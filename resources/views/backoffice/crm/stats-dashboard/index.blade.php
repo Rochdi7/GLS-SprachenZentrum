@@ -50,7 +50,7 @@
            class="btn btn-sm btn-outline-dark">
             <i class="ph-duotone ph-arrows-clockwise"></i>
         </a>
-        @include('backoffice.crm.partials._sync_badge')
+        @include('backoffice.crm.partials._resync_button')
     </div>
 </div>
 

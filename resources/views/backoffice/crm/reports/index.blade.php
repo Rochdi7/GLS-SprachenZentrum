@@ -40,7 +40,7 @@
             <h4 class="mb-1"><i class="ph-duotone ph-chart-bar text-primary me-2"></i>Rapports CEO</h4>
             <small class="text-muted">Synthèse quotidienne et hebdomadaire envoyée par email</small>
         </div>
-        @include('backoffice.crm.partials._sync_badge')
+        @include('backoffice.crm.partials._resync_button')
     </div>
 
     {{-- ── KPI Cards ────────────────────────────────────────────────────── --}}

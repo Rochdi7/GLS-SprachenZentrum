@@ -114,6 +114,27 @@ class LevelFollowupController extends Controller
             ->filter()
             ->values();
 
+        // Statut filter (derived per representative followup, mirrors the badge
+        // logic in the view): done => "Termine", current level => "En cours",
+        // otherwise "En attente".
+        if ($request->filled('status')) {
+            $status = $request->status;
+            $rows = $rows->filter(function ($f) use ($now, $status) {
+                if ($f->status === 'done') {
+                    $rowStatus = 'done';
+                } else {
+                    $isCurrent = $f->level_start_date && $f->level_end_date
+                        && $now->betweenIncluded(
+                            Carbon::parse($f->level_start_date)->startOfDay(),
+                            Carbon::parse($f->level_end_date)->startOfDay()
+                        );
+                    $rowStatus = $isCurrent ? 'current' : 'pending';
+                }
+
+                return $rowStatus === $status;
+            })->values();
+        }
+
         $dueRows = $rows->filter(function ($f) use ($now) {
             return ($f->status === 'pending')
                 && $f->due_date

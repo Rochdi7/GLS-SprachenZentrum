@@ -23,6 +23,8 @@ Route::prefix('crm')
             Route::get('/stats',                  'stats')->name('stats');
             Route::get('/duplicates',             'duplicates')->name('duplicates');
             Route::post('/center',                'setCenter')->name('set-center');
+            Route::post('/resync',                'resync')->name('resync');
+            Route::get('/resync/status',          'resyncStatus')->name('resync.status');
             Route::get('/api/students-search',    'studentsSearch')->name('api.students-search');
             Route::get('/lov/{kind}',             'lov')->name('lov')
                 ->where('kind', '[a-z0-9\-]+');

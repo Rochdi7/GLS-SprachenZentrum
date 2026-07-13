@@ -428,6 +428,15 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-md-4 col-lg-3">
+                            <label class="form-label">Statut</label>
+                            <select name="status" id="filter-status" class="form-select">
+                                <option value="">Tous les statuts</option>
+                                <option value="done" @selected(request('status') === 'done')>Termine</option>
+                                <option value="current" @selected(request('status') === 'current')>En cours</option>
+                                <option value="pending" @selected(request('status') === 'pending')>En attente</option>
+                            </select>
+                        </div>
                         <div class="col-md-auto">
                             <button type="submit" class="btn btn-primary">Filtrer</button>
                             <a href="{{ route('backoffice.level_followups.index') }}" class="btn btn-light-secondary">Reset</a>

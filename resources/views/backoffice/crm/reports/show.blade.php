@@ -38,7 +38,7 @@
             </small>
         </div>
         <div class="col-auto d-flex gap-2 align-items-center">
-            @include('backoffice.crm.partials._sync_badge')
+            @include('backoffice.crm.partials._resync_button')
 <a href="{{ route('backoffice.crm.reports.index') }}" class="btn btn-outline-secondary">
                 <i class="ph-duotone ph-arrow-left me-1"></i> Retour
             </a>

@@ -60,8 +60,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     </span>
                 @endif
             </div>
-            <div class="col-12 col-sm-auto ms-sm-auto">
-                @include('backoffice.crm.partials._sync_badge')
+            <div class="col-12 col-sm-auto ms-sm-auto d-flex align-items-center gap-2">
+                @include('backoffice.crm.partials._resync_button')
             </div>
         </form>
     </div>

@@ -17,7 +17,7 @@
                 Période : <strong>{{ $report['start_date'] }}</strong> → <strong>{{ $report['end_date'] }}</strong>
                 — z-score &gt; 2 signale une journée hors norme
             </div>
-            @include('backoffice.crm.partials._sync_badge')
+            @include('backoffice.crm.partials._resync_button')
         </div>
     </form>
 

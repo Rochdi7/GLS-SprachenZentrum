@@ -89,7 +89,7 @@
                     <i class="ph-duotone ph-arrows-clockwise me-1"></i> Actualiser
                 </button>
             </form>
-            @include('backoffice.crm.partials._sync_badge')
+            @include('backoffice.crm.partials._resync_button')
         </div>
     </div>
 

@@ -104,7 +104,7 @@ abstract class BaseCrmController extends Controller
         ], $data));
     }
 
-    private function lastSyncAt(): ?\Carbon\Carbon
+    protected function lastSyncAt(): ?\Carbon\Carbon
     {
         $max = CrmSyncLog::where('status', 'done')
             ->whereNotNull('completed_at')
