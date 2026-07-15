@@ -113,7 +113,7 @@ All public routes are cached (Spatie Response Cache) and support FR/EN localizat
 | Intensive Courses | `/intensive-courses` | Intensive course information |
 | Discover Your Level | `/discover-your-level` | Interactive placement quiz landing |
 | Level Quiz | `/discover-your-level/quiz` | AJAX-powered level quiz |
-| Level Pages | `/niveaux/a1` → `b2` | Per-level course details (A1, A2, B1, B2) |
+| Level Pages | `/niveaux/a1` → `b2` | Per-level course details (A1, A2, B1, B2, C1) |
 | Blog | `/blog`, `/blog/{slug}` | Blog listing and article detail |
 | Student Stories | `/student-stories` | Testimonials |
 | Centers | `/sites/{slug}` | Individual center detail pages |
@@ -160,7 +160,7 @@ Full CRUD for instructors, including:
 #### Groups (Classes)
 
 Full CRUD for language groups:
-- Level (A1–B2), time range, period label, status
+- Level (A1–C1), time range, period label, status
 - Start and end dates (`date_debut`, `date_fin`)
 - Linked to a site and teacher
 - `crm_class_id` for CRM class matching
@@ -223,7 +223,7 @@ Full revenue tracking per site:
 - **Excel Import**: Upload monthly payment exports from external POS or banking sources. Preview before confirming import.
 - **Manual Entry**: Create individual payment records
 - **Payment Methods**: Cash (`especes`), TPE (card terminal), bank transfer, cheque
-- **Fee Types**: Course registration (A1–B2), monthly tuition, OSD exam, other
+- **Fee Types**: Course registration (A1–C1), monthly tuition, OSD exam, other
 - **Dashboard**: Revenue overview with operator analytics and site-level breakdown
 - **Rentabilité (Profitability)**: Revenue vs. expenses comparison per site
 

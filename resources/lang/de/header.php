@@ -37,6 +37,7 @@ return [
     'level_a2' => 'Grundstufe',
     'level_b1' => 'Mittelstufe',
     'level_b2' => 'Fortgeschritten',
+    'level_c1' => 'Kompetent',
     'level_c1' => 'Selbstständig',
 
     // Cities

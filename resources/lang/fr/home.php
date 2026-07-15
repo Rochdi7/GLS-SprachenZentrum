@@ -3,7 +3,7 @@
 return [
 
     'meta_title' => "Apprendre l'allemand au Maroc | Cours d'allemand GLS",
-    'meta_description' => "Centre de langue allemande au Maroc : cours intensifs A1–B2, préparation Goethe et certifications. 6 centres — Rabat, Casablanca et plus.",
+    'meta_description' => "Centre de langue allemande au Maroc : cours intensifs A1–C1, préparation Goethe et certifications. 6 centres — Rabat, Casablanca et plus.",
 
     // ========================
     // 🔵 HERO SECTION
@@ -115,7 +115,7 @@ return [
 
         'intensive' => [
             'title' => "Cours intensifs d'allemand",
-            'subtitle' => "Cours d'allemand A1–B2",
+            'subtitle' => "Cours d'allemand A1–C1",
             'description' => 'Du lundi au vendredi — 2h30 par séance',
 
             'cards' => [
@@ -150,6 +150,14 @@ return [
                     'text' => 'Atteignez un niveau avancé en allemand avec notre programme B2.',
                     'button' => 'Programme B2',
                     'route' => 'front.online-courses',
+                ],
+                'c1' => [
+                    'letter' => 'C',
+                    'number' => '1',
+                    'title' => 'Allemand C1<br>Autonome',
+                    'text' => 'Maîtrisez l’allemand à un niveau avancé, proche du natif, avec notre programme C1.',
+                    'button' => 'Programme C1',
+                    'route' => 'front.niveaux.c1',
                 ],
             ],
         ],
@@ -247,6 +255,12 @@ return [
             'join_anytime' => 'Rejoignez-nous à tout moment !',
             'description' => "Mardi au vendredi, 4 semaines, 16 heures par semaine.<br>Apprenez aussi longtemps que vous le souhaitez.",
             'button' => 'Voir le tarif',
+        ],
+        'card_c1' => [
+            'title' => 'Nouveaux <span class="hh-yellow">Groupes C1</span> ouverts au Maroc !',
+            'badge' => 'Niveau avancé disponible !',
+            'description' => 'Nous avons ouvert de nouveaux groupes C1 dans nos centres au Maroc.<br>Atteignez un niveau d’allemand avancé, proche du natif et prêt pour l’université, avec GLS.',
+            'button' => 'Découvrir le cours C1',
         ],
     ],
 

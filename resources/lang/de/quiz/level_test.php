@@ -38,7 +38,7 @@ return [
     ],
 
     'gls' => [
-        'title' => 'Ihr GLS-Niveau (A1 → B2)',
+        'title' => 'Ihr GLS-Niveau (A1 → C1)',
         'subtitle' => 'Nach dem Quiz kann Ihr Niveau hier angezeigt und automatisch hervorgehoben werden.',
         'your_level' => 'Ihr geschätztes Niveau',
         'pick_hint' => 'Tipp: Sobald Sie das Quiz abgeschlossen haben, wird Ihr Niveau hier hervorgehoben!',
@@ -64,7 +64,7 @@ return [
 
             'intensive' => [
                 'title' => 'Intensiv-<br>Kurse',
-                'text' => 'Machen Sie schnelle Fortschritte mit unseren Intensivprogrammen von A1 bis B2.',
+                'text' => 'Machen Sie schnelle Fortschritte mit unseren Intensivprogrammen von A1 bis C1.',
             ],
 
             'gls_exam' => [

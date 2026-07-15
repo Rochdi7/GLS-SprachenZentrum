@@ -26,7 +26,7 @@ return [
         'text_list' => 'Bei GLS Kénitra profitieren Sie von:',
 
         'offers' => [
-            '1' => 'Intensiv-Deutschkurse (A1–B2)',
+            '1' => 'Intensiv-Deutschkurse (A1–C1)',
             '2' => 'Online-Deutschkurse mit flexibler Zeiteinteilung',
             '3' => 'Sprech- & Kommunikationsworkshops',
             '4' => 'Visum- & Studienunterstützung für Deutschland',

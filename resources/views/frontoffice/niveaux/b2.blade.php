@@ -115,6 +115,7 @@
                 <button class="gls-niveau-btn reveal delay-2" data-level="A2">A2</button>
                 <button class="gls-niveau-btn reveal delay-3" data-level="B1">B1</button>
                 <button class="gls-niveau-btn active reveal delay-1" data-level="B2">B2</button>
+                <button class="gls-niveau-btn" data-level="C1">C1</button>
             </div>
 
             <div class="gls-info-grid reveal delay-2">
@@ -350,6 +351,13 @@
                 times: @json(__('niveaux/b2.data_times')),
                 price: @json(__('niveaux/b2.data_price')),
                 priceLink: @json(__('niveaux/b2.data_price_link_text')),
+            },
+            C1: {
+                graduation: `{!! __('niveaux/c1.data_graduation') !!}`,
+                duration: `{!! __('niveaux/c1.data_duration') !!}`,
+                times: `{!! __('niveaux/c1.data_times') !!}`,
+                price: `{!! __('niveaux/c1.data_price') !!}`,
+                priceLink: `{!! __('niveaux/c1.data_price_link_text') !!}`,
             },
         };
 

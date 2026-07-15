@@ -34,7 +34,7 @@ return [
     'featured' => [
         'category' => 'Exams',
         'title' => 'Your GLS journey to ÖSD exams',
-        'excerpt' => 'Discover how our structured A1–B2 program prepares you step by step for the official ÖSD exam, from your first session to exam day.',
+        'excerpt' => 'Discover how our structured A1–C1 program prepares you step by step for the official ÖSD exam, from your first session to exam day.',
         'meta_read' => 'min read',
         'meta_updated' => 'Updated Nov 2025',
 

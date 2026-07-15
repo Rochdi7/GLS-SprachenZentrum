@@ -128,7 +128,7 @@ return [
                 'answer' => '
                     <p>Die Anmeldung bei GLS erfordert eine <strong>einmalige Zahlung</strong>, die Folgendes beinhaltet:</p>
                     <ul style="text-align:left; list-style-type:\'• \'; padding-left:1.2rem;">
-                        <li>Bücher für alle Niveaus (A1–B2)</li>
+                        <li>Bücher für alle Niveaus (A1–C1)</li>
                         <li>Kostenlose Begleitung der Visumakte</li>
                         <li>Administrative Unterstützung und Dokumentenvorbereitung</li>
                     </ul>

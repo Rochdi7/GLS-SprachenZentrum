@@ -121,7 +121,7 @@ return [
     'path_title' => 'Your Path from GLS to ÖSD Exam',
 
     'path_1_title' => 'Complete your<br>level at GLS',
-    'path_1_text' => 'Each learner completes their level (A1–B2) with structured training and guided practice.',
+    'path_1_text' => 'Each learner completes their level (A1–C1) with structured training and guided practice.',
     'path_1_btn' => 'View courses',
 
     'path_2_title' => 'Internal exam<br>preparation',

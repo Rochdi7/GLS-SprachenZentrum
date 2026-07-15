@@ -26,7 +26,7 @@ return [
         'text_list' => 'At GLS Marrakech, you benefit from:',
 
         'offers' => [
-            '1' => 'Intensive German courses (A1–B2)',
+            '1' => 'Intensive German courses (A1–C1)',
             '2' => 'Online German courses for more flexibility',
             '3' => 'Speaking & communication workshops',
             '4' => 'Visa & study support for Germany',

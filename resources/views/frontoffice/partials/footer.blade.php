@@ -96,7 +96,7 @@
                 </ul>
             </div>
 
-            {{-- Column 3 – Courses + Levels A1-B2 --}}
+            {{-- Column 3 – Courses + Levels A1-C1 --}}
             <div class="col-6 col-md-3 mb-4">
                 <p class="footer-title">{{ __('footer.german_courses') }}</p>
                 <ul class="list-unstyled footer-links">
@@ -133,6 +133,9 @@
                     </li>
                     <li>
                         <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.b2')) }}">{{ __('footer.level_links.b2') }}</a>
+                    </li>
+                    <li>
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.c1')) }}">{{ __('footer.level_links.c1') }}</a>
                     </li>
                 </ul>
             </div>

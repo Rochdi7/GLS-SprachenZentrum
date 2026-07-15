@@ -91,7 +91,7 @@ return [
     'path_title' => 'Ihr Weg von GLS zur ÖSD-Prüfung',
 
     'path_1_title' => 'Ihr Niveau<br>bei GLS abschließen',
-    'path_1_text' => 'Jeder Lernende schließt sein Niveau (A1–B2) mit strukturiertem Unterricht und begleiteter Praxis ab.',
+    'path_1_text' => 'Jeder Lernende schließt sein Niveau (A1–C1) mit strukturiertem Unterricht und begleiteter Praxis ab.',
     'path_1_btn' => 'Kurse ansehen',
 
     'path_2_title' => 'Interne Prüfungs-<br>vorbereitung',

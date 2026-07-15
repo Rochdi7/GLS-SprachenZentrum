@@ -32,6 +32,7 @@ return [
         'a2' => "Cours d'allemand A2 (Élémentaire)",
         'b1' => "Cours d'allemand B1 (Intermédiaire)",
         'b2' => "Cours d'allemand B2 (Avancé)",
+        'c1' => "Cours d'allemand C1 (Autonome)",
     ],
     'partner_fc_marokko' => 'Partenariat FC Marokko',
 

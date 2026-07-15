@@ -37,6 +37,7 @@ return [
     'level_a2' => 'أساسي',
     'level_b1' => 'متوسط',
     'level_b2' => 'متقدم',
+    'level_c1' => 'متمكّن',
     'level_c1' => 'مستقل',
 
     // Cities

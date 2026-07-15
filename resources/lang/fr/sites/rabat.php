@@ -33,7 +33,7 @@ return [
         'text_list' => 'Au GLS Rabat, les apprenants bénéficient de :',
 
         'offers' => [
-            '1' => 'Cours intensifs d’allemand (A1–B2)',
+            '1' => 'Cours intensifs d’allemand (A1–C1)',
             '2' => 'Cours d’allemand en ligne avec enseignants en direct',
             '3' => 'Ateliers de conversation et d’expression orale',
             '4' => 'Accompagnement visa, études & carrière pour l’Allemagne',

@@ -30,7 +30,7 @@ return [
     'exams_subtitle' => 'Get ready for something new in Morocco',
     'exams_p1' => 'GLS Sprachenzentrum is proud to bring international German exams to Morocco.',
     'exams_p2' => 'We will soon offer official ÖSD and GLS exams — giving students the opportunity to certify their language level locally.',
-    'exams_p3' => 'Our programs cover levels A1 to B2, helping you build a solid foundation for academic, professional, and personal success.',
+    'exams_p3' => 'Our programs cover levels A1 to C1, helping you build a solid foundation for academic, professional, and personal success.',
     'exams_p4' => 'Join us and be among the first in Morocco to take part in our GLS German exams — coming soon!',
 
     'start_title' => 'Get Started Today!',

@@ -123,6 +123,11 @@ class PageController extends Controller
         return view('frontoffice.niveaux.b2');
     }
 
+    public function niveauC1()
+    {
+        return view('frontoffice.niveaux.c1');
+    }
+
     public function contactPost(Request $request)
     {
         $request->validate([

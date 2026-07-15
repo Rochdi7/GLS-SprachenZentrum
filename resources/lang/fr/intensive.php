@@ -5,13 +5,13 @@ return [
     // =========================================================
     // META
     // =========================================================
-    'meta_title' => 'Cours d’Allemand Intensifs – A1 à B2 | GLS Sprachenzentrum',
+    'meta_title' => 'Cours d’Allemand Intensifs – A1 à C1 | GLS Sprachenzentrum',
 
     // =========================================================
     // HERO SECTION
     // =========================================================
     'hero' => [
-        'subtitle' => 'Cours intensifs d’allemand du niveau A1 au niveau B2',
+        'subtitle' => 'Cours intensifs d’allemand du niveau A1 au niveau C1',
         'title'    => 'Cours Intensifs d’Allemand – GLS Sprachenzentrum',
         'img_alt'  => 'Cours intensifs de langue allemande GLS',
     ],
@@ -28,7 +28,7 @@ return [
 
         'p2' => '<p>
                     Les cours intensifs proposés par <strong>GLS Sprachenzentrum</strong> sont adaptés
-                    aux apprenants des niveaux <strong>A1 à B2</strong>.
+                    aux apprenants des niveaux <strong>A1 à C1</strong>.
                     Notre méthode combine grammaire structurée, conversation active et immersion réelle —
                     pour que vous ne vous contentiez pas seulement d’apprendre l’allemand,
                     mais que vous commenciez à le <em>vivre</em>.
@@ -47,7 +47,7 @@ return [
     'courses' => [
 
         'section_title' => 'Cours Intensifs d’Allemand',
-        'subtitle'      => 'Cours de langue allemande A1–B2',
+        'subtitle'      => 'Cours de langue allemande A1–C1',
         'schedule'      => 'Du lundi au vendredi – 2h30 par séance',
 
         'learn_more' => 'En savoir plus',
@@ -84,7 +84,7 @@ return [
 
         'intro' => '<p>
                         Beaucoup d’étudiants veulent apprendre l’allemand mais ne savent pas par où commencer.
-                        Voici comment GLS vous accompagne du niveau <strong>A1 à B2</strong>.
+                        Voici comment GLS vous accompagne du niveau <strong>A1 à C1</strong>.
                     </p>
                     <p>Voici ce que vous devez savoir avant de choisir un cours intensif :</p>',
 
@@ -95,7 +95,7 @@ return [
                  Oui — GLS inclut gratuitement le suivi de votre dossier (documents, rendez-vous, accompagnement).',
 
         'q3' => '<strong>Certificat linguistique & démarches.</strong>
-                 Après avoir obtenu votre certificat (A1–B2), nous vous conseillons sur la suite du parcours :
+                 Après avoir obtenu votre certificat (A1–C1), nous vous conseillons sur la suite du parcours :
                  études, Ausbildung, travail, délais et documents requis.',
 
         'q4' => '<strong>Stress & intensité.</strong>

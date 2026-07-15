@@ -3,7 +3,7 @@
 return [
 
     'meta_title' => 'Deutsch lernen in Marokko | Deutschkurs & Sprachzentrum GLS',
-    'meta_description' => 'Deutschschule in Marokko: Deutschkurse A1–B2, Goethe-Vorbereitung, Zertifikate und Beratung für Studium & Visum in Deutschland. 6 Standorte – Rabat, Casablanca & mehr.',
+    'meta_description' => 'Deutschschule in Marokko: Deutschkurse A1–C1, Goethe-Vorbereitung, Zertifikate und Beratung für Studium & Visum in Deutschland. 6 Standorte – Rabat, Casablanca & mehr.',
 
     // ========================
     // 🔵 HERO SECTION
@@ -26,7 +26,7 @@ return [
         'logo_alt' => 'GLS Sprachenzentrum – Logo',
         'tagline' => 'Deutschschule & Sprachzentrum Marokko',
         'heading' => 'Lernen. Verbinden. Entdecken.',
-        'description' => 'GLS Sprachenzentrum ist Ihre Deutschschule in Marokko: strukturierte Deutschkurse von A1 bis B2, erfahrene Lehrkräfte und eine Lernatmosphäre, die Sie sicher auf Goethe-Prüfungen, Studium und den Weg nach Deutschland vorbereitet.',
+        'description' => 'GLS Sprachenzentrum ist Ihre Deutschschule in Marokko: strukturierte Deutschkurse von A1 bis C1, erfahrene Lehrkräfte und eine Lernatmosphäre, die Sie sicher auf Goethe-Prüfungen, Studium und den Weg nach Deutschland vorbereitet.',
         'button' => 'Deutschkurse entdecken',
     ],
 
@@ -59,7 +59,7 @@ return [
         ],
         [
             'question' => 'Bereitet GLS auf die Goethe-Prüfung vor?',
-            'answer' => 'Ja. Unsere Goethe-Vorbereitungskurse decken die Niveaus A1 bis B2 ab und orientieren sich an den offiziellen Prüfungsformaten.',
+            'answer' => 'Ja. Unsere Goethe-Vorbereitungskurse decken die Niveaus A1 bis C1 ab und orientieren sich an den offiziellen Prüfungsformaten.',
         ],
         [
             'question' => 'Welche Deutschzertifikate werden für Deutschland anerkannt?',
@@ -67,7 +67,7 @@ return [
         ],
         [
             'question' => 'Gibt es intensive Deutschkurse in Marokko?',
-            'answer' => 'Ja – intensive Deutschkurse A1–B2, montags bis freitags, mit kleinen Gruppen und zertifizierten Lehrkräften.',
+            'answer' => 'Ja – intensive Deutschkurse A1–C1, montags bis freitags, mit kleinen Gruppen und zertifizierten Lehrkräften.',
         ],
     ],
     'reviews' => [
@@ -133,7 +133,7 @@ return [
 
         'intensive' => [
             'title' => 'Intensiv-Deutschkurse',
-            'subtitle' => 'Deutschkurse A1–B2',
+            'subtitle' => 'Deutschkurse A1–C1',
             'description' => 'Montag bis Freitag — 2,5 Stunden pro Unterrichtseinheit',
 
             'cards' => [
@@ -168,6 +168,14 @@ return [
                     'text' => 'Erreichen Sie ein fortgeschrittenes Niveau in Deutsch mit unserem B2-Programm.',
                     'button' => 'Programm B2 ansehen',
                     'route' => 'front.online-courses',
+                ],
+                'c1' => [
+                    'letter' => 'C',
+                    'number' => '1',
+                    'title' => 'Deutsch C1<br>Kompetent',
+                    'text' => 'Beherrschen Sie Deutsch auf fortgeschrittenem, nahezu muttersprachlichem Niveau mit unserem C1-Programm.',
+                    'button' => 'Programm C1 ansehen',
+                    'route' => 'front.niveaux.c1',
                 ],
             ],
         ],
@@ -264,6 +272,12 @@ return [
             'join_anytime' => 'Treten Sie jederzeit bei!',
             'description' => 'Dienstag bis Freitag, 4 Wochen, 16 Stunden pro Woche.<br>Lernen Sie so lange Sie möchten.',
             'button' => 'Preisliste anzeigen',
+        ],
+        'card_c1' => [
+            'title' => 'Neue <span class="hh-yellow">C1-Gruppen</span> jetzt in Marokko geöffnet!',
+            'badge' => 'Fortgeschrittenes Niveau verfügbar!',
+            'description' => 'Wir haben neue C1-Gruppen in unseren Zentren in Marokko eröffnet.<br>Erreichen Sie mit GLS ein nahezu muttersprachliches, studienreifes Deutschniveau.',
+            'button' => 'Den C1-Kurs entdecken',
         ],
     ],
 

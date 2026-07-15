@@ -26,7 +26,7 @@ return [
         'text_list' => 'Bei GLS Salé profitieren Sie von:',
 
         'offers' => [
-            '1' => 'Intensiv-Deutschkurse (A1–B2)',
+            '1' => 'Intensiv-Deutschkurse (A1–C1)',
             '2' => 'Online-Deutschunterricht mit Live-Lehrern',
             '3' => 'Konversations- & Sprechworkshops',
             '4' => 'Visum-, Studien- & Einwanderungsberatung für Deutschland',
@@ -48,7 +48,7 @@ return [
     ],
 
     // ===========================
-    // LEVELS (A1–B2) FOR JS
+    // LEVELS (A1–C1) FOR JS
     // ===========================
     'levels' => [
         'A1' => [

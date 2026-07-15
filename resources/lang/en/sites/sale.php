@@ -26,7 +26,7 @@ return [
         'text_list' => 'At GLS Salé, you benefit from:',
 
         'offers' => [
-            '1' => 'Intensive German Courses (A1–B2)',
+            '1' => 'Intensive German Courses (A1–C1)',
             '2' => 'Online German Lessons with live instructors',
             '3' => 'Conversation & speaking workshops',
             '4' => 'Visa, study & immigration guidance for Germany',
@@ -48,7 +48,7 @@ return [
     ],
 
     // ===========================
-    // LEVELS (A1–B2) FOR JS
+    // LEVELS (A1–C1) FOR JS
     // ===========================
     'levels' => [
         'A1' => [

@@ -42,7 +42,7 @@ return [
                 'time' => '21:55',
                 'side' => 'left',
                 'green' => false,
-                'html' => 'Super 👌 Kennen Sie bereits Ihr Niveau? (A1, A2, B1, B2)',
+                'html' => 'Super 👌 Kennen Sie bereits Ihr Niveau? (A1, A2, B1, B2, C1)',
             ],
             [
                 'time' => '21:56',
@@ -118,7 +118,7 @@ return [
                 'time' => '21:56',
                 'side' => 'left',
                 'green' => false,
-                'html' => 'Kennen Sie bereits Ihr Niveau? (A1, A2, B1, B2)',
+                'html' => 'Kennen Sie bereits Ihr Niveau? (A1, A2, B1, B2, C1)',
             ],
             [
                 'time' => '21:56',

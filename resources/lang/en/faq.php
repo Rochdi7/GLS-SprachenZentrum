@@ -146,7 +146,7 @@ return [
                 'answer' => '
                     <p>Registration at GLS requires a <strong>single payment</strong> that includes:</p>
                     <ul style="text-align:left; list-style-type:\'• \'; padding-left:1.2rem;">
-                        <li>Books for all levels (A1–B2)</li>
+                        <li>Books for all levels (A1–C1)</li>
                         <li>Free visa file follow-up</li>
                         <li>Administrative support and document preparation</li>
                     </ul>

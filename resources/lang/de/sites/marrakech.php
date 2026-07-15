@@ -26,7 +26,7 @@ return [
         'text_list' => 'Bei GLS Marrakech profitieren Sie von:',
 
         'offers' => [
-            '1' => 'Intensiv-Deutschkurse (A1–B2)',
+            '1' => 'Intensiv-Deutschkurse (A1–C1)',
             '2' => 'Online-Deutschkurse für mehr Flexibilität',
             '3' => 'Sprech- & Kommunikationsworkshops',
             '4' => 'Visum- & Studienunterstützung für Deutschland',

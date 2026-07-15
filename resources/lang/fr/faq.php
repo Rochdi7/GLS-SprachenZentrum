@@ -30,7 +30,7 @@ return [
         'courses' => [
             'q1' => [
                 'question' => 'Quels niveaux de cours d’allemand GLS propose-t-il ?',
-                'a1' => 'GLS Sprachenzentrum propose des cours d’allemand pour tous les niveaux — <strong>A1, A2, B1 et B2</strong>.',
+                'a1' => 'GLS Sprachenzentrum propose des cours d’allemand pour tous les niveaux — <strong>A1, A2, B1, B2 et C1</strong>.',
                 'a2' => 'Nos professeurs sont parmi les plus qualifiés et expérimentés au Maroc, garantissant une acquisition rapide et efficace de la langue.',
             ],
         ],
@@ -146,7 +146,7 @@ return [
                 'answer' => '
                     <p>L’inscription chez GLS nécessite un <strong>paiement unique</strong> comprenant :</p>
                     <ul style="text-align:left; list-style-type:\'• \'; padding-left:1.2rem;">
-                        <li>Les livres pour tous les niveaux (A1–B2)</li>
+                        <li>Les livres pour tous les niveaux (A1–C1)</li>
                         <li>Le suivi gratuit du dossier de visa</li>
                         <li>L’aide administrative et la préparation des documents</li>
                     </ul>

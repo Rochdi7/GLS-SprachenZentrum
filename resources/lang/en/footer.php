@@ -32,6 +32,7 @@ return [
         'a2' => 'German Course A2 (Elementary)',
         'b1' => 'German Course B1 (Intermediate)',
         'b2' => 'German Course B2 (Advanced)',
+        'c1' => 'German Course C1 (Proficient)',
     ],
     'partner_fc_marokko' => 'FC Marokko Partnership',
 

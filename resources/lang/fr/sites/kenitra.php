@@ -31,7 +31,7 @@ return [
         'text_list' => 'Au GLS Kénitra, vous bénéficiez de :',
 
         'offers' => [
-            '1' => 'Cours intensifs d’allemand (A1–B2)',
+            '1' => 'Cours intensifs d’allemand (A1–C1)',
             '2' => 'Cours d’allemand en ligne avec horaires flexibles',
             '3' => 'Ateliers d’expression orale & de communication',
             '4' => 'Accompagnement visa & études pour l’Allemagne',

@@ -23,7 +23,7 @@ return [
 
         'card1' => [
             'title' => 'Complete<br>your level',
-            'text' => 'Each student validates their level (A1–B2) with structured training, exercises and internal evaluation.',
+            'text' => 'Each student validates their level (A1–C1) with structured training, exercises and internal evaluation.',
             'button' => 'View courses',
         ],
 
@@ -48,7 +48,7 @@ return [
 
     'levels' => [
         'title1' => 'Your path from GLS exams to Goethe certificate',
-        'text1' => 'Each student follows a clear path. After completing a level (A1–B2), you take an <strong>internal GLS exam</strong> with your teacher.',
+        'text1' => 'Each student follows a clear path. After completing a level (A1–C1), you take an <strong>internal GLS exam</strong> with your teacher.',
         'text2' => 'Once your level is validated, GLS registers your name for the corresponding official Goethe exam.',
 
         'title2' => 'What you must master before the Goethe exam',

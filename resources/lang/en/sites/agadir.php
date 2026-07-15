@@ -26,7 +26,7 @@ return [
         'text_list' => 'At GLS Agadir, you benefit from:',
 
         'offers' => [
-            '1' => 'Intensive German courses (A1–B2)',
+            '1' => 'Intensive German courses (A1–C1)',
             '2' => 'Online German courses with live teachers',
             '3' => 'Conversation & speaking workshops',
             '4' => 'Professional support for visa & studies in Germany',

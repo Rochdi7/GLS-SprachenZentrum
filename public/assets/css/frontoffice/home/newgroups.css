@@ -85,6 +85,13 @@
     display: none;
 }
 
+/* ===== FULL-WIDTH C1 CARD (under the row) ===== */
+.hh-card-full {
+    background-color: var(--dark--purple);
+    width: 100%;
+    margin-top: 1.5rem;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
 

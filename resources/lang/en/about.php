@@ -43,7 +43,7 @@ return [
         'h2' => 'Exams & Certifications',
         'h3' => 'A new step for German in Morocco',
         'p1' => '<strong>GLS Sprachenzentrum</strong> is proud to introduce official German exams to Morocco. In addition to our courses, we will soon offer <strong>GLS</strong> and <strong>ÖSD</strong> exams — allowing students to certify their level locally.',
-        'p2' => 'Our programs cover levels <strong>A1 to B2</strong>, providing a solid foundation for success in your academic, professional or personal projects.',
+        'p2' => 'Our programs cover levels <strong>A1 to C1</strong>, providing a solid foundation for success in your academic, professional or personal projects.',
         'p3' => 'Our teachers are certified, experienced and guide each student step by step towards success.',
         'p4' => 'Join GLS and be among the first in Morocco to take <strong>official German exams</strong> — coming soon!',
     ],
@@ -51,7 +51,7 @@ return [
     'cta' => [
         'h2'       => 'Start today!',
         'h3'       => 'Join the German adventure with GLS Morocco',
-        'p1'       => 'Start your German learning at <strong>GLS Sprachenzentrum</strong>. Our intensive and online courses are open to all levels — from A1 to B2.',
+        'p1'       => 'Start your German learning at <strong>GLS Sprachenzentrum</strong>. Our intensive and online courses are open to all levels — from A1 to C1.',
         'p2'       => 'Visit one of our centers in <strong>Marrakech, Rabat, Kénitra, Salé, Casablanca</strong> or <strong>Agadir</strong>, and discover the most effective method to learn German in Morocco.',
         'p3'       => 'Our team is here to guide you step by step — towards your language and professional goals.',
         'button'   => 'Learn more',

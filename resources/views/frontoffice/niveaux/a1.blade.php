@@ -110,6 +110,7 @@
                 <button class="gls-niveau-btn" data-level="A2">A2</button>
                 <button class="gls-niveau-btn" data-level="B1">B1</button>
                 <button class="gls-niveau-btn" data-level="B2">B2</button>
+                <button class="gls-niveau-btn" data-level="C1">C1</button>
             </div>
 
             <!-- GRID -->
@@ -334,6 +335,13 @@
                 times: `{!! __('niveaux/b2.data_times') !!}`,
                 price: `{!! __('niveaux/b2.data_price') !!}`,
                 priceLink: `{!! __('niveaux/b2.data_price_link_text') !!}`,
+            },
+            C1: {
+                graduation: `{!! __('niveaux/c1.data_graduation') !!}`,
+                duration: `{!! __('niveaux/c1.data_duration') !!}`,
+                times: `{!! __('niveaux/c1.data_times') !!}`,
+                price: `{!! __('niveaux/c1.data_price') !!}`,
+                priceLink: `{!! __('niveaux/c1.data_price_link_text') !!}`,
             },
         };
 

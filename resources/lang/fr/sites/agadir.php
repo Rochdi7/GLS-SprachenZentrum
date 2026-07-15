@@ -32,7 +32,7 @@ return [
         'text_list' => 'Au GLS Agadir, vous bénéficiez de :',
 
         'offers' => [
-            '1' => 'Cours intensifs d’allemand (A1–B2)',
+            '1' => 'Cours intensifs d’allemand (A1–C1)',
             '2' => 'Cours d’allemand en ligne avec professeurs en direct',
             '3' => 'Ateliers de conversation & d’expression orale',
             '4' => 'Accompagnement professionnel pour visa & études en Allemagne',

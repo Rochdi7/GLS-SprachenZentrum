@@ -26,19 +26,19 @@ return [
     'defaults' => [
         'fr' => [
             'title' => 'GLS Sprachenzentrum – Apprendre l’allemand au Maroc',
-            'description' => 'Centre de langue allemande au Maroc : cours intensifs A1–B2, préparation Goethe et certifications. 6 centres au Maroc.',
+            'description' => 'Centre de langue allemande au Maroc : cours intensifs A1–C1, préparation Goethe et certifications. 6 centres au Maroc.',
         ],
         'en' => [
             'title' => 'GLS Sprachenzentrum – Learn German in Morocco',
-            'description' => 'German language center in Morocco: intensive A1–B2 courses, Goethe exam prep and certifications. Six centers nationwide.',
+            'description' => 'German language center in Morocco: intensive A1–C1 courses, Goethe exam prep and certifications. Six centers nationwide.',
         ],
         'de' => [
             'title' => 'Deutsch lernen in Marokko | Deutschkurs & Sprachzentrum GLS',
-            'description' => 'Deutschschule und Sprachzentrum in Marokko: Deutschkurse A1–B2, Goethe-Vorbereitung, Zertifikate und Studienweg nach Deutschland. 6 Standorte.',
+            'description' => 'Deutschschule und Sprachzentrum in Marokko: Deutschkurse A1–C1, Goethe-Vorbereitung, Zertifikate und Studienweg nach Deutschland. 6 Standorte.',
         ],
         'ar' => [
             'title' => 'GLS Sprachenzentrum – تعلم الألمانية في المغرب',
-            'description' => 'مركز تعليم اللغة الألمانية في المغرب: دورات مكثفة A1–B2، تحضير امتحان غوته وشهادات معتمدة. 6 فروع.',
+            'description' => 'مركز تعليم اللغة الألمانية في المغرب: دورات مكثفة A1–C1، تحضير امتحان غوته وشهادات معتمدة. 6 فروع.',
         ],
     ],
 

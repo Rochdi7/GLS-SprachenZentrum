@@ -1,6 +1,6 @@
 @extends('frontoffice.layouts.app')
 
-@section('title', __('niveaux/b1.title'))
+@section('title', __('niveaux/c1.title'))
 
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/niveau/a1.css') }}">
 
@@ -12,43 +12,43 @@
 
             <!-- LEFT IMAGE -->
             <div class="gls-hero-image reveal delay-1">
-                <img src="{{ asset('assets/images/about/grid1.avif') }}" alt="{{ __('niveaux/b1.hero_alt') }}"
+                <img src="{{ asset('assets/images/about/c1.avif') }}" alt="{{ __('niveaux/c1.hero_alt') }}"
                     class="reveal delay-2">
             </div>
 
             <!-- RIGHT CONTENT -->
             <div class="div-block-37 reveal delay-2">
 
-                <!-- B1 BADGE -->
+                <!-- C1 BADGE -->
                 <div class="div-block-39 reveal delay-1">
-                    <div class="course-level-circle-copy reveal delay-2">B</div>
+                    <div class="course-level-circle-copy reveal delay-2">C</div>
                     <div class="course-level-circle-copy reveal delay-3">1</div>
                 </div>
 
                 <!-- SUBTITLE -->
                 <div class="text-block-4 reveal delay-2">
-                    {!! __('niveaux/b1.subtitle') !!}
+                    {!! __('niveaux/c1.subtitle') !!}
                     <br>
                 </div>
 
                 <!-- TITLE -->
                 <h1 class="hero_title is-course fade-blur-title reveal delay-3">
-                    {!! __('niveaux/b1.title_main') !!}
+                    {!! __('niveaux/c1.title_main') !!}
                     <br>
                     <span style="font-size:1.4rem; color:var(--light--blue); font-weight:500;" class="reveal delay-3">
-                        {!! __('niveaux/b1.title_secondary') !!}
+                        {!! __('niveaux/c1.title_secondary') !!}
                     </span>
                 </h1>
 
                 <!-- PARAGRAPH -->
                 <p class="course-hero_paragraph reveal delay-2">
-                    {!! __('niveaux/b1.paragraph') !!}
+                    {!! __('niveaux/c1.paragraph') !!}
                 </p>
 
                 <!-- CTA BUTTON -->
                 <a href="#" class="button w-button reveal delay-3" data-bs-toggle="modal"
                     data-bs-target="#glsEnrollModal">
-                    {{ __('niveaux/b1.btn_inscrire') }}
+                    {{ __('niveaux/c1.btn_inscrire') }}
                 </a>
 
             </div>
@@ -60,38 +60,37 @@
 
 
     <!-- ===========================================================
-                 AVANTAGES
-            =========================================================== -->
+                         AVANTAGES C1
+                    =========================================================== -->
     <div class="section is-off-white reveal delay-1">
         <div class="container is-2-col-grid is-flipped reveal delay-2">
 
-            <!-- LEFT TEXT -->
             <div class="get-started-contents reveal delay-1">
 
                 <div class="box-rich-text w-richtext reveal delay-2">
-                    <h2 class="fade-blur-title reveal delay-3">{{ __('niveaux/b1.avantages_title') }}</h2>
+                    <h2 class="fade-blur-title reveal delay-3">{{ __('niveaux/c1.avantages_title') }}</h2>
 
-                    <ul role="list" class="reveal delay-1">
-                        <li class="reveal delay-2">{!! __('niveaux/b1.adv_1') !!}</li>
-                        <li class="reveal delay-3">{!! __('niveaux/b1.adv_2') !!}</li>
-                        <li class="reveal delay-1">{!! __('niveaux/b1.adv_3') !!}</li>
-                        <li class="reveal delay-2">{!! __('niveaux/b1.adv_4') !!}</li>
-                        <li class="reveal delay-3">{!! __('niveaux/b1.adv_5') !!}</li>
-                        <li class="reveal delay-1">{!! __('niveaux/b1.adv_6') !!}</li>
-                        <li class="reveal delay-2">{!! __('niveaux/b1.adv_7') !!}</li>
+                    <ul role="list">
+                        <li class="reveal delay-1">{!! __('niveaux/c1.adv_1') !!}</li>
+                        <li class="reveal delay-2">{!! __('niveaux/c1.adv_2') !!}</li>
+                        <li class="reveal delay-3">{!! __('niveaux/c1.adv_3') !!}</li>
+                        <li class="reveal delay-1">{!! __('niveaux/c1.adv_4') !!}</li>
+                        <li class="reveal delay-2">{!! __('niveaux/c1.adv_5') !!}</li>
+                        <li class="reveal delay-3">{!! __('niveaux/c1.adv_6') !!}</li>
+                        <li class="reveal delay-1">{!! __('niveaux/c1.adv_7') !!}</li>
                     </ul>
 
                 </div>
 
                 <a href="#" class="button w-button reveal delay-3" data-bs-toggle="modal"
                     data-bs-target="#glsEnrollModal">
-                    {{ __('niveaux/b1.btn_inscrire') }}
+                    {{ __('niveaux/c1.btn_inscrire') }}
                 </a>
             </div>
 
-            <!-- RIGHT IMAGE -->
+            <!-- IMAGE -->
             <div class="image-block reveal delay-2">
-                <img src="{{ asset('assets/images/niveaux/affiche.avif') }}" alt="{{ __('niveaux/b1.class_alt') }}"
+                <img src="{{ asset('assets/images/niveaux/affiche.avif') }}" alt="{{ __('niveaux/c1.class_alt') }}"
                     class="full-image reveal delay-3">
             </div>
 
@@ -101,32 +100,30 @@
 
 
     <!-- ===========================================================
-                 INFO CARDS
-            =========================================================== -->
+                         INFO CARDS
+                    =========================================================== -->
     <section class="gls-info-section gls-section reveal delay-1">
-
         <div class="gls-container reveal delay-2">
 
             <h2 class="gls-info-title fade-blur-title reveal delay-3">
-                {{ __('niveaux/b1.info_title') }}
+                {{ __('niveaux/c1.info_title') }}
             </h2>
 
-            <!-- LEVEL SWITCHER -->
+            <!-- LEVEL SWITCH TABS -->
             <div class="gls-niveau-tabs reveal delay-1">
                 <button class="gls-niveau-btn reveal delay-1" data-level="A1">A1</button>
                 <button class="gls-niveau-btn reveal delay-2" data-level="A2">A2</button>
-                <button class="gls-niveau-btn active reveal delay-3" data-level="B1">B1</button>
+                <button class="gls-niveau-btn reveal delay-3" data-level="B1">B1</button>
                 <button class="gls-niveau-btn reveal delay-1" data-level="B2">B2</button>
-                <button class="gls-niveau-btn" data-level="C1">C1</button>
+                <button class="gls-niveau-btn active reveal delay-2" data-level="C1">C1</button>
             </div>
 
-            <!-- INFO GRID -->
             <div class="gls-info-grid reveal delay-2">
 
                 <div class="gls-info-card reveal delay-1">
                     <div class="gls-info-icon reveal delay-2">@include('frontoffice.svg.sites-info')</div>
                     <h3 class="gls-info-card-title fade-blur-title reveal delay-3">
-                        {{ __('niveaux/b1.graduation') }}
+                        {{ __('niveaux/c1.graduation') }}
                     </h3>
                     <div class="gls-info-text reveal delay-1" id="graduation-text"></div>
                 </div>
@@ -134,7 +131,7 @@
                 <div class="gls-info-card reveal delay-2">
                     <div class="gls-info-icon reveal delay-3">@include('frontoffice.svg.sites-duration')</div>
                     <h3 class="gls-info-card-title fade-blur-title reveal delay-1">
-                        {{ __('niveaux/b1.duration') }}
+                        {{ __('niveaux/c1.duration') }}
                     </h3>
                     <div class="gls-info-text reveal delay-2" id="duration-text"></div>
                 </div>
@@ -142,7 +139,7 @@
                 <div class="gls-info-card reveal delay-3">
                     <div class="gls-info-icon reveal delay-1">@include('frontoffice.svg.sites-times')</div>
                     <h3 class="gls-info-card-title fade-blur-title reveal delay-2">
-                        {{ __('niveaux/b1.times') }}
+                        {{ __('niveaux/c1.times') }}
                     </h3>
                     <div class="gls-info-text reveal delay-3" id="times-text"></div>
                 </div>
@@ -150,7 +147,7 @@
                 <div class="gls-info-card reveal delay-1">
                     <div class="gls-info-icon reveal delay-2">@include('frontoffice.svg.sites-price')</div>
                     <h3 class="gls-info-card-title fade-blur-title reveal delay-3">
-                        {{ __('niveaux/b1.price') }}
+                        {{ __('niveaux/c1.price') }}
                     </h3>
                     <div class="gls-info-text reveal delay-1" id="price-text"></div>
                 </div>
@@ -158,54 +155,65 @@
             </div>
 
         </div>
-
     </section>
 
 
 
     <!-- ===========================================================
-                 PATH GLS → ÖSD
-            =========================================================== -->
+                         PATH SECTION
+                    =========================================================== -->
     <section class="gls-path-section reveal delay-1">
 
         <div class="gls-path-container reveal delay-2">
 
             <h2 class="gls-path-title fade-blur-title reveal delay-3">
-                {{ __('niveaux/b1.path_title') }}
+                {{ __('niveaux/c1.path_title') }}
             </h2>
 
             <div class="gls-path-grid reveal delay-1">
 
                 <div class="gls-path-card reveal delay-1">
                     <div class="gls-path-icon reveal delay-2">@include('frontoffice.svg.info-arrow')</div>
-                    <h3 class="gls-path-card-title fade-blur-title reveal delay-3">{!! __('niveaux/b1.path_1_title') !!}</h3>
-                    <div class="gls-path-text reveal delay-1">{!! __('niveaux/b1.path_1_text') !!}</div>
-                    <a href="/courses"
-                        class="gls-path-button w-button reveal delay-2">{{ __('niveaux/b1.path_1_btn') }}</a>
+                    <h3 class="gls-path-card-title fade-blur-title reveal delay-3">
+                        {!! __('niveaux/c1.path_1_title') !!}
+                    </h3>
+                    <div class="gls-path-text reveal delay-1">{!! __('niveaux/c1.path_1_text') !!}</div>
+                    <a href="/courses" class="gls-path-button w-button reveal delay-2">
+                        {{ __('niveaux/c1.path_1_btn') }}
+                    </a>
                 </div>
 
                 <div class="gls-path-card reveal delay-2">
                     <div class="gls-path-icon reveal delay-3">@include('frontoffice.svg.info-arrow')</div>
-                    <h3 class="gls-path-card-title fade-blur-title reveal delay-1">{!! __('niveaux/b1.path_2_title') !!}</h3>
-                    <div class="gls-path-text reveal delay-2">{!! __('niveaux/b1.path_2_text') !!}</div>
-                    <a href="/exams/osd"
-                        class="gls-path-button w-button reveal delay-3">{{ __('niveaux/b1.path_2_btn') }}</a>
+                    <h3 class="gls-path-card-title fade-blur-title reveal delay-1">
+                        {!! __('niveaux/c1.path_2_title') !!}
+                    </h3>
+                    <div class="gls-path-text reveal delay-2">{!! __('niveaux/c1.path_2_text') !!}</div>
+                    <a href="/exams/osd" class="gls-path-button w-button reveal delay-3">
+                        {{ __('niveaux/c1.path_2_btn') }}
+                    </a>
                 </div>
 
                 <div class="gls-path-card reveal delay-3">
                     <div class="gls-path-icon reveal delay-1">@include('frontoffice.svg.info-arrow')</div>
-                    <h3 class="gls-path-card-title fade-blur-title reveal delay-2">{!! __('niveaux/b1.path_3_title') !!}</h3>
-                    <div class="gls-path-text reveal delay-3">{!! __('niveaux/b1.path_3_text') !!}</div>
-                    <a href="/exams/osd#dates"
-                        class="gls-path-button w-button reveal delay-1">{{ __('niveaux/b1.path_3_btn') }}</a>
+                    <h3 class="gls-path-card-title fade-blur-title reveal delay-2">
+                        {!! __('niveaux/c1.path_3_title') !!}
+                    </h3>
+                    <div class="gls-path-text reveal delay-3">{!! __('niveaux/c1.path_3_text') !!}</div>
+                    <a href="/exams/osd#dates" class="gls-path-button w-button reveal delay-1">
+                        {{ __('niveaux/c1.path_3_btn') }}
+                    </a>
                 </div>
 
                 <div class="gls-path-card reveal delay-1">
                     <div class="gls-path-icon reveal delay-2">@include('frontoffice.svg.info-arrow')</div>
-                    <h3 class="gls-path-card-title fade-blur-title reveal delay-3">{!! __('niveaux/b1.path_4_title') !!}</h3>
-                    <div class="gls-path-text reveal delay-1">{!! __('niveaux/b1.path_4_text') !!}</div>
-                    <a href="/exams/osd"
-                        class="gls-path-button w-button reveal delay-2">{{ __('niveaux/b1.path_4_btn') }}</a>
+                    <h3 class="gls-path-card-title fade-blur-title reveal delay-3">
+                        {!! __('niveaux/c1.path_4_title') !!}
+                    </h3>
+                    <div class="gls-path-text reveal delay-1">{!! __('niveaux/c1.path_4_text') !!}</div>
+                    <a href="/exams/osd" class="gls-path-button w-button reveal delay-2">
+                        {{ __('niveaux/c1.path_4_btn') }}
+                    </a>
                 </div>
 
             </div>
@@ -217,8 +225,8 @@
 
 
     <!-- ===========================================================
-                 RICH TEXT SECTION
-            =========================================================== -->
+                         RICH TEXT C1
+                    =========================================================== -->
     <section class="gls-a1-rich-section reveal delay-1">
 
         <div class="gls-a1-rich-container reveal delay-2">
@@ -227,61 +235,61 @@
 
                 <!-- BLOCK 1 -->
                 <h2 class="fade-blur-title reveal delay-3">
-                    {{ __('niveaux/b1.rich_1_title') }}
+                    {{ __('niveaux/c1.rich_1_title') }}
                 </h2>
 
                 <h3 class="fade-blur-title reveal delay-1">
-                    {{ __('niveaux/b1.rich_1_sub') }}
+                    {{ __('niveaux/c1.rich_1_sub') }}
                 </h3>
 
                 <p class="reveal delay-2">
-                    {!! __('niveaux/b1.rich_1_p1') !!}
+                    {!! __('niveaux/c1.rich_1_p1') !!}
                 </p>
 
                 <p class="reveal delay-3">
-                    {!! __('niveaux/b1.rich_1_p2') !!}
+                    {!! __('niveaux/c1.rich_1_p2') !!}
                 </p>
 
 
                 <!-- BLOCK 2 -->
                 <h2 class="fade-blur-title reveal delay-1">
-                    {{ __('niveaux/b1.rich_2_title') }}
+                    {{ __('niveaux/c1.rich_2_title') }}
                 </h2>
 
                 <h3 class="fade-blur-title reveal delay-2">
-                    {{ __('niveaux/b1.rich_2_sub') }}
+                    {{ __('niveaux/c1.rich_2_sub') }}
                 </h3>
 
                 <p class="reveal delay-3">
-                    {!! __('niveaux/b1.rich_2_p1') !!}
+                    {!! __('niveaux/c1.rich_2_p1') !!}
                 </p>
 
                 <p class="reveal delay-1">
-                    {!! __('niveaux/b1.rich_2_p2') !!}
+                    {!! __('niveaux/c1.rich_2_p2') !!}
                 </p>
 
 
                 <!-- BLOCK 3 -->
                 <h2 class="fade-blur-title reveal delay-2">
-                    {{ __('niveaux/b1.rich_3_title') }}
+                    {{ __('niveaux/c1.rich_3_title') }}
                 </h2>
 
                 <p class="reveal delay-3">
-                    {!! __('niveaux/b1.rich_3_p1') !!}
+                    {!! __('niveaux/c1.rich_3_p1') !!}
                 </p>
 
 
                 <!-- BLOCK 4 -->
                 <h2 class="fade-blur-title reveal delay-1">
-                    {{ __('niveaux/b1.rich_4_title') }}
+                    {{ __('niveaux/c1.rich_4_title') }}
                 </h2>
 
                 <p class="reveal delay-2">
-                    {!! __('niveaux/b1.rich_4_p1') !!}
+                    {!! __('niveaux/c1.rich_4_p1') !!}
                 </p>
 
                 <p class="reveal delay-3">
-                    {!! __('niveaux/b1.rich_4_p2') !!}
+                    {!! __('niveaux/c1.rich_4_p2') !!}
                 </p>
 
             </div>
@@ -294,21 +302,24 @@
     <section class="inline-cta-section section reveal delay-1">
         <div class="inline-cta-block reveal delay-2">
 
-            <h2 class="heading-cta fade-blur-title reveal delay-3">{!! __('niveaux/b1.cta_title') !!}</h2>
+            <h2 class="heading-cta fade-blur-title reveal delay-3">
+                {!! __('niveaux/c1.cta_title') !!}
+            </h2>
 
-            <p class="cta-box-subtext reveal delay-1">{!! __('niveaux/b1.cta_text') !!}</p>
+            <p class="cta-box-subtext reveal delay-1">{!! __('niveaux/c1.cta_text') !!}</p>
 
             <a href="/online-registration" class="cta-btn reveal delay-2" data-bs-toggle="modal"
                 data-bs-target="#consultationModal">
-                {{ __('niveaux/b1.cta_btn') }}
+                {{ __('niveaux/c1.cta_btn') }}
             </a>
 
         </div>
     </section>
 
+
     <!-- ===========================================================
-                 DYNAMIC JS (TRANSLATION SAFE)
-            =========================================================== -->
+                         DYNAMIC JS – TRANSLATION SAFE
+                    =========================================================== -->
     <script>
         const pricingUrl = `{{ route('front.pricing') }}`;
 
@@ -321,11 +332,11 @@
                 priceLink: @json(__('niveaux/a1.data_price_link_text')),
             },
             A2: {
-                graduation: @json(__('niveaux/b1.data_graduation')),
-                duration: @json(__('niveaux/b1.data_duration')),
-                times: @json(__('niveaux/b1.data_times')),
-                price: @json(__('niveaux/b1.data_price')),
-                priceLink: @json(__('niveaux/b1.data_price_link_text')),
+                graduation: @json(__('niveaux/a2.data_graduation')),
+                duration: @json(__('niveaux/a2.data_duration')),
+                times: @json(__('niveaux/a2.data_times')),
+                price: @json(__('niveaux/a2.data_price')),
+                priceLink: @json(__('niveaux/a2.data_price_link_text')),
             },
             B1: {
                 graduation: @json(__('niveaux/b1.data_graduation')),
@@ -342,15 +353,14 @@
                 priceLink: @json(__('niveaux/b2.data_price_link_text')),
             },
             C1: {
-                graduation: `{!! __('niveaux/c1.data_graduation') !!}`,
-                duration: `{!! __('niveaux/c1.data_duration') !!}`,
-                times: `{!! __('niveaux/c1.data_times') !!}`,
-                price: `{!! __('niveaux/c1.data_price') !!}`,
-                priceLink: `{!! __('niveaux/c1.data_price_link_text') !!}`,
+                graduation: @json(__('niveaux/c1.data_graduation')),
+                duration: @json(__('niveaux/c1.data_duration')),
+                times: @json(__('niveaux/c1.data_times')),
+                price: @json(__('niveaux/c1.data_price')),
+                priceLink: @json(__('niveaux/c1.data_price_link_text')),
             },
         };
 
-        // UPDATE CARDS
         function updateCards(level) {
             document.getElementById("graduation-text").innerHTML = data[level].graduation;
             document.getElementById("duration-text").innerHTML = data[level].duration;
@@ -361,7 +371,6 @@
             document.getElementById("price-text").innerHTML = priceHtml;
         }
 
-        // TAB CLICK
         document.querySelectorAll(".gls-niveau-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 document.querySelectorAll(".gls-niveau-btn").forEach(b => b.classList.remove("active"));
@@ -370,8 +379,8 @@
             });
         });
 
-        // default B1
-        updateCards("B1");
+        // Default C1
+        updateCards("C1");
     </script>
 
 @endsection

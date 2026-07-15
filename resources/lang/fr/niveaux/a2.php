@@ -121,7 +121,7 @@ return [
     'path_title' => 'Votre Parcours du GLS à l’Examen ÖSD',
 
     'path_1_title' => 'Complétez votre<br>niveau au GLS',
-    'path_1_text' => 'Chaque apprenant termine son niveau (A1–B2) avec entraînement structuré et pratique encadrée.',
+    'path_1_text' => 'Chaque apprenant termine son niveau (A1–C1) avec entraînement structuré et pratique encadrée.',
     'path_1_btn' => 'Voir les cours',
 
     'path_2_title' => 'Préparation interne<br>à l’examen',

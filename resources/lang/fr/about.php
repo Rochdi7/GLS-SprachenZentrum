@@ -43,7 +43,7 @@ return [
         'h2' => 'Examens & Certifications',
         'h3' => 'Une nouvelle étape pour l’allemand au Maroc',
         'p1' => '<strong>GLS Sprachenzentrum</strong> est fier d’introduire au Maroc les examens allemands officiels. En plus de nos cours, nous proposerons bientôt les examens <strong>GLS</strong> et <strong>ÖSD</strong> — permettant aux étudiants de certifier leur niveau locallement.',
-        'p2' => 'Nos programmes couvrent les niveaux <strong>A1 à B2</strong>, offrant une base solide pour réussir vos projets académiques, professionnels ou personnels.',
+        'p2' => 'Nos programmes couvrent les niveaux <strong>A1 à C1</strong>, offrant une base solide pour réussir vos projets académiques, professionnels ou personnels.',
         'p3' => 'Nos professeurs sont certifiés, expérimentés et accompagnent chaque étudiant pas à pas jusqu’à la réussite.',
         'p4' => 'Rejoignez GLS et soyez parmi les premiers au Maroc à passer les <strong>examens officiels allemands</strong> — bientôt disponibles !',
     ],
@@ -51,7 +51,7 @@ return [
     'cta' => [
         'h2'       => 'Commencez dès aujourd’hui !',
         'h3'       => 'Rejoignez l’aventure allemande avec GLS Maroc',
-        'p1'       => 'Lancez votre apprentissage de l’allemand au <strong>GLS Sprachenzentrum</strong>. Nos cours intensifs et en ligne sont ouverts à tous les niveaux — du A1 au B2.',
+        'p1'       => 'Lancez votre apprentissage de l’allemand au <strong>GLS Sprachenzentrum</strong>. Nos cours intensifs et en ligne sont ouverts à tous les niveaux — du A1 au C1.',
         'p2'       => 'Visitez l’un de nos centres à <strong>Marrakech, Rabat, Kénitra, Salé, Casablanca</strong> ou <strong>Agadir</strong>, et découvrez la méthode la plus efficace pour apprendre l’allemand au Maroc.',
         'p3'       => 'Notre équipe est là pour vous guider étape par étape — vers vos objectifs linguistiques et professionnels.',
         'button'   => 'En savoir plus',

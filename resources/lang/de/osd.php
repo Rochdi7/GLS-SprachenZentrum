@@ -24,7 +24,7 @@ return [
 
         'card1' => [
             'title' => 'Ihr Niveau<br>abschließen',
-            'text' => 'Jeder Studierende validiert sein Niveau (A1–B2) mit strukturiertem Unterricht, Übungen und interner Bewertung.',
+            'text' => 'Jeder Studierende validiert sein Niveau (A1–C1) mit strukturiertem Unterricht, Übungen und interner Bewertung.',
             'button' => 'Kurse ansehen',
             'route' => 'front.intensive-courses',
         ],
@@ -53,7 +53,7 @@ return [
 
     'levels' => [
         'title1' => 'Ihr Weg von GLS-Kursen zum ÖSD-Zertifikat',
-        'text1' => 'Jeder Studierende folgt einem klaren Weg. Nach Abschluss eines Niveaus (A1–B2) legen Sie eine <strong>interne GLS-Prüfung</strong> bei Ihrem Lehrer ab.',
+        'text1' => 'Jeder Studierende folgt einem klaren Weg. Nach Abschluss eines Niveaus (A1–C1) legen Sie eine <strong>interne GLS-Prüfung</strong> bei Ihrem Lehrer ab.',
         'text2' => 'Sobald Ihr Niveau validiert ist, meldet GLS Sie für die entsprechende offizielle ÖSD-Prüfung an.',
 
         'title2' => 'Was Sie vor der ÖSD-Prüfung beherrschen müssen',

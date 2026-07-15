@@ -23,7 +23,7 @@ return [
     'hero' => [
         'subtitle' => 'Depuis le confort de votre maison',
         'title' => 'Apprenez l’allemand en ligne',
-        'description' => "Du niveau A1 au niveau B2, des cours adaptés à tous les profils, partout au Maroc.<br>
+        'description' => "Du niveau A1 au niveau C1, des cours adaptés à tous les profils, partout au Maroc.<br>
                           Apprenez l’allemand en ligne avec des cours en direct, en petits groupes, animés par des professeurs qualifiés —
                           le tout depuis chez vous.",
 
@@ -75,7 +75,7 @@ return [
             'Cours en direct',
             'Du Lundi au vendredi',
             'Petits groupes',
-            'Tous niveaux de A1 à B2',
+            'Tous niveaux de A1 à C1',
             'Ressources pédagogiques en ligne',
             'Étudiants de tout le Maroc',
             'Inscriptions ouvertes toute l’année',
@@ -93,7 +93,7 @@ return [
         'text1'    => "Apprendre l’allemand en ligne est très efficace — chez GLS, 
                        vous bénéficiez de la même qualité pédagogique que dans nos cours en présentiel.",
         'text2'    => "Que vous soyez débutant ou que vous prépariez un examen avancé,
-                       GLS propose des cours interactifs du niveau A1 au niveau B2,
+                       GLS propose des cours interactifs du niveau A1 au niveau C1,
                        en petits groupes et avec des enseignants expérimentés.",
     ],
 

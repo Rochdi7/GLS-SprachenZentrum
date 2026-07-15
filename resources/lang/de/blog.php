@@ -22,7 +22,7 @@ return [
     'featured' => [
         'category' => 'Prüfungen',
         'title' => 'Ihr GLS-Weg zu den ÖSD-Prüfungen',
-        'excerpt' => 'Erfahren Sie, wie unser strukturiertes A1–B2-Programm Sie Schritt für Schritt auf die offizielle ÖSD-Prüfung vorbereitet, von Ihrer ersten Stunde bis zum Prüfungstag.',
+        'excerpt' => 'Erfahren Sie, wie unser strukturiertes A1–C1-Programm Sie Schritt für Schritt auf die offizielle ÖSD-Prüfung vorbereitet, von Ihrer ersten Stunde bis zum Prüfungstag.',
         'meta_read' => 'Min. Lesezeit',
         'meta_updated' => 'Aktualisiert Nov. 2025',
         'category_studies_germany' => 'Studium in Deutschland',

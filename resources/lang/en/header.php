@@ -37,6 +37,7 @@ return [
     'level_a2' => 'Elementary',
     'level_b1' => 'Intermediate',
     'level_b2' => 'Advanced',
+    'level_c1' => 'Proficient',
     'level_c1' => 'Autonomous',
 
     // Cities

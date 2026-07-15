@@ -53,7 +53,7 @@ return [
     // ------------------------------
     // DATA A1 (USED IN JS)
     // ------------------------------
-    // NOTE: mêmes contenus "cartes" pour tous les niveaux (A1–B2) comme demandé
+    // NOTE: mêmes contenus "cartes" pour tous les niveaux (A1–C1) comme demandé
     'data_graduation' => 'Certificat A1 – Niveau Débutant',
     'data_duration'   => '5 semaines<br>5 séances / semaine',
     'data_times'      => 'Lun–Ven',
@@ -123,7 +123,7 @@ return [
     'path_title' => 'Votre Parcours du GLS à l’Examen ÖSD',
 
     'path_1_title' => 'Complétez votre<br>niveau au GLS',
-    'path_1_text' => 'Chaque apprenant termine son niveau d’allemand (A1–B2) avec entraînement structuré, pratique et évaluations internes.',
+    'path_1_text' => 'Chaque apprenant termine son niveau d’allemand (A1–C1) avec entraînement structuré, pratique et évaluations internes.',
     'path_1_btn' => 'Voir les cours',
 
     'path_2_title' => 'Préparation interne<br>à l’examen',

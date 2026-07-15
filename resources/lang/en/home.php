@@ -3,7 +3,7 @@
 return [
 
     'meta_title' => 'Learn German in Morocco | German Courses at GLS',
-    'meta_description' => 'German language center in Morocco: intensive A1–B2 courses, Goethe exam prep and certifications. Six centers including Rabat and Casablanca.',
+    'meta_description' => 'German language center in Morocco: intensive A1–C1 courses, Goethe exam prep and certifications. Six centers including Rabat and Casablanca.',
 
     // ========================
     // 🔵 HERO SECTION
@@ -113,7 +113,7 @@ return [
 
         'intensive' => [
             'title' => 'Intensive German Courses',
-            'subtitle' => 'German Courses A1–B2',
+            'subtitle' => 'German Courses A1–C1',
             'description' => 'Monday to Friday — 2.5 hours per session',
 
             'cards' => [
@@ -148,6 +148,14 @@ return [
                     'text' => 'Reach an advanced level in German with our B2 program.',
                     'button' => 'B2 program',
                     'route' => 'front.online-courses',
+                ],
+                'c1' => [
+                    'letter' => 'C',
+                    'number' => '1',
+                    'title' => 'German C1<br>Proficient',
+                    'text' => 'Master German at an advanced, near-native level with our C1 program.',
+                    'button' => 'C1 program',
+                    'route' => 'front.niveaux.c1',
                 ],
             ],
         ],
@@ -243,6 +251,12 @@ return [
             'join_anytime' => 'Join anytime!',
             'description' => 'Tuesday to Friday, 4 Weeks, 16 hours a week.<br>Learn as long as you like.',
             'button' => 'View Pricelist',
+        ],
+        'card_c1' => [
+            'title' => 'New <span class="hh-yellow">C1 Groups</span> Now Open in Morocco!',
+            'badge' => 'Advanced level available!',
+            'description' => 'We have opened new C1 groups across our centers in Morocco.<br>Reach a near-native, university-ready level of German with GLS.',
+            'button' => 'Discover the C1 course',
         ],
     ],
 

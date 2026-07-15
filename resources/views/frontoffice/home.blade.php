@@ -426,6 +426,26 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                         </a>
                     </div>
                 </div>
+
+                {{-- Full-width C1 groups card --}}
+                <div class="hh-card hh-card-full reveal delay-2">
+                    <p class="hh-title reveal delay-1 mb-0">
+                        {!! __('home.highlights.card_c1.title') !!}
+                    </p>
+
+                    <p class="hh-text reveal delay-2">
+                        <strong>{{ __('home.highlights.card_c1.badge') }}<br></strong>
+                        <span class="hh-muted">
+                            {!! __('home.highlights.card_c1.description') !!}
+                        </span>
+                    </p>
+
+                    <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.c1')) }}"
+                        class="button is-white reveal delay-3"
+                        style="background:#ffffff !important; color: var(--dark--off-black) !important; border-color: var(--dark--off-black) !important;">
+                        {{ __('home.highlights.card_c1.button') }}
+                    </a>
+                </div>
             </div>
         </section>
 
@@ -437,7 +457,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <h2 class="h-section-title">{{ __('home.courses.title') }}</h2>
             </div>
 
-            {{-- 2. German Intensive Courses (A1-B2) --}}
+            {{-- 2. German Intensive Courses (A1-C1) --}}
             <div class="container is-h-courses">
                 <h2 class="h-section-subtitle-courses">{{ __('home.courses.intensive.title') }}</h2>
                 <div class="subtitle">{{ __('home.courses.intensive.subtitle') }}</div>
@@ -500,6 +520,20 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                         <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.b2')) }}"
                             class="button is-course-card w-button">
                             {{ __('home.courses.intensive.cards.b2.button') }}
+                        </a>
+                    </div>
+
+                    {{-- C1 --}}
+                    <div class="course-card is-orange">
+                        <div class="couse-card_level">
+                            <div class="course-card_level-circle">{{ __('home.courses.intensive.cards.c1.letter') }}</div>
+                            <div class="course-card_level-circle">{{ __('home.courses.intensive.cards.c1.number') }}</div>
+                        </div>
+                        <p class="course-card_title mb-0">{!! __('home.courses.intensive.cards.c1.title') !!}</p>
+                        <div class="course-card_text">{!! __('home.courses.intensive.cards.c1.text') !!}</div>
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.c1')) }}"
+                            class="button is-course-card w-button">
+                            {{ __('home.courses.intensive.cards.c1.button') }}
                         </a>
                     </div>
 

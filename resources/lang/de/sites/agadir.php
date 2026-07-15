@@ -26,7 +26,7 @@ return [
         'text_list' => 'Bei GLS Agadir profitieren Sie von:',
 
         'offers' => [
-            '1' => 'Intensiv-Deutschkurse (A1–B2)',
+            '1' => 'Intensiv-Deutschkurse (A1–C1)',
             '2' => 'Online-Deutschkurse mit Live-Lehrern',
             '3' => 'Konversations- & Sprechworkshops',
             '4' => 'Professionelle Unterstützung bei Visum & Studium in Deutschland',

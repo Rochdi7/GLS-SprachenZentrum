@@ -38,6 +38,7 @@ return [
     'level_b1' => 'Intermédiaire',
     'level_b2' => 'Avancé',
     'level_c1' => 'Autonome',
+    'level_c1' => 'Autonome',
 
     // Cities
     'casablanca' => 'Casablanca',

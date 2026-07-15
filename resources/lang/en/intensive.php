@@ -5,13 +5,13 @@ return [
     // =========================================================
     // META
     // =========================================================
-    'meta_title' => 'Intensive German Courses – A1 to B2 | GLS Sprachenzentrum',
+    'meta_title' => 'Intensive German Courses – A1 to C1 | GLS Sprachenzentrum',
 
     // =========================================================
     // HERO SECTION
     // =========================================================
     'hero' => [
-        'subtitle' => 'Intensive German courses from level A1 to B2',
+        'subtitle' => 'Intensive German courses from level A1 to C1',
         'title'    => 'Intensive German Courses – GLS Sprachenzentrum',
         'img_alt'  => 'Intensive German language courses at GLS',
     ],
@@ -28,7 +28,7 @@ return [
 
         'p2' => '<p>
                     The intensive courses offered by <strong>GLS Sprachenzentrum</strong> are tailored
-                    to learners at levels <strong>A1 to B2</strong>.
+                    to learners at levels <strong>A1 to C1</strong>.
                     Our method combines structured grammar, active conversation and real immersion —
                     so you don\'t just learn German,
                     but you begin to <em>live</em> it.
@@ -47,7 +47,7 @@ return [
     'courses' => [
 
         'section_title' => 'Intensive German Courses',
-        'subtitle'      => 'German language courses A1–B2',
+        'subtitle'      => 'German language courses A1–C1',
         'schedule'      => 'Monday to Friday – 2.5 hours per session',
 
         'learn_more' => 'Learn more',
@@ -84,7 +84,7 @@ return [
 
         'intro' => '<p>
                         Many students want to learn German but don\'t know where to start.
-                        Here\'s how GLS supports you from level <strong>A1 to B2</strong>.
+                        Here\'s how GLS supports you from level <strong>A1 to C1</strong>.
                     </p>
                     <p>Here\'s what you need to know before choosing an intensive course:</p>',
 
@@ -95,7 +95,7 @@ return [
                  Yes — GLS includes free follow-up of your file (documents, appointments, support).',
 
         'q3' => '<strong>Language certificate & procedures.</strong>
-                 After getting your certificate (A1–B2), we advise you on the next steps:
+                 After getting your certificate (A1–C1), we advise you on the next steps:
                  studies, Ausbildung, work, timelines and required documents.',
 
         'q4' => '<strong>Stress & intensity.</strong>

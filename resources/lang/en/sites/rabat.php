@@ -26,7 +26,7 @@ return [
         'text_list' => 'At GLS Rabat, learners benefit from:',
 
         'offers' => [
-            '1' => 'Intensive German courses (A1–B2)',
+            '1' => 'Intensive German courses (A1–C1)',
             '2' => 'Online German courses with live teachers',
             '3' => 'Speaking & conversation workshops',
             '4' => 'Visa, study & career support for Germany',

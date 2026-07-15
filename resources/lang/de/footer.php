@@ -32,6 +32,7 @@ return [
         'a2' => 'Deutsch A2',
         'b1' => 'Deutsch B1',
         'b2' => 'Deutsch B2',
+        'c1' => 'Deutsch C1',
     ],
     'partner_fc_marokko' => 'FC Marokko Partnerschaft',
 

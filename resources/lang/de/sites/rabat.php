@@ -26,7 +26,7 @@ return [
         'text_list' => 'Bei GLS Rabat profitieren die Lernenden von:',
 
         'offers' => [
-            '1' => 'Intensiv-Deutschkurse (A1–B2)',
+            '1' => 'Intensiv-Deutschkurse (A1–C1)',
             '2' => 'Online-Deutschkurse mit Live-Lehrern',
             '3' => 'Sprech- & Konversationsworkshops',
             '4' => 'Visum-, Studien- & Karriereunterstützung für Deutschland',

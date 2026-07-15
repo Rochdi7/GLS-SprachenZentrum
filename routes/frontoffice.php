@@ -64,6 +64,7 @@ Route::middleware(CacheResponse::class)->group(function () {
     Route::get('/niveaux/a2', [PageController::class, 'niveauA2'])->name('front.niveaux.a2');
     Route::get('/niveaux/b1', [PageController::class, 'niveauB1'])->name('front.niveaux.b1');
     Route::get('/niveaux/b2', [PageController::class, 'niveauB2'])->name('front.niveaux.b2');
+    Route::get('/niveaux/c1', [PageController::class, 'niveauC1'])->name('front.niveaux.c1');
 
     Route::get('/studienkollegs', [StudienkollegController::class, 'index'])->name('front.studienkollegs');
     Route::get('/studienkollegs/{slug}', [StudienkollegController::class, 'show'])->name('front.studienkollegs.show');

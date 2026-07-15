@@ -228,6 +228,8 @@
                                     {{ __('header.level_b1') }}</a></li>
                             <li><a class="dropdown-item" href="{{ route('front.niveaux.b2') }}">B2 –
                                     {{ __('header.level_b2') }}</a></li>
+                            <li><a class="dropdown-item" href="{{ route('front.niveaux.c1') }}">C1 –
+                                    {{ __('header.level_c1') }}</a></li>
                         </ul>
                     </li>
 
@@ -439,6 +441,7 @@
                             <a href="{{ route('front.niveaux.a2') }}">A2 – {{ __('header.level_a2') }}</a>
                             <a href="{{ route('front.niveaux.b1') }}">B1 – {{ __('header.level_b1') }}</a>
                             <a href="{{ route('front.niveaux.b2') }}">B2 – {{ __('header.level_b2') }}</a>
+                            <a href="{{ route('front.niveaux.c1') }}">C1 – {{ __('header.level_c1') }}</a>
                         </div>
                     </div>
 

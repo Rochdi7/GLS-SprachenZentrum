@@ -2,10 +2,10 @@
 
 return [
 
-    'meta_title' => 'Intensive Deutschkurse – A1 bis B2 | GLS Sprachenzentrum',
+    'meta_title' => 'Intensive Deutschkurse – A1 bis C1 | GLS Sprachenzentrum',
 
     'hero' => [
-        'subtitle' => 'Intensive Deutschkurse von Niveau A1 bis B2',
+        'subtitle' => 'Intensive Deutschkurse von Niveau A1 bis C1',
         'title'    => 'Intensive Deutschkurse – GLS Sprachenzentrum',
         'img_alt'  => 'Intensive Deutschkurse bei GLS',
     ],
@@ -19,7 +19,7 @@ return [
 
         'p2' => '<p>
                     Die Intensivkurse des <strong>GLS Sprachenzentrum</strong> sind auf
-                    Lernende der Niveaus <strong>A1 bis B2</strong> zugeschnitten.
+                    Lernende der Niveaus <strong>A1 bis C1</strong> zugeschnitten.
                     Unsere Methode kombiniert strukturierte Grammatik, aktive Konversation und echte Immersion —
                     so lernen Sie nicht nur Deutsch,
                     sondern beginnen es zu <em>leben</em>.
@@ -35,7 +35,7 @@ return [
     'courses' => [
 
         'section_title' => 'Intensive Deutschkurse',
-        'subtitle'      => 'Deutschkurse A1–B2',
+        'subtitle'      => 'Deutschkurse A1–C1',
         'schedule'      => 'Montag bis Freitag – 2,5 Stunden pro Unterrichtseinheit',
 
         'learn_more' => 'Mehr erfahren',
@@ -65,7 +65,7 @@ return [
 
         'intro' => '<p>
                         Viele Studierende möchten Deutsch lernen, wissen aber nicht, wo sie anfangen sollen.
-                        So unterstützt GLS Sie von Niveau <strong>A1 bis B2</strong>.
+                        So unterstützt GLS Sie von Niveau <strong>A1 bis C1</strong>.
                     </p>
                     <p>Hier ist, was Sie wissen müssen, bevor Sie einen Intensivkurs wählen:</p>',
 
@@ -76,7 +76,7 @@ return [
                  Ja — GLS beinhaltet eine kostenlose Betreuung Ihrer Unterlagen (Dokumente, Termine, Unterstützung).',
 
         'q3' => '<strong>Sprachzertifikat & Verfahren.</strong>
-                 Nach Erhalt Ihres Zertifikats (A1–B2) beraten wir Sie zu den nächsten Schritten:
+                 Nach Erhalt Ihres Zertifikats (A1–C1) beraten wir Sie zu den nächsten Schritten:
                  Studium, Ausbildung, Arbeit, Fristen und erforderliche Dokumente.',
 
         'q4' => '<strong>Stress & Intensität.</strong>

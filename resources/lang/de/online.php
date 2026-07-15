@@ -13,7 +13,7 @@ return [
     'hero' => [
         'subtitle' => 'Bequem von zu Hause aus',
         'title' => 'Deutsch online lernen',
-        'description' => "Von Niveau A1 bis B2, Kurse für alle Profile, überall in Marokko.<br>
+        'description' => "Von Niveau A1 bis C1, Kurse für alle Profile, überall in Marokko.<br>
                           Lernen Sie Deutsch online mit Live-Unterricht, in kleinen Gruppen, unterrichtet von qualifizierten Lehrern —
                           alles von zu Hause aus.",
 
@@ -55,7 +55,7 @@ return [
             'Live-Unterricht',
             'Dienstag bis Freitag',
             'Kleine Gruppen',
-            'Alle Niveaus A1 bis B2',
+            'Alle Niveaus A1 bis C1',
             'Online-Lehrmaterialien',
             'Studierende aus ganz Marokko',
             'Ganzjährig offene Einschreibung',
@@ -66,7 +66,7 @@ return [
         'title'    => 'GLS ist auch online!',
         'subtitle' => 'Finden Sie Ihren Online-Deutschkurs',
         'text1'    => "Deutsch online zu lernen ist sehr effektiv — bei GLS profitieren Sie von der gleichen Unterrichtsqualität wie bei unseren Präsenzkursen.",
-        'text2'    => "Ob Sie Anfänger sind oder sich auf eine fortgeschrittene Prüfung vorbereiten, GLS bietet interaktive Kurse von Niveau A1 bis B2, in kleinen Gruppen und mit erfahrenen Lehrern.",
+        'text2'    => "Ob Sie Anfänger sind oder sich auf eine fortgeschrittene Prüfung vorbereiten, GLS bietet interaktive Kurse von Niveau A1 bis C1, in kleinen Gruppen und mit erfahrenen Lehrern.",
     ],
 
     'groups' => [

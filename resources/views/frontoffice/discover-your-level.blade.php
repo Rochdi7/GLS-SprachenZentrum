@@ -320,7 +320,7 @@
                     <h3 class="fade-blur-title">Rejoignez l’aventure allemande avec GLS Maroc</h3>
                     <p>
                         Lancez votre apprentissage de l’allemand au <strong>GLS Sprachenzentrum</strong>.
-                        Nos cours intensifs et en ligne sont ouverts à tous les niveaux — du A1 au B2.
+                        Nos cours intensifs et en ligne sont ouverts à tous les niveaux — du A1 au C1.
                     </p>
                     <p>
                         Visitez l’un de nos centres à

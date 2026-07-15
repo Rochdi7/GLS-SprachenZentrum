@@ -23,7 +23,7 @@ return [
     'hero' => [
         'subtitle' => 'From the comfort of your home',
         'title' => 'Learn German online',
-        'description' => "From level A1 to B2, courses adapted to all profiles, anywhere in Morocco.<br>
+        'description' => "From level A1 to C1, courses adapted to all profiles, anywhere in Morocco.<br>
                           Learn German online with live classes, in small groups, taught by qualified teachers —
                           all from your home.",
 
@@ -75,7 +75,7 @@ return [
             'Live classes',
             'Tuesday to Friday',
             'Small groups',
-            'All levels A1 to B2',
+            'All levels A1 to C1',
             'Online teaching resources',
             'Students from across Morocco',
             'Open enrollment year-round',
@@ -91,7 +91,7 @@ return [
         'title'    => 'GLS is also online!',
         'subtitle' => 'Find your online German course',
         'text1'    => "Learning German online is very effective — at GLS, you benefit from the same teaching quality as our in-person courses.",
-        'text2'    => "Whether you\'re a beginner or preparing for an advanced exam, GLS offers interactive courses from level A1 to B2, in small groups and with experienced teachers.",
+        'text2'    => "Whether you\'re a beginner or preparing for an advanced exam, GLS offers interactive courses from level A1 to C1, in small groups and with experienced teachers.",
     ],
 
     /*

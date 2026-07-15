@@ -14,7 +14,7 @@ return [
     'intro' => [
         'p1' => 'Vous vous demandez à quel point votre allemand est solide ? Comment vous exprimez, comprenez et utilisez la langue dans des situations quotidiennes ? Ce sont des questions fréquentes pour les apprenants qui préparent leurs études, leur travail ou un dossier de visa. C’est exactement là que l’examen <strong>Goethe</strong> devient important.',
         'p2' => 'Au <strong>GLS Sprachenzentrum Maroc</strong>, vous pouvez vous préparer aux examens officiels Goethe et déterminer clairement votre niveau d’allemand actuel. Nos entraînements, examens blancs et séances ciblées vous aident à comprendre vos points forts et ce qu’il faut améliorer.',
-        'p3' => 'Quel examen Goethe vous correspond ? Comment se déroule l’examen ? Et comment bien vous préparer ? Vous trouverez ici des explications simples et claires sur les niveaux A1, A2, B1 et B2 — ainsi que notre parcours recommandé avec GLS.',
+        'p3' => 'Quel examen Goethe vous correspond ? Comment se déroule l’examen ? Et comment bien vous préparer ? Vous trouverez ici des explications simples et claires sur les niveaux A1, A2, B1, B2 et C1 — ainsi que notre parcours recommandé avec GLS.',
         'p4' => 'Si vous souhaitez passer un examen Goethe avec GLS, vous êtes au bon endroit !',
     ],
 
@@ -23,7 +23,7 @@ return [
 
         'card1' => [
             'title' => 'Terminez<br>votre niveau',
-            'text' => 'Chaque étudiant valide son niveau (A1–B2) avec une formation structurée, des exercices et une évaluation interne.',
+            'text' => 'Chaque étudiant valide son niveau (A1–C1) avec une formation structurée, des exercices et une évaluation interne.',
             'button' => 'Voir les cours',
         ],
 
@@ -48,7 +48,7 @@ return [
 
     'levels' => [
         'title1' => 'Votre chemin des examens GLS au certificat Goethe',
-        'text1' => 'Chaque étudiant suit un parcours clair. Après avoir terminé un niveau (A1–B2), vous passez un <strong>examen interne GLS</strong> avec votre professeur.',
+        'text1' => 'Chaque étudiant suit un parcours clair. Après avoir terminé un niveau (A1–C1), vous passez un <strong>examen interne GLS</strong> avec votre professeur.',
         'text2' => 'Une fois votre niveau validé, GLS inscrit votre nom à l’examen officiel Goethe correspondant.',
 
         'title2' => 'Ce que vous devez réussir avant l’examen Goethe',

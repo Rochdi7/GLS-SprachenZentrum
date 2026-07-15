@@ -43,7 +43,7 @@ return [
         'h2' => 'Prüfungen & Zertifizierungen',
         'h3' => 'Ein neuer Schritt für Deutsch in Marokko',
         'p1' => '<strong>GLS Sprachenzentrum</strong> ist stolz darauf, offizielle Deutschprüfungen in Marokko einzuführen. Neben unseren Kursen werden wir bald <strong>GLS</strong>- und <strong>ÖSD</strong>-Prüfungen anbieten — damit Schüler ihr Niveau vor Ort zertifizieren können.',
-        'p2' => 'Unsere Programme decken die Niveaustufen <strong>A1 bis B2</strong> ab und bieten eine solide Grundlage für den Erfolg Ihrer akademischen, beruflichen oder persönlichen Projekte.',
+        'p2' => 'Unsere Programme decken die Niveaustufen <strong>A1 bis C1</strong> ab und bieten eine solide Grundlage für den Erfolg Ihrer akademischen, beruflichen oder persönlichen Projekte.',
         'p3' => 'Unsere Lehrer sind zertifiziert, erfahren und begleiten jeden Schüler Schritt für Schritt zum Erfolg.',
         'p4' => 'Treten Sie GLS bei und gehören Sie zu den Ersten in Marokko, die <strong>offizielle Deutschprüfungen</strong> ablegen — demnächst verfügbar!',
     ],
@@ -51,7 +51,7 @@ return [
     'cta' => [
         'h2'       => 'Starten Sie noch heute!',
         'h3'       => 'Beginnen Sie das Deutsch-Abenteuer mit GLS Marokko',
-        'p1'       => 'Beginnen Sie Ihr Deutschlernen bei <strong>GLS Sprachenzentrum</strong>. Unsere Intensiv- und Online-Kurse sind für alle Niveaustufen offen — von A1 bis B2.',
+        'p1'       => 'Beginnen Sie Ihr Deutschlernen bei <strong>GLS Sprachenzentrum</strong>. Unsere Intensiv- und Online-Kurse sind für alle Niveaustufen offen — von A1 bis C1.',
         'p2'       => 'Besuchen Sie eines unserer Zentren in <strong>Marrakech, Rabat, Kénitra, Salé, Casablanca</strong> oder <strong>Agadir</strong> und entdecken Sie die effektivste Methode, um Deutsch in Marokko zu lernen.',
         'p3'       => 'Unser Team ist hier, um Sie Schritt für Schritt zu begleiten — zu Ihren sprachlichen und beruflichen Zielen.',
         'button'   => 'Mehr erfahren',

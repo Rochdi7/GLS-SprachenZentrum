@@ -76,10 +76,10 @@ class GlsSchema
     {
         $name = 'GLS Sprachenzentrum';
         $description = match ($locale) {
-            'de' => 'Deutschschule und Sprachzentrum in Marokko mit Deutschkursen A1–B2, Goethe-Vorbereitung und Zertifizierungen.',
-            'en' => 'German language school in Morocco offering A1–B2 courses, Goethe exam preparation and certifications.',
-            'ar' => 'مركز تعليم اللغة الألمانية في المغرب مع دورات A1–B2 وتحضير امتحان غوته.',
-            default => 'Centre de langue allemande au Maroc : cours A1–B2, préparation Goethe et certifications.',
+            'de' => 'Deutschschule und Sprachzentrum in Marokko mit Deutschkursen A1–C1, Goethe-Vorbereitung und Zertifizierungen.',
+            'en' => 'German language school in Morocco offering A1–C1 courses, Goethe exam preparation and certifications.',
+            'ar' => 'مركز تعليم اللغة الألمانية في المغرب مع دورات A1–C1 وتحضير امتحان غوته.',
+            default => 'Centre de langue allemande au Maroc : cours A1–C1, préparation Goethe et certifications.',
         };
 
         return Schema::educationalOrganization()
