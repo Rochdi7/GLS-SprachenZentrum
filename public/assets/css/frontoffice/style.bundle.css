@@ -3324,6 +3324,55 @@ font-size: min(4.2vw, 34px);
     background-color: var(--dark--purple);
     width: 100%;
     margin-top: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* keep text/button above the decorative shapes */
+.hh-card-full .hh-card-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+}
+
+/* decorative SVG shapes */
+.hh-shape {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hh-shape-tr {
+    top: -30px;
+    right: -20px;
+    width: 220px;
+    height: 220px;
+}
+
+.hh-shape-bl {
+    bottom: 18px;
+    left: -24px;
+    width: 150px;
+    height: 110px;
+}
+
+.hh-shape-blob {
+    top: 50%;
+    right: 12%;
+    width: 260px;
+    height: 260px;
+    transform: translateY(-50%);
+}
+
+@media (max-width: 900px) {
+    .hh-shape-blob {
+        display: none;
+    }
+
+    .hh-shape-tr {
+        width: 150px;
+        height: 150px;
+    }
 }
 
 /* ===== RESPONSIVE ===== */

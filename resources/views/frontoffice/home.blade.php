@@ -429,22 +429,50 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
                 {{-- Full-width C1 groups card --}}
                 <div class="hh-card hh-card-full reveal delay-2">
-                    <p class="hh-title reveal delay-1 mb-0">
-                        {!! __('home.highlights.card_c1.title') !!}
-                    </p>
 
-                    <p class="hh-text reveal delay-2">
-                        <strong>{{ __('home.highlights.card_c1.badge') }}<br></strong>
-                        <span class="hh-muted">
-                            {!! __('home.highlights.card_c1.description') !!}
-                        </span>
-                    </p>
+                    {{-- Decorative SVG shapes (top-right + bottom-left corners) --}}
+                    <svg class="hh-shape hh-shape-tr" viewBox="0 0 200 200" fill="none"
+                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                        <circle cx="150" cy="50" r="70" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2" />
+                        <circle cx="150" cy="50" r="46" stroke="#ffffff" stroke-opacity="0.14" stroke-width="2" />
+                        <circle cx="150" cy="50" r="8" fill="#f7c948" fill-opacity="0.55" />
+                    </svg>
 
-                    <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.c1')) }}"
-                        class="button is-white reveal delay-3"
-                        style="background:#ffffff !important; color: var(--dark--off-black) !important; border-color: var(--dark--off-black) !important;">
-                        {{ __('home.highlights.card_c1.button') }}
-                    </a>
+                    <svg class="hh-shape hh-shape-bl" viewBox="0 0 160 120" fill="none"
+                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                        <g fill="#ffffff" fill-opacity="0.16">
+                            <circle cx="10" cy="10" r="4" /><circle cx="34" cy="10" r="4" /><circle cx="58" cy="10" r="4" /><circle cx="82" cy="10" r="4" />
+                            <circle cx="10" cy="34" r="4" /><circle cx="34" cy="34" r="4" /><circle cx="58" cy="34" r="4" /><circle cx="82" cy="34" r="4" />
+                            <circle cx="10" cy="58" r="4" /><circle cx="34" cy="58" r="4" /><circle cx="58" cy="58" r="4" /><circle cx="82" cy="58" r="4" />
+                            <circle cx="10" cy="82" r="4" /><circle cx="34" cy="82" r="4" /><circle cx="58" cy="82" r="4" /><circle cx="82" cy="82" r="4" />
+                        </g>
+                    </svg>
+
+                    <svg class="hh-shape hh-shape-blob" viewBox="0 0 200 200" fill="none"
+                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                        <path
+                            d="M42 -66C55 -57 66 -46 72 -32C78 -18 79 -1 74 14C69 29 58 42 45 53C31 64 16 72 -1 74C-18 76 -37 71 -52 60C-67 49 -78 32 -80 14C-82 -4 -75 -23 -63 -37C-51 -51 -34 -60 -17 -66C0 -72 21 -75 42 -66Z"
+                            transform="translate(100 100)" fill="#ffffff" fill-opacity="0.06" />
+                    </svg>
+
+                    <div class="hh-card-content">
+                        <p class="hh-title reveal delay-1 mb-0">
+                            {!! __('home.highlights.card_c1.title') !!}
+                        </p>
+
+                        <p class="hh-text reveal delay-2">
+                            <strong>{{ __('home.highlights.card_c1.badge') }}<br></strong>
+                            <span class="hh-muted">
+                                {!! __('home.highlights.card_c1.description') !!}
+                            </span>
+                        </p>
+
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.niveaux.c1')) }}"
+                            class="button is-white reveal delay-3"
+                            style="background:#ffffff !important; color: var(--dark--off-black) !important; border-color: var(--dark--off-black) !important;">
+                            {{ __('home.highlights.card_c1.button') }}
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
