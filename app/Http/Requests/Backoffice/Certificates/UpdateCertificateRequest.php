@@ -16,6 +16,8 @@ class UpdateCertificateRequest extends FormRequest
         $type = $this->input('certificate_type', 'b2');
 
         $rules = [
+            'site_id'            => 'required|exists:sites,id',
+
             'last_name'          => 'required|string|max:255',
             'first_name'         => 'required|string|max:255',
             'birth_date'         => 'required|date',
