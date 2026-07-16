@@ -118,7 +118,8 @@
     { code: "A1", fr: "A1 – Débutant", en: "A1 – Beginner" },
     { code: "A2", fr: "A2 – Élémentaire", en: "A2 – Elementary" },
     { code: "B1", fr: "B1 – Intermédiaire", en: "B1 – Intermediate" },
-    { code: "B2", fr: "B2 – Intermédiaire Supérieur", en: "B2 – Upper Intermediate" }
+    { code: "B2", fr: "B2 – Intermédiaire Supérieur", en: "B2 – Upper Intermediate" },
+    { code: "C1", fr: "C1 – Avancé", en: "C1 – Advanced" }
   ];
 
   function loadStaticLevels() {

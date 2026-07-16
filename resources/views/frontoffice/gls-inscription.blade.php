@@ -221,6 +221,7 @@
                                                 <option value="A2">A2</option>
                                                 <option value="B1">B1</option>
                                                 <option value="B2">B2</option>
+                                                <option value="C1">C1</option>
                                             </select>
                                             <button type="button" class="att-select__btn" aria-haspopup="listbox" aria-expanded="false">
                                                 <span class="att-select__value att-select__value--placeholder">{{ $tr('templates/gls-form.fields.niveau.placeholder', 'Selectionner un niveau') }}</span>

@@ -26,7 +26,7 @@ class GlsInscriptionStoreRequest extends FormRequest
             'phone'           => 'required|string|max:20',
             'adresse'         => 'required|string|max:500',
             'type_cours'      => 'required|in:presentiel,en_ligne',
-            'niveau'          => 'required|in:A0,A1,A2,B1,B2',
+            'niveau'          => 'required|in:A0,A1,A2,B1,B2,C1',
             'horaire_prefere' => 'nullable|string|max:50',
             'date_start'      => 'nullable|date',
             'group_id'        => 'required|integer|min:1|max:999',
@@ -74,7 +74,7 @@ class GlsInscriptionStoreRequest extends FormRequest
             'type_cours.in'            => 'Le type de cours doit être "presentiel" ou "en_ligne".',
 
             'niveau.required'          => 'Le niveau est obligatoire.',
-            'niveau.in'                => 'Le niveau doit être l\'un des suivants: A0, A1, A2, B1, B2.',
+            'niveau.in'                => 'Le niveau doit être l\'un des suivants: A0, A1, A2, B1, B2, C1.',
 
             'horaire_prefere.string'   => 'L\'horaire préféré doit être un texte.',
             'horaire_prefere.max'      => 'L\'horaire préféré ne peut pas dépasser 50 caractères.',

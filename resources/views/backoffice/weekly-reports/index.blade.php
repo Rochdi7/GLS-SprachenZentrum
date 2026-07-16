@@ -1307,7 +1307,7 @@
                                 @foreach ($grouped as $key => $groupReports)
                                     @php $rep = $groupReports->first(); @endphp
                                     <div class="wc-chip"
-                                         onclick="event.stopPropagation(); openWeekModal('{{ $fridayKey }}', '{{ addslashes($weekLabel) }}', { teacherId: {{ $rep->teacher_id }}, groupId: {{ $rep->group_id ?? 'null' }} })">
+                                         onclick="event.stopPropagation(); openTeacherWeek('{{ $fridayKey }}', '{{ addslashes($weekLabel) }}', {{ $rep->teacher_id }}, {{ $rep->group_id ?? 'null' }})">
                                         <i class="ph-duotone ph-user-circle wc-chip-icon"></i>
                                         <span class="wc-chip-name">{{ $rep->teacher->name }}</span>
                                         @if ($rep->group)
@@ -1342,6 +1342,8 @@
             <form id="reportForm" method="POST" action="{{ route('backoffice.weekly_reports.batch_sync') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="report_date" id="modalDate">
+                <input type="hidden" name="scope_teacher_id" id="modalScopeTeacherId">
+                <input type="hidden" name="scope_group_id" id="modalScopeGroupId">
 
                 <div class="modal-header">
                     <div class="modal-header-inner">
@@ -1463,7 +1465,22 @@
     const SKILLS = @json(\App\Models\WeeklyReport::SKILLS);
     const rowsContainer = document.getElementById('rowsContainer');
     const emptyHint = document.getElementById('emptyRowsHint');
+    const CAN_EDIT_REPORTS = @json($canEditReports);
     let rowCounter = 0;
+
+    /**
+     * Chip click router. Front-desk (Réception) staff land on the clean read-only
+     * detail page; Admins go straight to the edit modal they already use.
+     */
+    function openTeacherWeek(fridayDate, weekLabel, teacherId, groupId) {
+        if (!CAN_EDIT_REPORTS) {
+            const params = new URLSearchParams({ week: fridayDate, teacher_id: teacherId });
+            if (groupId !== null && groupId !== undefined) params.set('group_id', groupId);
+            window.location.href = `${SHOW_URL}?${params.toString()}`;
+            return;
+        }
+        openWeekModal(fridayDate, weekLabel, { teacherId, groupId });
+    }
 
     // Event delegation: any change on a teacher-select inside the modal swaps modes.
     // This survives Choices.js wrapping and any other dynamic select handling.
@@ -2026,6 +2043,10 @@
         rowsContainer.innerHTML = '';
         document.getElementById('modalDate').value = fridayDate;
         document.getElementById('modalDateLabel').textContent = weekLabel;
+        // Scope fields tell batchSync to only touch this teacher/group's rows for the
+        // week, so saving a filtered chip never deletes other teachers' reports.
+        document.getElementById('modalScopeTeacherId').value = filterTeacherId !== null ? filterTeacherId : '';
+        document.getElementById('modalScopeGroupId').value = filterTeacherId !== null ? filterGroupId : '';
         emptyHint.style.display = 'block';
 
         if (freshOnly) {

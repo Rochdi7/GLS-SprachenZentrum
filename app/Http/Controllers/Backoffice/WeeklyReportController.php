@@ -68,7 +68,11 @@ class WeeklyReportController extends Controller
         $reports = $reportsQuery->get()
             ->groupBy(fn ($r) => $r->report_date->format('Y-m-d'));
 
-        return view('backoffice.weekly-reports.index', compact('teachers', 'teacherGroupsMap', 'weekDays', 'reports', 'date'));
+        // Réception (front-desk) clicks a chip to read the detail page; Admins go
+        // straight to the edit modal since they manage the data.
+        $canEditReports = auth()->user()?->hasAnyRole(['Super Admin', 'Admin']) ?? false;
+
+        return view('backoffice.weekly-reports.index', compact('teachers', 'teacherGroupsMap', 'weekDays', 'reports', 'date', 'canEditReports'));
     }
 
     /**
@@ -229,6 +233,17 @@ class WeeklyReportController extends Controller
         $monday = Carbon::parse($anchor)->startOfWeek(Carbon::MONDAY);
         $friday = $monday->copy()->addDays(4);
 
+        // Non-admins: block viewing a teacher outside their accessible centres.
+        $allowedSiteIds = $this->accessibleSiteIds();
+        if ($allowedSiteIds !== null) {
+            $teacherAllowed = !empty($allowedSiteIds) && Teacher::where('id', $data['teacher_id'])
+                ->whereIn('site_id', $allowedSiteIds)
+                ->exists();
+            if (!$teacherAllowed) {
+                abort(403);
+            }
+        }
+
         $reports = WeeklyReport::with(['teacher', 'group', 'attachments'])
             ->whereBetween('report_date', [$monday, $friday])
             ->where('teacher_id', $data['teacher_id'])
@@ -333,11 +348,22 @@ class WeeklyReportController extends Controller
         $monday = Carbon::parse($request->week)->startOfWeek(Carbon::MONDAY);
         $friday = $monday->copy()->addDays(4);
 
-        $reports = WeeklyReport::with(['teacher', 'group', 'attachments'])
+        $reportsQuery = WeeklyReport::with(['teacher', 'group', 'attachments'])
             ->whereBetween('report_date', [$monday, $friday])
             ->orderBy('report_date')
-            ->orderBy('created_at')
-            ->get()
+            ->orderBy('created_at');
+
+        // Non-admins: only reports for teachers tied to their accessible centres.
+        $allowedSiteIds = $this->accessibleSiteIds();
+        if ($allowedSiteIds !== null) {
+            if (empty($allowedSiteIds)) {
+                $reportsQuery->whereRaw('1 = 0');
+            } else {
+                $reportsQuery->whereHas('teacher', fn ($q) => $q->whereIn('site_id', $allowedSiteIds));
+            }
+        }
+
+        $reports = $reportsQuery->get()
             ->map(fn ($r) => [
                 'id'              => $r->id,
                 'teacher_id'      => $r->teacher_id,
@@ -368,10 +394,20 @@ class WeeklyReportController extends Controller
     {
         $request->validate(['date' => 'required|date']);
 
-        $reports = WeeklyReport::with(['teacher', 'group', 'attachments'])
+        $reportsQuery = WeeklyReport::with(['teacher', 'group', 'attachments'])
             ->whereDate('report_date', $request->date)
-            ->orderBy('created_at')
-            ->get()
+            ->orderBy('created_at');
+
+        $allowedSiteIds = $this->accessibleSiteIds();
+        if ($allowedSiteIds !== null) {
+            if (empty($allowedSiteIds)) {
+                $reportsQuery->whereRaw('1 = 0');
+            } else {
+                $reportsQuery->whereHas('teacher', fn ($q) => $q->whereIn('site_id', $allowedSiteIds));
+            }
+        }
+
+        $reports = $reportsQuery->get()
             ->map(fn ($r) => [
                 'id'              => $r->id,
                 'teacher_id'      => $r->teacher_id,
@@ -411,6 +447,8 @@ class WeeklyReportController extends Controller
 
         $data = $request->validate([
             'report_date'                       => 'required|date',
+            'scope_teacher_id'                  => 'nullable|integer|exists:teachers,id',
+            'scope_group_id'                    => 'nullable|integer|exists:groups,id',
             'rows'                              => 'array',
             'rows.*.id'                         => 'nullable|integer|exists:weekly_reports,id',
             'rows.*.teacher_id'                 => 'required|exists:teachers,id',
@@ -538,8 +576,20 @@ class WeeklyReportController extends Controller
                 }
             }
 
-            // Delete reports for that whole week that were removed in the modal.
+            // Delete reports removed in the modal. When the modal was opened scoped to a
+            // single teacher/group (e.g. clicking a chip), only clean up within that scope —
+            // otherwise this would wipe out every other teacher's reports for the week.
+            $scopeTeacherId = $data['scope_teacher_id'] ?? null;
+            $hasGroupScope = array_key_exists('scope_group_id', $data);
+            $scopeGroupId = $data['scope_group_id'] ?? null;
+
             $toDelete = WeeklyReport::whereBetween('report_date', [$weekMonday, $weekFriday])
+                ->when($scopeTeacherId, function ($q) use ($scopeTeacherId, $hasGroupScope, $scopeGroupId) {
+                    $q->where('teacher_id', $scopeTeacherId);
+                    if ($hasGroupScope) {
+                        $scopeGroupId ? $q->where('group_id', $scopeGroupId) : $q->whereNull('group_id');
+                    }
+                })
                 ->when(!empty($keepIds), fn ($q) => $q->whereNotIn('id', $keepIds))
                 ->get();
 
@@ -576,11 +626,21 @@ class WeeklyReportController extends Controller
             'end'   => 'required|date',
         ]);
 
-        $reports = WeeklyReport::with(['teacher', 'group'])
+        $reportsQuery = WeeklyReport::with(['teacher', 'group'])
             ->withCount('attachments')
             ->whereBetween('report_date', [$request->start, $request->end])
-            ->orderBy('created_at')
-            ->get()
+            ->orderBy('created_at');
+
+        $allowedSiteIds = $this->accessibleSiteIds();
+        if ($allowedSiteIds !== null) {
+            if (empty($allowedSiteIds)) {
+                $reportsQuery->whereRaw('1 = 0');
+            } else {
+                $reportsQuery->whereHas('teacher', fn ($q) => $q->whereIn('site_id', $allowedSiteIds));
+            }
+        }
+
+        $reports = $reportsQuery->get()
             ->map(fn ($r) => [
                 'id'                => $r->id,
                 'teacher_id'        => $r->teacher_id,

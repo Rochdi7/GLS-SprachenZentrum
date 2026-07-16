@@ -28,7 +28,7 @@ class AttestationRequestController extends Controller
             'birth_date'  => ['nullable', 'date'],
             'birth_place' => ['nullable', 'string', 'max:255'],
             'group_name'  => ['required', 'string', 'max:255'],
-            'level'       => ['required', 'in:A1,A2,B1,B2'],
+            'level'       => ['required', 'in:A1,A2,B1,B2,C1'],
             'notes'       => ['nullable', 'string', 'max:2000'],
         ], [
             'last_name.required'   => 'Le nom est obligatoire.',

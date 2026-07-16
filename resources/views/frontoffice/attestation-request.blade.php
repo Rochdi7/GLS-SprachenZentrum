@@ -138,7 +138,7 @@
                             <div class="att-select" data-att-select>
                                 <select name="level" class="att-select__native" required aria-labelledby="att-level-label">
                                     <option value="">{{ __('attestation-request.level_select') }}</option>
-                                    @foreach (['A1', 'A2', 'B1', 'B2'] as $lvl)
+                                    @foreach (['A1', 'A2', 'B1', 'B2', 'C1'] as $lvl)
                                         <option value="{{ $lvl }}" {{ old('level') === $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
                                     @endforeach
                                 </select>
@@ -147,7 +147,7 @@
                                     <svg class="att-select__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
                                 </button>
                                 <ul class="att-select__menu" role="listbox" tabindex="-1" aria-labelledby="att-level-label" hidden>
-                                    @foreach (['A1', 'A2', 'B1', 'B2'] as $lvl)
+                                    @foreach (['A1', 'A2', 'B1', 'B2', 'C1'] as $lvl)
                                         <li class="att-select__opt" role="option" data-value="{{ $lvl }}" tabindex="-1" aria-selected="{{ old('level') === $lvl ? 'true' : 'false' }}">
                                             <span class="att-select__dot" aria-hidden="true"></span>
                                             <span class="att-select__opt-label">{{ $lvl }}</span>
