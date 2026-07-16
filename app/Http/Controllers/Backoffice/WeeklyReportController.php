@@ -300,6 +300,17 @@ class WeeklyReportController extends Controller
         $monday = Carbon::parse($anchor)->startOfWeek(Carbon::MONDAY);
         $friday = $monday->copy()->addDays(4);
 
+        // Non-admins: block exporting a teacher outside their accessible centres.
+        $allowedSiteIds = $this->accessibleSiteIds();
+        if ($allowedSiteIds !== null) {
+            $teacherAllowed = !empty($allowedSiteIds) && Teacher::where('id', $data['teacher_id'])
+                ->whereIn('site_id', $allowedSiteIds)
+                ->exists();
+            if (!$teacherAllowed) {
+                abort(403);
+            }
+        }
+
         $reports = WeeklyReport::with(['teacher', 'group', 'attachments'])
             ->whereBetween('report_date', [$monday, $friday])
             ->where('teacher_id', $data['teacher_id'])

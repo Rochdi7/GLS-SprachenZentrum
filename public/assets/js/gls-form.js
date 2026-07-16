@@ -138,7 +138,8 @@
 
   /* ============================== LOAD CENTERS ============================== */
   function loadCenters() {
-    centreSelect.innerHTML = `<option>${t.loading}</option>`;
+    centreSelect.disabled = true;
+    centreSelect.innerHTML = `<option value="" disabled selected>${t.loading}</option>`;
 
     fetch("/api/centers", {
       headers: {
@@ -152,9 +153,11 @@
         data.forEach((c) => {
           centreSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
         });
+        centreSelect.disabled = false;
       })
       .catch(() => {
-        centreSelect.innerHTML = `<option>${t.errLoading}</option>`;
+        centreSelect.innerHTML = `<option value="" disabled selected>${t.errLoading}</option>`;
+        centreSelect.disabled = false;
       });
   }
 
@@ -342,11 +345,27 @@
     const requiredInputs = currentEl.querySelectorAll("[required]");
 
     for (let input of requiredInputs) {
+      // A disabled control (e.g. a <select> still loading its options) can't
+      // hold a real user choice yet — block the step instead of trusting its value.
+      if (input.disabled) {
+        showError(t.errRequired);
+        return false;
+      }
+
       const value = (input.value || "").trim();
       if (!value) {
         showError(t.errRequired);
         input.focus();
         return false;
+      }
+
+      if (input.tagName === "SELECT") {
+        const selectedOption = input.options[input.selectedIndex];
+        if (!selectedOption || selectedOption.disabled) {
+          showError(t.errRequired);
+          input.focus();
+          return false;
+        }
       }
     }
     return true;

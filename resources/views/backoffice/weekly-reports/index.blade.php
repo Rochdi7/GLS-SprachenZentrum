@@ -1469,17 +1469,13 @@
     let rowCounter = 0;
 
     /**
-     * Chip click router. Front-desk (Réception) staff land on the clean read-only
-     * detail page; Admins go straight to the edit modal they already use.
+     * Chip click always lands on the clean read-only detail page. Editing stays
+     * reachable from the week card's "Modifier" button, which opens the modal.
      */
     function openTeacherWeek(fridayDate, weekLabel, teacherId, groupId) {
-        if (!CAN_EDIT_REPORTS) {
-            const params = new URLSearchParams({ week: fridayDate, teacher_id: teacherId });
-            if (groupId !== null && groupId !== undefined) params.set('group_id', groupId);
-            window.location.href = `${SHOW_URL}?${params.toString()}`;
-            return;
-        }
-        openWeekModal(fridayDate, weekLabel, { teacherId, groupId });
+        const params = new URLSearchParams({ week: fridayDate, teacher_id: teacherId });
+        if (groupId !== null && groupId !== undefined) params.set('group_id', groupId);
+        window.location.href = `${SHOW_URL}?${params.toString()}`;
     }
 
     // Event delegation: any change on a teacher-select inside the modal swaps modes.

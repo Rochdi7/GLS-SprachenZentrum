@@ -127,8 +127,8 @@
 
     <div class="page-header">
         <img src="{{ public_path('assets/images/logo/gls.png') }}" alt="GLS">
-        <h1>Rapport Détaillé — {{ $teacher->name }}</h1>
-        <h2>{{ ucfirst($date->translatedFormat('l')) }} {{ $date->format('d F Y') }}</h2>
+        <h1>Rapport Détaillé — {{ $teacher->name }}{{ $group ? ' / ' . $group->name : '' }}</h1>
+        <h2>Semaine du {{ $date->format('d/m/Y') }} au {{ $date->copy()->addDays(4)->format('d/m/Y') }}</h2>
     </div>
 
     <div class="page-footer">
@@ -144,8 +144,8 @@
             <span class="value">{{ $teacher->name }}</span>
         </div>
         <div class="row">
-            <span class="label">Date :</span>
-            <span class="value">{{ ucfirst($date->translatedFormat('l')) }} {{ $date->format('d F Y') }}</span>
+            <span class="label">Semaine :</span>
+            <span class="value">{{ $date->format('d/m/Y') }} au {{ $date->copy()->addDays(4)->format('d/m/Y') }}</span>
         </div>
         <div class="row">
             <span class="label">Groupe :</span>
