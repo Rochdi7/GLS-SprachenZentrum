@@ -1658,8 +1658,9 @@
         ta.name = `rows[${idx}][notes]`;
         ta.className = 'form-control form-control-sm note-textarea';
         ta.rows = 3;
-        ta.placeholder = "Décrivez l'activité...";
+        ta.placeholder = "Décrivez l'activité (5 caractères minimum)...";
         ta.required = true;
+        ta.minLength = 5;
         ta.style.display = 'block';
         ta.style.width = '100%';
         ta.style.minHeight = '70px';
@@ -1952,6 +1953,19 @@
         window.open(`${SHOW_URL}?${params.toString()}`, '_blank');
     }
 
+    const MIN_NOTE_LENGTH = 5;
+
+    /**
+     * Real content check: rejects empty/whitespace-only text and junk made of a
+     * single repeated character (e.g. "aaaaaa"), which slipped through before.
+     */
+    function isMeaningfulNote(text) {
+        const trimmed = (text || '').trim();
+        if (trimmed.length < MIN_NOTE_LENGTH) return false;
+        if (/^(.)\1*$/.test(trimmed)) return false; // same character repeated
+        return true;
+    }
+
     // Before submission, expand each skills row into N rows (one per non-empty skill block)
     // so the backend's `rows[i][skill]` validation receives them in the expected shape.
     document.getElementById('reportForm').addEventListener('submit', function (ev) {
@@ -1959,10 +1973,19 @@
         // Remove any name attributes added in a previous submit attempt
         form.querySelectorAll('[data-skill-flat="1"]').forEach(el => el.remove());
 
+        const validationErrors = [];
         let flatIdx = 0;
 
         // Renumber simple rows starting at 0
-        form.querySelectorAll('.note-row.mode-simple').forEach(row => {
+        form.querySelectorAll('.note-row.mode-simple').forEach((row, rowIdx) => {
+            const teacherSel = row.querySelector('select.teacher-select');
+            const textarea = row.querySelector('textarea.note-textarea');
+            if (teacherSel && !teacherSel.value) {
+                validationErrors.push(`Note #${rowIdx + 1} : veuillez sélectionner un enseignant.`);
+            }
+            if (textarea && !isMeaningfulNote(textarea.value)) {
+                validationErrors.push(`Note #${rowIdx + 1} : le texte doit contenir au moins ${MIN_NOTE_LENGTH} caractères réels (pas juste des espaces ou un caractère répété).`);
+            }
             const inputs = row.querySelectorAll('[name^="rows["]');
             inputs.forEach(inp => {
                 inp.name = inp.name.replace(/^rows\[\d+\]/, `rows[${flatIdx}]`);
@@ -1971,13 +1994,19 @@
         });
 
         // Expand skill rows
-        form.querySelectorAll('.note-row.mode-skills').forEach(row => {
+        const seenSkillCombos = new Set();
+        form.querySelectorAll('.note-row.mode-skills').forEach((row, rowIdx) => {
             const teacherId = row.querySelector('select.teacher-select')?.value || '';
             const groupId = row.querySelector('select.group-select')?.value || '';
 
+            if (!teacherId) {
+                validationErrors.push(`Groupe #${rowIdx + 1} : veuillez sélectionner un enseignant.`);
+            }
+
             row.querySelectorAll('.skill-block').forEach(block => {
                 const skillKey = block.dataset.skill;
-                const notes = block.querySelector('.skill-notes')?.value?.trim() || '';
+                const rawNotes = block.querySelector('.skill-notes')?.value || '';
+                const notes = rawNotes.trim();
                 const idInput = block.querySelector('.skill-id-input');
                 const fileInput = block.querySelector('.skill-attachment');
                 const legacyRemoveChk = block.querySelector('.skill-remove-attachment');
@@ -1989,6 +2018,19 @@
 
                 // Skip empty skills with no existing record (nothing to save / nothing to delete)
                 if (!notes && !hasFile && !existingId && !wantsAnyAttachmentRemoval) return;
+
+                // A skill block with real text must clear the same bar as a simple note.
+                if (notes && !isMeaningfulNote(notes)) {
+                    validationErrors.push(`Groupe #${rowIdx + 1} (${skillKey}) : le texte doit contenir au moins ${MIN_NOTE_LENGTH} caractères réels.`);
+                }
+
+                if (teacherId) {
+                    const comboKey = `${teacherId}::${groupId}::${skillKey}`;
+                    if (seenSkillCombos.has(comboKey)) {
+                        validationErrors.push(`Groupe #${rowIdx + 1} (${skillKey}) : entrée en double pour le même enseignant/groupe.`);
+                    }
+                    seenSkillCombos.add(comboKey);
+                }
 
                 // Build flat hidden inputs that batchSync expects
                 const append = (name, value) => {
@@ -2022,6 +2064,22 @@
                 flatIdx++;
             });
         });
+
+        if (validationErrors.length > 0) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            alert('Impossible d\'enregistrer :\n\n' + validationErrors.join('\n'));
+            // Undo the flattening so a corrected resubmit starts clean.
+            form.querySelectorAll('[data-skill-flat="1"]').forEach(el => {
+                if (el.tagName === 'INPUT' && el.type === 'file') {
+                    el.removeAttribute('data-skill-flat');
+                    el.name = '';
+                } else {
+                    el.remove();
+                }
+            });
+            return false;
+        }
     });
 
     /**

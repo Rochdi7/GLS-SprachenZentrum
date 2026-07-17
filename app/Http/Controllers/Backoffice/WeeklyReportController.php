@@ -84,9 +84,22 @@ class WeeklyReportController extends Controller
         $data = $request->validate([
             'teacher_id'  => 'required|exists:teachers,id',
             'report_date' => 'required|date',
-            'notes'       => 'required|string|max:5000',
+            'notes'       => ['required', 'string', 'min:5', 'max:5000', 'regex:/\S/'],
             'attachment'  => 'nullable|file|mimes:pdf|max:10240',
+        ], [
+            'notes.min'   => 'La note doit contenir au moins 5 caractères de texte réel.',
+            'notes.regex' => 'La note ne peut pas être vide ou ne contenir que des espaces.',
         ]);
+
+        $allowedSiteIds = $this->accessibleSiteIds();
+        if ($allowedSiteIds !== null) {
+            $teacherAllowed = !empty($allowedSiteIds) && Teacher::where('id', $data['teacher_id'])
+                ->whereIn('site_id', $allowedSiteIds)
+                ->exists();
+            if (!$teacherAllowed) {
+                abort(403);
+            }
+        }
 
         $payload = [
             'teacher_id'  => $data['teacher_id'],
@@ -121,10 +134,23 @@ class WeeklyReportController extends Controller
         $data = $request->validate([
             'teacher_id'        => 'required|exists:teachers,id',
             'report_date'       => 'required|date',
-            'notes'             => 'required|string|max:5000',
+            'notes'             => ['required', 'string', 'min:5', 'max:5000', 'regex:/\S/'],
             'attachment'        => 'nullable|file|mimes:pdf|max:10240',
             'remove_attachment' => 'nullable|boolean',
+        ], [
+            'notes.min'   => 'La note doit contenir au moins 5 caractères de texte réel.',
+            'notes.regex' => 'La note ne peut pas être vide ou ne contenir que des espaces.',
         ]);
+
+        $allowedSiteIds = $this->accessibleSiteIds();
+        if ($allowedSiteIds !== null) {
+            $teacherAllowed = !empty($allowedSiteIds) && Teacher::where('id', $data['teacher_id'])
+                ->whereIn('site_id', $allowedSiteIds)
+                ->exists();
+            if (!$teacherAllowed) {
+                abort(403);
+            }
+        }
 
         $weeklyReport->teacher_id = $data['teacher_id'];
         $weeklyReport->report_date = $data['report_date'];
@@ -465,7 +491,8 @@ class WeeklyReportController extends Controller
             'rows.*.teacher_id'                 => 'required|exists:teachers,id',
             'rows.*.group_id'                   => 'nullable|integer|exists:groups,id',
             'rows.*.skill'                      => 'nullable|string|in:' . implode(',', array_keys(WeeklyReport::SKILLS)),
-            'rows.*.notes'                      => 'required|string|max:5000',
+            // "regex" rejects a note that is only whitespace; "min" enforces real content.
+            'rows.*.notes'                       => ['required', 'string', 'min:5', 'max:5000', 'regex:/\S/'],
             // Legacy single-file fields (kept for backward compat with old payloads)
             'rows.*.remove_attachment'          => 'nullable|boolean',
             'rows.*.attachment'                 => 'nullable|file|mimes:pdf|max:10240',
@@ -474,7 +501,25 @@ class WeeklyReportController extends Controller
             'rows.*.attachments.*'              => 'file|mimes:pdf|max:10240',
             'rows.*.remove_attachment_ids'      => 'nullable|array',
             'rows.*.remove_attachment_ids.*'    => 'integer|exists:weekly_report_attachments,id',
+        ], [
+            'rows.*.notes.min'   => 'La note doit contenir au moins 5 caractères de texte réel.',
+            'rows.*.notes.regex' => 'La note ne peut pas être vide ou ne contenir que des espaces.',
         ]);
+
+        // Non-admins: every submitted teacher must belong to an accessible centre —
+        // otherwise a front-desk user could write reports into another centre.
+        $allowedSiteIds = $this->accessibleSiteIds();
+        if ($allowedSiteIds !== null) {
+            $submittedTeacherIds = collect($data['rows'] ?? [])->pluck('teacher_id')->unique()->values();
+            if ($submittedTeacherIds->isNotEmpty()) {
+                $allowedCount = empty($allowedSiteIds) ? 0 : Teacher::whereIn('id', $submittedTeacherIds)
+                    ->whereIn('site_id', $allowedSiteIds)
+                    ->count();
+                if ($allowedCount !== $submittedTeacherIds->count()) {
+                    abort(403);
+                }
+            }
+        }
 
         // Enforce: each group must belong to the selected teacher
         foreach (($data['rows'] ?? []) as $i => $row) {
@@ -488,6 +533,19 @@ class WeeklyReportController extends Controller
                     ])->withInput();
                 }
             }
+        }
+
+        // Reject duplicate (teacher, group, skill) rows in the same submission —
+        // prevents accidental double-entries for the same week.
+        $seenCombos = [];
+        foreach (($data['rows'] ?? []) as $i => $row) {
+            $combo = $row['teacher_id'] . '::' . ($row['group_id'] ?? '') . '::' . ($row['skill'] ?? '');
+            if (isset($seenCombos[$combo])) {
+                return back()->withErrors([
+                    "rows.$i.skill" => "Une entrée en double a été détectée pour le même enseignant/groupe/compétence.",
+                ])->withInput();
+            }
+            $seenCombos[$combo] = true;
         }
 
         try {
