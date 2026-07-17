@@ -68,9 +68,10 @@ class WeeklyReportController extends Controller
         $reports = $reportsQuery->get()
             ->groupBy(fn ($r) => $r->report_date->format('Y-m-d'));
 
-        // Réception (front-desk) clicks a chip to read the detail page; Admins go
-        // straight to the edit modal since they manage the data.
-        $canEditReports = auth()->user()?->hasAnyRole(['Super Admin', 'Admin']) ?? false;
+        // Gate on the actual permission (managed in Rôles & Permissions), not a
+        // hardcoded role name — any role granted weekly_reports.edit sees the
+        // edit modal directly; others land on the read-only detail page.
+        $canEditReports = auth()->user()?->can('weekly_reports.edit') ?? false;
 
         return view('backoffice.weekly-reports.index', compact('teachers', 'teacherGroupsMap', 'weekDays', 'reports', 'date', 'canEditReports'));
     }
@@ -304,12 +305,14 @@ class WeeklyReportController extends Controller
             $exportParams['group_id'] = $data['group_id'];
         }
 
-        // "Modifier" makes the table on this page itself editable; "Supprimer"
-        // removes this whole tuple.
-        $canEditReports = auth()->user()?->hasAnyRole(['Super Admin', 'Admin']) ?? false;
+        // "Modifier" makes the table on this page itself editable (weekly_reports.edit);
+        // "Supprimer" removes this whole tuple (weekly_reports.delete) — gated on the
+        // actual permissions from Rôles & Permissions, not a hardcoded role name.
+        $canEditReports = auth()->user()?->can('weekly_reports.edit') ?? false;
+        $canDeleteReports = auth()->user()?->can('weekly_reports.delete') ?? false;
 
         return view('backoffice.weekly-reports.show', compact(
-            'reports', 'teacher', 'group', 'date', 'exportParams', 'canEditReports'
+            'reports', 'teacher', 'group', 'date', 'exportParams', 'canEditReports', 'canDeleteReports'
         ));
     }
 
@@ -653,6 +656,7 @@ class WeeklyReportController extends Controller
             'report_date'                       => 'required|date',
             'scope_teacher_id'                  => 'nullable|integer|exists:teachers,id',
             'scope_group_id'                    => 'nullable|integer|exists:groups,id',
+            'is_fresh_add'                      => 'nullable|boolean',
             'rows'                              => 'array',
             'rows.*.id'                         => 'nullable|integer|exists:weekly_reports,id',
             'rows.*.teacher_id'                 => 'required|exists:teachers,id',
@@ -812,32 +816,39 @@ class WeeklyReportController extends Controller
                 }
             }
 
-            // Delete reports removed in the modal. When the modal was opened scoped to a
-            // single teacher/group (e.g. clicking a chip), only clean up within that scope —
-            // otherwise this would wipe out every other teacher's reports for the week.
-            $scopeTeacherId = $data['scope_teacher_id'] ?? null;
-            $hasGroupScope = array_key_exists('scope_group_id', $data);
-            $scopeGroupId = $data['scope_group_id'] ?? null;
+            // Delete reports removed in the modal. This sweep only runs when the modal
+            // actually loaded existing data to reconcile against — a fresh/blank "Ajouter"
+            // submission (is_fresh_add) has nothing to compare to, so it must only INSERT
+            // and never delete, or it would wipe out every other teacher's reports for
+            // the week. When scoped to a single teacher/group (e.g. clicking a chip),
+            // the sweep is restricted to that scope only.
+            $isFreshAdd = $request->boolean('is_fresh_add');
 
-            $toDelete = WeeklyReport::whereBetween('report_date', [$weekMonday, $weekFriday])
-                ->when($scopeTeacherId, function ($q) use ($scopeTeacherId, $hasGroupScope, $scopeGroupId) {
-                    $q->where('teacher_id', $scopeTeacherId);
-                    if ($hasGroupScope) {
-                        $scopeGroupId ? $q->where('group_id', $scopeGroupId) : $q->whereNull('group_id');
+            if (!$isFreshAdd) {
+                $scopeTeacherId = $data['scope_teacher_id'] ?? null;
+                $hasGroupScope = array_key_exists('scope_group_id', $data);
+                $scopeGroupId = $data['scope_group_id'] ?? null;
+
+                $toDelete = WeeklyReport::whereBetween('report_date', [$weekMonday, $weekFriday])
+                    ->when($scopeTeacherId, function ($q) use ($scopeTeacherId, $hasGroupScope, $scopeGroupId) {
+                        $q->where('teacher_id', $scopeTeacherId);
+                        if ($hasGroupScope) {
+                            $scopeGroupId ? $q->where('group_id', $scopeGroupId) : $q->whereNull('group_id');
+                        }
+                    })
+                    ->when(!empty($keepIds), fn ($q) => $q->whereNotIn('id', $keepIds))
+                    ->get();
+
+                foreach ($toDelete as $report) {
+                    if ($report->attachment_path) {
+                        Storage::disk('public')->delete($report->attachment_path);
                     }
-                })
-                ->when(!empty($keepIds), fn ($q) => $q->whereNotIn('id', $keepIds))
-                ->get();
-
-            foreach ($toDelete as $report) {
-                if ($report->attachment_path) {
-                    Storage::disk('public')->delete($report->attachment_path);
+                    // Delete files for multi-attachments (FK cascade removes DB rows but not files)
+                    foreach ($report->attachments as $att) {
+                        Storage::disk('public')->delete($att->path);
+                    }
+                    $report->delete();
                 }
-                // Delete files for multi-attachments (FK cascade removes DB rows but not files)
-                foreach ($report->attachments as $att) {
-                    Storage::disk('public')->delete($att->path);
-                }
-                $report->delete();
             }
         } catch (\Throwable $e) {
             \Log::error('WeeklyReport batchSync failed', [

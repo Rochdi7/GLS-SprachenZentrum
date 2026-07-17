@@ -245,6 +245,8 @@
                         <button type="submit" form="weekEditForm" id="saveBtn" class="btn btn-success btn-sm" style="display:none;">
                             <i class="ph-duotone ph-floppy-disk me-1"></i> Enregistrer
                         </button>
+                    @endif
+                    @if ($canDeleteReports)
                         <form action="{{ route('backoffice.weekly_reports.destroy_week') }}" method="POST"
                               onsubmit="return confirm('Supprimer définitivement tout le rapport de {{ addslashes($teacher->name) }}{{ $group ? ' / ' . addslashes($group->name) : '' }} pour cette semaine ?');">
                             @csrf

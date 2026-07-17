@@ -1345,6 +1345,7 @@
                 <input type="hidden" name="report_date" id="modalDate">
                 <input type="hidden" name="scope_teacher_id" id="modalScopeTeacherId">
                 <input type="hidden" name="scope_group_id" id="modalScopeGroupId">
+                <input type="hidden" name="is_fresh_add" id="modalIsFreshAdd" value="0">
 
                 <div class="modal-header">
                     <div class="modal-header-inner">
@@ -2105,6 +2106,10 @@
         emptyHint.style.display = 'block';
 
         if (freshOnly) {
+            // Nothing was loaded from the server to reconcile against — batchSync
+            // must only INSERT the new rows and never run its whole-week delete
+            // sweep, or it would wipe out every other teacher's reports.
+            document.getElementById('modalIsFreshAdd').value = '1';
             emptyHint.classList.remove('is-loading');
             emptyHint.innerHTML = 'Aucune note pour cette semaine.<br>Cliquez sur <strong>« Ajouter une note »</strong> pour commencer.';
             reportModal.show();
@@ -2112,6 +2117,8 @@
             refreshRowNumbers();
             return;
         }
+
+        document.getElementById('modalIsFreshAdd').value = '0';
 
         emptyHint.classList.add('is-loading');
         emptyHint.innerHTML = '<span class="loading-wrap"><span class="loading-spinner"></span> Chargement…</span>';
