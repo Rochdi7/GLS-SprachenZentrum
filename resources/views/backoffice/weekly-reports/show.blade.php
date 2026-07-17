@@ -38,6 +38,7 @@
         gap: 8px;
         flex-shrink: 0;
     }
+    .detail-page-header .actions form { display: contents; }
     .detail-page-header .actions .btn {
         font-size: .82rem;
         padding: 7px 14px;
@@ -58,7 +59,7 @@
         }
         .detail-page-header h2 { font-size: 1.15rem; }
         .detail-page-header .meta { font-size: .82rem; }
-        .detail-page-header .actions { width: 100%; }
+        .detail-page-header .actions { width: 100%; flex-wrap: wrap; }
         .detail-page-header .actions .btn { flex: 1 1 0; padding: 9px 12px; }
     }
 
@@ -218,6 +219,24 @@
                        class="btn btn-danger btn-sm" target="_blank">
                         <i class="ph-duotone ph-file-pdf me-1"></i> Exporter PDF
                     </a>
+                    @if ($canEditReports)
+                        <a href="{{ $editUrl }}" class="btn btn-light btn-sm">
+                            <i class="ph-duotone ph-pencil-simple me-1"></i> Modifier
+                        </a>
+                        <form action="{{ route('backoffice.weekly_reports.destroy_week') }}" method="POST"
+                              onsubmit="return confirm('Supprimer définitivement tout le rapport de {{ addslashes($teacher->name) }}{{ $group ? ' / ' . addslashes($group->name) : '' }} pour cette semaine ?');">
+                            @csrf
+                            @method('DELETE')
+                            <input type="hidden" name="week" value="{{ $date->format('Y-m-d') }}">
+                            <input type="hidden" name="teacher_id" value="{{ $teacher->id }}">
+                            @if ($group)
+                                <input type="hidden" name="group_id" value="{{ $group->id }}">
+                            @endif
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="ph-duotone ph-trash me-1"></i> Supprimer
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </div>
 

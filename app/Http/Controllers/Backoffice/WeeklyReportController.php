@@ -304,9 +304,71 @@ class WeeklyReportController extends Controller
             $exportParams['group_id'] = $data['group_id'];
         }
 
+        // "Modifier" sends the user back to the index page with the edit modal
+        // pre-opened for this teacher/group; "Supprimer" removes this whole tuple.
+        $editUrl = route('backoffice.weekly_reports.index', [
+            'week'            => $monday->format('Y-m-d'),
+            'edit_teacher_id' => $data['teacher_id'],
+            'edit_group_id'   => $data['group_id'] ?? '',
+        ]);
+        $canEditReports = auth()->user()?->hasAnyRole(['Super Admin', 'Admin']) ?? false;
+
         return view('backoffice.weekly-reports.show', compact(
-            'reports', 'teacher', 'group', 'date', 'exportParams'
+            'reports', 'teacher', 'group', 'date', 'exportParams', 'editUrl', 'canEditReports'
         ));
+    }
+
+    /**
+     * Delete every report for a (teacher, group?, week) tuple in one action —
+     * used by the "Supprimer" button on the detail (show) page.
+     */
+    public function destroyWeek(Request $request)
+    {
+        $data = $request->validate([
+            'week'       => 'required|date',
+            'teacher_id' => 'required|exists:teachers,id',
+            'group_id'   => 'nullable|integer|exists:groups,id',
+        ]);
+
+        $allowedSiteIds = $this->accessibleSiteIds();
+        if ($allowedSiteIds !== null) {
+            $teacherAllowed = !empty($allowedSiteIds) && Teacher::where('id', $data['teacher_id'])
+                ->whereIn('site_id', $allowedSiteIds)
+                ->exists();
+            if (!$teacherAllowed) {
+                abort(403);
+            }
+        }
+
+        $monday = Carbon::parse($data['week'])->startOfWeek(Carbon::MONDAY);
+        $friday = $monday->copy()->addDays(4);
+
+        $reports = WeeklyReport::with('attachments')
+            ->whereBetween('report_date', [$monday, $friday])
+            ->where('teacher_id', $data['teacher_id'])
+            ->when(true, function ($q) use ($data) {
+                $gid = $data['group_id'] ?? null;
+                if ($gid === null || $gid === '') {
+                    $q->whereNull('group_id');
+                } else {
+                    $q->where('group_id', $gid);
+                }
+            })
+            ->get();
+
+        foreach ($reports as $report) {
+            if ($report->attachment_path) {
+                Storage::disk('public')->delete($report->attachment_path);
+            }
+            foreach ($report->attachments as $att) {
+                Storage::disk('public')->delete($att->path);
+            }
+            $report->delete();
+        }
+
+        return redirect()
+            ->route('backoffice.weekly_reports.index', ['week' => $monday->format('Y-m-d')])
+            ->with('success', 'Rapport supprimé avec succès.');
     }
 
     /**

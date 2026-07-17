@@ -525,6 +525,7 @@ Route::prefix('backoffice')
                 Route::get('/export-pdf', [WeeklyReportController::class, 'exportPdf'])->middleware('permission:weekly_reports.view')->name('export_pdf');
                 Route::get('/export-single-pdf', [WeeklyReportController::class, 'exportSinglePdf'])->middleware('permission:weekly_reports.view')->name('export_single_pdf');
                 Route::get('/show', [WeeklyReportController::class, 'show'])->middleware('permission:weekly_reports.view')->name('show');
+                Route::delete('/destroy-week', [WeeklyReportController::class, 'destroyWeek'])->middleware('permission:weekly_reports.delete')->name('destroy_week');
                 Route::post('/{weeklyReport}', [WeeklyReportController::class, 'update'])->middleware('permission:weekly_reports.edit')->name('update');
                 Route::delete('/{weeklyReport}', [WeeklyReportController::class, 'destroy'])->middleware('permission:weekly_reports.delete')->name('destroy');
             });
