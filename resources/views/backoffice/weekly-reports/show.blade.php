@@ -192,6 +192,25 @@
         color: #adb5bd;
     }
     .empty-state i { font-size: 3rem; opacity: .4; }
+
+    .notes-textarea {
+        width: 100%;
+        min-height: 90px;
+        resize: vertical;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 8px 10px;
+        font-size: .9rem;
+        line-height: 1.5;
+        font-family: inherit;
+    }
+    .notes-textarea:focus {
+        outline: none;
+        border-color: #4680ff;
+        box-shadow: 0 0 0 3px rgba(70,128,255,.15);
+    }
+    body.editing .view-mode { display: none !important; }
+    body.editing .edit-mode { display: block !important; }
 </style>
 @endsection
 
@@ -220,9 +239,12 @@
                         <i class="ph-duotone ph-file-pdf me-1"></i> Exporter PDF
                     </a>
                     @if ($canEditReports)
-                        <a href="{{ $editUrl }}" class="btn btn-light btn-sm">
+                        <button type="button" id="editToggleBtn" class="btn btn-light btn-sm" onclick="toggleEditMode()">
                             <i class="ph-duotone ph-pencil-simple me-1"></i> Modifier
-                        </a>
+                        </button>
+                        <button type="submit" form="weekEditForm" id="saveBtn" class="btn btn-success btn-sm" style="display:none;">
+                            <i class="ph-duotone ph-floppy-disk me-1"></i> Enregistrer
+                        </button>
                         <form action="{{ route('backoffice.weekly_reports.destroy_week') }}" method="POST"
                               onsubmit="return confirm('Supprimer définitivement tout le rapport de {{ addslashes($teacher->name) }}{{ $group ? ' / ' . addslashes($group->name) : '' }} pour cette semaine ?');">
                             @csrf
@@ -275,72 +297,105 @@
                     $bySkill = $reports->keyBy('skill');
                 @endphp
 
-                @if ($hasSkills)
-                    <table class="skills-table">
-                        <thead>
-                            <tr>
-                                <th class="skill-cell">Compétence</th>
-                                <th>Activité / Contenu</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (\App\Models\WeeklyReport::SKILLS as $skillKey => $skillLabel)
-                                @php $report = $bySkill->get($skillKey); @endphp
+                <form id="weekEditForm" action="{{ route('backoffice.weekly_reports.update_week') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="week" value="{{ $date->format('Y-m-d') }}">
+                    <input type="hidden" name="teacher_id" value="{{ $teacher->id }}">
+                    @if ($group)
+                        <input type="hidden" name="group_id" value="{{ $group->id }}">
+                    @endif
+
+                    @if ($hasSkills)
+                        <table class="skills-table">
+                            <thead>
                                 <tr>
-                                    <td class="skill-cell">
-                                        <span class="skill-pill">{{ $skillLabel }}</span>
-                                    </td>
-                                    <td>
-                                        @if ($report && trim($report->notes) !== '')
-                                            <div class="notes-text">{{ $report->notes }}</div>
-                                            @if ($report->attachment_path)
-                                                <a href="{{ $report->attachment_url }}" target="_blank" rel="noopener" class="pdf-attached">
-                                                    <i class="ph-duotone ph-file-pdf"></i>
-                                                    {{ $report->attachment_original_name ?? 'document.pdf' }}
-                                                </a>
-                                            @endif
-                                            @foreach ($report->attachments as $att)
-                                                <a href="{{ $att->url }}" target="_blank" rel="noopener" class="pdf-attached">
-                                                    <i class="ph-duotone ph-file-pdf"></i>
-                                                    {{ $att->original_name ?? 'document.pdf' }}
-                                                </a>
-                                            @endforeach
-                                        @else
-                                            <span class="empty-skill">— Aucune activité enregistrée pour cette compétence —</span>
-                                        @endif
-                                    </td>
+                                    <th class="skill-cell">Compétence</th>
+                                    <th>Activité / Contenu</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @elseif ($reports->isNotEmpty())
-                    @foreach ($reports as $report)
-                        <div class="freeform-block">
-                            <div class="notes-text">{{ $report->notes }}</div>
-                            @if ($report->attachment_path)
-                                <a href="{{ $report->attachment_url }}" target="_blank" rel="noopener" class="pdf-attached">
-                                    <i class="ph-duotone ph-file-pdf"></i>
-                                    {{ $report->attachment_original_name ?? 'document.pdf' }}
-                                </a>
-                            @endif
-                            @foreach ($report->attachments as $att)
-                                <a href="{{ $att->url }}" target="_blank" rel="noopener" class="pdf-attached">
-                                    <i class="ph-duotone ph-file-pdf"></i>
-                                    {{ $att->original_name ?? 'document.pdf' }}
-                                </a>
-                            @endforeach
+                            </thead>
+                            <tbody>
+                                @foreach (\App\Models\WeeklyReport::SKILLS as $skillKey => $skillLabel)
+                                    @php $report = $bySkill->get($skillKey); @endphp
+                                    <tr>
+                                        <td class="skill-cell">
+                                            <span class="skill-pill">{{ $skillLabel }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="view-mode">
+                                                @if ($report && trim($report->notes) !== '')
+                                                    <div class="notes-text">{{ $report->notes }}</div>
+                                                    @if ($report->attachment_path)
+                                                        <a href="{{ $report->attachment_url }}" target="_blank" rel="noopener" class="pdf-attached">
+                                                            <i class="ph-duotone ph-file-pdf"></i>
+                                                            {{ $report->attachment_original_name ?? 'document.pdf' }}
+                                                        </a>
+                                                    @endif
+                                                    @foreach ($report->attachments as $att)
+                                                        <a href="{{ $att->url }}" target="_blank" rel="noopener" class="pdf-attached">
+                                                            <i class="ph-duotone ph-file-pdf"></i>
+                                                            {{ $att->original_name ?? 'document.pdf' }}
+                                                        </a>
+                                                    @endforeach
+                                                @else
+                                                    <span class="empty-skill">— Aucune activité enregistrée pour cette compétence —</span>
+                                                @endif
+                                            </div>
+                                            @if ($canEditReports)
+                                                <textarea class="edit-mode notes-textarea" style="display:none;"
+                                                          name="notes[{{ $skillKey }}]"
+                                                          placeholder="Activité {{ $skillLabel }}...">{{ $report->notes ?? '' }}</textarea>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @elseif ($reports->isNotEmpty())
+                        @foreach ($reports as $report)
+                            <div class="freeform-block">
+                                <div class="view-mode">
+                                    <div class="notes-text">{{ $report->notes }}</div>
+                                    @if ($report->attachment_path)
+                                        <a href="{{ $report->attachment_url }}" target="_blank" rel="noopener" class="pdf-attached">
+                                            <i class="ph-duotone ph-file-pdf"></i>
+                                            {{ $report->attachment_original_name ?? 'document.pdf' }}
+                                        </a>
+                                    @endif
+                                    @foreach ($report->attachments as $att)
+                                        <a href="{{ $att->url }}" target="_blank" rel="noopener" class="pdf-attached">
+                                            <i class="ph-duotone ph-file-pdf"></i>
+                                            {{ $att->original_name ?? 'document.pdf' }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                                @if ($canEditReports)
+                                    <input type="hidden" name="freeform_ids[]" value="{{ $report->id }}">
+                                    <textarea class="edit-mode notes-textarea" style="display:none;"
+                                              name="freeform_notes[]">{{ $report->notes }}</textarea>
+                                @endif
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="empty-state">
+                            <i class="ph-duotone ph-folder-open"></i>
+                            <p class="mt-2">Aucun rapport pour cette sélection.</p>
                         </div>
-                    @endforeach
-                @else
-                    <div class="empty-state">
-                        <i class="ph-duotone ph-folder-open"></i>
-                        <p class="mt-2">Aucun rapport pour cette sélection.</p>
-                    </div>
-                @endif
+                    @endif
+                </form>
             </div>
 
         </div>
     </div>
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+    function toggleEditMode() {
+        document.body.classList.add('editing');
+        document.getElementById('editToggleBtn').style.display = 'none';
+        document.getElementById('saveBtn').style.display = '';
+    }
+</script>
 @endsection

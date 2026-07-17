@@ -304,18 +304,123 @@ class WeeklyReportController extends Controller
             $exportParams['group_id'] = $data['group_id'];
         }
 
-        // "Modifier" sends the user back to the index page with the edit modal
-        // pre-opened for this teacher/group; "Supprimer" removes this whole tuple.
-        $editUrl = route('backoffice.weekly_reports.index', [
-            'week'            => $monday->format('Y-m-d'),
-            'edit_teacher_id' => $data['teacher_id'],
-            'edit_group_id'   => $data['group_id'] ?? '',
-        ]);
+        // "Modifier" makes the table on this page itself editable; "Supprimer"
+        // removes this whole tuple.
         $canEditReports = auth()->user()?->hasAnyRole(['Super Admin', 'Admin']) ?? false;
 
         return view('backoffice.weekly-reports.show', compact(
-            'reports', 'teacher', 'group', 'date', 'exportParams', 'editUrl', 'canEditReports'
+            'reports', 'teacher', 'group', 'date', 'exportParams', 'canEditReports'
         ));
+    }
+
+    /**
+     * Save inline edits made directly on the detail (show) page. Accepts either
+     * `notes` keyed by skill (skills table) or a flat `notes` list (free-form,
+     * no-skill reports) for one (teacher, group?, week) tuple. Updates existing
+     * rows, creates new ones for skills that gained text, and clears/deletes
+     * rows whose text was emptied out.
+     */
+    public function updateWeek(Request $request)
+    {
+        $data = $request->validate([
+            'week'                => 'required|date',
+            'teacher_id'          => 'required|exists:teachers,id',
+            'group_id'            => 'nullable|integer|exists:groups,id',
+            'notes'               => 'nullable|array',
+            'notes.*'             => ['nullable', 'string', 'max:5000'],
+            'freeform_ids'        => 'nullable|array',
+            'freeform_ids.*'      => 'integer|exists:weekly_reports,id',
+            'freeform_notes'      => 'nullable|array',
+            'freeform_notes.*'    => ['nullable', 'string', 'max:5000'],
+        ]);
+
+        $allowedSiteIds = $this->accessibleSiteIds();
+        if ($allowedSiteIds !== null) {
+            $teacherAllowed = !empty($allowedSiteIds) && Teacher::where('id', $data['teacher_id'])
+                ->whereIn('site_id', $allowedSiteIds)
+                ->exists();
+            if (!$teacherAllowed) {
+                abort(403);
+            }
+        }
+
+        $monday = Carbon::parse($data['week'])->startOfWeek(Carbon::MONDAY);
+        $friday = $monday->copy()->addDays(4);
+        $groupId = $data['group_id'] ?? null;
+
+        $baseQuery = fn () => WeeklyReport::whereBetween('report_date', [$monday, $friday])
+            ->where('teacher_id', $data['teacher_id'])
+            ->when($groupId, fn ($q) => $q->where('group_id', $groupId), fn ($q) => $q->whereNull('group_id'));
+
+        $existing = $baseQuery()->get();
+
+        // Skills table branch: one entry per skill key.
+        if (!empty($data['notes'])) {
+            $bySkill = $existing->whereNotNull('skill')->keyBy('skill');
+
+            foreach ($data['notes'] as $skillKey => $rawNotes) {
+                if (!array_key_exists($skillKey, WeeklyReport::SKILLS)) {
+                    continue;
+                }
+                $notes = trim($rawNotes ?? '');
+                $report = $bySkill->get($skillKey);
+
+                if ($notes === '') {
+                    // Cleared out: delete the row if one existed and had no attachment.
+                    if ($report && !$report->attachment_path && $report->attachments->isEmpty()) {
+                        $report->delete();
+                    }
+                    continue;
+                }
+
+                if (mb_strlen($notes) < 5) {
+                    return back()->withErrors([
+                        "notes.$skillKey" => 'Chaque activité renseignée doit contenir au moins 5 caractères.',
+                    ])->withInput();
+                }
+
+                if ($report) {
+                    $report->notes = $notes;
+                    $report->save();
+                } else {
+                    WeeklyReport::create([
+                        'teacher_id'  => $data['teacher_id'],
+                        'group_id'    => $groupId,
+                        'skill'       => $skillKey,
+                        'report_date' => $friday->format('Y-m-d'),
+                        'notes'       => $notes,
+                        'created_by'  => auth()->id(),
+                    ]);
+                }
+            }
+        }
+
+        // Free-form branch: existing rows without a skill, edited in place.
+        if (!empty($data['freeform_ids'])) {
+            $freeformNotes = $data['freeform_notes'] ?? [];
+            foreach ($data['freeform_ids'] as $i => $id) {
+                $report = $existing->firstWhere('id', (int) $id);
+                if (!$report) {
+                    continue;
+                }
+                $notes = trim($freeformNotes[$i] ?? '');
+                if (mb_strlen($notes) < 5) {
+                    return back()->withErrors([
+                        "freeform_notes.$i" => 'Chaque note doit contenir au moins 5 caractères.',
+                    ])->withInput();
+                }
+                $report->notes = $notes;
+                $report->save();
+            }
+        }
+
+        return redirect()
+            ->route('backoffice.weekly_reports.show', [
+                'week'       => $monday->format('Y-m-d'),
+                'teacher_id' => $data['teacher_id'],
+                'group_id'   => $groupId,
+            ])
+            ->with('success', 'Rapport mis à jour avec succès.');
     }
 
     /**

@@ -1321,11 +1321,12 @@
                             </div>
                         @endif
 
-                        {{-- Add CTA button — editing an existing entry happens from the detail (show) page --}}
+                        {{-- Add CTA button — always opens a blank entry. Editing an existing
+                             report happens from its detail (show) page instead. --}}
                         <button class="wc-edit-btn"
-                                onclick="event.stopPropagation(); openWeekModal('{{ $fridayKey }}', '{{ addslashes($weekLabel) }}', { freshOnly: {{ $allWeekReports->isEmpty() ? 'true' : 'false' }} })">
+                                onclick="event.stopPropagation(); openWeekModal('{{ $fridayKey }}', '{{ addslashes($weekLabel) }}', { freshOnly: true })">
                             <i class="ph-duotone ph-plus"></i>
-                            {{ $allWeekReports->isEmpty() ? 'Saisir le rapport' : 'Ajouter' }}
+                            Ajouter
                         </button>
                     </div>
                 </div>
@@ -1466,14 +1467,11 @@
     const rowsContainer = document.getElementById('rowsContainer');
     const emptyHint = document.getElementById('emptyRowsHint');
     const CAN_EDIT_REPORTS = @json($canEditReports);
-    const CURRENT_FRIDAY_KEY = @json($weekDays->last()->format('Y-m-d'));
-    const CURRENT_WEEK_LABEL = @json($weekDays->first()->locale('fr')->isoFormat('D MMM') . ' – ' . $weekDays->last()->locale('fr')->isoFormat('D MMM YYYY'));
     let rowCounter = 0;
 
     /**
-     * Chip click always lands on the clean read-only detail page. Editing is
-     * reachable from the week card's "Ajouter" button, or from the "Modifier"
-     * button on the detail (show) page, which opens the modal.
+     * Chip click always lands on the clean read-only detail page. Editing an
+     * existing report happens right there via its own "Modifier" button.
      */
     function openTeacherWeek(fridayDate, weekLabel, teacherId, groupId) {
         const params = new URLSearchParams({ week: fridayDate, teacher_id: teacherId });
@@ -2347,29 +2345,6 @@
     document.addEventListener('DOMContentLoaded', function () {
         const toastEl = document.getElementById('liveToast');
         if (toastEl) new bootstrap.Toast(toastEl).show();
-    });
-
-    // "Modifier" button on the detail (show) page links back here with
-    // edit_teacher_id/edit_group_id — auto-open the edit modal for that scope.
-    document.addEventListener('DOMContentLoaded', function () {
-        const params = new URLSearchParams(window.location.search);
-        const editTeacherId = params.get('edit_teacher_id');
-        if (!editTeacherId) return;
-
-        const editGroupIdRaw = params.get('edit_group_id');
-        const editGroupId = editGroupIdRaw ? Number(editGroupIdRaw) : null;
-
-        openWeekModal(CURRENT_FRIDAY_KEY, CURRENT_WEEK_LABEL, {
-            teacherId: Number(editTeacherId),
-            groupId: editGroupId,
-        });
-
-        // Clean the URL so a refresh doesn't reopen the modal.
-        params.delete('edit_teacher_id');
-        params.delete('edit_group_id');
-        const cleanQuery = params.toString();
-        const cleanUrl = window.location.pathname + (cleanQuery ? '?' + cleanQuery : '');
-        window.history.replaceState({}, '', cleanUrl);
     });
 </script>
 @endsection
