@@ -255,6 +255,11 @@ class AttestationController extends Controller
             $data['hours_per_session'] = 2.5;
             // site_id vient du formulaire en mode legacy.
             $data['site_id'] = isset($data['site_id']) ? (int) $data['site_id'] : null;
+
+            // Si la ville n'est pas définie, on tente le centre sélectionné manuellement.
+            if (empty($data['city']) && $data['site_id']) {
+                $data['city'] = \App\Models\Site::find($data['site_id'])?->city ?? '';
+            }
         } else {
             $group = Group::with('site')->findOrFail($data['group_id']);
 
