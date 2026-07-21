@@ -277,17 +277,6 @@
 
                     {{-- Action buttons --}}
                     <div class="d-flex gap-2 flex-wrap">
-                        {{-- Send / Resend email --}}
-                        <form method="POST"
-                              action="{{ route('backoffice.crm.reports.resend', ['date' => $report->report_date->toDateString()]) }}"
-                              onsubmit="return confirm('{{ $report->email_sent_at ? 'Déjà envoyé le ' . $report->email_sent_at->format('d/m/Y à H:i') . '. Renvoyer quand même ?' : 'Envoyer ce rapport par email ?' }}')">
-                            @csrf
-                            <button type="submit" class="btn {{ $report->email_sent_at ? 'btn-outline-success' : 'btn-success' }}">
-                                <i class="ph-duotone ph-paper-plane-tilt me-1"></i>
-                                {{ $report->email_sent_at ? 'Renvoyer l\'email' : 'Envoyer par email' }}
-                            </button>
-                        </form>
-
                         {{-- Regenerate --}}
                         <form method="POST" action="{{ route('backoffice.crm.reports.generate') }}">
                             @csrf
