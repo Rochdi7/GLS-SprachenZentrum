@@ -55,13 +55,6 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/crm-weekly-report.log'));
 
-        // ── Step 2 — :20 — Daily report (after sync finishes) ────────────────
-        $schedule->command('crm:daily-report')
-            ->cron('20 */2 * * *')
-            ->timezone('Africa/Casablanca')
-            ->withoutOverlapping()
-            ->appendOutputTo(storage_path('logs/crm-daily-report.log'));
-
         // ── Step 3 — :30 — Level followups ───────────────────────────────────
         $schedule->command('gls:generate-level-followups')
             ->cron('30 */2 * * *')
