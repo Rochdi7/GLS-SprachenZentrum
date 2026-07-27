@@ -163,7 +163,7 @@ class AttestationController extends Controller
     {
         $group->loadMissing('site');
 
-        $segments = GroupLevelFollowup::query()
+        $fetchSegments = fn () => GroupLevelFollowup::query()
             ->where('group_id', $group->id)
             ->orderBy('level_start_date')
             ->get(['level', 'level_start_date', 'level_end_date'])
@@ -176,12 +176,27 @@ class AttestationController extends Controller
             })
             ->values();
 
+        $segments = $fetchSegments();
+
+        // Groupe terminé (ou jamais suivi) : le générateur de Suivi niveau ne tourne que
+        // pour les groupes actifs, donc on génère les segments à la volée (idempotent)
+        // pour que les dates de niveau se pré-remplissent quand même.
+        if ($segments->isEmpty() && $group->date_debut) {
+            app(\App\Services\LevelFollowupGenerator::class)->generateForGroup($group);
+            $segments = $fetchSegments();
+        }
+
+        $isFinished = $group->date_fin
+            ? Carbon::parse($group->date_fin)->endOfDay()->isPast()
+            : false;
+
         return response()->json([
             'group' => [
                 'id'                 => $group->id,
                 'name'               => $group->name,
                 'date_debut'         => optional($group->date_debut)->toDateString() ?? $group->date_debut,
                 'date_fin'           => optional($group->date_fin)->toDateString() ?? $group->date_fin,
+                'is_finished'        => $isFinished,
                 'site_name'          => $group->site?->name,
                 'site_city'          => $group->site?->city,
                 'hours_per_session'  => $group->site?->getCourseDuration() ?? 2.5,

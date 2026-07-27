@@ -711,8 +711,9 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
 
 
         {{-- ===========================
- STUDENTENAKTE — Editorial student services dossier
+ STUDENTENAKTE — Editorial student services dossier (hidden per request)
 =========================== --}}
+        @if (false)
         <section class="ssn-section reveal delay-1" aria-label="{{ __('home.student_services.eyebrow') }}">
             <div class="ssn-inner">
 
@@ -996,6 +997,7 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 </div>
             </div>
         </section>
+        @endif
 
         {{-- ===========================
  ABOUT GLS MOROCCO – 9onsol’s Talks

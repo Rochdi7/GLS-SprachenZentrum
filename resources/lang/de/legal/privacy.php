@@ -40,8 +40,8 @@ return [
         's9_title' => 'Formulare, Server-Logs und integrierte Dienste',
         's9_text' => 'Der Website-Anbieter kann automatisch bestimmte Informationen in Log-Dateien erfassen (Browsertyp/-version, Betriebssystem, Referrer-URL, Anfragezeitpunkt, IP-Adresse). Wenn Sie uns über ein Formular kontaktieren, verarbeiten wir die bereitgestellten Informationen, um auf Ihre Anfrage zu antworten. Die Website kann auch Dienste von Drittanbietern einbinden (z. B. Karten, Videos oder Schriftarten). Wenn diese Dienste geladen werden, können technische Daten (einschließlich Ihrer IP-Adresse) an deren Anbieter übermittelt werden.',
 
-        's10_title' => 'Über GLS Sprachenzentrum',
-        's10_text' => 'Das GLS Sprachenzentrum ist ein Sprachenzentrum mit Sitz in Marokko. Unsere Studierenden befinden sich ausschließlich in Marokko. Wir haben keinerlei Verbindung, Zugehörigkeit oder rechtliche bzw. kommerzielle Beziehung zu der deutschen Einrichtung „GLS Sprachen Zentrum Berlin" in Deutschland. Unsere Dienstleistungen, Kurse und Website sind vollständig unabhängig von dieser Organisation.',
+        's10_title' => 'Rechtliche Unabhängigkeit und keine Zugehörigkeit',
+        's10_text' => 'Das Sprachenzentrum GLS Sprachenzentrum, das in Marokko tätig ist und sich ausschließlich an Studierende mit Wohnsitz in Marokko richtet, ist eine vollständig eigenständige Einrichtung.<br><br>Es wird ausdrücklich klargestellt, dass GLS Sprachenzentrum keinerlei rechtliche, geschäftliche, finanzielle, partnerschaftliche oder organisatorische Verbindung zu der Einrichtung „GLS Berlin" (auch bezeichnet als „GLS SprachenZentrum Berlin" oder „GLS Deutsch in Berlin") mit Sitz in Deutschland unterhält.<br><br>Sämtliche Dienstleistungen, Ausbildungsprogramme, digitalen Inhalte und die vorliegende Website sind strikt unabhängig von dieser Drittorganisation. Folglich lehnt GLS Sprachenzentrum jegliche Verantwortung für Aktivitäten, Angebote, Verpflichtungen oder Datenverarbeitungen der vorgenannten deutschen Einrichtung ab.',
 
     ],
 

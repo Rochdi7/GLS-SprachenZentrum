@@ -328,8 +328,9 @@ document.addEventListener('DOMContentLoaded', function () {
     function applyLegacyMode() {
         const isLegacy = legacyCheck.checked;
         // Mode ancien → date de fin saisie manuellement (is_ongoing = 0).
-        // Mode normal → étudiant toujours en cours par défaut (is_ongoing = 1).
-        if (ongoingInput) ongoingInput.value = isLegacy ? '0' : '1';
+        // Mode normal → « en cours » sauf si le groupe sélectionné a déjà terminé sa formation
+        // (le PDF doit alors afficher les vraies dates de fin, pas « heute »).
+        if (ongoingInput) ongoingInput.value = (isLegacy || (cachedGroup && cachedGroup.is_finished)) ? '0' : '1';
         if (isLegacy) {
             groupWrapper.style.display = 'none';
             groupSelect.removeAttribute('required');
@@ -348,6 +349,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const baseLevelsUrl = groupSelect.dataset.levelsUrl; // ends with /0
     const levelWarning  = document.getElementById('att-level-warning');
     let cachedLevels    = [];
+    let cachedGroup     = null;
 
     function showLevelWarning(show) {
         if (!levelWarning) return;
@@ -358,6 +360,8 @@ document.addEventListener('DOMContentLoaded', function () {
         opts = opts || {};
         if (!groupId) {
             cachedLevels = [];
+            cachedGroup  = null;
+            if (!legacyCheck.checked && ongoingInput) ongoingInput.value = '1';
             return;
         }
 
@@ -369,6 +373,12 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(r => r.json())
             .then(data => {
                 cachedLevels = data.levels || [];
+                cachedGroup  = data.group || null;
+
+                // Groupe terminé → attestation plus « en cours » (PDF: vraies dates au lieu de « heute »).
+                if (!legacyCheck.checked && ongoingInput) {
+                    ongoingInput.value = cachedGroup && cachedGroup.is_finished ? '0' : '1';
+                }
 
                 // Pre-fill course (vom .. bis) from group dates if empty
                 if (!courseStart.value && data.group?.date_debut) {
@@ -417,8 +427,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const startLvl = cachedLevels.find(function (l) { return l.level === lowest; });
         const endLvl   = cachedLevels.find(function (l) { return l.level === highest; });
 
-        const start = startLvl ? startLvl.start_date : null;
-        const end   = endLvl   ? endLvl.end_date     : null;
+        // Suivi niveau d'abord ; sinon repli sur les dates du groupe (début/fin de formation)
+        // pour que les champs se remplissent quand même — utile pour les groupes terminés.
+        const start = (startLvl ? startLvl.start_date : null) || (cachedGroup ? cachedGroup.date_debut : null);
+        const end   = (endLvl   ? endLvl.end_date     : null) || (cachedGroup ? cachedGroup.date_fin   : null);
 
         if (keepPreselectedDates) {
             // On edit reload, prefer saved values, otherwise fall back to Suivi niveau dates.
@@ -432,7 +444,8 @@ document.addEventListener('DOMContentLoaded', function () {
             niveauEnd.value   = end   || '';
         }
 
-        showLevelWarning(!startLvl || !endLvl);
+        // Avertir seulement si, même après repli, une date manque encore.
+        showLevelWarning(!start || !end);
     }
 
     groupSelect.addEventListener('change', function () {
@@ -462,6 +475,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     legacyCheck.addEventListener('change', applyLegacyMode);
+
+    // La molette souris sur un champ nombre encore focus (unités, niveaux…) modifie
+    // silencieusement la valeur pendant que l'utilisateur fait défiler le formulaire.
+    document.querySelectorAll('input[type="number"]').forEach(function (inp) {
+        inp.addEventListener('wheel', function (e) {
+            if (document.activeElement === inp) {
+                e.preventDefault();
+                inp.blur();
+            }
+        }, { passive: false });
+    });
 
     // Initial load (edit / old() repopulation)
     applyLegacyMode();

@@ -40,8 +40,8 @@ return [
         's9_title' => 'Formulaires, journaux serveur et services intégrés',
         's9_text' => 'Le fournisseur du site peut collecter automatiquement certaines informations dans des fichiers journaux (type/version du navigateur, système d\'exploitation, URL de référence, heure de la requête, adresse IP). Si vous nous contactez via un formulaire, nous traitons les informations fournies pour répondre à votre demande. Le site peut également intégrer des services tiers (par exemple cartes, vidéos ou polices). Lorsque ces services sont chargés, des données techniques (dont l\'adresse IP) peuvent être transmises à leurs fournisseurs.',
 
-        's10_title' => 'À propos de GLS Sprachenzentrum',
-        's10_text' => 'GLS Sprachenzentrum est un centre de langues situé au Maroc. Nos étudiants sont exclusivement basés au Maroc. Nous n\'avons aucun lien, affiliation ni relation juridique ou commerciale avec l\'établissement allemand « GLS Sprachen Zentrum Berlin », situé en Allemagne. Nos services, nos formations et notre site web sont totalement indépendants de cet organisme.',
+        's10_title' => 'Indépendance juridique et absence d\'affiliation',
+        's10_text' => 'Le centre de langues GLS Sprachenzentrum, opérant au Maroc et s\'adressant exclusivement à des étudiants basés sur le territoire marocain, est une entité totalement autonome.<br><br>Il est expressément précisé que GLS Sprachenzentrum ne dispose d\'aucun lien juridique, commercial, financier, partenarial ou organisationnel avec l\'établissement nommé « GLS Berlin » (également identifié sous les dénommations « GLS SprachenZentrum Berlin » ou « GLS allemand à Berlin »), situé en Allemagne.<br><br>L\'ensemble des services, programmes de formation, contenus digitaux et le présent site web sont strictement indépendants de cet organisme tiers. Par conséquent, GLS Sprachenzentrum décline toute responsabilité quant aux activités, offres, engagements ou traitements de données effectués par l\'établissement allemand susmentionné.',
 
     ],
 
