@@ -152,16 +152,24 @@
                                     @endcan
                                 </td>
                                 <td class="text-center">
-                                    @can('translations.edit')
-                                    <form method="POST" action="{{ route('backoffice.translations.status', $t) }}" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="status-pill status-{{ $t->status }} border-0">
-                                            {{ $t->statusLabel() }}
-                                        </button>
-                                    </form>
+                                    @if($t->status === \App\Models\Translation::STATUS_DELIVERED)
+                                        {{-- État final : plus cliquable — un clic accidentel ne doit pas remettre la commande à « Reçu ». --}}
+                                        <span class="status-pill status-{{ $t->status }}" style="cursor:default"
+                                              title="Commande rendue — statut verrouillé. Utilisez « Éditer » pour le modifier.">
+                                            <i class="ti ti-lock"></i> {{ $t->statusLabel() }}
+                                        </span>
                                     @else
-                                    <span class="status-pill status-{{ $t->status }}">{{ $t->statusLabel() }}</span>
-                                    @endcan
+                                        @can('translations.edit')
+                                        <form method="POST" action="{{ route('backoffice.translations.status', $t) }}" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="status-pill status-{{ $t->status }} border-0">
+                                                {{ $t->statusLabel() }}
+                                            </button>
+                                        </form>
+                                        @else
+                                        <span class="status-pill status-{{ $t->status }}">{{ $t->statusLabel() }}</span>
+                                        @endcan
+                                    @endif
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-link text-info p-1"

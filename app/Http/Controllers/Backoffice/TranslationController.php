@@ -225,10 +225,16 @@ class TranslationController extends Controller
     {
         $this->authorizeTranslationAccess($translation);
 
+        // « Rendu à l'étudiant » est un état final : un clic sur la pastille ne doit
+        // pas faire re-basculer la commande à « Reçu (GLS) ». Pour un changement
+        // volontaire, passer par le statut dans le modal d'édition.
+        if ($translation->status === Translation::STATUS_DELIVERED) {
+            return back()->with('toast', 'Commande déjà rendue — statut verrouillé. Utilisez « Éditer » pour le modifier.');
+        }
+
         $next = match ($translation->status) {
             Translation::STATUS_PENDING    => Translation::STATUS_TRANSLATOR,
-            Translation::STATUS_TRANSLATOR => Translation::STATUS_DELIVERED,
-            default                        => Translation::STATUS_PENDING,
+            default                        => Translation::STATUS_DELIVERED,
         };
 
         $payload = ['status' => $next];
