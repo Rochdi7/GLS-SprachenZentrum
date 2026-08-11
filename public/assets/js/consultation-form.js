@@ -90,6 +90,10 @@
             clearError();
             setSuccessVisible(true);
 
+            if (window.glsTrack) {
+                window.glsTrack('consultation_submit', { event_category: 'Consultation', event_label: 'Consultation Modal' });
+            }
+
         } catch (err) {
             showError('Impossible d\'envoyer la demande. Vérifiez votre connexion.');
             if (submitBtn) submitBtn.disabled = false;

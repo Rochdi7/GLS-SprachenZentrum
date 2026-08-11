@@ -496,7 +496,7 @@
         if (data.success && data.redirect_url) {
           // Track conversion before redirect
           if (window.gtag) {
-            gtag('event', 'form_submit', {
+            gtag('event', 'inscription_submit', {
               event_category: 'GLS Inscription',
               event_label: 'Page Form',
               event_callback: function() {
@@ -515,6 +515,9 @@
           // Fallback: show success message if no redirect URL
           form.style.display = "none";
           if (successMessage) successMessage.style.display = "block";
+          if (window.glsTrack) {
+            window.glsTrack('inscription_submit', { event_category: 'GLS Inscription', event_label: 'Page Form' });
+          }
         } else {
           showError(data.message || t.errGeneric);
           if (submitBtn) {

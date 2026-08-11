@@ -33,3 +33,13 @@
     </div>
 </main>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.glsTrack) {
+                window.glsTrack('attestation_submit', { event_category: 'Attestation', event_label: 'Attestation Request' });
+            }
+        });
+    </script>
+@endpush

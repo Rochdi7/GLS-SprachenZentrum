@@ -66,6 +66,7 @@
         window.GLS_TRACKING = {
             pixelId: '407443676615251',
             gtagId: 'AW-17817493313',
+            ga4Id: 'G-STVL64P4J1',
             ahrefsKey: 'vKoc9I4c7spqw+TRXsjGtw',
             tawkSrc: 'https://embed.tawk.to/69af4ebd7d962c1c35e7812e/1jjacn54k',
             tawkDelay: 10000,
@@ -78,6 +79,7 @@
         };
     </script>
     <script src="{{ asset('assets/js/consent-loader.js') }}?v={{ @filemtime(public_path('assets/js/consent-loader.js')) ?: '1' }}" defer></script>
+    <script src="{{ asset('assets/js/gls-events.js') }}?v={{ @filemtime(public_path('assets/js/gls-events.js')) ?: '1' }}" defer></script>
     {{-- The no-JS Meta Pixel <noscript> fallback was removed: it would fire without
          consent (can't be gated without JS), conflicting with the consent-only policy. --}}
     @stack('head')

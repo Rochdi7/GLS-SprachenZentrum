@@ -167,6 +167,12 @@
             // Success
             if (res.ok && data.status === 'success') {
                 setSuccessMode(data.message || 'Votre demande a bien été envoyée.');
+                if (window.glsTrack) {
+                    window.glsTrack('group_apply_submit', {
+                        event_category: 'Group Application',
+                        event_label: inputLabel.value || 'Group Apply Modal'
+                    });
+                }
                 return;
             }
 

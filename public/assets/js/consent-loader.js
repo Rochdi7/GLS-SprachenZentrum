@@ -86,6 +86,9 @@
         window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
         window.gtag('js', new Date());
         window.gtag('config', cfg.gtagId);
+        if (cfg.ga4Id) {
+            window.gtag('config', cfg.ga4Id);
+        }
     }
 
     /* ---- Ahrefs Analytics ---- */

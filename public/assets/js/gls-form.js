@@ -428,6 +428,7 @@
       const data = parsed.data || {};
 
       if (data.status === "success") {
+        submitted = true;
         if (window.gtag) {
           gtag("event", "gls_inscription_submitted", { form_source: "modal" });
         }
@@ -453,6 +454,9 @@
   }
 
   /* ============================== NEXT BUTTON ============================== */
+  let reachedStep2 = false;
+  let submitted = false;
+
   nextBtn.addEventListener("click", () => {
     if (!validateStep()) return;
 
@@ -463,6 +467,17 @@
 
     currentStep++;
     updateProgress();
+
+    // Fires once: visitor completed step 1 (Informations) and clicked Continuer.
+    if (currentStep >= 2 && !reachedStep2) {
+      reachedStep2 = true;
+      if (window.glsTrack) {
+        window.glsTrack("gls_form_step1_completed", {
+          event_category: "GLS Inscription",
+          event_label: "Modal - Step 1 Completed"
+        });
+      }
+    }
   });
 
   /* ============================== PREV BUTTON ============================== */
@@ -491,6 +506,16 @@
 
     // Listen for modal close to reset state
     modal.addEventListener("hidden.bs.modal", function () {
+      // Visitor filled step 1, clicked Continuer, but left without completing/submitting.
+      if (reachedStep2 && !submitted && window.glsTrack) {
+        window.glsTrack("gls_form_abandoned", {
+          event_category: "GLS Inscription",
+          event_label: "Modal - Abandoned at step " + currentStep
+        });
+      }
+      reachedStep2 = false;
+      submitted = false;
+
       currentStep = 1;
       form.reset();
       clearError();
