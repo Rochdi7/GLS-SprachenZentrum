@@ -57,10 +57,27 @@
     });
 
     // 3) Tawk.to live chat — fires when the visitor actually opens the widget.
-    window.Tawk_API = window.Tawk_API || {};
-    var prevOnChatMaximized = window.Tawk_API.onChatMaximized;
-    window.Tawk_API.onChatMaximized = function () {
-        glsTrack('Tawk_Chat_Opened', { event_category: 'Live Chat' });
-        if (typeof prevOnChatMaximized === 'function') prevOnChatMaximized();
-    };
+    // IMPORTANT: do NOT create window.Tawk_API here if it doesn't exist yet —
+    // consent-loader.js's loadTawk() uses `if (window.Tawk_API) return;` to avoid
+    // double-loading the widget, so pre-creating it here would make Tawk think
+    // it's already loaded and skip injecting the real script entirely.
+    function hookTawkOnChatMaximized() {
+        var prevOnChatMaximized = window.Tawk_API.onChatMaximized;
+        window.Tawk_API.onChatMaximized = function () {
+            glsTrack('Tawk_Chat_Opened', { event_category: 'Live Chat' });
+            if (typeof prevOnChatMaximized === 'function') prevOnChatMaximized();
+        };
+    }
+
+    if (window.Tawk_API) {
+        hookTawkOnChatMaximized();
+    } else {
+        // Poll until consent-loader.js creates window.Tawk_API (after consent + tawkDelay).
+        var tawkWait = setInterval(function () {
+            if (window.Tawk_API) {
+                clearInterval(tawkWait);
+                hookTawkOnChatMaximized();
+            }
+        }, 500);
+    }
 })();
