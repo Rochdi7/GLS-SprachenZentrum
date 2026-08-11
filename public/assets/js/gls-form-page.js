@@ -465,6 +465,10 @@
       submitBtn.textContent = t.sending;
     }
 
+    if (window.glsTrack) {
+      window.glsTrack('Inscription_Page_Send_Clicked', { event_category: 'GLS Inscription', event_label: 'Page Form' });
+    }
+
     fetch(glsStoreUrl, {
       method: "POST",
       headers: {

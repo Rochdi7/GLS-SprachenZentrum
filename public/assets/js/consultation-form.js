@@ -62,6 +62,10 @@
 
         if (submitBtn) submitBtn.disabled = true;
 
+        if (window.glsTrack) {
+            window.glsTrack('Consultation_Send_Clicked', { event_category: 'Consultation', event_label: 'Consultation Modal' });
+        }
+
         try {
             const response = await fetch(form.action, {
                 method: 'POST',

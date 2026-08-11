@@ -13,6 +13,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 msg.className = 'small mt-2';
                 btn.disabled = true;
 
+                if (window.glsTrack) {
+                    window.glsTrack('Newsletter_Send_Clicked', { event_category: 'Newsletter', event_label: window.location.pathname });
+                }
+
                 try {
                     const formData = new FormData(form);
 
@@ -44,6 +48,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (data.status === 'subscribed') {
                         emailInput.value = '';
+                        if (window.glsTrack) {
+                            window.glsTrack('Newsletter_Signup_Completed', { event_category: 'Newsletter', event_label: window.location.pathname });
+                        }
                     }
                 } catch (err) {
                     msg.textContent = "{{ __('footer.newsletter.error') }}";

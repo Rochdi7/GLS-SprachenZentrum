@@ -54,6 +54,13 @@
         if (facade.parentNode) {
             facade.parentNode.replaceChild(iframe, facade);
         }
+
+        if (window.glsTrack) {
+            window.glsTrack('Video_Play_Click', {
+                event_category: 'Video',
+                event_label: title || (provider + ':' + id)
+            });
+        }
     }
 
     function onClick(e) {

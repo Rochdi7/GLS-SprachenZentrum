@@ -55,7 +55,8 @@
                         <i class="bi bi-shield-check"></i>
                         {{ __('certificate.helper_secure') }}
                     </div>
-                    <button type="submit" class="vc-search-btn mt-3">
+                    <button type="submit" class="vc-search-btn mt-3"
+                        data-gtm-event="Certificate_Search_Send_Clicked" data-gtm-category="Certificate">
                         <i class="bi bi-search me-1"></i> {{ __('certificate.submit') }}
                     </button>
                 </form>
@@ -164,6 +165,14 @@
                 </div>
             </div>
         </section>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (window.glsTrack) {
+                    window.glsTrack('Certificate_Search_Completed', { event_category: 'Certificate' });
+                }
+            });
+        </script>
     @endif
 
 </main>

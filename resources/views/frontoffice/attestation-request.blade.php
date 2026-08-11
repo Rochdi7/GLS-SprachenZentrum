@@ -176,7 +176,8 @@
                         <span class="att-secure-note">
                             <i class="bi bi-shield-lock-fill"></i> {{ __('attestation-request.secure_note') }}
                         </span>
-                        <button type="submit" class="att-submit">
+                        <button type="submit" class="att-submit"
+                            data-gtm-event="Attestation_Send_Clicked" data-gtm-category="Attestation">
                             <i class="bi bi-send-fill"></i> {{ __('attestation-request.submit') }}
                         </button>
                     </div>

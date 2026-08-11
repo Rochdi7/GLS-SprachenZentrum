@@ -149,6 +149,13 @@
         const btn = root.querySelector('#applyGroupSubmitBtn');
         if (btn) btn.disabled = true;
 
+        if (window.glsTrack) {
+            window.glsTrack('Group_Apply_Send_Clicked', {
+                event_category: 'Group Application',
+                event_label: inputLabel.value || 'Group Apply Modal'
+            });
+        }
+
         try {
             const url = form.getAttribute('action');
             const formData = new FormData(form);

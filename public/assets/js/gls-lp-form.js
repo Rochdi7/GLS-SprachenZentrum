@@ -280,6 +280,10 @@
       submitBtn.textContent = t.sending;
     }
 
+    if (window.glsTrack) {
+      window.glsTrack('Inscription_LP_Send_Clicked', { event_category: 'GLS Inscription', event_label: formSource });
+    }
+
     fetch(glsStoreUrl, {
       method: 'POST',
       headers: { 'X-CSRF-TOKEN': getCsrfToken(), Accept: 'application/json' },
@@ -302,11 +306,15 @@
             if (formSource === 'meta_ads' && typeof fbq === 'function') {
               fbq('track', 'Lead', { content_name: 'GLS Inscription', source: 'meta_ads' });
             }
+            // TODO(ads): 'GLS_GOOGLE_ADS_LEAD' is an UNREPLACED PLACEHOLDER, not a real
+            // conversion ID, so this call currently records nothing in Google Ads.
+            // Replace with the real label from Google Ads → Tools → Conversions,
+            // in the form 'AW-17817493313/XXXXXXXXXXXXXXXX'.
             if (formSource === 'google_ads' && typeof gtag === 'function') {
               gtag('event', 'conversion', { send_to: 'GLS_GOOGLE_ADS_LEAD', event_label: 'google_ads' });
             }
-            if (typeof gtag === 'function') {
-              gtag('event', 'form_submit', { event_category: 'GLS Inscription', event_label: formSource });
+            if (window.glsTrack) {
+              window.glsTrack('Inscription_LP_Form_Submitted', { event_category: 'GLS Inscription', event_label: formSource });
             }
           } catch (err) { /* tracking optional */ }
 

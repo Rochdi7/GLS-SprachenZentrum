@@ -19,6 +19,11 @@
   let currentStep = 1;
   const totalSteps = 3;
 
+  // Tracking / submission state. Declared here (before submitForm is defined) so the
+  // submit guard is never read in its temporal dead zone.
+  let submitting = false;
+  let submitted = false;
+
   // Translated labels from data attributes
   const t = {
     next: root.dataset.labelNext || "Continuer",
@@ -373,10 +378,21 @@
 
   /* ============================== SUBMIT (SAFE JSON) ============================== */
   async function submitForm() {
+    // Guard against double-submits (double-click / rapid retry). Without this both the
+    // network request AND the Send_Clicked event fire more than once per real attempt.
+    if (submitting) return;
+
     const csrf = getCsrfToken();
     if (!csrf) {
       showError(t.errSession);
       return;
+    }
+
+    submitting = true;
+    if (nextBtn) nextBtn.disabled = true;
+
+    if (window.glsTrack) {
+      window.glsTrack("Inscription_Modal_Send_Clicked", { event_category: "GLS Inscription", event_label: "Modal" });
     }
 
     const formData = new FormData(form);
@@ -429,8 +445,11 @@
 
       if (data.status === "success") {
         submitted = true;
-        if (window.gtag) {
-          gtag("event", "Inscription_Modal_Submitted", { form_source: "modal" });
+        if (window.glsTrack) {
+          window.glsTrack("Inscription_Modal_Submitted", {
+            event_category: "GLS Inscription",
+            form_source: "modal"
+          });
         }
 
         form.style.display = "none";
@@ -450,15 +469,32 @@
     } catch (err) {
       console.error(err);
       showError(t.errConnection);
+    } finally {
+      // Always release the submit lock so the visitor can retry after a failure.
+      // On success the form is hidden behind the success message, so re-enabling
+      // the button is harmless and cannot produce a second submission.
+      submitting = false;
+      if (nextBtn && !submitted) nextBtn.disabled = false;
     }
   }
 
   /* ============================== NEXT BUTTON ============================== */
-  let reachedStep2 = false;
-  let submitted = false;
+  // false = visitor has not yet completed a step and clicked Continuer, so no
+  // abandonment event fires if they just open and immediately close the modal.
+  // (submitting/submitted are declared at the top of the IIFE, with the other state.)
+  let hasEngaged = false;
+
+  // Fires once per step, the moment the visitor completes THAT step's fields and
+  // clicks Continuer (i.e. "Step N completed" — separate events per step number).
+  const STEP_COMPLETED_EVENTS = {
+    1: "Inscription_Modal_Step1_Completed",
+    2: "Inscription_Modal_Step2_Completed"
+  };
 
   nextBtn.addEventListener("click", () => {
     if (!validateStep()) return;
+
+    const completedStep = currentStep;
 
     if (currentStep === totalSteps) {
       submitForm();
@@ -468,15 +504,14 @@
     currentStep++;
     updateProgress();
 
-    // Fires once: visitor completed step 1 (Informations) and clicked Continuer.
-    if (currentStep >= 2 && !reachedStep2) {
-      reachedStep2 = true;
-      if (window.glsTrack) {
-        window.glsTrack("Inscription_Modal_Step1_Completed", {
-          event_category: "GLS Inscription",
-          event_label: "Modal - Step 1 Completed"
-        });
-      }
+    hasEngaged = true;
+
+    const stepEvent = STEP_COMPLETED_EVENTS[completedStep];
+    if (stepEvent && window.glsTrack) {
+      window.glsTrack(stepEvent, {
+        event_category: "GLS Inscription",
+        event_label: "Modal - Step " + completedStep + " Completed"
+      });
     }
   });
 
@@ -491,30 +526,40 @@
   // Initial progress update
   updateProgress();
 
-  // Track form impression when modal opens
+  // Track form impression when modal opens.
+  // NOTE: this must fire ONLY on show.bs.modal. The modal markup lives in the global
+  // layout, so firing on script init would report an impression on every page view.
   const modal = document.getElementById("glsEnrollModal");
   if (modal) {
-    if (window.gtag) {
-      gtag("event", "Inscription_Modal_Viewed", { form_source: "modal" });
-    }
-
     modal.addEventListener("show.bs.modal", function () {
-      if (window.gtag) {
-        gtag("event", "Inscription_Modal_Viewed", { form_source: "modal" });
+      if (window.glsTrack) {
+        window.glsTrack("Inscription_Modal_Viewed", {
+          event_category: "GLS Inscription",
+          form_source: "modal"
+        });
       }
     });
 
     // Listen for modal close to reset state
     modal.addEventListener("hidden.bs.modal", function () {
-      // Visitor filled step 1, clicked Continuer, but left without completing/submitting.
-      if (reachedStep2 && !submitted && window.glsTrack) {
-        window.glsTrack("Inscription_Modal_Abandoned", {
+      // Visitor closed the modal without submitting, AFTER genuinely engaging (i.e. they
+      // completed at least step 1 and advanced at least once — opening and closing with
+      // no interaction does not count). We report the step they were ACTUALLY ON when
+      // they left (currentStep), not the furthest step ever reached, so a visitor who
+      // advances then navigates Back and quits is attributed to the step they quit on.
+      if (!submitted && hasEngaged && window.glsTrack) {
+        window.glsTrack("Inscription_Modal_Abandoned_At_Step_" + currentStep, {
           event_category: "GLS Inscription",
           event_label: "Modal - Abandoned at step " + currentStep
         });
       }
-      reachedStep2 = false;
+      hasEngaged = false;
       submitted = false;
+
+      // Clear the submit lock too: closing the modal mid-request would otherwise leave
+      // the next/submit button permanently disabled the next time it is reopened.
+      submitting = false;
+      if (nextBtn) nextBtn.disabled = false;
 
       currentStep = 1;
       form.reset();

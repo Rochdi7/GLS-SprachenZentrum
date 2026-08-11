@@ -291,7 +291,8 @@
                     </div>
 
                     <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-dark px-5 py-3 rounded-pill fw-semibold">
+                        <button type="submit" class="btn btn-dark px-5 py-3 rounded-pill fw-semibold"
+                            data-gtm-event="Contact_Send_Clicked" data-gtm-category="Contact">
                             {{ __('contact.form.button') }}
                         </button>
                     </div>
@@ -301,5 +302,15 @@
 
         </div>
     </section>
+
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (window.glsTrack) {
+                    window.glsTrack('Contact_Form_Completed', { event_category: 'Contact' });
+                }
+            });
+        </script>
+    @endif
 
 @endsection

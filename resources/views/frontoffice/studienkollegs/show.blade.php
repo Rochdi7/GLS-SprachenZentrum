@@ -101,7 +101,9 @@
 
         <div class="hero-actions">
             @if ($studienkolleg->application_url)
-                <a href="{{ $studienkolleg->application_url }}" target="_blank" rel="noopener" class="btn-primary">
+                <a href="{{ $studienkolleg->application_url }}" target="_blank" rel="noopener" class="btn-primary"
+                    data-gtm-event="Studienkolleg_Apply_Click" data-gtm-category="Studienkolleg"
+                    data-gtm-label="{{ $studienkolleg->name }}">
                     <i class="bi bi-arrow-up-right"></i> Apply now
                 </a>
             @endif
@@ -353,7 +355,9 @@
                     @endif
 
                     @if ($studienkolleg->application_url)
-                        <a href="{{ $studienkolleg->application_url }}" target="_blank" rel="noopener" class="btn-apply">
+                        <a href="{{ $studienkolleg->application_url }}" target="_blank" rel="noopener" class="btn-apply"
+                            data-gtm-event="Studienkolleg_Apply_Click" data-gtm-category="Studienkolleg"
+                            data-gtm-label="{{ $studienkolleg->name }}">
                             Start application <i class="bi bi-arrow-up-right"></i>
                         </a>
                     @endif
@@ -436,7 +440,9 @@
                 @else Apply directly to the official portal @endif
             </small>
         </div>
-        <a href="{{ $studienkolleg->application_url }}" target="_blank" rel="noopener" class="btn-apply">Apply</a>
+        <a href="{{ $studienkolleg->application_url }}" target="_blank" rel="noopener" class="btn-apply"
+            data-gtm-event="Studienkolleg_Apply_Click" data-gtm-category="Studienkolleg"
+            data-gtm-label="{{ $studienkolleg->name }}">Apply</a>
     </div>
 @endif
 
