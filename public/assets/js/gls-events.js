@@ -41,7 +41,7 @@
         var href = link.href || '';
 
         if (/(^|\/\/)(api\.)?wa\.me\//i.test(href) || /wa\.me\//i.test(href)) {
-            glsTrack('whatsapp_click', {
+            glsTrack('WhatsApp_Button_Click', {
                 event_category: 'WhatsApp',
                 event_label: window.location.pathname
             });
@@ -49,7 +49,7 @@
         }
 
         if (/google\.[^/]+\/maps|maps\.app\.goo\.gl|goo\.gl\/maps/i.test(href)) {
-            glsTrack('google_maps_click', {
+            glsTrack('Google_Maps_Click', {
                 event_category: 'Google Maps',
                 event_label: window.location.pathname
             });
@@ -60,7 +60,7 @@
     window.Tawk_API = window.Tawk_API || {};
     var prevOnChatMaximized = window.Tawk_API.onChatMaximized;
     window.Tawk_API.onChatMaximized = function () {
-        glsTrack('tawk_chat_open', { event_category: 'Live Chat' });
+        glsTrack('Tawk_Chat_Opened', { event_category: 'Live Chat' });
         if (typeof prevOnChatMaximized === 'function') prevOnChatMaximized();
     };
 })();

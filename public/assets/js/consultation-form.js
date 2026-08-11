@@ -91,7 +91,7 @@
             setSuccessVisible(true);
 
             if (window.glsTrack) {
-                window.glsTrack('consultation_submit', { event_category: 'Consultation', event_label: 'Consultation Modal' });
+                window.glsTrack('Consultation_Form_Submitted', { event_category: 'Consultation', event_label: 'Consultation Modal' });
             }
 
         } catch (err) {

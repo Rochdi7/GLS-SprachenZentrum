@@ -30,23 +30,27 @@ Analytics / Google Ads account) and ask them to walk through the "GA4 Setup Step
 
 ## 2. Full list of custom events already implemented
 
-| Event name                  | Fires when…                                                                                   | Event params sent                                              | File |
-|------------------------------|------------------------------------------------------------------------------------------------|------------------------------------------------------------------|------|
-| `whatsapp_click`             | Visitor clicks **any** link on the site pointing to `wa.me/...` (WhatsApp)                     | `event_category: 'WhatsApp'`, `event_label: <page path>`         | `public/assets/js/gls-events.js` (site-wide, auto-detected) |
-| `google_maps_click`          | Visitor clicks **any** link to Google Maps (`google.*/maps`, `maps.app.goo.gl`, `goo.gl/maps`) | `event_category: 'Google Maps'`, `event_label: <page path>`      | `public/assets/js/gls-events.js` (site-wide, auto-detected) |
-| `tawk_chat_open`             | Visitor opens/maximizes the Tawk.to live chat widget                                           | `event_category: 'Live Chat'`                                    | `public/assets/js/gls-events.js` |
-| `consultation_submit`        | "Consultation" popup form is submitted successfully (AJAX success)                             | `event_category: 'Consultation'`, `event_label: 'Consultation Modal'` | `public/assets/js/consultation-form.js` |
-| `group_apply_submit`         | "Apply to a group" modal form is submitted successfully                                        | `event_category: 'Group Application'`, `event_label: <group name>` | `public/assets/js/apply-group.js` |
-| `inscription_submit`         | GLS Inscription **standalone page** form (`/gls-inscription`) is submitted successfully        | `event_category: 'GLS Inscription'`, `event_label: 'Page Form'`  | `public/assets/js/gls-form-page.js` |
-| `gls_inscription_form_viewed`| The GLS Inscription **modal popup** is opened                                                  | `form_source: 'modal'`                                           | `public/assets/js/gls-form.js` |
-| `gls_form_step1_completed`   | Inside the GLS Inscription **modal popup**: visitor fills step 1 (Informations) and clicks "Continuer" | `event_category: 'GLS Inscription'`, `event_label: 'Modal - Step 1 Completed'` | `public/assets/js/gls-form.js` |
-| `gls_form_abandoned`         | Visitor closes the GLS Inscription modal **after** completing step 1 but **without** finishing/submitting | `event_category: 'GLS Inscription'`, `event_label: 'Modal - Abandoned at step N'` | `public/assets/js/gls-form.js` |
-| `gls_inscription_submitted`  | GLS Inscription **modal popup** form is submitted successfully                                 | `form_source: 'modal'`                                           | `public/assets/js/gls-form.js` |
-| `attestation_submit`         | Attestation request form is submitted successfully (lands on success page)                     | `event_category: 'Attestation'`, `event_label: 'Attestation Request'` | `resources/views/frontoffice/attestation-request-success.blade.php` |
+Event names use `Readable_Title_Case` (underscores instead of spaces) so anyone glancing at GA4
+reports understands them immediately — GA4 only allows letters/numbers/underscores in event
+names, so this is the most readable format GA4 won't silently rewrite.
 
-**Funnel note for the inscription modal:** `gls_inscription_form_viewed` → `gls_form_step1_completed`
-→ `gls_inscription_submitted` (or `gls_form_abandoned` if they leave early). This lets you build a
-GA4 funnel exploration showing exactly where visitors drop off in the 3-step form.
+| Event name                              | Fires when…                                                                                   | Event params sent                                              | File |
+|-------------------------------------------|------------------------------------------------------------------------------------------------|------------------------------------------------------------------|------|
+| `WhatsApp_Button_Click`                   | Visitor clicks **any** link on the site pointing to `wa.me/...` (WhatsApp)                     | `event_category: 'WhatsApp'`, `event_label: <page path>`         | `public/assets/js/gls-events.js` (site-wide, auto-detected) |
+| `Google_Maps_Click`                       | Visitor clicks **any** link to Google Maps (`google.*/maps`, `maps.app.goo.gl`, `goo.gl/maps`) | `event_category: 'Google Maps'`, `event_label: <page path>`      | `public/assets/js/gls-events.js` (site-wide, auto-detected) |
+| `Tawk_Chat_Opened`                        | Visitor opens/maximizes the Tawk.to live chat widget                                           | `event_category: 'Live Chat'`                                    | `public/assets/js/gls-events.js` |
+| `Consultation_Form_Submitted`             | "Consultation" popup form is submitted successfully (AJAX success)                             | `event_category: 'Consultation'`, `event_label: 'Consultation Modal'` | `public/assets/js/consultation-form.js` |
+| `Group_Apply_Form_Submitted`              | "Apply to a group" modal form is submitted successfully                                        | `event_category: 'Group Application'`, `event_label: <group name>` | `public/assets/js/apply-group.js` |
+| `Inscription_Page_Form_Submitted`         | GLS Inscription **standalone page** form (`/gls-inscription`) is submitted successfully        | `event_category: 'GLS Inscription'`, `event_label: 'Page Form'`  | `public/assets/js/gls-form-page.js` |
+| `Inscription_Modal_Viewed`                | The GLS Inscription **modal popup** (3-step) is opened                                         | `form_source: 'modal'`                                           | `public/assets/js/gls-form.js` |
+| `Inscription_Modal_Step1_Completed`       | Inside the GLS Inscription **modal popup**: visitor fills step 1 (Informations) and clicks "Continuer" | `event_category: 'GLS Inscription'`, `event_label: 'Modal - Step 1 Completed'` | `public/assets/js/gls-form.js` |
+| `Inscription_Modal_Abandoned`             | Visitor closes the GLS Inscription modal **after** completing step 1 but **without** finishing/submitting | `event_category: 'GLS Inscription'`, `event_label: 'Modal - Abandoned at step N'` | `public/assets/js/gls-form.js` |
+| `Inscription_Modal_Submitted`             | GLS Inscription **modal popup** form is submitted successfully                                 | `form_source: 'modal'`                                           | `public/assets/js/gls-form.js` |
+| `Attestation_Form_Submitted`              | Attestation request form is submitted successfully (lands on success page)                     | `event_category: 'Attestation'`, `event_label: 'Attestation Request'` | `resources/views/frontoffice/attestation-request-success.blade.php` |
+
+**Funnel note for the inscription modal:** `Inscription_Modal_Viewed` → `Inscription_Modal_Step1_Completed`
+→ `Inscription_Modal_Submitted` (or `Inscription_Modal_Abandoned` if they leave early). This lets you
+build a GA4 funnel exploration showing exactly where visitors drop off in the 3-step form.
 
 All events are only sent **after the visitor has accepted cookies** (GDPR-compliant — same gate as
 the existing Google Ads/Meta Pixel/Ahrefs trackers).
@@ -83,15 +87,15 @@ are needed — what's left is verification and conversion setup in the GA4 UI (S
    `?gtm_debug=x` in the URL, or install the **Google Analytics Debugger** Chrome extension.
 3. Accept the cookie consent banner on the site (required — events won't fire before consent).
 4. Click a WhatsApp link, a Google Maps link, open Tawk chat, or submit one of the forms.
-5. Within a few seconds you should see the matching event name (e.g. `whatsapp_click`,
-   `gls_form_abandoned`) appear in DebugView with its parameters.
+5. Within a few seconds you should see the matching event name (e.g. `WhatsApp_Button_Click`,
+   `Inscription_Modal_Abandoned`) appear in DebugView with its parameters.
 
 ### Step 4 — Mark key events as GA4 Conversions
 Once events are confirmed arriving:
 1. GA4 → **Admin → Events**.
-2. Find each event you want counted as a conversion (recommended: `inscription_submit`,
-   `gls_inscription_submitted`, `consultation_submit`, `group_apply_submit`, `attestation_submit`,
-   `whatsapp_click`).
+2. Find each event you want counted as a conversion (recommended: `Inscription_Page_Form_Submitted`,
+   `Inscription_Modal_Submitted`, `Consultation_Form_Submitted`, `Group_Apply_Form_Submitted`,
+   `Attestation_Form_Submitted`, `WhatsApp_Button_Click`).
 3. Toggle **"Mark as conversion"** next to each.
 4. They'll now appear under **Admin → Conversions** and in acquisition/campaign reports as
    goal completions.
@@ -99,13 +103,13 @@ Once events are confirmed arriving:
 ### Step 5 (optional) — Build a drop-off funnel for the inscription modal
 1. GA4 → **Explore → Funnel exploration**.
 2. Add steps in order:
-   - Step 1: `gls_inscription_form_viewed`
-   - Step 2: `gls_form_step1_completed`
-   - Step 3: `gls_inscription_submitted`
+   - Step 1: `Inscription_Modal_Viewed`
+   - Step 2: `Inscription_Modal_Step1_Completed`
+   - Step 3: `Inscription_Modal_Submitted`
 3. GA4 will show the % drop-off between each step — i.e. how many people opened the form,
-   how many got past step 1, and how many actually finished. `gls_form_abandoned` is emitted
-   as a separate event for anyone who leaves after step 1, so you can also just build a simple
-   report comparing `gls_form_step1_completed` vs `gls_form_abandoned` counts.
+   how many got past step 1, and how many actually finished. `Inscription_Modal_Abandoned` is
+   emitted as a separate event for anyone who leaves after step 1, so you can also just build a
+   simple report comparing `Inscription_Modal_Step1_Completed` vs `Inscription_Modal_Abandoned` counts.
 
 ### Step 6 (optional) — Google Ads conversions (not GA4, but related)
 Since a Google Ads tag (`AW-17817493313`) is already loaded, you can also mark specific events as
@@ -121,12 +125,12 @@ Google Ads conversions (useful for Ads bidding optimization), separately from GA
 ## 4. Quick reference — what to tell ChatGPT / your analytics person
 
 > "I have a Laravel website that already fires `gtag('event', ...)` calls for these events:
-> `whatsapp_click`, `google_maps_click`, `tawk_chat_open`, `consultation_submit`,
-> `group_apply_submit`, `inscription_submit`, `gls_inscription_form_viewed`,
-> `gls_form_step1_completed`, `gls_form_abandoned`, `gls_inscription_submitted`,
-> `attestation_submit`. A GA4 property already exists (Measurement ID `G-STVL64P4J1`) and is wired
-> into the site alongside our Google Ads tag (`AW-17817493313`) via `gtag('config', ...)`. I need
-> help to: (1) verify the events show up correctly in GA4 DebugView, (2) mark the form-submission
-> and WhatsApp-click events as conversions in GA4, (3) build a funnel exploration for the
-> inscription modal drop-off (`gls_inscription_form_viewed` → `gls_form_step1_completed` →
-> `gls_inscription_submitted`/`gls_form_abandoned`)."
+> `WhatsApp_Button_Click`, `Google_Maps_Click`, `Tawk_Chat_Opened`, `Consultation_Form_Submitted`,
+> `Group_Apply_Form_Submitted`, `Inscription_Page_Form_Submitted`, `Inscription_Modal_Viewed`,
+> `Inscription_Modal_Step1_Completed`, `Inscription_Modal_Abandoned`, `Inscription_Modal_Submitted`,
+> `Attestation_Form_Submitted`. A GA4 property already exists (Measurement ID `G-STVL64P4J1`) and is
+> wired into the site alongside our Google Ads tag (`AW-17817493313`) via `gtag('config', ...)`. I
+> need help to: (1) verify the events show up correctly in GA4 DebugView, (2) mark the
+> form-submission and WhatsApp-click events as conversions in GA4, (3) build a funnel exploration
+> for the inscription modal drop-off (`Inscription_Modal_Viewed` → `Inscription_Modal_Step1_Completed`
+> → `Inscription_Modal_Submitted`/`Inscription_Modal_Abandoned`)."

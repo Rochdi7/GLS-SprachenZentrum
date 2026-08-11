@@ -38,7 +38,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             if (window.glsTrack) {
-                window.glsTrack('attestation_submit', { event_category: 'Attestation', event_label: 'Attestation Request' });
+                window.glsTrack('Attestation_Form_Submitted', { event_category: 'Attestation', event_label: 'Attestation Request' });
             }
         });
     </script>

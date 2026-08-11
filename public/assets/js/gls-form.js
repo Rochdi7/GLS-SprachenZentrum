@@ -430,7 +430,7 @@
       if (data.status === "success") {
         submitted = true;
         if (window.gtag) {
-          gtag("event", "gls_inscription_submitted", { form_source: "modal" });
+          gtag("event", "Inscription_Modal_Submitted", { form_source: "modal" });
         }
 
         form.style.display = "none";
@@ -472,7 +472,7 @@
     if (currentStep >= 2 && !reachedStep2) {
       reachedStep2 = true;
       if (window.glsTrack) {
-        window.glsTrack("gls_form_step1_completed", {
+        window.glsTrack("Inscription_Modal_Step1_Completed", {
           event_category: "GLS Inscription",
           event_label: "Modal - Step 1 Completed"
         });
@@ -495,12 +495,12 @@
   const modal = document.getElementById("glsEnrollModal");
   if (modal) {
     if (window.gtag) {
-      gtag("event", "gls_inscription_form_viewed", { form_source: "modal" });
+      gtag("event", "Inscription_Modal_Viewed", { form_source: "modal" });
     }
 
     modal.addEventListener("show.bs.modal", function () {
       if (window.gtag) {
-        gtag("event", "gls_inscription_form_viewed", { form_source: "modal" });
+        gtag("event", "Inscription_Modal_Viewed", { form_source: "modal" });
       }
     });
 
@@ -508,7 +508,7 @@
     modal.addEventListener("hidden.bs.modal", function () {
       // Visitor filled step 1, clicked Continuer, but left without completing/submitting.
       if (reachedStep2 && !submitted && window.glsTrack) {
-        window.glsTrack("gls_form_abandoned", {
+        window.glsTrack("Inscription_Modal_Abandoned", {
           event_category: "GLS Inscription",
           event_label: "Modal - Abandoned at step " + currentStep
         });
