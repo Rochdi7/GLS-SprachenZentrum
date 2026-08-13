@@ -1,5 +1,6 @@
 <div class="container" id="glsInscriptionRoot" data-label-next="{{ __('templates/gls-form.buttons.next') }}"
     data-label-submit="{{ __('templates/gls-form.buttons.submit') }}"
+    data-step1-save-url="{{ LaravelLocalization::localizeUrl(route('gls.inscription.step1')) }}"
     data-error-required="{{ __('templates/gls-form.errors.required_fields') }}"
     data-error-duplicate="{{ __('templates/gls-form.errors.duplicate') }}"
     data-error-connection="{{ __('templates/gls-form.errors.connection_error') }}"

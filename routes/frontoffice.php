@@ -120,6 +120,7 @@ Route::middleware('throttle:public-form')->group(function () {
     Route::post('/certificate-check', [PageController::class, 'certificateCheckPost'])->name('front.certificate.check.post');
     Route::post('/online-registration', [PageController::class, 'storeOnlineRegistration'])->name('front.online-registration.store');
     Route::post('/gls-inscription', [GlsController::class, 'store'])->name('gls.inscription');
+    Route::post('/gls-inscription/step1', [GlsController::class, 'storeStep1'])->name('gls.inscription.step1');
     Route::post('/demande-attestation', [AttestationRequestController::class, 'store'])->name('front.attestation-request.store');
     Route::post('/feedback', [FeedbackController::class, 'store'])->name('front.feedback.store');
     Route::post('/consultation', [ConsultationController::class, 'store'])->name('front.consultation.store');

@@ -376,6 +376,45 @@
     return true;
   }
 
+  /* ============================== STEP 1 PARTIAL SAVE ============================== */
+  // Fires the moment step 1 validates on "Continuer", so we keep the lead even if the
+  // visitor never finishes steps 2-3. Fire-and-forget: never blocks the step transition
+  // or shows an error to the visitor if it fails (this is a background capture, not
+  // part of the required submission flow).
+  const step1SaveUrl = root.dataset.step1SaveUrl;
+  let step1Saved = false;
+
+  function saveStep1Data() {
+    if (step1Saved || !step1SaveUrl) return;
+
+    const csrf = getCsrfToken();
+    if (!csrf) return;
+
+    const payload = new FormData();
+    payload.append("nom", root.querySelector("#glsNom").value.trim());
+    payload.append("prenom", root.querySelector("#glsPrenom").value.trim());
+    payload.append("email", root.querySelector("#glsEmail").value.trim());
+    payload.append("phone", root.querySelector("#glsPhone").value.trim());
+    payload.append("adresse", root.querySelector("#glsAdresse").value.trim());
+    payload.append("form_source", "modal");
+
+    step1Saved = true;
+
+    fetch(step1SaveUrl, {
+      method: "POST",
+      headers: {
+        "X-CSRF-TOKEN": csrf,
+        Accept: "application/json",
+        "X-Requested-With": "XMLHttpRequest"
+      },
+      body: payload
+    }).catch((err) => {
+      console.error("[GLS Form] Step 1 partial save failed:", err);
+      // Allow a retry if the visitor edits step 1 fields and clicks Continuer again.
+      step1Saved = false;
+    });
+  }
+
   /* ============================== SUBMIT (SAFE JSON) ============================== */
   async function submitForm() {
     // Guard against double-submits (double-click / rapid retry). Without this both the
@@ -496,6 +535,10 @@
 
     const completedStep = currentStep;
 
+    if (completedStep === 1) {
+      saveStep1Data();
+    }
+
     if (currentStep === totalSteps) {
       submitForm();
       return;
@@ -555,6 +598,7 @@
       }
       hasEngaged = false;
       submitted = false;
+      step1Saved = false;
 
       // Clear the submit lock too: closing the modal mid-request would otherwise leave
       // the next/submit button permanently disabled the next time it is reopened.

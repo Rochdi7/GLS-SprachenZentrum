@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Frontoffice;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontoffice\GlsInscriptionStoreRequest;
+use App\Http\Requests\Frontoffice\GlsInscriptionStep1StoreRequest;
 use App\Models\GlsInscription;
+use App\Models\GlsInscriptionStep1Data;
 use App\Models\Site;
 use App\Mail\GlsInscriptionMail;
 use App\Mail\GlsInscriptionConfirmation;
@@ -15,6 +17,31 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 class GlsController extends Controller
 {
+    /**
+     * Save (upsert by email) the step-1 fields of the multi-step modal as soon as
+     * the visitor clicks "Continuer", so partial leads aren't lost if they never
+     * finish the remaining steps. Stored separately from the final gls_inscriptions.
+     */
+    public function storeStep1(GlsInscriptionStep1StoreRequest $request)
+    {
+        $validated = $request->validated();
+
+        GlsInscriptionStep1Data::updateOrCreate(
+            ['email' => $validated['email']],
+            [
+                'nom'         => $validated['nom'],
+                'prenom'      => $validated['prenom'],
+                'phone'       => $validated['phone'],
+                'adresse'     => $validated['adresse'],
+                'form_source' => $request->input('form_source', 'modal'),
+                'ip_address'  => $request->ip(),
+                'user_agent'  => $request->userAgent(),
+            ]
+        );
+
+        return response()->json(['success' => true]);
+    }
+
     public function store(GlsInscriptionStoreRequest $request)
     {
         $validated = $request->validated();
