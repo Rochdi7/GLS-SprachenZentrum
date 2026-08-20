@@ -60,10 +60,10 @@ return [
     'groups' => [
         'title' => 'Nos groupes – GLS Kénitra',
 
-        'morning' => '10h00 – 12h30 • Groupes du matin',
-        'midday' => '13h00 – 15h30 • Groupes de la mi-journée',
-        'afternoon' => '16h00 – 18h00 • Groupes d’après-midi',
-        'evening' => '19h00 – 21h30 • Groupes du soir',
+        'morning' => '10h00 – 12h00 • Groupes du matin',
+        'midday' => '15h00 – 17h00 • Groupes de la mi-journée',
+        'afternoon' => '17h00 – 19h00 • Groupes d’après-midi',
+        'evening' => '19h00 – 21h00 • Groupes du soir',
 
         'active' => 'Actifs',
         'upcoming' => 'À venir',

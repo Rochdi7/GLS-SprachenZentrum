@@ -53,10 +53,10 @@ return [
     'groups' => [
         'title' => 'Unsere Gruppen – GLS Rabat',
 
-        'morning' => '10:00 – 12:30 • Vormittagsgruppen',
-        'midday' => '13:00 – 15:30 • Mittagsgruppen',
-        'afternoon' => '16:00 – 18:00 • Nachmittagsgruppen',
-        'evening' => '19:00 – 21:30 • Abendgruppen',
+        'morning' => '10:00 – 12:00 • Vormittagsgruppen',
+        'midday' => '15:00 – 17:00 • Mittagsgruppen',
+        'afternoon' => '17:00 – 19:00 • Nachmittagsgruppen',
+        'evening' => '19:00 – 21:00 • Abendgruppen',
 
         'active' => 'Aktiv',
         'upcoming' => 'Demnächst',

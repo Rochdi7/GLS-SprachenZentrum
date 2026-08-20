@@ -53,10 +53,10 @@ return [
     'groups' => [
         'title' => 'Our groups – GLS Casablanca',
 
-        'morning' => '10:00 – 12:30 • Morning groups',
-        'midday' => '13:00 – 15:30 • Midday groups',
-        'afternoon' => '16:00 – 18:00 • Afternoon groups',
-        'evening' => '19:00 – 21:30 • Evening groups',
+        'morning' => '10:00 – 12:00 • Morning groups',
+        'midday' => '15:00 – 17:00 • Midday groups',
+        'afternoon' => '17:00 – 19:00 • Afternoon groups',
+        'evening' => '19:00 – 21:00 • Evening groups',
 
         'active' => 'Active',
         'upcoming' => 'Coming soon',
