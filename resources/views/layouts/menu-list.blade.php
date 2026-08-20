@@ -18,7 +18,8 @@
     $admissionsOpen =
         request()->routeIs('backoffice.applications.*') ||
         request()->routeIs('backoffice.leads.*') ||
-        request()->routeIs('backoffice.newsletter_subscribers.*');
+        request()->routeIs('backoffice.newsletter_subscribers.*') ||
+        request()->routeIs('backoffice.gls_step1_leads.*');
     $contentOpen = request()->routeIs('backoffice.blog.*');
     $rhOpen = request()->routeIs('backoffice.schedules.*') || request()->routeIs('backoffice.planning.*');
     $adminOpen = request()->routeIs('backoffice.users.*') || request()->routeIs('backoffice.roles.*');
@@ -186,7 +187,7 @@
     </li>
 @endcanany
 
-    @canany(['applications.view', 'leads.view', 'lead_stats.view', 'newsletter_subscribers.view'])
+    @canany(['applications.view', 'leads.view', 'lead_stats.view', 'newsletter_subscribers.view', 'gls_step1_leads.view'])
         <li class="pc-item pc-hasmenu {{ $admissionsOpen ? 'pc-trigger' : '' }}">
             <a href="#!" class="pc-link">
                 <span class="pc-micon"><i class="ph-duotone ph-address-book"></i></span>
@@ -207,6 +208,14 @@
                         <a href="{{ route('backoffice.leads.index') }}"
                             class="pc-link {{ request()->routeIs('backoffice.leads.index') ? 'active' : '' }}">
                             <span class="pc-mtext">Leads</span>
+                        </a>
+                    </li>
+                @endcan
+                @can('gls_step1_leads.view')
+                    <li class="pc-item {{ request()->routeIs('backoffice.gls_step1_leads.*') ? 'active' : '' }}">
+                        <a href="{{ route('backoffice.gls_step1_leads.index') }}"
+                            class="pc-link {{ request()->routeIs('backoffice.gls_step1_leads.*') ? 'active' : '' }}">
+                            <span class="pc-mtext">Leads Inscription (Étape 1)</span>
                         </a>
                     </li>
                 @endcan

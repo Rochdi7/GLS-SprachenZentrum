@@ -27,6 +27,7 @@ use App\Http\Controllers\Backoffice\HelpController;
 use App\Http\Controllers\Backoffice\UserController;
 use App\Http\Controllers\Backoffice\RoleController;
 use App\Http\Controllers\Backoffice\WhatsAppCampaignController;
+use App\Http\Controllers\Backoffice\GlsInscriptionStep1Controller;
 use App\Http\Controllers\Backoffice\NewsletterSubscriberController;
 
 use App\Http\Controllers\Backoffice\LeadController;
@@ -313,6 +314,21 @@ Route::prefix('backoffice')
                     ->middleware('permission:newsletter_subscribers.view')->name('index');
                 Route::delete('/{subscriber}', [NewsletterSubscriberController::class, 'destroy'])
                     ->middleware('permission:newsletter_subscribers.delete')->name('destroy');
+            });
+
+        /*
+        |----------------------------------------------------------------------
+        | GLS INSCRIPTION — STEP 1 PARTIAL LEADS
+        |----------------------------------------------------------------------
+        */
+        Route::prefix('leads-inscription-etape1')
+            ->name('gls_step1_leads.')
+            ->middleware('role:Super Admin|Admin')
+            ->group(function () {
+                Route::get('/', [GlsInscriptionStep1Controller::class, 'index'])
+                    ->middleware('permission:gls_step1_leads.view')->name('index');
+                Route::delete('/{lead}', [GlsInscriptionStep1Controller::class, 'destroy'])
+                    ->middleware('permission:gls_step1_leads.delete')->name('destroy');
             });
 
         /*

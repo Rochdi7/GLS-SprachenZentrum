@@ -41,6 +41,7 @@ class RolePermissionSeeder extends Seeder
             'weekly_reports'   => ['view', 'create', 'edit', 'delete'],
             'schedules'        => ['view', 'create', 'edit', 'delete'],
             'newsletter_subscribers' => ['view', 'delete'],
+            'gls_step1_leads'  => ['view', 'delete'],
             'crm'              => ['view', 'create', 'edit', 'delete'],
             'crm_prof_payment' => ['view', 'create', 'edit', 'delete'],
             'hikvision'        => ['view'],
