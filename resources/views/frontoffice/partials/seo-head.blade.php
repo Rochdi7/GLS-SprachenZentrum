@@ -1,8 +1,13 @@
 @php
     $locale = app()->getLocale();
     $defaults = config("seo.defaults.{$locale}", config('seo.defaults.fr'));
-    $seoTitle = trim($__env->yieldContent('title')) ?: ($defaults['title'] ?? 'GLS Sprachenzentrum');
-    $seoDescription = trim($__env->yieldContent('meta_description')) ?: ($defaults['description'] ?? '');
+    // yieldContent() returns HTML-escaped output (Blade escapes the value form of @section),
+    // so decode once here — the {{ }} below re-escapes it. Without this, apostrophes and
+    // accents render as raw entities (l&#039;allemand) in the tab title and in SERPs.
+    $decodeMeta = fn ($value) => trim(html_entity_decode((string) $value, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+
+    $seoTitle = $decodeMeta($__env->yieldContent('title')) ?: ($defaults['title'] ?? 'GLS Sprachenzentrum');
+    $seoDescription = $decodeMeta($__env->yieldContent('meta_description')) ?: ($defaults['description'] ?? '');
     $canonicalUrl = LaravelLocalization::getLocalizedURL($locale, null, [], true);
     $ogImage = asset(ltrim(config('seo.og_image', '/assets/images/IMG_4399.avif'), '/'));
     $ogLocaleMap = ['fr' => 'fr_FR', 'en' => 'en_US', 'de' => 'de_DE', 'ar' => 'ar_MA'];
