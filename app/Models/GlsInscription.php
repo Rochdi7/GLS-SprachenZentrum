@@ -55,6 +55,11 @@ class GlsInscription extends Model implements SyncableToGoogleSheet
         return $this->belongsTo(Site::class, 'centre');
     }
 
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
+
     // --- SyncableToGoogleSheet ---
 
     public function getSheetFullName(): string
@@ -88,6 +93,12 @@ class GlsInscription extends Model implements SyncableToGoogleSheet
 
     public function getSheetGroup(): string
     {
+        $this->loadMissing('group');
+
+        if ($this->group?->time_range) {
+            return 'Groupe ' . $this->group->time_range;
+        }
+
         $groupNames = config('google-sheets.group_names', []);
         return $groupNames[$this->group_id] ?? ('Groupe ' . ($this->group_id ?? 'N/A'));
     }

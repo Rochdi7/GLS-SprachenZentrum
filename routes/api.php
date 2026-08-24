@@ -23,13 +23,15 @@ Route::get('/groups/{site_id}', function ($site_id) {
                     ->select('id', 'name', 'name_fr', 'level', 'time_range')
                     ->get();
 
-        foreach ($groups as $index => $g) {
+        foreach ($groups as $g) {
             if ($g->name_fr) {
                 $g->display_name = $g->name_fr;
             } elseif ($g->name) {
                 $g->display_name = $g->name;
+            } elseif ($g->time_range) {
+                $g->display_name = 'Groupe ' . $g->time_range;
             } else {
-                $g->display_name = "Groupe " . ($index + 1);
+                $g->display_name = 'Groupe ' . $g->id;
             }
         }
 

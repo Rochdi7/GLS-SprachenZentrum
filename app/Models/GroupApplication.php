@@ -110,6 +110,12 @@ class GroupApplication extends Model implements HasMedia, SyncableToGoogleSheet
 
     public function getSheetGroup(): string
     {
+        $this->loadMissing('group');
+
+        if ($this->group?->time_range) {
+            return 'Groupe ' . $this->group->time_range;
+        }
+
         $groupNames = config('google-sheets.group_names', []);
         return $groupNames[$this->group_id] ?? ('Groupe ' . ($this->group_id ?? 'N/A'));
     }

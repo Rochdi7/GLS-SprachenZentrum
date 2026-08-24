@@ -125,8 +125,9 @@ class GlsController extends Controller
         $group = null;
         if (isset($validated['group_id']) && $validated['group_id']) {
             $groupId = (int) $validated['group_id'];
+            $timeRange = \App\Models\Group::find($groupId)?->time_range;
             $staticName = config('google-sheets.group_names')[$groupId] ?? null;
-            $groupDisplay = $staticName ?? ('Groupe ' . $groupId);
+            $groupDisplay = $timeRange ? ('Groupe ' . $timeRange) : ($staticName ?? ('Groupe ' . $groupId));
 
             $group = (object)[
                 'id' => $groupId,
