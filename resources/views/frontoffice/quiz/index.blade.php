@@ -234,7 +234,7 @@
 
             <div class="quiz-progress" aria-label="Progression" data-quiz-progress></div>
 
-            <form class="quiz-form" data-quiz-form hidden method="POST"
+            <form class="quiz-form" data-quiz-form data-no-recaptcha hidden method="POST"
                 action="{{ route('front.discover-your-level.answer') }}">
                 @csrf
                 <input type="hidden" name="quiz" value="{{ $quizLevel ?? 'A1' }}">

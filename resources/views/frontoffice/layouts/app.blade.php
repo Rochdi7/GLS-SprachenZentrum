@@ -147,6 +147,8 @@
     <script defer
         src="{{ asset('assets/js/att-form-loading.js') }}?v={{ @filemtime(public_path('assets/js/att-form-loading.js')) ?: '1' }}">
     </script>
+    @include('frontoffice.partials.recaptcha')
+
     @stack('scripts')
 
     @include('frontoffice.templates.consultation-form')

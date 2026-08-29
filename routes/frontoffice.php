@@ -115,7 +115,7 @@ Route::get('/traductions/suivi', [TranslationTrackingController::class, 'show'])
 | against spam/abuse now that submissions trigger emails + CRM/Sheets sync.
 |--------------------------------------------------------------------------
 */
-Route::middleware('throttle:public-form')->group(function () {
+Route::middleware(['throttle:public-form', 'recaptcha'])->group(function () {
     Route::post('/contact', [PageController::class, 'contactPost'])->name('front.contact.post');
     Route::post('/certificate-check', [PageController::class, 'certificateCheckPost'])->name('front.certificate.check.post');
     Route::post('/online-registration', [PageController::class, 'storeOnlineRegistration'])->name('front.online-registration.store');
