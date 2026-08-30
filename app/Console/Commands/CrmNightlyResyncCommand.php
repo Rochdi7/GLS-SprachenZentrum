@@ -34,7 +34,7 @@ class CrmNightlyResyncCommand extends Command
     // data already present updates rows in place rather than duplicating them.
     private const STEPS = [
         'homeschool:mirror-core'         => ['--months' => 3],
-        'crm:sync-attendance'             => ['--months' => 3, '--max-pages' => 600, '--delay' => 1500],
+        'crm:sync-attendance'             => ['--months' => 3, '--max-pages' => 900, '--delay' => 1500, '--size' => 200],
         'crm:sync-collections'            => ['--all' => true, '--delay' => 1000],
         'crm:snapshot-payments'           => ['--months' => 3, '--pause' => 60],
         'crm:sync-registrations'          => ['--all' => true, '--delay' => 1000],

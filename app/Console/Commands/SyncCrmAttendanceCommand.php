@@ -25,13 +25,14 @@ class SyncCrmAttendanceCommand extends Command
         {--days= : Number of days back to sync instead of whole months (e.g. --days=2 for yesterday+today)}
         {--delay=500 : Delay between page requests in ms}
         {--max-pages=200 : Max pages per run to avoid OOM on shared hosting (default 200)}
-        {--from-page=0 : Start from this page (for manual resume)}';
+        {--from-page=0 : Start from this page (for manual resume)}
+        {--size=500 : Rows per page (lower this if the API times out generating large pages)}';
 
     protected $description = 'Sync CRM session-presence (attendance) to local crm_attendance table';
 
     private const LOCK_KEY  = 'crm.sync-attendance.lock';
     private const LOCK_TTL  = 3600;
-    private const PAGE_SIZE = 500;
+    private const PAGE_SIZE = 500;   // default; override with --size
     private const BACKOFF   = [5, 15, 30, 60, 120];
 
     public function __construct(protected Crm $crm)
@@ -60,6 +61,7 @@ class SyncCrmAttendanceCommand extends Command
         $delayMs  = max(100, (int) $this->option('delay'));
         $maxPages = max(1, (int) $this->option('max-pages'));
         $fromPage = max(0, (int) $this->option('from-page'));
+        $pageSize = max(50, min(500, (int) $this->option('size')));
 
         $days = $this->option('days');
 
@@ -73,9 +75,9 @@ class SyncCrmAttendanceCommand extends Command
 
         $dateTo = Carbon::today('Africa/Casablanca')->toDateString();
 
-        $this->info("Syncing attendance {$dateFrom} → {$dateTo} (all stores, pages {$fromPage}–" . ($fromPage + $maxPages - 1) . ")");
+        $this->info("Syncing attendance {$dateFrom} → {$dateTo} (bulk endpoint, all stores, pages {$fromPage}–" . ($fromPage + $maxPages - 1) . ", size={$pageSize})");
 
-        $synced = $this->syncAll($dateFrom, $dateTo, $delayMs, $maxPages, $fromPage);
+        $synced = $this->syncAll($dateFrom, $dateTo, $delayMs, $maxPages, $fromPage, $pageSize);
 
         Cache::flush();
 
@@ -83,7 +85,7 @@ class SyncCrmAttendanceCommand extends Command
         return self::SUCCESS;
     }
 
-    private function syncAll(string $dateFrom, string $dateTo, int $delayMs, int $maxPages, int $fromPage): int
+    private function syncAll(string $dateFrom, string $dateTo, int $delayMs, int $maxPages, int $fromPage, int $pageSize): int
     {
         // Global classMap: Wimschool CLASS_ID → our crm_classes.crm_id (FK in attendance).
         // Bulk endpoint streams ALL stores mixed — one pass covers everything.
@@ -101,7 +103,7 @@ class SyncCrmAttendanceCommand extends Command
             $this->line("[ALL] Page {$page}...");
 
             try {
-                $response = $this->fetchWithBackoff($dateFrom, $dateTo, $page);
+                $response = $this->fetchWithBackoff($dateFrom, $dateTo, $page, $pageSize);
             } catch (\Throwable $e) {
                 // All retries exhausted for this page. Record it and keep going —
                 // one bad page must not abandon the remaining window. Failed pages
@@ -142,7 +144,7 @@ class SyncCrmAttendanceCommand extends Command
             foreach ($failedPages as $fp) {
                 $this->line("[RETRY] Page {$fp}...");
                 try {
-                    $response = $this->fetchWithBackoff($dateFrom, $dateTo, $fp);
+                    $response = $this->fetchWithBackoff($dateFrom, $dateTo, $fp, $pageSize);
                     $synced  += $this->persistRows($response['data'] ?? [], $classMap);
                     $this->info("[RETRY] Page {$fp} recovered");
                 } catch (\Throwable $e) {
@@ -235,7 +237,7 @@ class SyncCrmAttendanceCommand extends Command
         return count($upserts);
     }
 
-    private function fetchWithBackoff(string $dateFrom, string $dateTo, int $page): array
+    private function fetchWithBackoff(string $dateFrom, string $dateTo, int $page, int $pageSize = self::PAGE_SIZE): array
     {
         foreach (self::BACKOFF as $attempt => $waitSec) {
             try {
@@ -245,7 +247,7 @@ class SyncCrmAttendanceCommand extends Command
                         'startDate'    => $dateFrom,
                         'endDate'      => $dateTo,
                         'page'         => $page,
-                        'size'         => self::PAGE_SIZE,
+                        'size'         => $pageSize,
                         'includeTotal' => 'false',
                     ]
                 );
@@ -284,7 +286,7 @@ class SyncCrmAttendanceCommand extends Command
                 'startDate'    => $dateFrom,
                 'endDate'      => $dateTo,
                 'page'         => $page,
-                'size'         => self::PAGE_SIZE,
+                'size'         => $pageSize,
                 'includeTotal' => 'false',
             ]
         );
