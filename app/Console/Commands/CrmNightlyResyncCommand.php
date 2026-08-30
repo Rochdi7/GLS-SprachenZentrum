@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Nightly deep re-sync at 22:00 Casablanca time.
+ * Nightly deep re-sync at 00:00 Casablanca time.
  *
  * Covers a longer history window than the 2-hourly crm:sync-all so that
  * any data modified in Wimschool during the day (absences entered by
@@ -25,17 +25,24 @@ class CrmNightlyResyncCommand extends Command
     protected $signature = 'crm:nightly-resync
         {--dry-run : Show what would run without executing}';
 
-    protected $description = 'Nightly deep re-sync of all CRM data domains (runs at 22:00 Casablanca)';
+    protected $description = 'Nightly deep re-sync of all CRM data domains (runs once at 00:00 Casablanca)';
 
+    // Single nightly window — Wimschool rate-limits during business hours, so
+    // this is now the ONLY scheduled job that hits their API. Delays are
+    // deliberately generous and page caps high enough to complete a full sweep
+    // in one run; every step upserts on a unique key, so a step that overlaps
+    // data already present updates rows in place rather than duplicating them.
     private const STEPS = [
         'homeschool:mirror-core'         => ['--months' => 3],
-        'crm:sync-attendance'             => ['--months' => 3, '--max-pages' => 120, '--delay' => 300],
-        'crm:sync-collections'            => ['--all' => true, '--delay' => 300],
-        'crm:snapshot-payments'           => ['--months' => 3],
-        'crm:sync-registrations'          => ['--all' => true],
-        'crm:sync-payment-allocations'    => ['--all' => true, '--months' => 6, '--delay' => 500],
+        'crm:sync-attendance'             => ['--months' => 3, '--max-pages' => 600, '--delay' => 1500],
+        'crm:sync-collections'            => ['--all' => true, '--delay' => 1000],
+        'crm:snapshot-payments'           => ['--months' => 3, '--pause' => 60],
+        'crm:sync-registrations'          => ['--all' => true, '--delay' => 1000],
+        'crm:sync-expenses'               => ['--all' => true, '--months' => 3, '--delay' => 1000],
+        'crm:sync-payment-allocations'    => ['--all' => true, '--months' => 6, '--delay' => 1500],
         'crm:build-presence-summary'      => ['--all' => true, '--months' => 6],
         'crm:build-group-evolution'       => ['--all' => true],
+        'crm:churn-scores'                => [],
     ];
 
     // Cache keys flushed after sync so dashboards read fresh data on next load
@@ -98,7 +105,7 @@ class CrmNightlyResyncCommand extends Command
         CrmResyncLog::create([
             'user_id'          => null,
             'domain'           => 'nightly',
-            'domain_label'     => 'Sync nocturne automatique (22h)',
+            'domain_label'     => 'Sync nocturne automatique (00h)',
             'status'           => $hasErrors ? 'partial' : 'ok',
             'crm_store_id'     => null,
             'steps'            => $results,

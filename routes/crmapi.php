@@ -30,6 +30,14 @@ Route::prefix('crm')
                 ->where('kind', '[a-z0-9\-]+');
         });
 
+        // Vue 360 — Étudiant × Inscription × Groupe × Paiement in one table,
+        // served from the local mirror tables, with a two-sheet Excel export.
+        Route::controller(\App\Http\Controllers\Backoffice\Crm\Crm360Controller::class)->group(function () {
+            Route::get('/vue-360',        'index')->name('unified-360');
+            Route::get('/vue-360/data',   'data')->name('unified-360.data');
+            Route::get('/vue-360/export', 'export')->name('unified-360.export');
+        });
+
         // Students-domain pages: directory + presence + registrations.
         Route::controller(\App\Http\Controllers\Backoffice\Crm\CrmStudentsController::class)->group(function () {
             Route::get('/students',               'students')->name('students');

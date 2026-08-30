@@ -133,6 +133,43 @@
                                 <a href="{{ route('backoffice.gls_step1_leads.index') }}"
                                     class="btn btn-sm btn-outline-secondary">Réinitialiser</a>
                             @endif
+
+                            {{-- Export Excel : garde les filtres courants, choix du statut --}}
+                            @php
+                                $exportFilters = array_filter([
+                                    'q' => request('q'),
+                                    'form_source' => request('form_source'),
+                                ]);
+                            @endphp
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-success dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="ti ti-file-spreadsheet me-1"></i> Exporter Excel
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item"
+                                            href="{{ route('backoffice.gls_step1_leads.export', $exportFilters + ['status' => 'all']) }}">
+                                            <i class="ti ti-users me-2"></i> Tous les leads
+                                            <span class="badge bg-light-secondary text-secondary ms-1">{{ $leads->count() }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                            href="{{ route('backoffice.gls_step1_leads.export', $exportFilters + ['status' => 'converted']) }}">
+                                            <i class="ti ti-circle-check me-2 text-success"></i> Inscrits
+                                            <span class="badge bg-light-success text-success ms-1">{{ $leads->where('is_converted', true)->count() }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                            href="{{ route('backoffice.gls_step1_leads.export', $exportFilters + ['status' => 'abandoned']) }}">
+                                            <i class="ti ti-clock-exclamation me-2 text-warning"></i> Non finalisés
+                                            <span class="badge bg-light-warning text-warning ms-1">{{ $leads->where('is_converted', false)->count() }}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </form>
                     </div>
                 </div>

@@ -13,28 +13,18 @@ class Kernel extends ConsoleKernel
      * HOSTINGER CRON SETUP (set once, never touch again):
      *   * * * * *  /usr/local/bin/php /home/USERNAME/domains/DOMAIN/artisan schedule:run >> /dev/null 2>&1
      *
-     * All CRM sync is now orchestrated by crm:sync-all running every 2 hours.
-     * Individual CRM commands are no longer scheduled directly.
+     * All CRM API sync runs ONCE per night via crm:nightly-resync at 00:00
+     * Casablanca — Wimschool rate-limits requests during business hours.
+     * Do not add daytime jobs that call their API.
      * See: docs/crm-warehouse-architecture.md
      */
     protected function schedule(Schedule $schedule): void
     {
-        // ── Step 1 — :00 — CRM full sync ─────────────────────────────────────
-        $schedule->command('crm:sync-all')
-            ->cron('0 */2 * * *')
-            ->timezone('Africa/Casablanca')
-            ->withoutOverlapping(120)
-            ->runInBackground()
-            ->appendOutputTo(storage_path('logs/crm-sync-all.log'));
-
-        // ── One-time backfill — expenses from 2025-09-01 to today ───────────
-        // Remove after 2026-06-15 once confirmed synced.
-        $schedule->command('crm:sync-expenses --all --from=2025-09-01')
-            ->dailyAt('02:00')
-            ->timezone('Africa/Casablanca')
-            ->withoutOverlapping(120)
-            ->when(fn () => now('Africa/Casablanca')->lt(\Carbon\Carbon::parse('2026-06-15', 'Africa/Casablanca')))
-            ->appendOutputTo(storage_path('logs/crm-expenses-backfill.log'));
+        // ── CRM API sync — ONCE PER NIGHT ────────────────────────────────────
+        // Wimschool rate-limits us during the day, so all API-hitting syncs are
+        // collapsed into a single overnight window starting at 00:00 Casablanca.
+        // crm:sync-all is NOT scheduled: crm:nightly-resync covers the same
+        // domains over a longer history window. Run it by hand if ever needed.
 
         // ── Monthly re-snapshot — 5th of each month at 03:00 ────────────────
         // Re-fetches last 3 months to catch retroactive CRM entries (payments
@@ -57,16 +47,16 @@ class Kernel extends ConsoleKernel
 
         // ── Step 3 — :30 — Level followups ───────────────────────────────────
         $schedule->command('gls:generate-level-followups')
-            ->cron('30 */2 * * *')
+            ->dailyAt('06:00')
             ->timezone('Africa/Casablanca')
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/level-followups-schedule.log'));
 
         // ── Step 4 — :40 — Wimschool attendance ─────────────────────────────
         $schedule->command('wimschool:sync-attendance')
-            ->cron('40 */2 * * *')
+            ->dailyAt('03:30')
             ->timezone('Africa/Casablanca')
-            ->withoutOverlapping()
+            ->withoutOverlapping(120)
             ->appendOutputTo(storage_path('logs/wimschool-sync.log'));
 
         // ── Step 5 — :45 — Stats dashboard self-heal ────────────────────────
@@ -90,7 +80,7 @@ class Kernel extends ConsoleKernel
             \Illuminate\Support\Facades\Artisan::call('cache:clear');
         })
             ->name('stats-dashboard-self-heal')
-            ->cron('45 */2 * * *')
+            ->dailyAt('04:00')
             ->timezone('Africa/Casablanca')
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/stats-self-heal.log'));
@@ -119,9 +109,9 @@ class Kernel extends ConsoleKernel
         //    the next business day. Runs at :50 so it starts after sync-all finishes.
         //    Force-clears stuck web-UI locks before each run.
         $schedule->command('crm:nightly-resync')
-            ->cron('50 */2 * * *')
+            ->dailyAt('00:00')
             ->timezone('Africa/Casablanca')
-            ->withoutOverlapping(110)
+            ->withoutOverlapping(360)
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/crm-nightly-resync.log'));
 

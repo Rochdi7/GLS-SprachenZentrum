@@ -327,6 +327,8 @@ Route::prefix('backoffice')
             ->group(function () {
                 Route::get('/', [GlsInscriptionStep1Controller::class, 'index'])
                     ->middleware('permission:gls_step1_leads.view')->name('index');
+                Route::get('/export', [GlsInscriptionStep1Controller::class, 'export'])
+                    ->middleware('permission:gls_step1_leads.view')->name('export');
                 Route::delete('/{lead}', [GlsInscriptionStep1Controller::class, 'destroy'])
                     ->middleware('permission:gls_step1_leads.delete')->name('destroy');
             });

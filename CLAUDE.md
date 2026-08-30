@@ -41,7 +41,12 @@ php artisan db:seed
 # Cache management
 php artisan cache:clear
 php artisan config:cache
-php artisan route:cache
+php artisan view:cache
+
+# WARNING: NEVER run `php artisan route:cache` on this project.
+# Frontoffice routes are wrapped in LaravelLocalization::setLocale() (routes/web.php:89),
+# which freezes one locale prefix at cache-build time and 404s the ENTIRE site
+# (/fr, /fr/contact, all pages). Recovery: php artisan route:clear
 
 # Sitemap
 php artisan sitemap:generate

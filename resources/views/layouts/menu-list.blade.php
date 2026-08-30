@@ -28,6 +28,7 @@
 
     // New variables for CRM split
     $crmDataOpen =
+        request()->routeIs('backoffice.crm.unified-360') ||
         request()->routeIs('backoffice.crm.students') ||
         request()->routeIs('backoffice.crm.session-presence') ||
         request()->routeIs('backoffice.crm.registrations') ||
@@ -344,6 +345,12 @@
                     <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
                 </a>
                 <ul class="pc-submenu">
+                    <li class="pc-item {{ request()->routeIs('backoffice.crm.unified-360') ? 'active' : '' }}">
+                        <a href="{{ route('backoffice.crm.unified-360') }}"
+                            class="pc-link {{ request()->routeIs('backoffice.crm.unified-360') ? 'active' : '' }}">
+                            <span class="pc-mtext">Vue 360</span>
+                        </a>
+                    </li>
                     <li class="pc-item {{ request()->routeIs('backoffice.crm.students') ? 'active' : '' }}">
                         <a href="{{ route('backoffice.crm.students') }}"
                             class="pc-link {{ request()->routeIs('backoffice.crm.students') ? 'active' : '' }}">
