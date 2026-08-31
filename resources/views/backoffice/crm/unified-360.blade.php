@@ -7,6 +7,13 @@
 @section('content')
     @include('backoffice.crm.partials._center')
 
+    @if(session('error'))
+        <div class="alert alert-warning d-flex align-items-start gap-2" role="alert">
+            <i class="ti ti-alert-triangle mt-1"></i>
+            <div>{{ session('error') }}</div>
+        </div>
+    @endif
+
     {{-- KPI strip — computed on the same filtered query as the table below --}}
     <div class="row g-2 mb-3">
         @php

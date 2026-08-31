@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backoffice\Crm;
 use App\Exports\Crm360Workbook;
 use App\Services\Crm\Unified360Service;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
@@ -41,8 +42,8 @@ class Crm360Controller extends BaseCrmController
         $filters = $this->filters($r);
         $perPage = min(200, max(10, (int) $r->query('perPage', 50)));
 
-        $rows = $this->service->query($filters)
-            ->paginate($perPage)
+        $rows = $this->service
+            ->page($filters, $perPage, (int) $r->query('page', 1))
             ->withQueryString();
 
         return $this->view('backoffice.crm.unified-360', [
@@ -67,9 +68,38 @@ class Crm360Controller extends BaseCrmController
         ]);
     }
 
-    public function export(Request $r): BinaryFileResponse
+    /**
+     * Rows above which the export is refused rather than attempted.
+     *
+     * Building the .xlsx is the slow half, not the SQL: at ~15.6k rows the
+     * query takes ~1.5s while PhpSpreadsheet takes ~51s to assemble the
+     * workbook in memory. That already sits near nginx's default 60s
+     * proxy_read_timeout, and overshooting it returns a 504 — the user sees a
+     * gateway error rather than a file, with no hint that narrowing the
+     * filters would have worked.
+     *
+     * So refuse early and say so, instead of timing out.
+     */
+    private const EXPORT_MAX_ROWS = 20000;
+
+    public function export(Request $r): BinaryFileResponse|RedirectResponse
     {
         $filters = $this->filters($r);
+        $rows = $this->service->totals($filters)['rows'];
+
+        if ($rows > self::EXPORT_MAX_ROWS) {
+            return back()->with('error', sprintf(
+                'Export trop volumineux : %s lignes (maximum %s). '
+                .'Affinez les filtres — par centre, par groupe, ou sur une période de paiement — puis réessayez.',
+                number_format($rows, 0, ',', ' '),
+                number_format(self::EXPORT_MAX_ROWS, 0, ',', ' '),
+            ));
+        }
+
+        // The writer needs more headroom than a normal request: the whole
+        // workbook is assembled in memory before the first byte is sent.
+        set_time_limit(600);
+
         $name = 'gls-vue360-'.now()->format('Y-m-d_His').'.xlsx';
 
         return Excel::download(new Crm360Workbook($this->service, $filters), $name);

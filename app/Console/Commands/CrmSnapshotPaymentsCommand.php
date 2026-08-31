@@ -9,6 +9,7 @@ use App\Services\Crm\Crm;
 use App\Services\Crm\CrmException;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Pulls every payment row from the Wimschool CRM and stores a snapshot for
@@ -36,32 +37,34 @@ class CrmSnapshotPaymentsCommand extends Command
 
     protected $description = 'Capture daily snapshot of all CRM payments (+ due dates) for fraud detection.';
 
-    private const BULK_SIZE           = 500;
+    private const BULK_SIZE = 500;
+
     private const SLEEP_BETWEEN_PAGES = 2;
 
     public function handle(Crm $crm): int
     {
-        $date     = $this->option('date')
+        $date = $this->option('date')
             ? Carbon::parse($this->option('date'))->toDateString()
             : Carbon::today()->toDateString();
 
-        $months       = max(1, (int) $this->option('months'));
-        $pauseSecs    = max(10, (int) $this->option('pause'));
-        $storeIds     = array_map('intval', array_filter((array) $this->option('store')));
+        $months = max(1, (int) $this->option('months'));
+        $pauseSecs = max(10, (int) $this->option('pause'));
+        $storeIds = array_map('intval', array_filter((array) $this->option('store')));
 
         $sites = Site::whereNotNull('crm_store_id')->where('crm_store_id', '>', 0)
-            ->when(!empty($storeIds), fn ($q) => $q->whereIn('crm_store_id', $storeIds))
+            ->when(! empty($storeIds), fn ($q) => $q->whereIn('crm_store_id', $storeIds))
             ->get();
 
         if ($sites->isEmpty()) {
             $this->error('No sites with crm_store_id configured.');
+
             return self::FAILURE;
         }
 
-        $this->info("Snapshotting payments for {$date} across {$sites->count()} center(s) [bulk, size=" . self::BULK_SIZE . ", pause={$pauseSecs}s]...");
+        $this->info("Snapshotting payments for {$date} across {$sites->count()} center(s) [bulk, size=".self::BULK_SIZE.", pause={$pauseSecs}s]...");
 
         $totalCaptured = 0;
-        $totalErrors   = 0;
+        $totalErrors = 0;
 
         foreach ($sites as $i => $site) {
             if ($i > 0) {
@@ -81,10 +84,51 @@ class CrmSnapshotPaymentsCommand extends Command
             }
         }
 
+        $this->refreshLatestFlags();
+
         $this->newLine();
         $this->info("Done. Captured {$totalCaptured} payments. {$totalErrors} center(s) failed.");
 
         return $totalErrors > 0 ? self::FAILURE : self::SUCCESS;
+    }
+
+    /**
+     * Re-point is_latest at the newest snapshot row of every payment.
+     *
+     * This table is append-only, so "the current state of a payment" is its
+     * row with the highest snapshot_date. Deriving that at read time is what
+     * made the Vue 360 page time out (MariaDB re-runs the MAX() per candidate
+     * row, so cost grows with snapshot history), hence the persisted flag —
+     * see the is_latest migration and Unified360Service::latestSnapshotSub().
+     *
+     * Must run after ALL centers are written, not per center: a payment can be
+     * absent from tonight's batch entirely (deleted in the CRM), and its
+     * latest row is then an older date than this run's.
+     */
+    protected function refreshLatestFlags(): void
+    {
+        $this->line('  → refreshing is_latest flags...');
+
+        DB::transaction(function () {
+            // Clear only rows that currently claim to be latest — far cheaper
+            // than rewriting the whole table every night.
+            DB::table('crm_payment_snapshots')->where('is_latest', true)->update(['is_latest' => false]);
+
+            DB::statement('
+                UPDATE crm_payment_snapshots ps
+                JOIN (
+                    SELECT crm_payment_id, MAX(snapshot_date) AS snapshot_date
+                    FROM crm_payment_snapshots
+                    GROUP BY crm_payment_id
+                ) latest
+                  ON latest.crm_payment_id = ps.crm_payment_id
+                 AND latest.snapshot_date  = ps.snapshot_date
+                SET ps.is_latest = 1
+            ');
+        });
+
+        $flagged = DB::table('crm_payment_snapshots')->where('is_latest', true)->count();
+        $this->line("    {$flagged} payments flagged as current");
     }
 
     protected function snapshotCenter(Crm $crm, Site $site, string $date, int $months = 2): int
@@ -103,7 +147,7 @@ class CrmSnapshotPaymentsCommand extends Command
             label: "payments/{$site->crm_store_id}"
         );
 
-        $this->line("    fetched " . count($payments) . " payments");
+        $this->line('    fetched '.count($payments).' payments');
 
         // Step 2 — bulk-fetch payment-allocations for the same window
         // so we can resolve PAYMENT_ID → REGISTRATION_ID → DUE_DATE / REST_AMOUNT
@@ -119,7 +163,7 @@ class CrmSnapshotPaymentsCommand extends Command
             label: "allocations/{$site->crm_store_id}"
         );
 
-        $this->line("    fetched " . count($allocations) . " allocations");
+        $this->line('    fetched '.count($allocations).' allocations');
 
         // Build map: payment_id → registration_id
         $paymentToReg = [];
@@ -135,13 +179,13 @@ class CrmSnapshotPaymentsCommand extends Command
         // keyed by registration_id → [due_date, rest_amount]
         $regIds = array_values(array_unique(array_filter(array_values($paymentToReg))));
         $collectionByReg = [];
-        if (!empty($regIds)) {
+        if (! empty($regIds)) {
             CrmCollectionRow::where('crm_store_id', $site->crm_store_id)
                 ->whereIn('registration_id', $regIds)
                 ->get(['registration_id', 'due_date', 'rest_amount'])
                 ->each(function ($row) use (&$collectionByReg) {
                     $collectionByReg[(int) $row->registration_id] = [
-                        'due_date'    => $row->due_date?->toDateString(),
+                        'due_date' => $row->due_date?->toDateString(),
                         'rest_amount' => $row->rest_amount,
                     ];
                 });
@@ -157,18 +201,19 @@ class CrmSnapshotPaymentsCommand extends Command
 
         // Step 5 — upsert only new or changed rows
         $captured = 0;
-        $skipped  = 0;
+        $skipped = 0;
         foreach ($payments as $row) {
-            $pid  = (int) ($row['ID'] ?? 0);
+            $pid = (int) ($row['ID'] ?? 0);
             $hash = hash('sha256', json_encode($row, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR));
 
             // Skip if payload unchanged AND echéance already resolved
             if (isset($existingHashes[$pid]) && $existingHashes[$pid] === $hash) {
                 $skipped++;
+
                 continue;
             }
 
-            $rid      = $paymentToReg[$pid] ?? null;
+            $rid = $paymentToReg[$pid] ?? null;
             $echeance = $rid ? ($collectionByReg[$rid] ?? []) : [];
 
             $this->upsertSnapshot($row, $date, $rid, $echeance, $hash);
@@ -176,6 +221,7 @@ class CrmSnapshotPaymentsCommand extends Command
         }
 
         $this->line("    {$captured} written, {$skipped} unchanged (skipped)");
+
         return $captured + $skipped;
     }
 
@@ -186,7 +232,7 @@ class CrmSnapshotPaymentsCommand extends Command
     protected function fetchAllPagesBulk(callable $fetcher, string $label): array
     {
         $page = 0;
-        $all  = [];
+        $all = [];
 
         do {
             if ($page > 0) {
@@ -194,10 +240,10 @@ class CrmSnapshotPaymentsCommand extends Command
             }
 
             $response = $fetcher($page);
-            $rows     = $response['data'] ?? [];
-            $all      = array_merge($all, $rows);
+            $rows = $response['data'] ?? [];
+            $all = array_merge($all, $rows);
 
-            $this->line("    [{$label}] page {$page} — " . count($rows) . " rows");
+            $this->line("    [{$label}] page {$page} — ".count($rows).' rows');
 
             $hasNext = $response['pagination']['hasNext']
                 ?? $response['pagination']['hasMore']
@@ -214,34 +260,34 @@ class CrmSnapshotPaymentsCommand extends Command
         CrmPaymentSnapshot::updateOrCreate(
             [
                 'crm_payment_id' => $row['ID'],
-                'snapshot_date'  => $date,
+                'snapshot_date' => $date,
             ],
             [
-                'crm_store_id'            => $row['STR_STORE_ID']            ?? null,
-                'student_id'              => $row['STUDENT_ID']              ?? null,
-                'registration_id'         => $registrationId,
-                'reference'               => $row['REFERENCE']               ?? null,
-                'amount'                  => $row['AMOUNT']                  ?? null,
-                'rest_amount'             => $echeance['rest_amount']        ?? null,
-                'effective_date'          => isset($row['EFFECTIVE_DATE']) && $row['EFFECTIVE_DATE']
+                'crm_store_id' => $row['STR_STORE_ID'] ?? null,
+                'student_id' => $row['STUDENT_ID'] ?? null,
+                'registration_id' => $registrationId,
+                'reference' => $row['REFERENCE'] ?? null,
+                'amount' => $row['AMOUNT'] ?? null,
+                'rest_amount' => $echeance['rest_amount'] ?? null,
+                'effective_date' => isset($row['EFFECTIVE_DATE']) && $row['EFFECTIVE_DATE']
                     ? Carbon::parse($row['EFFECTIVE_DATE'])->setTimezone('Africa/Casablanca')->toDateString()
                     : null,
-                'due_date'                => $echeance['due_date']           ?? null,
-                'payment_method_id'       => $row['PAYMENT_METHOD_ID']       ?? null,
-                'payment_method_name'     => $row['PAYMENT_METHOD_NAME']     ?? null,
-                'payment_type_id'         => $row['PAYMENT_TYPE_ID']         ?? null,
-                'payment_type_name'       => $row['PAYMENT_TYPE_NAME']       ?? null,
-                'user_creation_id'        => $row['USER_CREATION']           ?? null,
+                'due_date' => $echeance['due_date'] ?? null,
+                'payment_method_id' => $row['PAYMENT_METHOD_ID'] ?? null,
+                'payment_method_name' => $row['PAYMENT_METHOD_NAME'] ?? null,
+                'payment_type_id' => $row['PAYMENT_TYPE_ID'] ?? null,
+                'payment_type_name' => $row['PAYMENT_TYPE_NAME'] ?? null,
+                'user_creation_id' => $row['USER_CREATION'] ?? null,
                 'user_creation_full_name' => $row['USER_CREATION_FULL_NAME'] ?? null,
-                'user_update_id'          => $row['USER_UPDATE']             ?? null,
-                'user_update_full_name'   => $row['USER_UPDATE_FULL_NAME']   ?? null,
-                'date_creation'           => $row['DATE_CREATION']           ?? null,
-                'date_update'             => $row['DATE_UPDATE']             ?? null,
-                'date_creation_date'      => isset($row['DATE_CREATION']) && $row['DATE_CREATION']
+                'user_update_id' => $row['USER_UPDATE'] ?? null,
+                'user_update_full_name' => $row['USER_UPDATE_FULL_NAME'] ?? null,
+                'date_creation' => $row['DATE_CREATION'] ?? null,
+                'date_update' => $row['DATE_UPDATE'] ?? null,
+                'date_creation_date' => isset($row['DATE_CREATION']) && $row['DATE_CREATION']
                     ? Carbon::parse($row['DATE_CREATION'])->toDateString()
                     : null,
-                'payload'                 => $row,
-                'payload_hash'            => $hash,
+                'payload' => $row,
+                'payload_hash' => $hash,
             ]
         );
     }

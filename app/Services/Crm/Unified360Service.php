@@ -3,6 +3,8 @@
 namespace App\Services\Crm;
 
 use Illuminate\Database\Query\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -121,17 +123,33 @@ class Unified360Service
     /**
      * One row per payment, taking only its most recent snapshot.
      *
-     * crm_payment_snapshots is append-only per day; without this the same
-     * payment appears once per snapshot_date and every total is inflated.
+     * crm_payment_snapshots is append-only per night, so a payment synced for
+     * 3 months carries ~90 rows. Without this the same payment appears once
+     * per snapshot_date and every total is inflated.
+     *
+     * PERFORMANCE — this is the hot spot of the whole page.
+     *
+     * Deriving "latest" at query time is what caused the nginx 504. Both
+     * natural formulations degrade with snapshot HISTORY rather than with the
+     * number of payments, so the page got slower every night the sync ran:
+     *
+     *   - correlated subquery (WHERE snapshot_date = (SELECT MAX(...)))
+     *     → MariaDB plans it as DEPENDENT SUBQUERY, re-running the MAX()
+     *       for every candidate row.
+     *   - grouped derived table joined on (payment, max date)
+     *     → MariaDB plans it as LATERAL DERIVED, re-evaluated per row.
+     *
+     * Measured on 420k snapshot rows across 28 dates, both left a single page
+     * load in the 5-19s range depending on the filter.
+     *
+     * So the flag is persisted instead: CrmSnapshotPaymentsCommand maintains
+     * is_latest after each nightly sync, and reads become an indexed equality
+     * lookup whose cost stays flat as history accumulates.
      */
     private function latestSnapshotSub(): Builder
     {
         return DB::table('crm_payment_snapshots as ps')
-            ->whereRaw('ps.snapshot_date = (
-                SELECT MAX(ps2.snapshot_date)
-                FROM crm_payment_snapshots ps2
-                WHERE ps2.crm_payment_id = ps.crm_payment_id
-            )')
+            ->where('ps.is_latest', true)
             ->select([
                 'ps.crm_payment_id', 'ps.student_id', 'ps.registration_id',
                 'ps.reference', 'ps.amount', 'ps.rest_amount',
@@ -141,8 +159,11 @@ class Unified360Service
             ]);
     }
 
-    /** @param  array<string,mixed>  $f */
-    private function applyFilters(Builder $q, array $f): Builder
+    /**
+     * @param  array<string,mixed>  $f
+     * @param  bool  $sorted  false when the caller supplies its own ORDER BY
+     */
+    private function applyFilters(Builder $q, array $f, bool $sorted = true): Builder
     {
         if (! empty($f['strStoreId'])) {
             $q->where('r.crm_store_id', (int) $f['strStoreId']);
@@ -207,10 +228,99 @@ class Unified360Service
             $q->where('p.rest_amount', '>', 0);
         }
 
+        if (! $sorted) {
+            return $q;
+        }
+
         return $q->orderBy('s.last_name')
             ->orderBy('s.first_name')
             ->orderBy('r.crm_id')
             ->orderByRaw('COALESCE(p.effective_date, p.date_creation_date)');
+    }
+
+    /**
+     * A page of the 360 table.
+     *
+     * PERFORMANCE — why this is not just query()->paginate().
+     *
+     * The display order is by student name, but the row count is driven by
+     * PAYMENTS (one row per payment). Sorting the fully-joined set means
+     * MariaDB must materialise and filesort every matching row before it can
+     * return the 50 the page shows — the EXPLAIN reads "Using temporary;
+     * Using filesort" over the whole join. Measured on 420k snapshot rows
+     * that was ~19s for a single page, versus ~0.18s to sort and slice the
+     * inscriptions alone. Adding an index on (last_name, first_name) does not
+     * help, because the sort happens after the LEFT JOIN has already expanded
+     * the rows.
+     *
+     * So: page over INSCRIPTIONS (a stable, indexable unit), then join the
+     * payments for just that page. The user still sees whole inscriptions,
+     * never an inscription split across two pages — which is also the more
+     * correct reading of "all payments of this inscription".
+     *
+     * @param  array<string,mixed>  $f
+     */
+    public function page(array $f, int $perPage, int $currentPage, string $pageName = 'page'): LengthAwarePaginator
+    {
+        // 1) Which inscriptions are on this page — sorted and sliced cheaply,
+        //    with only the joins the filters actually need.
+        $ids = $this->registrationIdQuery($f)
+            ->forPage($currentPage, $perPage)
+            ->pluck('crm_id')
+            ->all();
+
+        $total = $this->registrationIdQuery($f)->count();
+
+        // 2) Full detail for just those inscriptions.
+        $rows = $ids === []
+            ? collect()
+            : $this->query($f)->whereIn('r.crm_id', $ids)->get();
+
+        return new LengthAwarePaginator($rows, $total, $perPage, $currentPage, [
+            'path' => Paginator::resolveCurrentPath(),
+            'pageName' => $pageName,
+        ]);
+    }
+
+    /**
+     * The inscriptions matching the filters, in display order — the driving
+     * set for pagination. Joins crm_students for the sort, and the payment
+     * snapshot only when a payment-level filter demands it, so the common
+     * unfiltered case stays a cheap two-table sort.
+     *
+     * @param  array<string,mixed>  $f
+     */
+    private function registrationIdQuery(array $f): Builder
+    {
+        $needsPayments = ! empty($f['paymentMethod'])
+            || ! empty($f['paymentType'])
+            || ! empty($f['startDate'])
+            || ! empty($f['endDate'])
+            || ! empty($f['unpaidOnly'])
+            || ! empty($f['search'])
+            || ($f['paymentPresence'] ?? '') !== '';
+
+        $q = DB::table('crm_registrations as r')
+            ->join('crm_students as s', 's.crm_id', '=', 'r.crm_student_id');
+
+        if ($needsPayments) {
+            $q->leftJoinSub($this->latestSnapshotSub(), 'p', function ($join) {
+                $join->on('p.student_id', '=', 's.crm_id')
+                    ->where(function ($w) {
+                        $w->whereColumn('p.registration_id', '=', 'r.crm_id')
+                            ->orWhereNull('p.registration_id');
+                    });
+            });
+        }
+
+        $this->applyFilters($q, $f, sorted: false);
+
+        // One entry per inscription regardless of how many payments matched.
+        return $q->select('r.crm_id')
+            ->distinct()
+            ->orderBy('s.last_name')
+            ->orderBy('s.first_name')
+            ->orderBy('r.crm_id');
     }
 
     /**
