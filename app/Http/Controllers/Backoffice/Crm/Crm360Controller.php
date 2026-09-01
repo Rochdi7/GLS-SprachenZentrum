@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Backoffice\Crm;
 use App\Exports\Crm360Workbook;
 use App\Services\Crm\Unified360Service;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Vue 360 — the single table that links Étudiant → Inscription → Groupe →
@@ -69,40 +69,78 @@ class Crm360Controller extends BaseCrmController
     }
 
     /**
-     * Rows above which the export is refused rather than attempted.
+     * Rows above which the export switches from .xlsx to streamed CSV.
      *
      * Building the .xlsx is the slow half, not the SQL: at ~15.6k rows the
      * query takes ~1.5s while PhpSpreadsheet takes ~51s to assemble the
-     * workbook in memory. That already sits near nginx's default 60s
-     * proxy_read_timeout, and overshooting it returns a 504 — the user sees a
-     * gateway error rather than a file, with no hint that narrowing the
-     * filters would have worked.
+     * workbook in memory — already brushing nginx's default 60s
+     * proxy_read_timeout, beyond which the user gets a 504 instead of a file.
+     * Live data sits at ~28k rows, so a full unfiltered .xlsx cannot finish
+     * inside the window.
      *
-     * So refuse early and say so, instead of timing out.
+     * CSV has no such wall: rows are written to the response as the query
+     * streams them, first byte in under a second regardless of size. Excel
+     * opens it directly (UTF-8 BOM + semicolon delimiter for the FR locale).
+     * The trade-off is one flat sheet — no Résumé tab, no styling — which is
+     * why small exports keep the nicer workbook.
      */
-    private const EXPORT_MAX_ROWS = 20000;
+    private const XLSX_MAX_ROWS = 20000;
 
-    public function export(Request $r): BinaryFileResponse|RedirectResponse
+    public function export(Request $r): BinaryFileResponse|StreamedResponse
     {
         $filters = $this->filters($r);
         $rows = $this->service->totals($filters)['rows'];
+        $stamp = now()->format('Y-m-d_His');
 
-        if ($rows > self::EXPORT_MAX_ROWS) {
-            return back()->with('error', sprintf(
-                'Export trop volumineux : %s lignes (maximum %s). '
-                .'Affinez les filtres — par centre, par groupe, ou sur une période de paiement — puis réessayez.',
-                number_format($rows, 0, ',', ' '),
-                number_format(self::EXPORT_MAX_ROWS, 0, ',', ' '),
-            ));
+        if ($rows > self::XLSX_MAX_ROWS) {
+            return $this->exportCsv($filters, "gls-vue360-{$stamp}.csv");
         }
 
-        // The writer needs more headroom than a normal request: the whole
-        // workbook is assembled in memory before the first byte is sent.
+        // The workbook is assembled in memory before the first byte is sent —
+        // give the writer more headroom than a normal request.
         set_time_limit(600);
 
-        $name = 'gls-vue360-'.now()->format('Y-m-d_His').'.xlsx';
+        return Excel::download(new Crm360Workbook($this->service, $filters), "gls-vue360-{$stamp}.xlsx");
+    }
 
-        return Excel::download(new Crm360Workbook($this->service, $filters), $name);
+    /**
+     * Stream the detail table as CSV, row by row, straight from the cursor.
+     * Nothing is buffered, so size only affects transfer time — not memory,
+     * and not time-to-first-byte.
+     *
+     * @param  array<string,mixed>  $filters
+     */
+    private function exportCsv(array $filters, string $name): StreamedResponse
+    {
+        set_time_limit(600);
+        $columns = Unified360Service::COLUMNS;
+
+        return response()->streamDownload(function () use ($filters, $columns) {
+            $out = fopen('php://output', 'w');
+
+            // BOM so Excel reads the accents; semicolon so the FR locale
+            // splits columns instead of dumping everything into column A.
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, array_values($columns), ';');
+
+            foreach ($this->service->query($filters)->cursor() as $row) {
+                $line = [];
+                foreach (array_keys($columns) as $field) {
+                    $value = $row->{$field} ?? '';
+                    // Same date presentation as the xlsx export.
+                    if ($value && preg_match('/^\d{4}-\d{2}-\d{2}/', (string) $value)) {
+                        $value = \Carbon\Carbon::parse($value)->format('d/m/Y');
+                    }
+                    $line[] = $value;
+                }
+                fputcsv($out, $line, ';');
+            }
+
+            fclose($out);
+        }, $name, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'X-Accel-Buffering' => 'no', // let nginx flush as we write
+        ]);
     }
 
     /**

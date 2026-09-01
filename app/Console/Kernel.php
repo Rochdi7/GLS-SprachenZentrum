@@ -115,11 +115,22 @@ class Kernel extends ConsoleKernel
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/crm-nightly-resync.log'));
 
+        // ── Repair orphan payment→registration links — 05:00, after every
+        //    nightly sync has finished writing. Pure local-DB work (no API):
+        //    backfills registration_id on snapshots from the allocations
+        //    mirror, so Vue 360 attaches each payment to its true inscription
+        //    instead of guessing. See CrmResolvePaymentLinksCommand.
+        $schedule->command('crm:resolve-payment-links')
+            ->dailyAt('05:00')
+            ->timezone('Africa/Casablanca')
+            ->withoutOverlapping(60)
+            ->appendOutputTo(storage_path('logs/crm-resolve-payment-links.log'));
+
         // ── Weekly reports — every Friday at midnight (Casablanca) ───────────
         // Controlled by REPORTS_AUTO_SEND_ENABLED=true in .env
-        $weeklyDay  = config('reports.weekly_send_day', 5);   // 5 = Friday
+        $weeklyDay = config('reports.weekly_send_day', 5);   // 5 = Friday
         $weeklyTime = config('reports.weekly_send_time', '00:00');
-        $tz         = config('reports.timezone', 'Africa/Casablanca');
+        $tz = config('reports.timezone', 'Africa/Casablanca');
 
         $weeklyReports = [
             'weekly-presence',
@@ -140,7 +151,7 @@ class Kernel extends ConsoleKernel
 
         // ── Monthly reports — 1st of each month (Casablanca) ─────────────────
         // Controlled by REPORTS_AUTO_SEND_ENABLED=true in .env (same flag as weekly)
-        $monthlyDay  = config('reports.monthly_send_day', 1);
+        $monthlyDay = config('reports.monthly_send_day', 1);
         $monthlyTime = config('reports.monthly_send_time', '00:00');
 
         $monthlyReports = [
@@ -163,7 +174,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__ . '/Commands');
+        $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');
     }

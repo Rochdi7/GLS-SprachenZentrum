@@ -82,17 +82,11 @@ class Unified360Service
         $q = DB::table('crm_registrations as r')
             ->join('crm_students as s', 's.crm_id', '=', 'r.crm_student_id')
             ->leftJoin('crm_classes as c', 'c.crm_id', '=', 'r.crm_class_id')
-            ->leftJoin('sites as site', 'site.crm_store_id', '=', 'r.crm_store_id')
-            ->leftJoinSub($this->latestSnapshotSub(), 'p', function ($join) {
-                // Prefer the explicit registration link; fall back to the
-                // student link for payments the allocation sync never resolved
-                // to a registration (registration_id stays NULL for those).
-                $join->on('p.student_id', '=', 's.crm_id')
-                    ->where(function ($w) {
-                        $w->whereColumn('p.registration_id', '=', 'r.crm_id')
-                            ->orWhereNull('p.registration_id');
-                    });
-            })
+            ->leftJoin('sites as site', 'site.crm_store_id', '=', 'r.crm_store_id');
+
+        $this->joinLatestPayments($q);
+
+        $q
             ->select([
                 DB::raw("COALESCE({$refPath}, s.crm_id) as student_ref"),
                 DB::raw("TRIM(CONCAT(COALESCE(s.first_name, ''), ' ', COALESCE(s.last_name, ''))) as student_name"),
@@ -118,6 +112,42 @@ class Unified360Service
             ]);
 
         return $this->applyFilters($q, $f);
+    }
+
+    /**
+     * LEFT JOIN the latest payment snapshots onto (r, s) without ever
+     * duplicating a payment across a student's inscriptions.
+     *
+     * A payment whose registration_id is known joins that inscription and no
+     * other. A payment left with registration_id NULL (allocation never synced
+     * — crm:resolve-payment-links repairs most of these nightly) joins ONLY
+     * the student's designated inscription: the most recent one, via the
+     * `fb` derived table (one row per student, so it cannot multiply).
+     *
+     * The previous form — `p.registration_id = r.crm_id OR p.registration_id
+     * IS NULL` — attached every orphan payment to EVERY inscription of its
+     * student. Observed live: the same payments listed under two inscriptions,
+     * 28,308 rows for 23,725 distinct payments, and Total encaissé inflated
+     * by the double-counted amounts.
+     */
+    private function joinLatestPayments(Builder $q): Builder
+    {
+        $designated = DB::table('crm_registrations')
+            ->selectRaw('crm_student_id, MAX(crm_id) as reg_id')
+            ->groupBy('crm_student_id');
+
+        return $q
+            ->leftJoinSub($designated, 'fb', 'fb.crm_student_id', '=', 's.crm_id')
+            ->leftJoinSub($this->latestSnapshotSub(), 'p', function ($join) {
+                $join->on('p.student_id', '=', 's.crm_id')
+                    ->where(function ($w) {
+                        $w->whereColumn('p.registration_id', '=', 'r.crm_id')
+                            ->orWhere(function ($orphan) {
+                                $orphan->whereNull('p.registration_id')
+                                    ->whereColumn('fb.reg_id', '=', 'r.crm_id');
+                            });
+                    });
+            });
     }
 
     /**
@@ -308,13 +338,10 @@ class Unified360Service
             ->join('crm_students as s', 's.crm_id', '=', 'r.crm_student_id');
 
         if ($needsPayments) {
-            $q->leftJoinSub($this->latestSnapshotSub(), 'p', function ($join) {
-                $join->on('p.student_id', '=', 's.crm_id')
-                    ->where(function ($w) {
-                        $w->whereColumn('p.registration_id', '=', 'r.crm_id')
-                            ->orWhereNull('p.registration_id');
-                    });
-            });
+            // Same attachment rule as the detail query — an orphan payment
+            // counts toward ONE inscription, so "avec/sans paiement" and the
+            // amount filters agree with what the table displays.
+            $this->joinLatestPayments($q);
         }
 
         $this->applyFilters($q, $f, sorted: false);
