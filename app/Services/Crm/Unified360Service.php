@@ -269,7 +269,11 @@ class Unified360Service
             ->pluck('crm_id')
             ->all();
 
-        $total = $this->registrationIdQuery($f)->count();
+        // Counted through a subquery: registrationIdQuery() is grouped, so a
+        // plain ->count() would return the size of the FIRST group (always 1)
+        // instead of the number of groups, silently capping the paginator at
+        // one page.
+        $total = DB::query()->fromSub($this->registrationIdQuery($f), 'ids')->count();
 
         // 2) Full detail for just those inscriptions.
         $rows = $ids === []
@@ -316,8 +320,16 @@ class Unified360Service
         $this->applyFilters($q, $f, sorted: false);
 
         // One entry per inscription regardless of how many payments matched.
+        //
+        // GROUP BY rather than DISTINCT: the payment join can multiply a row,
+        // but ordering by the student name means the sort columns are not in
+        // the select list — and under ONLY_FULL_GROUP_BY (default on MySQL 8,
+        // which production runs) "SELECT DISTINCT r.crm_id ... ORDER BY
+        // s.last_name" is rejected outright with error 3065. Grouping on
+        // r.crm_id is accepted because the sort columns are functionally
+        // dependent on it: one inscription belongs to exactly one student.
         return $q->select('r.crm_id')
-            ->distinct()
+            ->groupBy('r.crm_id', 's.last_name', 's.first_name')
             ->orderBy('s.last_name')
             ->orderBy('s.first_name')
             ->orderBy('r.crm_id');
