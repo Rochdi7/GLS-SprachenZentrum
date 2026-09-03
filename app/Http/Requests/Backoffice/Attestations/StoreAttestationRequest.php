@@ -43,7 +43,7 @@ class StoreAttestationRequest extends FormRequest
 
             'fees_status' => 'required|in:full,partial',
 
-            'stufe_index' => 'required|integer|min:1|max:9',
+            'stufe_index' => 'required|integer|min:1|max:255',
             'stufe_total' => 'required|integer|min:1|max:9',
             'methodology_text' => 'nullable|string|max:5000',
             'language' => 'required|in:de_fr',

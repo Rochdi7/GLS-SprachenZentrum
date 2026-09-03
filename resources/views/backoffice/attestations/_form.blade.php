@@ -230,7 +230,7 @@
 
     <div class="col-md-3 mb-3">
         <label class="form-label fw-bold">Niveau actuel <span class="text-danger">*</span></label>
-        <input type="number" min="1" max="9" name="stufe_index"
+        <input type="number" min="1" name="stufe_index"
                class="form-control @error('stufe_index') is-invalid @enderror" required
                value="{{ old('stufe_index', $att->stufe_index ?? 1) }}">
         <small class="text-muted">Numéro du palier en cours.</small>
