@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backoffice\Crm;
 
 use App\Http\Controllers\Controller;
+use App\Models\CrmResyncLog;
 use App\Models\CrmSyncLog;
 use App\Services\Crm\CenterContext;
 use App\Services\Crm\Crm;
@@ -104,15 +105,32 @@ abstract class BaseCrmController extends Controller
         ], $data));
     }
 
+    /**
+     * Newest successful CRM sync, whichever job produced it.
+     *
+     * Two commands sync CRM data and each writes its own audit table:
+     *   - crm:sync-all       -> crm_sync_log   (step rows, status 'done')
+     *   - crm:nightly-resync -> crm_resync_log (one row, status 'ok'|'partial')
+     *
+     * Only the nightly job is scheduled, so reading crm_sync_log alone made the
+     * badge freeze at the last manual sync-all run. Take the max of both.
+     */
     protected function lastSyncAt(): ?\Carbon\Carbon
     {
-        $max = CrmSyncLog::where('status', 'done')
+        $syncAll = CrmSyncLog::where('status', 'done')
             ->whereNotNull('completed_at')
             ->max('completed_at');
 
-        return $max
-            ? \Carbon\Carbon::parse($max)->setTimezone('Africa/Casablanca')
-            : null;
+        // 'partial' still means data was written — some steps succeeded.
+        $nightly = CrmResyncLog::whereIn('status', ['ok', 'partial'])
+            ->max('created_at');
+
+        $max = collect([$syncAll, $nightly])
+            ->filter()
+            ->map(fn ($ts) => \Carbon\Carbon::parse($ts))
+            ->max();
+
+        return $max?->setTimezone('Africa/Casablanca');
     }
 
     /**

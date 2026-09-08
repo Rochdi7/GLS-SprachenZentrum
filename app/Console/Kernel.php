@@ -16,6 +16,12 @@ class Kernel extends ConsoleKernel
      * All CRM API sync runs ONCE per night via crm:nightly-resync at 00:00
      * Casablanca — Wimschool rate-limits requests during business hours.
      * Do not add daytime jobs that call their API.
+     *
+     * Measured runtime (crm_resync_log, 1-8 Sep 2026): 17100-19800s, i.e.
+     * 4h45-5h30. The run starts 00:00 and lands between 03:45 and 04:29.
+     * It therefore already fills most of the quiet API window on its own —
+     * do NOT add a second resync pass at 05:00 or later: it would re-fetch
+     * data the 00:00 pass just wrote and run into business hours.
      * See: docs/crm-warehouse-architecture.md
      */
     protected function schedule(Schedule $schedule): void
@@ -115,11 +121,15 @@ class Kernel extends ConsoleKernel
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/crm-nightly-resync.log'));
 
+
         // ── Repair orphan payment→registration links — 05:00, after every
         //    nightly sync has finished writing. Pure local-DB work (no API):
         //    backfills registration_id on snapshots from the allocations
         //    mirror, so Vue 360 attaches each payment to its true inscription
         //    instead of guessing. See CrmResolvePaymentLinksCommand.
+        //    05:00 is chosen because the 00:00 nightly-resync lands by ~04:30
+        //    at its slowest (measured 1-8 Sep 2026), so the sync writes are
+        //    always finished before this reads them.
         $schedule->command('crm:resolve-payment-links')
             ->dailyAt('05:00')
             ->timezone('Africa/Casablanca')
