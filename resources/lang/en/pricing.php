@@ -119,11 +119,11 @@ return [
             'col3' => ["Monthly rate", "1300 DH / month", "1300 DH / month", "1300 DH / month", "1300 DH / month"],
         ],
 
-        // ✅ Agadir (1200 DH / month)
+        // ✅ Agadir (1300 DH / month)
         'agadir' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
             'col2' => ["Duration", "2 months", "2.5 months", "2.5 months", "3 months"],
-            'col3' => ["Monthly rate", "1200 DH / month", "1200 DH / month", "1200 DH / month", "1200 DH / month"],
+            'col3' => ["Monthly rate", "1300 DH / month", "1300 DH / month", "1300 DH / month", "1300 DH / month"],
         ],
 
         // ✅ Exams unchanged

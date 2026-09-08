@@ -96,7 +96,7 @@ return [
         'agadir' => [
             'col1' => ["", "A1", "A2", "B1", "B2"],
             'col2' => ["Dauer", "2 Monate", "2,5 Monate", "2,5 Monate", "3 Monate"],
-            'col3' => ["Monatspreis", "1200 DH / Monat", "1200 DH / Monat", "1200 DH / Monat", "1200 DH / Monat"],
+            'col3' => ["Monatspreis", "1300 DH / Monat", "1300 DH / Monat", "1300 DH / Monat", "1300 DH / Monat"],
         ],
 
         'exams' => [
