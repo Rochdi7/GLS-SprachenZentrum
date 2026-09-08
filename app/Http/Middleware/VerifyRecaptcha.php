@@ -64,15 +64,30 @@ class VerifyRecaptcha
             return $this->reject($request, 'invalid-token');
         }
 
-        if ($score < config('recaptcha.min_score', 0.5)) {
-            Log::info('reCAPTCHA low score — likely spam', [
+        // reCAPTCHA v3 routinely scores real people low (VPNs, ad-blockers, older
+        // mobile browsers, private windows, carrier NAT). Rejecting on score alone
+        // silently loses genuine students, so only hard-block clearly automated
+        // traffic; everything in between is accepted and flagged for review.
+        $minScore    = (float) config('recaptcha.min_score', 0.5);
+        $rejectBelow = (float) config('recaptcha.reject_below', 0.0);
+
+        if ($score < $minScore) {
+            $context = [
                 'path'   => $request->path(),
                 'score'  => $score,
                 'action' => $result['action'] ?? null,
                 'ip'     => $request->ip(),
-            ]);
+            ];
 
-            return $this->reject($request, 'low-score');
+            if ($score <= $rejectBelow) {
+                Log::info('reCAPTCHA rejected — score at or below hard floor', $context);
+
+                return $this->reject($request, 'low-score');
+            }
+
+            Log::info('reCAPTCHA low score — accepted, flagged for review', $context);
+
+            $request->attributes->set('recaptcha_suspicious', true);
         }
 
         $request->attributes->set('recaptcha_score', $score);
