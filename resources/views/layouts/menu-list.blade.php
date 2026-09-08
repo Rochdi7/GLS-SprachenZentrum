@@ -24,7 +24,6 @@
     $rhOpen = request()->routeIs('backoffice.schedules.*') || request()->routeIs('backoffice.planning.*');
     $adminOpen = request()->routeIs('backoffice.users.*') || request()->routeIs('backoffice.roles.*');
     $crmOpen = request()->routeIs('backoffice.crm.*');
-    $hikvisionOpen = request()->routeIs('backoffice.hikvision.*');
 
     // New variables for CRM split
     $crmDataOpen =
@@ -498,66 +497,6 @@
                         </a>
                     </li>
                 </ul>
-            </li>
-        </ul>
-    </li>
-@endcan
-
-@can('hikvision.view')
-    <li class="pc-item pc-hasmenu {{ $hikvisionOpen ? 'pc-trigger' : '' }}">
-        <a href="#!" class="pc-link">
-            <span class="pc-micon"><i class="ph-duotone ph-fingerprint"></i></span>
-            <span class="pc-mtext">Compte du partenaire tiers</span>
-            <span class="pc-arrow"><i class="ph-duotone ph-caret-right"></i></span>
-        </a>
-        <ul class="pc-submenu">
-            <li class="pc-item {{ request()->routeIs('backoffice.hikvision.dashboard') ? 'active' : '' }}">
-                <a href="{{ route('backoffice.hikvision.dashboard') }}"
-                    class="pc-link {{ request()->routeIs('backoffice.hikvision.dashboard') ? 'active' : '' }}">
-                    <span class="pc-mtext">Tableau de bord</span>
-                </a>
-            </li>
-            <li class="pc-item {{ request()->routeIs('backoffice.hikvision.devices.*') ? 'active' : '' }}">
-                <a href="{{ route('backoffice.hikvision.devices.index') }}"
-                    class="pc-link {{ request()->routeIs('backoffice.hikvision.devices.*') ? 'active' : '' }}">
-                    <span class="pc-mtext">Appareils</span>
-                </a>
-            </li>
-            <li class="pc-item {{ request()->routeIs('backoffice.hikvision.persons.*') ? 'active' : '' }}">
-                <a href="{{ route('backoffice.hikvision.persons.index') }}"
-                    class="pc-link {{ request()->routeIs('backoffice.hikvision.persons.*') ? 'active' : '' }}">
-                    <span class="pc-mtext">Employes / Personnes</span>
-                </a>
-            </li>
-            <li class="pc-item {{ request()->routeIs('backoffice.hikvision.attendance.*') ? 'active' : '' }}">
-                <a href="{{ route('backoffice.hikvision.attendance.index') }}"
-                    class="pc-link {{ request()->routeIs('backoffice.hikvision.attendance.*') ? 'active' : '' }}">
-                    <span class="pc-mtext">Pointages / Presence</span>
-                </a>
-            </li>
-            <li class="pc-item {{ request()->routeIs('backoffice.hikvision.alarms.*') ? 'active' : '' }}">
-                <a href="{{ route('backoffice.hikvision.alarms.index') }}"
-                    class="pc-link {{ request()->routeIs('backoffice.hikvision.alarms.*') ? 'active' : '' }}">
-                    <span class="pc-mtext">Alarmes</span>
-                </a>
-            </li>
-            <li class="pc-item {{ request()->routeIs('backoffice.hikvision.webhooks.*') ? 'active' : '' }}">
-                <a href="{{ route('backoffice.hikvision.webhooks.index') }}"
-                    class="pc-link {{ request()->routeIs('backoffice.hikvision.webhooks.*') ? 'active' : '' }}">
-                    <span class="pc-mtext">Webhooks</span>
-                </a>
-            </li>
-            <li class="pc-item {{ request()->routeIs('backoffice.hikvision.settings.*') ? 'active' : '' }}">
-                <a href="{{ route('backoffice.hikvision.settings.index') }}"
-                    class="pc-link {{ request()->routeIs('backoffice.hikvision.settings.*') ? 'active' : '' }}">
-                    <span class="pc-mtext">Parametres API</span>
-                </a>
-            </li>
-            <li class="pc-item {{ request()->routeIs('backoffice.hikvision.logs.*') ? 'active' : '' }}">
-                <a href="{{ route('backoffice.hikvision.logs.index') }}"
-                    class="pc-link {{ request()->routeIs('backoffice.hikvision.logs.*') ? 'active' : '' }}">
-                    <span class="pc-mtext">Logs de synchronisation</span>
-                </a>
             </li>
         </ul>
     </li>
