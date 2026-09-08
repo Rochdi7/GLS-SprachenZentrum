@@ -34,6 +34,22 @@ class ConsultationController extends Controller
             ], 429);
         }
 
+        // Guard against double submissions (double-tap, browser/network retry).
+        // A genuine repeat request seconds after the first is never intentional.
+        $recent = Consultation::where('created_at', '>=', now()->subSeconds(60))
+            ->where(function ($q) use ($validated) {
+                $q->where('email', $validated['email'])
+                  ->orWhere('phone', $validated['phone']);
+            })
+            ->first();
+
+        if ($recent) {
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Votre demande a bien été envoyée. Email envoyé.',
+            ]);
+        }
+
         // Save in DB
         $consultation = Consultation::create($validated);
 

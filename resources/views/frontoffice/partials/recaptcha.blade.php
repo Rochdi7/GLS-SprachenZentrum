@@ -43,6 +43,11 @@
     }
 
     // ---- 1. Classic (non-AJAX) form submits -------------------------------
+    // NOTE: this listener runs in the CAPTURE phase, so it fires BEFORE a form's
+    // own submit handler. It must only drive forms that rely on a native browser
+    // submit. A form handled in JS (fetch/axios) calls preventDefault() itself and
+    // already gets its token from the fetch/axios wrappers below - re-submitting it
+    // here via requestSubmit() would fire its handler a second time and POST twice.
     document.addEventListener('submit', function (e) {
         var form = e.target;
         if (!(form instanceof HTMLFormElement)) return;
@@ -52,7 +57,33 @@
         // Forms posting to an external host are left alone.
         if (form.action && form.action.indexOf(window.location.origin) !== 0 && /^https?:/i.test(form.action)) return;
 
+        // Detect whether a downstream (AJAX) handler cancels this event. We must
+        // preventDefault() ourselves to hold back the native submit while the token
+        // is fetched, so e.defaultPrevented cannot tell us apart from them - patch
+        // preventDefault on this event and watch for a call we did not make.
+        var cancelledDownstream = false;
+        var nativePreventDefault = e.preventDefault.bind(e);
+        var ours = false;
+        e.preventDefault = function () {
+            if (!ours) cancelledDownstream = true;
+            return nativePreventDefault();
+        };
+
+        ours = true;
         e.preventDefault();
+        ours = false;
+
+        // Let the event finish propagating to the form's own handlers first.
+        setTimeout(function () {
+            e.preventDefault = nativePreventDefault;
+            // A handler cancelled it -> the form posts itself over AJAX (token is
+            // added by the fetch/axios wrappers). Re-submitting would POST twice.
+            if (cancelledDownstream) return;
+            runClassicSubmit(e, form);
+        }, 0);
+    }, true);
+
+    function runClassicSubmit(e, form) {
         var action = (form.dataset.recaptchaAction || 'submit').replace(/[^A-Za-z0-9_\/]/g, '_');
 
         getToken(action).then(function (token) {
@@ -65,7 +96,7 @@
                 form.submit();
             }
         });
-    }, true);
+    }
 
     // ---- 2. Axios (AJAX) requests ----------------------------------------
     function attachAxios(ax) {
