@@ -104,7 +104,7 @@ return [
         'call_label' => 'اتصلوا بنا هاتفيًا',
         'email_label' => 'راسلونا',
         'visit_label' => 'زوروا مركزنا',
-        'addresses' => '14 Bd de Paris، الطابق الأول رقم 8، الدار البيضاء 20000',
+        'addresses' => '14 Bd de Paris، الدار البيضاء',
         'follow_label' => 'تابعونا',
         'phone_link' => '+212808549717',
         'phone_display' => '+212 8 08 54 97 17',

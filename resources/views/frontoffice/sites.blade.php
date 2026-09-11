@@ -63,7 +63,7 @@
                                     <a href="https://www.google.com/maps/place/GLS+Sprachzentrum+-+Centre+GLS+de+langue+Allemande+Casablanca/"
                                         target="_blank">GLS Casablanca</a>
                                 </h5>
-                                <p class="reveal delay-3">14 Bd de Paris, 1er étage N°8, Casablanca 20000</p>
+                                <p class="reveal delay-3">14 Bd de Paris, Casablanca</p>
                                 <a href="https://wa.me/212808549717" class="phone reveal delay-1">
                                     <i class="bi bi-telephone-fill me-2"></i>+212 80-85 497 17
                                 </a>

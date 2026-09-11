@@ -14,7 +14,7 @@ class SitesTableSeeder extends Seeder
                 'name'    => 'GLS Casablanca',
                 'slug'    => 'casablanca',
                 'city'    => 'Casablanca',
-                'address' => '14 Bd de Paris, 1er étage N°8, Casablanca 20000',
+                'address' => '14 Bd de Paris, Casablanca',
                 'phone'   => '+212 80-8549717',
                 'email'   => 'info@gls-sprachzentrum.ma',
             ],

@@ -95,7 +95,7 @@ return [
         'call_label' => 'Rufen Sie uns an',
         'email_label' => 'Schreiben Sie uns',
         'visit_label' => 'Besuchen Sie unser Zentrum',
-        'addresses' => '14 Bd de Paris, 1. Stock N°8, Casablanca 20000',
+        'addresses' => '14 Bd de Paris, Casablanca',
         'follow_label' => 'Folgen Sie uns',
         'phone_link' => '+212808549717',
         'phone_display' => '+212 8 08 54 97 17',

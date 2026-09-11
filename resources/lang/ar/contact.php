@@ -39,10 +39,10 @@ return [
                 'key' => 'casablanca',
                 'name' => 'الدار البيضاء',
                 'image' => asset('assets/images/sites/casablanca.avif'),
-                'address' => '14 Bd de Paris, 1ér étage N8, Casablanca 20000',
+                'address' => '14 Bd de Paris, Casablanca',
                 'phone' => '+212 80-8549717',
                 'email' => 'info@gls-sprachzentrum.ma',
-                'maps_query' => '14 Bd de Paris, 1ér étage N8, Casablanca 20000',
+                'maps_query' => '14 Bd de Paris, Casablanca',
             ],
             [
                 'key' => 'marrakech',

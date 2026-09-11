@@ -301,7 +301,7 @@ return [
         ],
 
         'addresses' => "
-            14 Bd de Paris, 1. Stock N°8, Casablanca 20000<br>
+            14 Bd de Paris, Casablanca<br>
             3ème étage Bureau 28, Immeuble Espace, Av. Yacoub El Mansour, Marrakech 40000<br>
             Avenue Fal Ould Oumeir, Gebäude 77, 1. Stock N°1, Agdal, Rabat<br>
             4ème étage, résidence Nezha, Av. Mohamed V, Kenitra 14000<br>
@@ -310,7 +310,7 @@ return [
         ",
 
         'address_by_city' => [
-            'casablanca' => '14 Bd de Paris, 1. Stock N°8, Casablanca 20000',
+            'casablanca' => '14 Bd de Paris, Casablanca',
             'marrakech'  => '3ème étage Bureau 28, Immeuble Espace, Av. Yacoub El Mansour, Marrakech 40000',
             'rabat'      => 'Avenue Fal Ould Oumeir, Gebäude 77, 1. Stock N°1, Agdal, Rabat',
             'kenitra'    => '4ème étage, résidence Nezha, Av. Mohamed V, Kenitra 14000',
@@ -331,7 +331,7 @@ return [
 
         'centers_list' => [
             'casablanca' => [
-                ['address' => '14 Bd de Paris, 1. Stock N°8, Casablanca 20000', 'maps_url' => 'https://maps.app.goo.gl/EdqBoa3KWEYjuzoq7', 'phones' => [['n' => '+212 808 549717', 't' => 'call'], ['n' => '+212 651 447651', 't' => 'whatsapp']]],
+                ['address' => '14 Bd de Paris, Casablanca', 'maps_url' => 'https://maps.app.goo.gl/EdqBoa3KWEYjuzoq7', 'phones' => [['n' => '+212 808 549717', 't' => 'call'], ['n' => '+212 651 447651', 't' => 'whatsapp']]],
             ],
             'marrakech' => [
                 ['address' => '3ème étage Bureau 28, Immeuble Espace, Av. Yacoub El Mansour, Marrakech 40000', 'maps_url' => 'https://maps.app.goo.gl/krR8pGZue3DW3yyv6', 'phones' => [['n' => '+212 669 515019', 't' => 'call'], ['n' => '+212 603 160277', 't' => 'whatsapp']]],

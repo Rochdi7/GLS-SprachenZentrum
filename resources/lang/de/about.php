@@ -65,7 +65,7 @@ return [
         'visit' => 'BESUCHEN SIE UNS',
         'follow' => 'FOLGEN SIE UNS',
         'addresses' => '
-            14 Bd de Paris, 1. Stock N°8, Casablanca 20000<br>
+            14 Bd de Paris, Casablanca<br>
             Avenue Yacoub El Mansour, 3. Stock Büro 28, Marrakech<br>
             Avenue Fal Ould Oumeir, 1. Stock N°1, Agdal, Rabat<br>
             4ème étage, résidence Nezha, Av. Mohamed V, Kenitra 14000<br>
