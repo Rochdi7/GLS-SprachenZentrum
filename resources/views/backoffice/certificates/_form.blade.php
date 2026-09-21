@@ -235,7 +235,7 @@
     </div>
 
     {{-- ============================================================ --}}
-    {{--   A1 SCORES — Lesen / Hören / Schreiben / Sprechen (Max 15) --}}
+    {{--   A1 SCORES — Lesen / Hören / Schreiben / Sprechen (Max 20) --}}
     {{-- ============================================================ --}}
     <div id="a1-scores" class="col-12" style="{{ $currentType !== 'a1' ? 'display:none' : '' }}">
         <div class="row">
@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const configs = {
         b2: { fields: ['reading_score','grammar_score','listening_score','writing_score','presentation_score','discussion_score','problemsolving_score'], total: 300 },
         a2: { fields: ['reading_score','listening_score','writing_score','speaking_score'], total: 100 },
-        a1: { fields: ['reading_score','listening_score','writing_score','speaking_score'], total: 60  },
+        a1: { fields: ['reading_score','listening_score','writing_score','speaking_score'], total: {{ $configs['a1']['reading'] * 4 }}  },
         b1: { fields: ['reading_score','listening_score','writing_score','speaking_score'], total: 240 },
     };
 

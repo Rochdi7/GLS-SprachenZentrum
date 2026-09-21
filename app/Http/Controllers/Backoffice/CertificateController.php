@@ -37,10 +37,10 @@ class CertificateController extends Controller
             'speaking'  => 25,
         ],
         'a1' => [
-            'reading'   => 15,
-            'listening' => 15,
-            'writing'   => 15,
-            'speaking'  => 15,
+            'reading'   => 20,
+            'listening' => 20,
+            'writing'   => 20,
+            'speaking'  => 20,
         ],
         'b1' => [
             'reading'   => 60,
