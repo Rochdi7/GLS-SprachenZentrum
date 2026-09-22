@@ -33,10 +33,10 @@ class StoreCertificateRequest extends FormRequest
         ];
 
         if ($type === 'a1') {
-            $rules['reading_score']   = 'required|integer|min:0|max:15';
-            $rules['listening_score'] = 'required|integer|min:0|max:15';
-            $rules['writing_score']   = 'required|integer|min:0|max:15';
-            $rules['speaking_score']  = 'required|integer|min:0|max:15';
+            $rules['reading_score']   = 'required|integer|min:0|max:20';
+            $rules['listening_score'] = 'required|integer|min:0|max:20';
+            $rules['writing_score']   = 'required|integer|min:0|max:20';
+            $rules['speaking_score']  = 'required|integer|min:0|max:20';
         } elseif ($type === 'a2') {
             $rules['reading_score']   = 'required|integer|min:0|max:25';
             $rules['listening_score'] = 'required|integer|min:0|max:25';
