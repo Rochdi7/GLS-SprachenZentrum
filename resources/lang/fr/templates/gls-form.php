@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'meta' => [
+        'title' => 'Inscription aux cours d’allemand | GLS Sprachenzentrum',
+        'description' => 'Inscrivez-vous en ligne à un cours d’allemand GLS : choisissez votre centre, votre niveau et vos horaires. Réponse rapide de notre équipe.',
+    ],
+
     'header' => [
         'title' => 'Inscription GLS',
         'subtitle' => 'Complétez les étapes pour envoyer votre demande',

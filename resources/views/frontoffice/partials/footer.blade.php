@@ -57,32 +57,32 @@
                 <ul class="list-unstyled footer-links">
                     {{-- IMPORTANT: /sites/{slug} --}}
                     <li>
-                        <a href="{{ LaravelLocalization::localizeUrl(route('front.sites.show', 'casablanca')) }}">
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.sites.show', 'gls-casablanca')) }}">
                             {{ __('footer.sites.casablanca') }}
                         </a>
                     </li>
                     <li>
-                        <a href="{{ LaravelLocalization::localizeUrl(route('front.sites.show', 'marrakech')) }}">
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.sites.show', 'gls-marrakech')) }}">
                             {{ __('footer.sites.marrakech') }}
                         </a>
                     </li>
                     <li>
-                        <a href="{{ LaravelLocalization::localizeUrl(route('front.sites.show', 'rabat')) }}">
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.sites.show', 'gls-rabat')) }}">
                             {{ __('footer.sites.rabat') }}
                         </a>
                     </li>
                     <li>
-                        <a href="{{ LaravelLocalization::localizeUrl(route('front.sites.show', 'kenitra')) }}">
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.sites.show', 'gls-kenitra')) }}">
                             {{ __('footer.sites.kenitra') }}
                         </a>
                     </li>
                     <li>
-                        <a href="{{ LaravelLocalization::localizeUrl(route('front.sites.show', 'sale')) }}">
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.sites.show', 'gls-sale')) }}">
                             {{ __('footer.sites.sale') }}
                         </a>
                     </li>
                     <li>
-                        <a href="{{ LaravelLocalization::localizeUrl(route('front.sites.show', 'agadir')) }}">
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.sites.show', 'gls-agadir')) }}">
                             {{ __('footer.sites.agadir') }}
                         </a>
                     </li>

@@ -1,12 +1,17 @@
 <?php
 
 return [
+    'meta' => [
+        'title' => 'Cours d’allemand à Agadir – Centre GLS Sprachenzentrum',
+        'description' => 'Centre GLS Agadir : cours d’allemand A1 à C1 en petits groupes, horaires matin, midi et soir, préparation Goethe et ÖSD. Adresse, horaires et inscription.',
+    ],
+
     // -------------------------
     // HERO SECTION
     // -------------------------
     'hero' => [
         'subtitle' => 'Apprenez l’allemand au cœur d’Agadir',
-        'title' => 'GLS Sprachenzentrum – Centre d’Agadir',
+        'title' => 'GLS Agadir – centre de langue allemande et cours d’allemand',
     ],
 
     // -------------------------

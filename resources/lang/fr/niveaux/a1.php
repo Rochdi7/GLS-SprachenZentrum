@@ -10,12 +10,13 @@ return [
     // ------------------------------
     // HERO
     // ------------------------------
-    'title' => 'Cours d’Allemand A1 – GLS',
+    'title' => 'Cours d’allemand A1 pour débutants au Maroc | GLS',
+    'meta_description' => 'Cours d’allemand A1 pour débutants à Casablanca, Rabat, Marrakech, Kénitra, Salé, Agadir et en ligne : objectifs du niveau, durée, horaires et préparation à l’examen A1.',
     'hero_alt' => 'Cours Allemand A1 GLS',
     'subtitle' => 'Cours d’Allemand A1 – GLS',
 
-    'title_main' => 'Apprenez l’Allemand Niveau A1',
-    'title_secondary' => 'Learn German at Level A1',
+    'title_main' => 'Cours d’allemand A1 – niveau débutant',
+    'title_secondary' => '',
 
     'paragraph' => '
         Vous débutez totalement en allemand ? Alors le niveau A1 est la première étape pour apprendre les bases essentielles.

@@ -1,5 +1,6 @@
 ﻿@extends('frontoffice.layouts.app')
-@section('title', __('sites/casablanca.hero.title'))
+@section('title', seo_trans('sites/casablanca.meta.title', __('sites/casablanca.hero.title')))
+@section('meta_description', seo_trans('sites/casablanca.meta.description'))
 
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/sites/marrakech.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/9onsol.css') }}">

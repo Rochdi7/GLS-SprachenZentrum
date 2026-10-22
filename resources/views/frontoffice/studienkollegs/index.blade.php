@@ -1,11 +1,17 @@
 @extends('frontoffice.layouts.app')
 
-@section('title', 'Studienkollegs in Germany')
-@section('description', 'Explore public Studienkollegs in Germany and prepare your university admission.')
+@section('title', seo_trans('studienkollegs.meta.title', 'Studienkollegs in Germany'))
+@section('meta_description', seo_trans('studienkollegs.meta.description'))
 
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/studienkollegs/studienkollegs.css') }}?v={{ @filemtime(public_path('assets/css/frontoffice/studienkollegs/studienkollegs.css')) ?: '1' }}">
 
 <style>
+    .studienkollegs-page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 1.25rem;
+    }
+
     .favorite-btn {
         cursor: pointer;
         transition: transform .2s ease, opacity .2s ease;
@@ -79,6 +85,8 @@
                 ],
             ];
         @endphp
+
+        <h1 class="studienkollegs-page-title reveal">{{ seo_trans('studienkollegs.page_title', 'Studienkollegs in Germany') }}</h1>
 
         <form method="GET" action="{{ url()->current() }}" class="studienkollegs-filters reveal delay-1" id="skFilters">
             <div class="sk-filters-row">

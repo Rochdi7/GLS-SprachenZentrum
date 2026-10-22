@@ -10,12 +10,13 @@ return [
     // ------------------------------
     // HERO
     // ------------------------------
-    'title' => 'Cours d’Allemand C1 – GLS',
+    'title' => 'Cours d’allemand C1 au Maroc | GLS Sprachenzentrum',
+    'meta_description' => 'Cours d’allemand C1 au Maroc et en ligne : niveau supérieur pour les études et la vie professionnelle en Allemagne. Objectifs, durée, horaires et préparation à l’examen C1.',
     'hero_alt' => 'Cours Allemand C1 GLS',
     'subtitle' => 'Cours d’Allemand C1 – GLS',
 
-    'title_main' => 'Atteignez le Niveau C1 en Allemand',
-    'title_secondary' => 'Learn German at Level C1',
+    'title_main' => 'Cours d’allemand C1 – niveau supérieur',
+    'title_secondary' => '',
 
     'paragraph' => "
         Le niveau C1 marque la maîtrise avancée de l’allemand : vous comprenez des textes exigeants,

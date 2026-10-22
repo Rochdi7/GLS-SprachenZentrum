@@ -2,7 +2,8 @@
 
 return [
     'meta' => [
-        'title' => 'Test de niveau Allemand | GLS Sprachenzentrum',
+        'title' => 'Test de niveau d’allemand gratuit en ligne (A1–C1) | GLS',
+        'description' => 'Évaluez votre niveau d’allemand gratuitement en ligne, du A1 au C1, et trouvez le cours GLS adapté. Résultat immédiat.',
     ],
 
     'hero' => [
@@ -11,7 +12,7 @@ return [
     ],
 
     'select' => [
-        'title' => 'Select your Quiz!',
+        'title' => 'Choisissez votre test',
         'subtitle' => 'Placement plus précis',
         'text' => "To provide a more accurate placement, we've created four different quizzes to better account for different German levels. Please select the most appropriate quiz!",
     ],

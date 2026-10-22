@@ -1,12 +1,17 @@
 <?php
 
 return [
+    'meta' => [
+        'title' => 'Cours d’allemand à Marrakech – Centre GLS Sprachenzentrum',
+        'description' => 'Centre GLS Marrakech : cours d’allemand A1 à C1 en petits groupes, horaires matin, midi et soir, préparation Goethe et ÖSD. Adresse, horaires et inscription.',
+    ],
+
     // -------------------------
     // HERO SECTION
     // -------------------------
     'hero' => [
         'subtitle' => 'Apprenez l’allemand au cœur de Marrakech',
-        'title' => 'GLS Sprachenzentrum – Centre de Marrakech',
+        'title' => 'GLS Marrakech – centre de langue allemande et cours d’allemand',
     ],
 
     // -------------------------

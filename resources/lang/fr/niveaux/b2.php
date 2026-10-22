@@ -10,12 +10,13 @@ return [
     // ------------------------------
     // HERO
     // ------------------------------
-    'title' => 'Cours d’Allemand B2 – GLS',
+    'title' => 'Cours d’allemand B2 au Maroc | GLS Sprachenzentrum',
+    'meta_description' => 'Cours d’allemand B2 au Maroc et en ligne : le niveau avancé demandé par les Studienkollegs et les universités. Objectifs, durée, horaires et préparation à l’examen B2.',
     'hero_alt' => 'Cours Allemand B2 GLS',
     'subtitle' => 'Cours d’Allemand B2 – GLS',
 
-    'title_main' => 'Atteignez le Niveau B2 en Allemand',
-    'title_secondary' => 'Learn German at Level B2',
+    'title_main' => 'Cours d’allemand B2 – niveau avancé',
+    'title_secondary' => '',
 
     'paragraph' => "
         Le niveau B2 vous permet de comprendre et de communiquer avec aisance

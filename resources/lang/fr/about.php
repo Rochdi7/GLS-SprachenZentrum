@@ -3,7 +3,8 @@
 return [
 
     'meta' => [
-        'title' => 'À propos | GLS Sprachenzentrum',
+        'title' => 'À propos de GLS – École de langue allemande au Maroc',
+        'description' => 'GLS Sprachenzentrum, école de langue allemande au Maroc : notre équipe, nos 6 centres, nos méthodes et nos certifications Goethe et ÖSD.',
     ],
 
     'hero' => [

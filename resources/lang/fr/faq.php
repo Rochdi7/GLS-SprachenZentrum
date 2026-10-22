@@ -3,7 +3,8 @@
 return [
 
     'meta' => [
-        'title' => 'FAQ – Foire Aux Questions',
+        'title' => 'FAQ – Questions fréquentes sur les cours d’allemand GLS',
+        'description' => 'Réponses aux questions fréquentes sur les cours d’allemand GLS au Maroc : niveaux, inscription, horaires, tarifs, examens Goethe et ÖSD, Ausbildung et études en Allemagne.',
     ],
 
     'hero' => [

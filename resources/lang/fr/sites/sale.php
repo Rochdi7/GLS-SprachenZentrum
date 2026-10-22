@@ -1,56 +1,61 @@
 <?php
 
 return [
+    'meta' => [
+        'title' => 'Cours d’allemand à Salé – Centre GLS Sprachenzentrum',
+        'description' => 'Centre GLS Salé : cours d’allemand A1 à C1 en petits groupes, horaires matin, midi et soir, préparation Goethe et ÖSD. Adresse, horaires et inscription.',
+    ],
+
     // ===========================
     // HERO SECTION
     // ===========================
     'hero' => [
-        'subtitle' => 'Learn German in the Heart of Salé',
-        'title' => 'GLS Sprachenzentrum – Salé Center',
+        'subtitle' => 'Apprenez l’allemand au cœur de Salé',
+        'title' => 'GLS Salé – centre de langue allemande et cours d’allemand',
     ],
 
     // ===========================
     // ABOUT SECTION
     // ===========================
     'about' => [
-        'title1' => 'Welcome to GLS Salé',
-        'subtitle1' => 'Your German Language Gateway in Diyar, Salé',
+        'title1' => 'Bienvenue au GLS Salé',
+        'subtitle1' => 'Votre porte d’entrée vers l’allemand à Diyar, Salé',
 
-        'p1' => 'The <strong>GLS Sprachenzentrum Salé</strong> is a modern center dedicated to helping learners
-                develop strong and practical German skills. Located at
+        'p1' => 'Le <strong>GLS Sprachenzentrum Salé</strong> est un centre moderne dédié à l’apprentissage
+                d’un allemand solide et pratique. Situé
                 <strong>Avenue Mohamed V, Rue Halima N°12, Diyar, Salé</strong>,
-                our center offers a warm and motivating learning environment for all levels.',
+                notre centre offre un cadre d’apprentissage chaleureux et motivant pour tous les niveaux.',
 
-        'p2' => 'Whether your dream is to study in Germany, prepare for Ausbildung,
-                or enhance your career opportunities, GLS Salé provides
-                <strong>immersive, structured, and results-focused German courses</strong>.',
+        'p2' => 'Que votre projet soit d’étudier en Allemagne, de préparer une Ausbildung
+                ou de booster votre carrière, GLS Salé vous propose des
+                <strong>cours d’allemand immersifs, structurés et orientés résultats</strong>.',
 
-        'title2' => 'What We Offer',
-        'subtitle2' => 'German Courses for Every Path',
+        'title2' => 'Ce que nous offrons',
+        'subtitle2' => 'Des cours d’allemand pour chaque projet',
 
-        'text_list' => 'At GLS Salé, you benefit from:',
+        'text_list' => 'Au GLS Salé, vous bénéficiez de :',
 
         'offers' => [
-            '1' => 'Intensive German Courses (A1–C1)',
-            '2' => 'Online German Lessons with live instructors',
-            '3' => 'Conversation & speaking workshops',
-            '4' => 'Visa, study & immigration guidance for Germany',
-            '5' => 'Soon: Official ÖSD & GLS Certified Exams',
+            '1' => 'Cours d’allemand intensifs (A1–C1)',
+            '2' => 'Cours d’allemand en ligne avec formateurs en direct',
+            '3' => 'Ateliers de conversation et d’expression orale',
+            '4' => 'Accompagnement visa, études et immigration vers l’Allemagne',
+            '5' => 'Bientôt : examens officiels ÖSD et GLS',
         ],
 
-        'p3' => 'Our training method emphasizes communication, interaction,
-                 and real-world usage — ensuring solid progress for every learner.',
+        'p3' => 'Notre méthode privilégie la communication, l’interaction
+                 et l’usage réel de la langue, pour des progrès solides à chaque niveau.',
     ],
 
     // ===========================
     // INFO CARDS
     // ===========================
     'info' => [
-        'title' => 'Information about our German Courses',
-        'certification' => 'Graduation',
-        'duration' => 'Duration',
-        'times' => 'Course Times',
-        'price' => 'Price',
+        'title' => 'Informations sur nos cours d’allemand',
+        'certification' => 'Certification',
+        'duration' => 'Durée',
+        'times' => 'Horaires',
+        'price' => 'Tarif',
     ],
 
     // ===========================
@@ -58,27 +63,27 @@ return [
     // ===========================
     'levels' => [
         'A1' => [
-            'graduation' => 'A1 Certification (Basic German)',
-            'duration' => '5 weeks<br>18 lessons per week',
-            'times' => 'Mon–Fri',
+            'graduation' => 'Certification A1 (Allemand débutant)',
+            'duration' => '5 semaines<br>18 leçons par semaine',
+            'times' => 'Lun–Ven',
             'price' => '998 DH',
         ],
         'A2' => [
-            'graduation' => 'A2 Certification (Elementary level)',
-            'duration' => '5 weeks<br>18 lessons per week',
-            'times' => 'Mon–Fri',
+            'graduation' => 'Certification A2 (Niveau élémentaire)',
+            'duration' => '5 semaines<br>18 leçons par semaine',
+            'times' => 'Lun–Ven',
             'price' => '1100 DH',
         ],
         'B1' => [
-            'graduation' => 'B1 Certification (Intermediate)',
-            'duration' => '6 weeks<br>18 lessons per week',
-            'times' => 'Mon–Fri',
+            'graduation' => 'Certification B1 (Niveau intermédiaire)',
+            'duration' => '6 semaines<br>18 leçons par semaine',
+            'times' => 'Lun–Ven',
             'price' => '1300 DH',
         ],
         'B2' => [
-            'graduation' => 'B2 Certification (Upper-Intermediate)',
-            'duration' => '6 weeks<br>20 lessons per week',
-            'times' => 'Mon–Fri',
+            'graduation' => 'Certification B2 (Niveau avancé)',
+            'duration' => '6 semaines<br>20 leçons par semaine',
+            'times' => 'Lun–Ven',
             'price' => '1500 DH',
         ],
     ],
@@ -102,25 +107,25 @@ return [
     // 9ONSOL SECTION
     // ===========================
     '9onsol' => [
-        'title' => 'Deutshow – Episode 4<br>Auditions from Salé',
+        'title' => 'Deutshow – Épisode 4<br>Auditions à Salé',
 
-        'text' => 'Welcome to <strong>Deutshow</strong>, Morocco’s first German-language talent competition! 🇩🇪🇲🇦 <br><br>
-                   In this Salé episode, learners present expressive performances that reflect their
-                   creativity, confidence, and growing German skills. <br><br>
-                   Produced by <strong>9onsol’s Talks</strong>, it highlights the dedication of GLS Salé students.',
+        'text' => 'Bienvenue dans <strong>Deutshow</strong>, le premier concours de talents en langue allemande au Maroc ! 🇩🇪🇲🇦 <br><br>
+                   Dans cet épisode à Salé, les apprenants présentent des prestations expressives qui reflètent
+                   leur créativité, leur confiance et leurs progrès en allemand. <br><br>
+                   Produit par <strong>9onsol’s Talks</strong>, il met en lumière l’engagement des étudiants du GLS Salé.',
 
-        'button' => 'More Episodes',
+        'button' => 'Plus d’épisodes',
     ],
 
     // ===========================
     // CTA SECTION
     // ===========================
     'cta' => [
-        'title' => 'Ready to Start Your German Journey<br>in Salé?',
-        'text' => 'Book your free consultation at GLS Salé and get full guidance about studying or
-                     working in Germany. Our team will help you understand the programs, visa process,
-                     schedules, and the best course for your goals.',
-        'button' => 'Book Your Consultation',
+        'title' => 'Prêt à commencer votre parcours en allemand<br>à Salé ?',
+        'text' => 'Réservez votre consultation gratuite au GLS Salé et obtenez un accompagnement complet pour étudier ou
+                     travailler en Allemagne. Notre équipe vous explique les programmes, les démarches de visa,
+                     les horaires et le cours le plus adapté à vos objectifs.',
+        'button' => 'Réserver ma consultation',
     ],
 
     // -------------------------

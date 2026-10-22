@@ -1,6 +1,7 @@
 @extends('frontoffice.layouts.app')
 
 @section('title', __('niveaux/a1.title'))
+@section('meta_description', seo_trans('niveaux/a1.meta_description'))
 
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/niveau/a1.css') }}">
 
@@ -33,10 +34,12 @@
                 <!-- TITLE -->
                 <h1 class="hero_title is-course">
                     {{ __('niveaux/a1.title_main') }}
+                    @if(trim(__('niveaux/a1.title_secondary')) !== '')
                     <br>
                     <span style="font-size:1.4rem; color:var(--light--blue); font-weight:500;">
                         {{ __('niveaux/a1.title_secondary') }}
                     </span>
+                    @endif
                 </h1>
 
                 <!-- PARAGRAPH -->

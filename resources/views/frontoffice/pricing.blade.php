@@ -1,6 +1,7 @@
 @extends('frontoffice.layouts.app')
 
 @section('title', __('pricing.meta_title'))
+@section('meta_description', seo_trans('pricing.meta_description'))
 
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/pricing/pricing.css') }}">
 

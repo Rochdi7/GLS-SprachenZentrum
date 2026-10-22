@@ -118,11 +118,13 @@
                         <span class="hero-title__top hero-title__top--line2" dir="{{ $topDir }}">{!! $top2Html !!}</span>
                     @endif
 
-                    @if(!$isAr)
-                        <span class="hero-title__bottom" dir="rtl">{!! $botHtml !!}</span>
-                    @endif
-
                 </h1>
+                @if(!$isAr)
+                    {{-- Arabic tagline: same animation, but outside the H1 so the heading stays one language --}}
+                    <p class="hero-title hero-title--animated hero-title__bottom-wrap">
+                        <span class="hero-title__bottom" dir="rtl">{!! $botHtml !!}</span>
+                    </p>
+                @endif
             </div>
         </section>
 

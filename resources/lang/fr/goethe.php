@@ -2,12 +2,13 @@
 
 return [
     'meta' => [
-        'title' => 'Examen Goethe – GLS Sprachenzentrum Maroc',
+        'title' => 'Examen Goethe au Maroc : préparation et certificat | GLS',
+        'description' => 'Préparez l’examen Goethe (A1 à C1) au Maroc avec GLS : préparation interne, examens blancs, inscription et calendrier des sessions. Obtenez votre Goethe-Zertifikat.',
     ],
 
     'hero' => [
         'subtitle' => 'Examen Goethe au Maroc',
-        'title' => 'Certification Allemande Goethe chez GLS',
+        'title' => 'Examen Goethe au Maroc – préparation et certification',
         'alt' => 'Examen Goethe GLS Maroc',
     ],
 

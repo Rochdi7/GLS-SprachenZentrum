@@ -4,6 +4,7 @@ return [
 
     'meta' => [
         'title' => 'Contact | GLS Sprachenzentrum',
+        'description' => 'Contactez GLS Sprachenzentrum : adresses, horaires et téléphones de nos 6 centres au Maroc (Casablanca, Rabat, Marrakech, Kénitra, Salé, Agadir) et formulaire de contact.',
     ],
 
     'hero' => [

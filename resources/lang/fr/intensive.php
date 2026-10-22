@@ -5,14 +5,15 @@ return [
     // =========================================================
     // META
     // =========================================================
-    'meta_title' => 'Cours d’Allemand Intensifs – A1 à C1 | GLS Sprachenzentrum',
+    'meta_title' => 'Cours d’allemand intensifs A1 à C1 au Maroc | GLS',
+    'meta_description' => 'Cours d’allemand intensifs et formation en allemand au Maroc, du niveau A1 au C1 : petits groupes, 6 centres, préparation aux examens Goethe et ÖSD. Inscription en ligne.',
 
     // =========================================================
     // HERO SECTION
     // =========================================================
     'hero' => [
         'subtitle' => 'Cours intensifs d’allemand du niveau A1 au niveau C1',
-        'title'    => 'Cours Intensifs d’Allemand – GLS Sprachenzentrum',
+        'title'    => 'Cours d’allemand intensifs – A1 à C1',
         'img_alt'  => 'Cours intensifs de langue allemande GLS',
     ],
 

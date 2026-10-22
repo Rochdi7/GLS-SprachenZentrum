@@ -3,8 +3,8 @@
 return [
 
     'meta' => [
-        'title'       => 'Histoires des Étudiants – GLS Sprachenzentrum',
-        'description' => 'Découvrez comment des étudiants marocains ont pu rejoindre l’Allemagne grâce à l’accompagnement GLS – Ausbildung, Studienkolleg, contrats de travail, études universitaires et plus encore.',
+        'title'       => 'Témoignages : du Maroc à l’Allemagne (Ausbildung, Studienkolleg) | GLS',
+        'description' => 'Ils ont appris l’allemand chez GLS et sont partis en Allemagne : Ausbildung, Studienkolleg, études et contrats de travail. Découvrez leurs parcours.',
     ],
 
     'hero' => [

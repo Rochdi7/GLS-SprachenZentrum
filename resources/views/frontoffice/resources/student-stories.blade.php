@@ -1,7 +1,7 @@
 @extends('frontoffice.layouts.app')
 
 @section('title', __('student-stories.meta.title'))
-@section('meta_description', __('student-stories.meta.description'))
+@section('meta_description', seo_trans('student-stories.meta.description'))
 
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/ressource/student-stories.css') }}">
 

@@ -1,7 +1,7 @@
 @extends('frontoffice.layouts.app')
 
-@section('title', $studienkolleg->meta_title ?? $studienkolleg->name . ' | Studienkolleg in Germany')
-@section('description', $studienkolleg->meta_description ?? 'Detailed information about ' . $studienkolleg->name)
+@section('title', $studienkolleg->meta_title ?? seo_trans('studienkollegs.show.title', $studienkolleg->name . ' | Studienkolleg in Germany', ['name' => $studienkolleg->name, 'city' => $studienkolleg->city]))
+@section('meta_description', $studienkolleg->meta_description ?? seo_trans('studienkollegs.show.description', '', ['name' => $studienkolleg->name, 'city' => $studienkolleg->city]))
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/studienkollegs/studienkolleg-show.css') }}">

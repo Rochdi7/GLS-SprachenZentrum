@@ -2,12 +2,13 @@
 
 return [
     'meta' => [
-        'title' => 'Examen ÖSD – GLS Sprachenzentrum Maroc',
+        'title' => 'Examen ÖSD au Maroc : préparation et certification | GLS',
+        'description' => 'Passez l’examen ÖSD au Maroc avec GLS : préparation en interne, sessions sur place dans nos centres, certificat reconnu en Allemagne et en Autriche.',
     ],
 
     'hero' => [
         'subtitle' => 'Examen ÖSD au Maroc',
-        'title' => 'Certification Allemande ÖSD chez GLS',
+        'title' => 'Examen ÖSD au Maroc – préparation et certification',
         'alt' => 'Examen ÖSD GLS Maroc',
     ],
 

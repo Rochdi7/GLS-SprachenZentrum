@@ -1,12 +1,17 @@
 <?php
 
 return [
+    'meta' => [
+        'title' => 'Cours d’allemand à Rabat – Centre GLS Sprachenzentrum',
+        'description' => 'Centre GLS Rabat : cours d’allemand A1 à C1 en petits groupes, horaires matin, midi et soir, préparation Goethe et ÖSD. Adresse, horaires et inscription.',
+    ],
+
     // -------------------------
     // HERO SECTION
     // -------------------------
     'hero' => [
         'subtitle' => 'Apprenez l’allemand au cœur de Rabat',
-        'title' => 'GLS Sprachenzentrum – Centre de Rabat',
+        'title' => 'GLS Rabat – centre de langue allemande et cours d’allemand',
     ],
 
     // -------------------------

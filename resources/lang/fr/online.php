@@ -8,7 +8,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'meta' => [
-        'title' => 'Cours d’allemand en ligne – GLS Sprachenzentrum',
+        'title' => 'Cours d’allemand en ligne A1 à C1 | GLS Sprachenzentrum',
+        'description' => 'Apprenez l’allemand en ligne avec GLS : cours d’allemand à distance en petits groupes, du A1 au C1, horaires matin, midi et soir, certification à la clé.',
     ],
 
     'buttons' => [
@@ -28,8 +29,8 @@ return [
                           le tout depuis chez vous.",
 
         'hidden' => [
-            'subtitle' => 'Cours d’allemand A1',
-            'title' => 'Apprenez l’allemand – Niveau A1',
+            'subtitle' => 'Cours d’allemand en ligne',
+            'title' => 'Cours d’allemand en ligne : apprenez l’allemand à distance',
             'text' => "Vous avez peu ou pas de connaissances en allemand ?<br>
                        Le cours A1 est le point de départ idéal pour vous.",
         ],

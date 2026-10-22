@@ -1,6 +1,9 @@
 {{-- resources/views/frontoffice/gls-inscription.blade.php --}}
 @extends('frontoffice.layouts.app')
 
+@section('title', seo_trans('templates/gls-form.meta.title'))
+@section('meta_description', seo_trans('templates/gls-form.meta.description'))
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/gls-form-page.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">

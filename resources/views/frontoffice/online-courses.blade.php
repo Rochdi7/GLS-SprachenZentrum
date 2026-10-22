@@ -1,6 +1,7 @@
 @extends('frontoffice.layouts.app')
 
 @section('title', __('online.meta.title'))
+@section('meta_description', seo_trans('online.meta.description'))
 
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/online/online-courses.css') }}">
 
@@ -19,9 +20,10 @@
 
             <div class="text-block-4 reveal delay-1">{{ __('online.hero.hidden.subtitle') }}</div>
 
-            <h1 class="hero_title is-course reveal fade-blur-title delay-2">
+            {{-- Demoted from <h1>: this hero is display:none (.is-course-hero.hide) and the page already has its H1 below --}}
+            <p class="hero_title is-course reveal fade-blur-title delay-2">
                 {{ __('online.hero.hidden.title') }}
-            </h1>
+            </p>
 
             <p class="course-hero_paragraph reveal delay-3">
                 {!! __('online.hero.hidden.text') !!}

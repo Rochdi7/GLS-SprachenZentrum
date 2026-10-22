@@ -1,6 +1,7 @@
 @extends('frontoffice.layouts.app')
 
 @section('title', __('quiz/level_test.meta.title'))
+@section('meta_description', seo_trans('quiz/level_test.meta.description'))
 
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/quiz/discover.css') }}">
 

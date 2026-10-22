@@ -10,7 +10,8 @@ return [
     | META & HERO
     |--------------------------------------------------------------------------
     */
-    'meta_title' => 'Tarifs des Cours d’Allemand – GLS Sprachenzentrum',
+    'meta_title' => 'Tarifs des cours d’allemand au Maroc | GLS Sprachenzentrum',
+    'meta_description' => 'Prix et tarifs des cours d’allemand GLS au Maroc : cours intensifs, cours en ligne et préparation aux examens. Tarifs clairs, sans frais cachés.',
 
     'hero' => [
         'subtitle' => 'Investissez dans votre avenir en Allemagne',

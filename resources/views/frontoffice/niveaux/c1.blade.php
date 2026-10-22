@@ -1,6 +1,7 @@
 @extends('frontoffice.layouts.app')
 
 @section('title', __('niveaux/c1.title'))
+@section('meta_description', seo_trans('niveaux/c1.meta_description'))
 
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/niveau/a1.css') }}">
 
@@ -34,10 +35,12 @@
                 <!-- TITLE -->
                 <h1 class="hero_title is-course fade-blur-title reveal delay-3">
                     {!! __('niveaux/c1.title_main') !!}
+                    @if(trim(__('niveaux/c1.title_secondary')) !== '')
                     <br>
                     <span style="font-size:1.4rem; color:var(--light--blue); font-weight:500;" class="reveal delay-3">
                         {!! __('niveaux/c1.title_secondary') !!}
                     </span>
+                    @endif
                 </h1>
 
                 <!-- PARAGRAPH -->

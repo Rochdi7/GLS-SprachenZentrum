@@ -1,6 +1,7 @@
 @extends('frontoffice.layouts.app')
 
 @section('title', __('intensive.meta_title'))
+@section('meta_description', seo_trans('intensive.meta_description'))
 
 {{-- Page-specific stylesheet --}}
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/intensive/intensive-courses.css') }}">

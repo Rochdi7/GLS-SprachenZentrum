@@ -10,12 +10,13 @@ return [
     // ------------------------------
     // HERO
     // ------------------------------
-    'title' => 'Cours d’Allemand B1 – GLS',
+    'title' => 'Cours d’allemand B1 au Maroc | GLS Sprachenzentrum',
+    'meta_description' => 'Cours d’allemand B1 au Maroc et en ligne : niveau intermédiaire requis pour l’Ausbildung et de nombreux visas. Objectifs, durée, horaires et préparation à l’examen B1.',
     'hero_alt' => 'Cours Allemand B1 GLS',
     'subtitle' => 'Cours d’Allemand B1 – GLS',
 
-    'title_main' => 'Atteignez le Niveau B1 en Allemand',
-    'title_secondary' => 'Learn German at Level B1',
+    'title_main' => 'Cours d’allemand B1 – niveau intermédiaire',
+    'title_secondary' => '',
 
     'paragraph' => "
         Le niveau B1 marque une étape essentielle : comprendre et communiquer sur

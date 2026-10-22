@@ -1,6 +1,7 @@
 @extends('frontoffice.layouts.app')
 
 @section('title', __('about.meta.title'))
+@section('meta_description', seo_trans('about.meta.description'))
 
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/about/about.css') }}">
 

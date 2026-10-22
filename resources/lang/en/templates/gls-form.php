@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'meta' => [
+        'title' => 'Enrol in a German course | GLS Sprachenzentrum',
+        'description' => 'Enrol online in a GLS German course: choose your centre, level and schedule. Quick reply from our team.',
+    ],
+
     'header' => [
         'title' => 'GLS Registration',
         'subtitle' => 'Complete the steps to submit your request',

@@ -10,12 +10,13 @@ return [
     // ------------------------------
     // HERO
     // ------------------------------
-    'title' => 'Cours d’Allemand A2 – GLS',
+    'title' => 'Cours d’allemand A2 au Maroc | GLS Sprachenzentrum',
+    'meta_description' => 'Cours d’allemand A2 dans nos 6 centres au Maroc et en ligne : consolidez vos bases, objectifs du niveau, durée, horaires et préparation à l’examen A2.',
     'hero_alt' => 'Cours Allemand A2 GLS',
     'subtitle' => 'Cours d’Allemand A2 – GLS',
 
-    'title_main' => 'Passez au Niveau A2 en Allemand',
-    'title_secondary' => 'Learn German at Level A2',
+    'title_main' => 'Cours d’allemand A2 – consolidez vos bases',
+    'title_secondary' => '',
 
     'paragraph' => "
         Le niveau A2 vous permet d’élargir vos bases et de commencer à communiquer

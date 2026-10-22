@@ -1,5 +1,6 @@
 ﻿@extends('frontoffice.layouts.app')
-@section('title', 'GLS Agadir | Centre de langue allemande')
+@section('title', seo_trans('sites/agadir.meta.title', __('sites/agadir.hero.title')))
+@section('meta_description', seo_trans('sites/agadir.meta.description'))
 
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/sites/marrakech.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/9onsol.css') }}">
