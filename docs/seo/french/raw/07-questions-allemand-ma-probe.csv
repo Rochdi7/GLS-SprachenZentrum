@@ -1,0 +1,4 @@
+﻿keyword;database;language;search_volume;cpc;competition;keyword_difficulty;trend_data;intent;source_report;retrieved_at;data_freshness;notes
+"je t aime en allemand";ma;fr;110;0;0.33;;0.24,0.24,0.01,1.00,0.12,0.03,0.01,0.01,0.01,0.03,0.07,0.01;unclassified;phrase_questions;2026-10-21T13:48:29+00:00;fresh_api_retrieval;"competition = Semrush paid-competition index (0-1), not organic"
+"en allemand";ma;fr;40;0;0.01;;0.05,1.00,0.19,0.24,0.05,0.14,0.05,0.05,0.05,0.33,0.24,0.05;unclassified;phrase_questions;2026-10-21T13:48:29+00:00;fresh_api_retrieval;"competition = Semrush paid-competition index (0-1), not organic"
+"comment dresser chien berger allemand";ma;fr;30;0;0.33;;0.11,0.11,1.00,0.11,0.33,0.11,0.22,0.11,1.00,0.22,0.11,0.11;"informational (heuristic)";phrase_questions;2026-10-21T13:48:29+00:00;fresh_api_retrieval;"competition = Semrush paid-competition index (0-1), not organic"
