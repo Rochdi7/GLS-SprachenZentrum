@@ -6,11 +6,11 @@
     <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Nom complet <span class="text-danger">*</span></label>
         <input type="text" name="name"
-               class="form-control @error(‘name’) is-invalid @enderror"
-               value="{{ old(‘name’, $teacher->name ?? ‘’) }}"
+               class="form-control @error('name') is-invalid @enderror"
+               value="{{ old('name', $teacher->name ?? '') }}"
                placeholder="Nom de l’enseignant"
                required>
-        @error(‘name’) <div class="invalid-feedback">{{ $message }}</div> @enderror
+        @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
     {{-- CENTRES AFFECTÉS (multi) --}}
