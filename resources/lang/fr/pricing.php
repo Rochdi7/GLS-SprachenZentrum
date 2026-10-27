@@ -2,6 +2,9 @@
 
 return [
 
+
+    'registration_fee' => 'Frais d’inscription : <strong>500 DH</strong> (payés une seule fois lors de la première inscription).',
+
     /*
     |--------------------------------------------------------------------------
     | META & HERO

@@ -2,6 +2,9 @@
 
 return [
 
+
+    'registration_fee' => 'Registration fee: <strong>500 DH</strong> (paid only once, at your first enrollment).',
+
     /*
     |--------------------------------------------------------------------------
     | META & HERO

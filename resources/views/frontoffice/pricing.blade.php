@@ -81,11 +81,7 @@
             </div>
 
             <div class="text-block-6 reveal delay-2">
-                Frais d’inscription : <strong>300 DH</strong> (payés une seule fois lors de la première inscription).
-            </div>
-
-            <div class="text-block-6 reveal delay-2">
-                Inscription niveau B2 : <strong>200 DH</strong> (payée une seule fois).
+                {!! __('pricing.registration_fee') !!}
             </div>
         </div>
 

@@ -2,6 +2,9 @@
 
 return [
 
+
+    'registration_fee' => 'Anmeldegebühr: <strong>500 DH</strong> (einmalig bei der ersten Anmeldung zu zahlen).',
+
     'meta_title' => 'Deutschkurs-Preise – GLS Sprachenzentrum',
 
     'hero' => [
