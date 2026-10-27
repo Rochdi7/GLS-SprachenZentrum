@@ -44,3 +44,8 @@ Semrush reports retrieved at the timestamps above. The exact update date of the 
 
 ## Files written by this task
 `docs/seo/french/07-homepage-keyword-expansion.csv`, `07-keyword-page-mapping.csv`, `07-homepage-keyword-analysis.md`, `07-research-log.md`, `raw/07-*.csv`. No application, translation, view, route or sitemap file was modified; nothing staged or committed.
+
+## Addendum 2026-10-27 — KD for 20 target keywords + Excel export
+- 1 live call, `phrase_kdi`, database `ma`, 20 keywords, **1,000 units** (budget 1,000, guard estimate 50/keyword, no overshoot). Export: `raw/08-kd-top20-ma.csv`.
+- Real KD returned only for `ausbildung` 64 and `centre allemand` 44. The other 18 (volumes 20–260) returned 0 = not computed. Combined with 2026-10-21 (9 of 12 at 0), Semrush computes KD in `ma` only for roughly ≥ 300 searches/month. Buying KD for the remaining 62 keywords (~3,100 units) would return almost only zeros — not recommended.
+- Consolidated workbook: `GLS-keywords-research.xlsx` (Read me · All keywords (Morocco) 151 rows · By page 91 rows · France reference 8 rows). Type = intent classification by wording, SERP-confirmed for 3 keywords.

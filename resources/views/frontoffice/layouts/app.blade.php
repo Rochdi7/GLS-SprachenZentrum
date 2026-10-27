@@ -61,13 +61,15 @@
 
     @stack('styles')
 
+    {{-- Ahrefs Web Analytics: cookieless, no personal data → not consent-gated. --}}
+    <script src="https://analytics.ahrefs.com/analytics.js" data-key="7Enhn4vHnDv05czYK/csLQ" async></script>
+
     {{-- Tracking config (consumed by consent-loader.js). Scripts load ONLY after cookie consent. --}}
     <script>
         window.GLS_TRACKING = {
             pixelId: '407443676615251',
             gtagId: 'AW-17817493313',
             ga4Id: 'G-STVL64P4J1',
-            ahrefsKey: 'vKoc9I4c7spqw+TRXsjGtw',
             tawkSrc: 'https://embed.tawk.to/69af4ebd7d962c1c35e7812e/1jjacn54k',
             tawkDelay: 10000,
             tawkStyle: {
@@ -153,7 +155,7 @@
 
     @include('frontoffice.templates.consultation-form')
 
-    {{-- Tracking (Google Ads/GTM, Ahrefs, Meta Pixel, Tawk.to) is loaded by
+    {{-- Tracking (Google Ads/GTM, Meta Pixel, Tawk.to) is loaded by
          assets/js/consent-loader.js ONLY after the visitor accepts cookies. --}}
 
     {{-- Disable Inspect/DevTools (Production Only) - temporarily commented out --}}

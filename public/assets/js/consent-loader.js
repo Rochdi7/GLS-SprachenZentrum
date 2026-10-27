@@ -6,8 +6,8 @@
 
    TWO STRICT LANES:
 
-   1) TRACKING / MARKETING  — Facebook Pixel, Google Tag (Ads/GTM), Ahrefs Analytics,
-      and Tawk.to chat.
+   1) TRACKING / MARKETING  — Facebook Pixel, Google Tag (Ads/GTM), and Tawk.to chat.
+      (Ahrefs Analytics is cookieless and loads directly from the layout <head>.)
       Loaded **only** after explicit consent: localStorage 'gls_cookie_choice' === 'accepted'.
       NOT loaded on scroll / interaction / timeout. NOT loaded on a fresh visit with no
       choice, and NOT loaded if the visitor rejected. (GDPR-safe.)
@@ -17,7 +17,7 @@
         - Vimeo / YouTube players: loaded on user click (see video-facade.js).
       These do not require consent.
 
-   Config (Pixel ID, Ads ID, Ahrefs key, Tawk src) is passed from Blade via
+   Config (Pixel ID, Ads ID, Tawk src) is passed from Blade via
    window.GLS_TRACKING so we never hardcode IDs here.
 ========================================================= */
 (function () {
@@ -91,13 +91,6 @@
         }
     }
 
-    /* ---- Ahrefs Analytics ---- */
-    function loadAhrefs() {
-        if (!cfg.ahrefsKey || window.__glsAhrefsLoaded) return;
-        window.__glsAhrefsLoaded = true;
-        injectScript('https://analytics.ahrefs.com/analytics.js', { 'data-key': cfg.ahrefsKey });
-    }
-
     /* ---- Tawk.to live chat (sets its own cookies → consent-gated, +10s idle) ---- */
     function loadTawk() {
         if (!cfg.tawkSrc || window.Tawk_API) return;
@@ -124,7 +117,6 @@
         trackingLoaded = true;
         loadPixel();
         loadGtag();
-        loadAhrefs();
         loadTawk();
     }
 

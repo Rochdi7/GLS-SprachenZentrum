@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://player.vimeo.com">
     <link rel="preconnect" href="https://i.vimeocdn.com">
     <link rel="preconnect" href="https://f.vimeocdn.com">
-    <link rel="preconnect" href="https://basemaps.cartocdn.com" crossorigin>
+    <link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 @endpush
@@ -675,12 +675,13 @@
                             const map = L.map('glsCentresMap', {
                                 zoomControl: true,
                                 scrollWheelZoom: false,
-                                attributionControl: false,
+                                attributionControl: true,
                             }).setView([32.0, -7.5], 6);
 
-                            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                                maxZoom: 18,
-                            }).addTo(map);
+                            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                                maxZoom: 19,
+                            }).addTo(map).getContainer().style.filter = 'grayscale(1) brightness(1.06) contrast(0.9)';
 
                             const baseUrl = @json(LaravelLocalization::localizeUrl('/sites/'));
                             const legend = document.getElementById('glsMapLegend');

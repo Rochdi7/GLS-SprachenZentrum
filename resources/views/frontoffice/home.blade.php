@@ -27,7 +27,7 @@
     {{-- Leaflet (map) is loaded lazily when the map scrolls into view — see the map
          section script below. Only preconnect here; do NOT load the CSS/JS eagerly. --}}
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
-    <link rel="preconnect" href="https://basemaps.cartocdn.com" crossorigin>
+    <link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin>
     {{-- Calligraphic Arabic font for hero bottom line --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1271,12 +1271,13 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                         const map = L.map('glsCentresMap', {
                             zoomControl: true,
                             scrollWheelZoom: false,
-                            attributionControl: false,
+                            attributionControl: true,
                         }).setView([32.0, -7.5], 7);
 
-                        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                            maxZoom: 18,
-                        }).addTo(map);
+                        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                            maxZoom: 19,
+                        }).addTo(map).getContainer().style.filter = 'grayscale(1) brightness(1.06) contrast(0.9)';
 
                         const baseUrl = @json(LaravelLocalization::localizeUrl('/sites/'));
                         const legend = document.getElementById('glsMapLegend');
