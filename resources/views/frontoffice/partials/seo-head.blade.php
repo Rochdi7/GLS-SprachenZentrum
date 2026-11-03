@@ -8,7 +8,17 @@
 
     $seoTitle = $decodeMeta($__env->yieldContent('title')) ?: ($defaults['title'] ?? 'GLS Sprachenzentrum');
     $seoDescription = $decodeMeta($__env->yieldContent('meta_description')) ?: ($defaults['description'] ?? '');
-    $canonicalUrl = LaravelLocalization::getLocalizedURL($locale, null, [], true);
+    // Canonical + hreflang without query strings (?ref=, ?utm_…, filters) so parameter
+    // variants consolidate on one URL. Only ?page= is kept for paginated lists.
+    $cleanSeoUrl = function (string $url): string {
+        $parts = parse_url($url);
+        parse_str($parts['query'] ?? '', $query);
+        $kept = array_intersect_key($query, ['page' => true]);
+        $base = strtok($url, '?');
+
+        return $kept ? $base.'?'.http_build_query($kept) : $base;
+    };
+    $canonicalUrl = $cleanSeoUrl(LaravelLocalization::getLocalizedURL($locale, null, [], true));
     $ogImage = asset(ltrim(config('seo.og_image', '/assets/images/IMG_4399.avif'), '/'));
     $ogLocaleMap = ['fr' => 'fr_FR', 'en' => 'en_US', 'de' => 'de_DE', 'ar' => 'ar_MA'];
     $ogLocale = $ogLocaleMap[$locale] ?? 'fr_FR';
@@ -22,9 +32,9 @@
 <link rel="canonical" href="{{ $canonicalUrl }}">
 @foreach (LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
     <link rel="alternate" hreflang="{{ $localeCode }}"
-        href="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], true) }}">
+        href="{{ $cleanSeoUrl(LaravelLocalization::getLocalizedURL($localeCode, null, [], true)) }}">
 @endforeach
-<link rel="alternate" hreflang="x-default" href="{{ LaravelLocalization::getLocalizedURL('fr', null, [], true) }}">
+<link rel="alternate" hreflang="x-default" href="{{ $cleanSeoUrl(LaravelLocalization::getLocalizedURL('fr', null, [], true)) }}">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="GLS Sprachenzentrum">

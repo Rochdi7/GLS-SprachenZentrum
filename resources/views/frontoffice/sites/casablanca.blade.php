@@ -2,6 +2,10 @@
 @section('title', seo_trans('sites/casablanca.meta.title', __('sites/casablanca.hero.title')))
 @section('meta_description', seo_trans('sites/casablanca.meta.description'))
 
+@push('seo-schema')
+    {!! \App\Support\Schema\GlsSchema::centre('casablanca', 'Casablanca') !!}
+@endpush
+
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/sites/marrakech.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/9onsol.css') }}">
 
@@ -56,6 +60,14 @@
                 </ul>
 
                 <p class="reveal delay-3">{!! __('sites/casablanca.about.p3') !!}</p>
+
+                @if (\Illuminate\Support\Facades\Lang::has('sites/casablanca.network.anchor', app()->getLocale(), false))
+
+                    <p class="reveal delay-3">{{ __('sites/casablanca.network.before') }}
+
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.home')) }}">{{ __('sites/casablanca.network.anchor') }}</a>{{ __('sites/casablanca.network.after') }}</p>
+
+                @endif
 
             </div>
         </div>

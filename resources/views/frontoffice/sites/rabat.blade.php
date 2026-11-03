@@ -2,6 +2,10 @@
 @section('title', seo_trans('sites/rabat.meta.title', __('sites/rabat.hero.title')))
 @section('meta_description', seo_trans('sites/rabat.meta.description'))
 
+@push('seo-schema')
+    {!! \App\Support\Schema\GlsSchema::centre('rabat', 'Rabat') !!}
+@endpush
+
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/sites/marrakech.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/9onsol.css') }}">
 
@@ -58,6 +62,14 @@
                 </ul>
 
                 <p class="reveal delay-3">{!! __('sites/rabat.about.p3') !!}</p>
+
+                @if (\Illuminate\Support\Facades\Lang::has('sites/rabat.network.anchor', app()->getLocale(), false))
+
+                    <p class="reveal delay-3">{{ __('sites/rabat.network.before') }}
+
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.home')) }}">{{ __('sites/rabat.network.anchor') }}</a>{{ __('sites/rabat.network.after') }}</p>
+
+                @endif
 
             </div>
         </div>

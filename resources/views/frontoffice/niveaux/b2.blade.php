@@ -311,7 +311,7 @@
 
             <p class="cta-box-subtext reveal delay-1">{!! __('niveaux/b2.cta_text') !!}</p>
 
-            <a href="/online-registration" class="cta-btn reveal delay-2" data-bs-toggle="modal"
+            <a href="{{ LaravelLocalization::localizeUrl(route('front.gls-inscription')) }}" class="cta-btn reveal delay-2" data-bs-toggle="modal"
                 data-bs-target="#consultationModal">
                 {{ __('niveaux/b2.cta_btn') }}
             </a>

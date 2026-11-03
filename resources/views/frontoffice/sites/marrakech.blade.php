@@ -2,6 +2,10 @@
 @section('title', seo_trans('sites/marrakech.meta.title', __('sites/marrakech.hero.title')))
 @section('meta_description', seo_trans('sites/marrakech.meta.description'))
 
+@push('seo-schema')
+    {!! \App\Support\Schema\GlsSchema::centre('marrakech', 'Marrakech') !!}
+@endpush
+
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/sites/marrakech.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/9onsol.css') }}">
 
@@ -58,6 +62,14 @@
                 </ul>
 
                 <p class="reveal delay-3">{!! __('sites/marrakech.about.p3') !!}</p>
+
+                @if (\Illuminate\Support\Facades\Lang::has('sites/marrakech.network.anchor', app()->getLocale(), false))
+
+                    <p class="reveal delay-3">{{ __('sites/marrakech.network.before') }}
+
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.home')) }}">{{ __('sites/marrakech.network.anchor') }}</a>{{ __('sites/marrakech.network.after') }}</p>
+
+                @endif
 
             </div>
         </div>

@@ -2,15 +2,15 @@
 
 return [
 
-    'meta_title' => "Apprendre l'allemand au Maroc | Cours d'allemand GLS",
-    'meta_description' => "Apprenez l'allemand au Maroc avec GLS : cours d'allemand A1 à C1, préparation aux examens Goethe et ÖSD, 6 centres (Casablanca, Rabat, Marrakech…).",
+    'meta_title' => "Centre allemand au Maroc – Apprendre l'allemand | GLS",
+    'meta_description' => "GLS Sprachenzentrum, centre allemand au Maroc : cours d'allemand A1 à C1 à Casablanca, Rabat, Marrakech, Kénitra, Salé, Agadir et en ligne.",
 
     // ========================
     // 🔵 HERO SECTION
     // ========================
     'hero' => [
-        'title' => "Apprendre l'allemand au Maroc",
-        'title2' => "Votre premier pas vers l'Allemagne",
+        'title' => "Centre allemand au Maroc",
+        'title2' => "Apprendre l'allemand avec GLS",
 
         'subtitle_ar' => 'خطوتك الأولى نحو ألمانيا',
         'badge1' => 'Jawohl',
@@ -23,29 +23,29 @@ return [
     // 🟢 INTRO SECTION
     // ========================
     'site_heading' => [
-        'rabat'      => "Cours d'allemand à Rabat – GLS",
-        'kenitra'    => 'Centre GLS à Kénitra',
-        'marrakech'  => "École d'allemand à Marrakech",
-        'sale'       => "Cours d'allemand à Salé – GLS",
-        'agadir'     => 'Campus GLS Agadir',
-        'casablanca' => "Cours d'allemand à Casablanca",
+        'rabat'      => "Centre allemand à Rabat – GLS",
+        'kenitra'    => "Centre allemand à Kénitra – GLS",
+        'marrakech'  => "Centre allemand à Marrakech – GLS",
+        'sale'       => "Centre allemand à Salé – GLS",
+        'agadir'     => "Centre allemand à Agadir – GLS",
+        'casablanca' => "Centre allemand à Casablanca – GLS",
     ],
 
     'intro' => [
         'logo_alt' => 'Logo GLS Sprachenzentrum',
         'tagline' => "Apprenez l'allemand chez GLS",
         'heading' => 'Apprendre. Connecter. Découvrir.',
-        'description' => "Notre objectif est d'accompagner nos étudiants à travers une expérience linguistique immersive et motivante.",
+        'description' => "GLS Sprachenzentrum est un centre de langue allemande présent à Casablanca, Rabat, Marrakech, Kénitra, Salé et Agadir, ainsi qu'en ligne. Notre objectif est d'accompagner nos étudiants à travers une expérience linguistique immersive et motivante.",
         'button' => 'Voir nos cours',
     ],
 
     'site_image_alt' => [
-        'rabat' => "Cours d'allemand à Rabat – GLS Sprachenzentrum",
-        'kenitra' => "Cours d'allemand à Kénitra – GLS Sprachenzentrum",
-        'marrakech' => "Cours d'allemand à Marrakech – GLS Sprachenzentrum",
-        'sale' => "Cours d'allemand à Salé – GLS Sprachenzentrum",
-        'casablanca' => "Cours d'allemand à Casablanca – GLS Sprachenzentrum",
-        'agadir' => "Cours d'allemand à Agadir – GLS Sprachenzentrum",
+        'rabat' => "Centre allemand GLS à Rabat – cours d'allemand",
+        'kenitra' => "Centre allemand GLS à Kénitra – cours d'allemand",
+        'marrakech' => "Centre allemand GLS à Marrakech – cours d'allemand",
+        'sale' => "Centre allemand GLS à Salé – cours d'allemand",
+        'casablanca' => "Centre allemand GLS à Casablanca – cours d'allemand",
+        'agadir' => "Centre allemand GLS à Agadir – cours d'allemand",
     ],
 
     'video_facade' => [

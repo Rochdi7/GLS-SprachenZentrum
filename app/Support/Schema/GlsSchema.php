@@ -103,6 +103,41 @@ class GlsSchema
     }
 
     /**
+     * One GLS centre: EducationalOrganization + LocalBusiness, built only from the
+     * centre's own translation file (address, phone, email). No opening hours, geo
+     * or ratings are emitted because the site does not state them reliably.
+     */
+    public static function centre(string $slug, string $city): string
+    {
+        $t = fn (string $key) => \Illuminate\Support\Facades\Lang::has("sites/{$slug}.contact.{$key}")
+            ? trim(strip_tags((string) __("sites/{$slug}.contact.{$key}")))
+            : null;
+
+        $data = array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => ['EducationalOrganization', 'LocalBusiness'],
+            'name' => "GLS Sprachenzentrum {$city}",
+            'url' => url()->current(),
+            'telephone' => $t('phone_link'),
+            'email' => $t('email'),
+            'address' => array_filter([
+                '@type' => 'PostalAddress',
+                'streetAddress' => $t('addresses'),
+                'addressLocality' => $city,
+                'addressCountry' => 'MA',
+            ]),
+            'areaServed' => $city,
+            'parentOrganization' => [
+                '@type' => 'EducationalOrganization',
+                'name' => 'GLS Sprachenzentrum',
+                'url' => url('/'),
+            ],
+        ]);
+
+        return '<script type="application/ld+json">'.json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES).'</script>';
+    }
+
+    /**
      * FAQPage from translation array (home.faq_schema or faq.questions)
      */
     public static function faqFromTranslations(array $items): string

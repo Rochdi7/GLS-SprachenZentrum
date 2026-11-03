@@ -2,8 +2,14 @@
 
 return [
     'meta' => [
-        'title' => 'Cours d’allemand à Rabat – Centre GLS Sprachenzentrum',
-        'description' => 'Centre GLS Rabat : cours d’allemand A1 à C1 en petits groupes, horaires matin, midi et soir, préparation Goethe et ÖSD. Adresse, horaires et inscription.',
+        'title' => 'Centre allemand à Rabat – Cours d’allemand GLS',
+        'description' => 'Centre allemand GLS à Rabat : cours d’allemand A1 à C1, groupes du matin au soir, préparation aux examens ÖSD et Goethe. Adresse, horaires et inscription.',
+    ],
+
+    'network' => [
+        'before' => 'GLS Rabat fait partie de GLS Sprachenzentrum,',
+        'anchor' => 'centre allemand au Maroc',
+        'after' => ' présent à Casablanca, Rabat, Marrakech, Kénitra, Salé et Agadir, ainsi qu’en ligne.',
     ],
 
     // -------------------------
@@ -11,7 +17,7 @@ return [
     // -------------------------
     'hero' => [
         'subtitle' => 'Apprenez l’allemand au cœur de Rabat',
-        'title' => 'GLS Rabat – centre de langue allemande et cours d’allemand',
+        'title' => 'Centre allemand GLS à Rabat – cours d’allemand A1 à C1',
     ],
 
     // -------------------------

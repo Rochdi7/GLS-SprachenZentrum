@@ -2,6 +2,10 @@
 @section('title', seo_trans('sites/agadir.meta.title', __('sites/agadir.hero.title')))
 @section('meta_description', seo_trans('sites/agadir.meta.description'))
 
+@push('seo-schema')
+    {!! \App\Support\Schema\GlsSchema::centre('agadir', 'Agadir') !!}
+@endpush
+
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/sites/marrakech.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/9onsol.css') }}">
 
@@ -50,6 +54,14 @@
                 </ul>
 
                 <p class="reveal delay-3">{!! __('sites/agadir.about.p3') !!}</p>
+
+                @if (\Illuminate\Support\Facades\Lang::has('sites/agadir.network.anchor', app()->getLocale(), false))
+
+                    <p class="reveal delay-3">{{ __('sites/agadir.network.before') }}
+
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.home')) }}">{{ __('sites/agadir.network.anchor') }}</a>{{ __('sites/agadir.network.after') }}</p>
+
+                @endif
 
             </div>
         </div>

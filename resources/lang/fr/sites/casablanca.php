@@ -2,8 +2,14 @@
 
 return [
     'meta' => [
-        'title' => 'Centre de langue allemande à Casablanca – Cours d’allemand | GLS',
-        'description' => 'Centre GLS Casablanca : cours d’allemand A1 à C1 en petits groupes, horaires matin, midi et soir, préparation Goethe et ÖSD. Adresse, horaires et inscription.',
+        'title' => 'Centre allemand à Casablanca – Cours d’allemand GLS',
+        'description' => 'Centre allemand GLS à Casablanca : cours d’allemand A1 à C1, groupes du matin au soir, préparation aux examens ÖSD et Goethe. Adresse, horaires et inscription.',
+    ],
+
+    'network' => [
+        'before' => 'GLS Casablanca fait partie de GLS Sprachenzentrum,',
+        'anchor' => 'centre allemand au Maroc',
+        'after' => ' présent à Casablanca, Rabat, Marrakech, Kénitra, Salé et Agadir, ainsi qu’en ligne.',
     ],
 
     // -------------------------
@@ -11,7 +17,7 @@ return [
     // -------------------------
     'hero' => [
         'subtitle' => 'Apprenez l’allemand au cœur de Casablanca',
-        'title' => 'GLS Casablanca – centre de langue allemande et cours d’allemand',
+        'title' => 'Centre allemand GLS à Casablanca – cours d’allemand A1 à C1',
     ],
 
     // -------------------------

@@ -219,7 +219,7 @@
                     <h3 class="gls-info-title reveal fade-blur-title delay-3">{!! __('online.more.card1.title') !!}</h3>
                     <div class="gls-info-text reveal delay-1">{{ __('online.more.card1.text') }}</div>
                     <div class="gls-info-spacer"></div>
-                    <a href="{{ LaravelLocalization::localizeURL('/courses/pricing') }}"
+                    <a href="{{ LaravelLocalization::localizeUrl(route('front.pricing')) }}"
                         class="gls-info-button w-button reveal delay-2">
                         {{ __('online.more.card1.button') }}
                     </a>
@@ -230,7 +230,7 @@
                     <h3 class="gls-info-title reveal fade-blur-title delay-1">{!! __('online.more.card2.title') !!}</h3>
                     <div class="gls-info-text reveal delay-2">{{ __('online.more.card2.text') }}</div>
                     <div class="gls-info-spacer"></div>
-                    <a href="{{ LaravelLocalization::localizeURL('/german-exams') }}"
+                    <a href="{{ LaravelLocalization::localizeUrl(route('front.exams.osd')) }}"
                         class="gls-info-button w-button reveal delay-3">
                         {{ __('online.more.card2.button') }}
                     </a>
@@ -241,7 +241,7 @@
                     <h3 class="gls-info-title reveal fade-blur-title delay-2">{!! __('online.more.card3.title') !!}</h3>
                     <div class="gls-info-text reveal delay-3">{{ __('online.more.card3.text') }}</div>
                     <div class="gls-info-spacer"></div>
-                    <a href="{{ LaravelLocalization::localizeURL('/courses/course-schedules') }}"
+                    <a href="#horaires"
                         class="gls-info-button w-button reveal delay-1">
                         {{ __('online.more.card3.button') }}
                     </a>

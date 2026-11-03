@@ -166,7 +166,8 @@ class PageController extends Controller
 
     public function onlineRegistration()
     {
-        return view('frontoffice.online-registration');
+        // The view never existed (the URL returned 500); send visitors to the live registration form.
+        return redirect()->to(\Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl(route('front.gls-inscription')), 301);
     }
 
     public function storeOnlineRegistration(Request $request)

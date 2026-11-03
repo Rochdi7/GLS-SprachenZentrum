@@ -1,6 +1,6 @@
 
 
-<section class="gls-schedule-section reveal delay-1">
+<section id="horaires" class="gls-schedule-section reveal delay-1">
     <div class="gls-schedule-container reveal delay-2">
 
         <h2 class="gls-schedule-main-title fade-blur-title reveal delay-3">

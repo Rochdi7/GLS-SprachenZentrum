@@ -3,8 +3,8 @@
 return [
 
     'sites' => [
-        'title' => 'Nos Centres GLS',
-        'subtitle' => 'Trouvez le centre GLS le plus proche de chez vous au Maroc.',
+        'title' => 'Nos centres d’allemand au Maroc',
+        'subtitle' => 'Trouvez le centre allemand GLS le plus proche de chez vous au Maroc.',
 
         'rabat' => 'Rabat',
         'kenitra' => 'Kénitra',

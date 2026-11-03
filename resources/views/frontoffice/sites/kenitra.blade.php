@@ -2,6 +2,10 @@
 @section('title', seo_trans('sites/kenitra.meta.title', __('sites/kenitra.hero.title')))
 @section('meta_description', seo_trans('sites/kenitra.meta.description'))
 
+@push('seo-schema')
+    {!! \App\Support\Schema\GlsSchema::centre('kenitra', 'Kénitra') !!}
+@endpush
+
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/sites/marrakech.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/frontoffice/9onsol.css') }}">
 
@@ -55,6 +59,14 @@
                 </ul>
 
                 <p class="reveal delay-3">{!! __('sites/kenitra.about.p3') !!}</p>
+
+                @if (\Illuminate\Support\Facades\Lang::has('sites/kenitra.network.anchor', app()->getLocale(), false))
+
+                    <p class="reveal delay-3">{{ __('sites/kenitra.network.before') }}
+
+                        <a href="{{ LaravelLocalization::localizeUrl(route('front.home')) }}">{{ __('sites/kenitra.network.anchor') }}</a>{{ __('sites/kenitra.network.after') }}</p>
+
+                @endif
 
             </div>
         </div>
