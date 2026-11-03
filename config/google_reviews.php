@@ -9,7 +9,8 @@
 | Reviewer names are shortened to first name + initial for privacy.
 | "year" is derived from Google's relative date on 2026-11-03
 | ("5 months ago" → 2026, "a year ago" → 2025, "3 years ago" → 2023).
-| Individual star ratings were not copied, so cards show no per-review stars.
+| Cards keep the site's standard 5-star graphic; individual star ratings were
+| not copied, so replace any review that is not 5 stars on Google.
 |
 | Excluded on purpose: reviews truncated by Google ("… More"), reviews
 | written by GLS staff or the owner, and a review about another business.

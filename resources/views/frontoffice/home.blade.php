@@ -333,9 +333,9 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <div class="review-carousel_track is-animating-left reveal delay-1">
                     @foreach ($reviewTrackLeft as $review)
                         <div class="review-block review-card-inspired reveal delay-2">
-                            <div class="review-stars small fw-bold reveal delay-3">{{ __('google-reviews.source') }} · GLS {{ \Illuminate\Support\Facades\Lang::has('gls.sites.'.$review['slug']) ? __('gls.sites.'.$review['slug']) : $review['city'] }}</div>
+                            <div class="review-stars reveal delay-3">@include('frontoffice.partials.svg-stars')</div>
                             <div class="text-block-9 reveal delay-1" lang="{{ $review['lang'] }}" dir="auto">"{{ $review['text'] }}"</div>
-                            <div class="text-block-10 reveal delay-2" dir="auto">– {{ $review['name'] }} ({{ $review['year'] }})
+                            <div class="text-block-10 reveal delay-2" dir="auto">– {{ $review['name'] }} · GLS {{ \Illuminate\Support\Facades\Lang::has('gls.sites.'.$review['slug']) ? __('gls.sites.'.$review['slug']) : $review['city'] }} ({{ $review['year'] }})
                             </div>
                         </div>
                     @endforeach
@@ -345,9 +345,9 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <div class="review-carousel_track is-alt is-animating-right reveal delay-1">
                     @foreach ($reviewTrackRight as $review)
                         <div class="review-block review-card-inspired reveal delay-2">
-                            <div class="review-stars small fw-bold reveal delay-3">{{ __('google-reviews.source') }} · GLS {{ \Illuminate\Support\Facades\Lang::has('gls.sites.'.$review['slug']) ? __('gls.sites.'.$review['slug']) : $review['city'] }}</div>
+                            <div class="review-stars reveal delay-3">@include('frontoffice.partials.svg-stars')</div>
                             <div class="text-block-9 reveal delay-1" lang="{{ $review['lang'] }}" dir="auto">"{{ $review['text'] }}"</div>
-                            <div class="text-block-10 reveal delay-2" dir="auto">– {{ $review['name'] }} ({{ $review['year'] }})
+                            <div class="text-block-10 reveal delay-2" dir="auto">– {{ $review['name'] }} · GLS {{ \Illuminate\Support\Facades\Lang::has('gls.sites.'.$review['slug']) ? __('gls.sites.'.$review['slug']) : $review['city'] }} ({{ $review['year'] }})
                             </div>
                         </div>
                     @endforeach

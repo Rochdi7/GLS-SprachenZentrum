@@ -23,9 +23,9 @@
                 @foreach ($gr['reviews'] as $review)
                     <div class="col-md-6 col-lg-4 d-flex">
                         <div class="review-block review-card-inspired reveal delay-2" style="width:100%;margin-right:0;">
-                            <div class="review-stars small fw-bold reveal delay-3">{{ __('google-reviews.source') }} · GLS {{ $grCity }}</div>
+                            <div class="review-stars reveal delay-3">@include('frontoffice.partials.svg-stars')</div>
                             <div class="text-block-9 reveal delay-1" lang="{{ $review['lang'] }}" dir="auto">"{{ $review['text'] }}"</div>
-                            <div class="text-block-10 reveal delay-2" dir="auto">– {{ $review['name'] }} ({{ $review['year'] }})</div>
+                            <div class="text-block-10 reveal delay-2" dir="auto">– {{ $review['name'] }} · GLS {{ $grCity }} ({{ $review['year'] }})</div>
                         </div>
                     </div>
                 @endforeach
