@@ -12,6 +12,19 @@ return [
         'alt' => 'Examen ÖSD GLS Maroc',
     ],
 
+    // ÖSD B1 / B2 sections (facts: osd.at — B1 four modules, B2 written + oral module).
+    // GLS wording limited to what the site states: preparation + registration to the official exam.
+    'b1b2' => [
+        'b1_title' => 'Examen ÖSD B1 (ÖSD Zertifikat B1)',
+        'b1_p1' => 'Le <strong>ÖSD Zertifikat B1</strong> atteste un allemand autonome au quotidien : comprendre l’essentiel d’une conversation, raconter une expérience, écrire un message structuré. Le niveau B1 est en général celui demandé pour une <strong>Ausbildung</strong> en Allemagne.',
+        'b1_p2' => 'L’examen se compose de quatre modules : <strong>Lesen</strong> (compréhension écrite), <strong>Hören</strong> (compréhension orale), <strong>Schreiben</strong> (expression écrite) et <strong>Sprechen</strong> (expression orale). Chaque module est évalué séparément : un module non réussi peut être repassé seul.',
+        'b1_p3' => 'Chez GLS, vous préparez le B1 avec notre <a href=":b1">cours d’allemand B1</a>. Après l’examen interne GLS, nous vous inscrivons à l’examen officiel ÖSD B1.',
+        'b2_title' => 'Examen ÖSD B2 (ÖSD Zertifikat B2)',
+        'b2_p1' => 'Le <strong>ÖSD Zertifikat B2</strong> correspond à un allemand avancé : suivre une discussion argumentée, comprendre des textes complexes, rédiger un avis nuancé. C’est un niveau souvent demandé pour entrer au <a href=":studienkolleg">Studienkolleg</a> et pour la reconnaissance de nombreux métiers en Allemagne.',
+        'b2_p2' => 'L’examen ÖSD B2 comprend deux modules : un <strong>module écrit</strong> (Lesen, Hören, Schreiben) et un <strong>module oral</strong> (Sprechen). Ils peuvent être passés ensemble ou séparément, et chacun est certifié séparément.',
+        'b2_p3' => 'Préparez-le avec notre <a href=":b2">cours d’allemand B2</a> : entraînement aux quatre compétences, examens blancs, puis inscription à l’examen officiel ÖSD B2.',
+    ],
+
     'intro' => [
         'p1' => 'Vous vous demandez à quel point votre allemand est solide ? Comment vous exprimez, comprenez et utilisez la langue dans des situations quotidiennes ? Ce sont des questions fréquentes pour les apprenants qui préparent leurs études, leur travail ou un dossier de visa. C’est exactement là que l’examen <strong>ÖSD</strong> devient important.',
         'p2' => 'Au <strong>GLS Sprachenzentrum Maroc</strong>, vous pouvez vous préparer aux examens officiels ÖSD et déterminer clairement votre niveau d’allemand actuel. Nos entraînements, examens blancs et séances ciblées vous aident à comprendre vos points forts et ce qu’il faut améliorer.',

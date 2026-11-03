@@ -12,6 +12,24 @@
         margin: 0 0 1.25rem;
     }
 
+    .studienkollegs-intro {
+        max-width: 860px;
+        margin: 0 0 1.5rem;
+        line-height: 1.6;
+    }
+
+    .studienkollegs-guide {
+        max-width: 860px;
+        margin: 3rem auto 1rem;
+        line-height: 1.7;
+    }
+
+    .studienkollegs-guide h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 1.75rem 0 .75rem;
+    }
+
     .favorite-btn {
         cursor: pointer;
         transition: transform .2s ease, opacity .2s ease;
@@ -87,6 +105,9 @@
         @endphp
 
         <h1 class="studienkollegs-page-title reveal">{{ seo_trans('studienkollegs.page_title', 'Studienkollegs in Germany') }}</h1>
+        @if (\Illuminate\Support\Facades\Lang::has('studienkollegs.intro', app()->getLocale(), false))
+            <p class="studienkollegs-intro reveal">{!! __('studienkollegs.intro') !!}</p>
+        @endif
 
         <form method="GET" action="{{ url()->current() }}" class="studienkollegs-filters reveal delay-1" id="skFilters">
             <div class="sk-filters-row">
@@ -320,6 +341,26 @@
 
             {{ $studienkollegs->onEachSide(1)->links('frontoffice.studienkollegs.partials.pagination') }}
         </div>
+
+        @if (\Illuminate\Support\Facades\Lang::has('studienkollegs.guide.title1', app()->getLocale(), false))
+            @php
+                $skLinks = [
+                    'b1' => LaravelLocalization::localizeUrl(route('front.niveaux.b1')),
+                    'b2' => LaravelLocalization::localizeUrl(route('front.niveaux.b2')),
+                    'online' => LaravelLocalization::localizeUrl(route('front.online-courses')),
+                    'osd' => LaravelLocalization::localizeUrl(route('front.exams.osd')),
+                    'goethe' => LaravelLocalization::localizeUrl(route('front.exams.goethe')),
+                ];
+            @endphp
+            <section class="studienkollegs-guide reveal" aria-labelledby="sk-guide-title">
+                <h2 id="sk-guide-title">{{ __('studienkollegs.guide.title1') }}</h2>
+                <p>{!! __('studienkollegs.guide.p1') !!}</p>
+                <p>{!! __('studienkollegs.guide.p2') !!}</p>
+                <h2>{{ __('studienkollegs.guide.title2') }}</h2>
+                <p>{!! __('studienkollegs.guide.p3') !!}</p>
+                <p>{!! __('studienkollegs.guide.p4', $skLinks) !!}</p>
+            </section>
+        @endif
 
 
     </div>

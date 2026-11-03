@@ -116,6 +116,25 @@
                 <h3 class="reveal delay-1">{{ __('osd.levels.a1_write') }}</h3>
                 <p class="reveal delay-1">{!! __('osd.levels.a1_write_text') !!}</p>
 
+                @if (\Illuminate\Support\Facades\Lang::has('osd.b1b2.b1_title', app()->getLocale(), false))
+                    @php
+                        $osdLinks = [
+                            'b1' => LaravelLocalization::localizeUrl(route('front.niveaux.b1')),
+                            'b2' => LaravelLocalization::localizeUrl(route('front.niveaux.b2')),
+                            'studienkolleg' => LaravelLocalization::localizeUrl(route('front.studienkollegs')),
+                        ];
+                    @endphp
+                    <h2 id="osd-b1" class="fade-blur-title reveal delay-1">{{ __('osd.b1b2.b1_title') }}</h2>
+                    <p class="reveal delay-1">{!! __('osd.b1b2.b1_p1') !!}</p>
+                    <p class="reveal delay-2">{!! __('osd.b1b2.b1_p2') !!}</p>
+                    <p class="reveal delay-3">{!! __('osd.b1b2.b1_p3', $osdLinks) !!}</p>
+
+                    <h2 id="osd-b2" class="fade-blur-title reveal delay-1">{{ __('osd.b1b2.b2_title') }}</h2>
+                    <p class="reveal delay-1">{!! __('osd.b1b2.b2_p1', $osdLinks) !!}</p>
+                    <p class="reveal delay-2">{!! __('osd.b1b2.b2_p2') !!}</p>
+                    <p class="reveal delay-3">{!! __('osd.b1b2.b2_p3', $osdLinks) !!}</p>
+                @endif
+
                 <h2 class="fade-blur-title reveal delay-2">{{ __('osd.levels.title3') }}</h2>
 
                 <h3 class="reveal delay-1">{{ __('osd.levels.gls_to_osd') }}</h3>
