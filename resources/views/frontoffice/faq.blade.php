@@ -267,7 +267,7 @@
 
             </div>
 
-            <a href="https://maps.app.goo.gl/g4PjrPB7wHQAqrSZA" target="_blank" class="div-block-7 reveal delay-3">
+            <a href="https://maps.app.goo.gl/mUnSAVYEnGToS8i2A" target="_blank" class="div-block-7 reveal delay-3">
                 <iframe src="{{ __('faq.contact.map_iframe') }}" loading="lazy" allowfullscreen
                     referrerpolicy="no-referrer-when-downgrade" class="reveal delay-1"></iframe>
             </a>

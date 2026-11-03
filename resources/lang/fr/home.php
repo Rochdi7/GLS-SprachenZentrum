@@ -302,7 +302,7 @@ return [
         ],
 
         'maps_url_by_city' => [
-            'casablanca' => 'https://maps.app.goo.gl/EdqBoa3KWEYjuzoq7',
+            'casablanca' => 'https://www.google.com/maps/place/GLS+Sprachzentrum+-+Centre+GLS+de+langue+Allemande+Casablanca/@33.5936893,-7.6210973,17z/data=!3m1!4b1!4m6!3m5!1s0xda7d3157551b175:0x6ea42bcafb702001!8m2!3d33.5936893!4d-7.6210973',
             'marrakech'  => 'https://maps.app.goo.gl/krR8pGZue3DW3yyv6',
             'rabat'      => 'https://maps.app.goo.gl/mUnSAVYEnGToS8i2A',
             'kenitra'    => 'https://maps.app.goo.gl/pEsso9L8ygWpdSor5',
@@ -314,7 +314,7 @@ return [
 
         'centers_list' => [
             'casablanca' => [
-                ['address' => '14 Bd de Paris, Casablanca', 'maps_url' => 'https://maps.app.goo.gl/EdqBoa3KWEYjuzoq7', 'phones' => [['n' => '+212 808 549717', 't' => 'call'], ['n' => '+212 651 447651', 't' => 'whatsapp']]],
+                ['address' => '14 Bd de Paris, Casablanca', 'maps_url' => 'https://www.google.com/maps/place/GLS+Sprachzentrum+-+Centre+GLS+de+langue+Allemande+Casablanca/@33.5936893,-7.6210973,17z/data=!3m1!4b1!4m6!3m5!1s0xda7d3157551b175:0x6ea42bcafb702001!8m2!3d33.5936893!4d-7.6210973', 'phones' => [['n' => '+212 808 549717', 't' => 'call'], ['n' => '+212 651 447651', 't' => 'whatsapp']]],
             ],
             'marrakech' => [
                 ['address' => '3ème étage Bureau 28, Immeuble Espace, Av. Yacoub El Mansour, Marrakech 40000', 'maps_url' => 'https://maps.app.goo.gl/krR8pGZue3DW3yyv6', 'phones' => [['n' => '+212 669 515019', 't' => 'call'], ['n' => '+212 808 663983', 't' => 'call'], ['n' => '+212 603 160277', 't' => 'whatsapp']]],

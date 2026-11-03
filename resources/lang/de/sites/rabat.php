@@ -101,7 +101,7 @@ return [
         'phone_display' => '+212 8 08 57 35 09',
         'email' => 'info@gls-sprachzentrum.ma',
         'whatsapp_url' => 'https://api.whatsapp.com/send/?phone=0537671420&text&type=phone_number&app_absent=0',
-        'map_url' => 'https://maps.app.goo.gl/g4PjrPB7wHQAqrSZA',
+        'map_url' => 'https://maps.app.goo.gl/mUnSAVYEnGToS8i2A',
         'map_iframe_src' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3331.744621379457!2d-6.836039!3d33.978558!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda76b6d63b66b1d%3A0x3c6ee0a64f273aa2!2sAgdal%2C%20Rabat!5e0!3m2!1sen!2sma!4v1700000000000',
     ],
 

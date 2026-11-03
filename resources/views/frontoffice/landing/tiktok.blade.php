@@ -642,7 +642,7 @@
                                     lat: 33.5936893,
                                     lng: -7.6210973,
                                     color: '#9767f8',
-                                    gmap: 'https://maps.app.goo.gl/EdqBoa3KWEYjuzoq7'
+                                    gmap: 'https://www.google.com/maps/place/GLS+Sprachzentrum+-+Centre+GLS+de+langue+Allemande+Casablanca/@33.5936893,-7.6210973,17z/data=!3m1!4b1!4m6!3m5!1s0xda7d3157551b175:0x6ea42bcafb702001!8m2!3d33.5936893!4d-7.6210973'
                                 },
                                 {
                                     name: 'GLS Marrakech',
