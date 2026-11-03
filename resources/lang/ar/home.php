@@ -54,60 +54,8 @@ return [
 
     'reviews' => [
         'title' => 'انضم إلى أفضل مدرسة لتعلم الألمانية في المغرب',
-        'rating_line' => '4.9 / 5 (+677 تقييم)',
+        // rating line + reviews now come from config/google_reviews.php (real Google reviews per centre)
 
-        'items' => [
-            [
-                'text' => 'ساعدني GLS كثيراً في تحسين لغتي الألمانية. الأساتذة صبورون ومتحمسون جداً.',
-                'name' => 'Salma Benyahia',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'Ich habe bei GLS einen großartigen Fortschritt gemacht. Die Atmosphäre war freundlich et motivierend.',
-                'name' => 'Youssef El Amrani',
-                'year' => 2024,
-            ],
-            [
-                'text' => 'الدورة عبر الإنترنت منظمة بشكل ممتاز، أخيراً أفهم قواعد اللغة الألمانية!',
-                'name' => 'Lina Zahraoui',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'أنصح بشدة بـ GLS لكل من يريد تعلم الألمانية في أجواء ممتعة.',
-                'name' => 'Rachid El Khattabi',
-                'year' => 2024,
-            ],
-            [
-                'text' => 'أستاذي كان رائعاً! الدورات كانت ممتعة وتفاعلية ومفيدة جداً لامتحاناتي.',
-                'name' => 'Imane Ait Lhaj',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'Ich liebe die Energie der Lehrer bei GLS. Sie motivieren jeden Schüler.',
-                'name' => 'Hamza Belkadi',
-                'year' => 2024,
-            ],
-            [
-                'text' => 'GLS Sprachenzentrum مكان رائع لتعلم الألمانية بإيقاعك الخاص.',
-                'name' => 'Nadia Cherkaoui',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'أجواء المدرسة عائلية. الجميع لطيف ومحترف جداً.',
-                'name' => 'Karim Berrada',
-                'year' => 2024,
-            ],
-            [
-                'text' => 'أنا سعيدة جداً بدوراتي في GLS، الأساتذة ديناميكيون ومحفزون.',
-                'name' => 'Hajar Bouziane',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'ساعدني GLS حقاً في التحضير لامتحان B1. منهجية واضحة وفعالة.',
-                'name' => 'Ayoub Idrissi',
-                'year' => 2025,
-            ],
-        ],
     ],
 
     'courses' => [

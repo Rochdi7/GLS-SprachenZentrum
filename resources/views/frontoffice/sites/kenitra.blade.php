@@ -299,6 +299,8 @@
     {{-- ===============================
  CONTACT SECTION
 ================================ --}}
+    @include('frontoffice.partials.google-reviews-centre', ['slug' => 'kenitra'])
+
     <section class="contact-section section {{ app()->getLocale() == 'ar' ? 'rtl' : '' }} reveal delay-1">
         <div class="container is-2-col-grid reveal delay-2">
 

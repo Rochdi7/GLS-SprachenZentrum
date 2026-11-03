@@ -310,12 +310,17 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                         @include('frontoffice.partials.svg-stars-big')
                     </div>
 
-                    <div class="reveal delay-2"><strong>{{ __('home.reviews.rating_line') }}</strong></div>
+                    @php $grTotals = \App\Support\GoogleReviews::totals(); @endphp
+                    <div class="reveal delay-2"><strong>{{ __('google-reviews.summary', [
+                        'rating' => \App\Support\GoogleReviews::number($grTotals['rating'], 1),
+                        'count' => \App\Support\GoogleReviews::number($grTotals['count']),
+                    ]) }}</strong></div>
                 </div>
             </div>
 
             @php
-                $reviewItems = __('home.reviews.items');
+                // Real Google reviews, 5 per centre, interleaved by city (config/google_reviews.php).
+                $reviewItems = \App\Support\GoogleReviews::interleaved();
                 $reviewHalf = (int) ceil(count($reviewItems) / 2);
                 $reviewTrackLeft = array_slice($reviewItems, 0, $reviewHalf);
                 $reviewTrackRight = array_slice($reviewItems, $reviewHalf);
@@ -326,9 +331,9 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <div class="review-carousel_track is-animating-left reveal delay-1">
                     @foreach ($reviewTrackLeft as $review)
                         <div class="review-block review-card-inspired reveal delay-2">
-                            <div class="review-stars reveal delay-3">@include('frontoffice.partials.svg-stars')</div>
-                            <div class="text-block-9 reveal delay-1">"{{ $review['text'] }}"</div>
-                            <div class="text-block-10 reveal delay-2">– {{ $review['name'] }} ({{ $review['year'] }})
+                            <div class="review-stars small fw-bold reveal delay-3">{{ __('google-reviews.source') }} · GLS {{ \Illuminate\Support\Facades\Lang::has('gls.sites.'.$review['slug']) ? __('gls.sites.'.$review['slug']) : $review['city'] }}</div>
+                            <div class="text-block-9 reveal delay-1" lang="{{ $review['lang'] }}" dir="auto">"{{ $review['text'] }}"</div>
+                            <div class="text-block-10 reveal delay-2" dir="auto">– {{ $review['name'] }} ({{ $review['year'] }})
                             </div>
                         </div>
                     @endforeach
@@ -338,9 +343,9 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                 <div class="review-carousel_track is-alt is-animating-right reveal delay-1">
                     @foreach ($reviewTrackRight as $review)
                         <div class="review-block review-card-inspired reveal delay-2">
-                            <div class="review-stars reveal delay-3">@include('frontoffice.partials.svg-stars')</div>
-                            <div class="text-block-9 reveal delay-1">"{{ $review['text'] }}"</div>
-                            <div class="text-block-10 reveal delay-2">– {{ $review['name'] }} ({{ $review['year'] }})
+                            <div class="review-stars small fw-bold reveal delay-3">{{ __('google-reviews.source') }} · GLS {{ \Illuminate\Support\Facades\Lang::has('gls.sites.'.$review['slug']) ? __('gls.sites.'.$review['slug']) : $review['city'] }}</div>
+                            <div class="text-block-9 reveal delay-1" lang="{{ $review['lang'] }}" dir="auto">"{{ $review['text'] }}"</div>
+                            <div class="text-block-10 reveal delay-2" dir="auto">– {{ $review['name'] }} ({{ $review['year'] }})
                             </div>
                         </div>
                     @endforeach

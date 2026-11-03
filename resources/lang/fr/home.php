@@ -54,60 +54,8 @@ return [
 
     'reviews' => [
         'title' => "Rejoignez l'école d'allemand la mieux notée au Maroc",
-        'rating_line' => '4.9 / 5 (+677 avis)',
+        // rating line + reviews now come from config/google_reviews.php (real Google reviews per centre)
 
-        'items' => [
-            [
-                'text' => "GLS m'a beaucoup aidé à améliorer mon allemand. Les professeurs sont très patients et passionnés.",
-                'name' => 'Salma Benyahia',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'Ich habe bei GLS einen großartigen Fortschritt gemacht. Die Atmosphäre war freundlich et motivierend.',
-                'name' => 'Youssef El Amrani',
-                'year' => 2024,
-            ],
-            [
-                'text' => 'Le cours en ligne est super bien structuré, je comprends enfin la grammaire allemande !',
-                'name' => 'Lina Zahraoui',
-                'year' => 2025,
-            ],
-            [
-                'text' => "Je recommande vivement GLS à tous ceux qui veulent apprendre l'allemand dans une ambiance agréable.",
-                'name' => 'Rachid El Khattabi',
-                'year' => 2024,
-            ],
-            [
-                'text' => "Mon professeur était incroyable ! Les cours étaient amusants, interactifs et très utiles pour mes examens.",
-                'name' => 'Imane Ait Lhaj',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'Ich liebe die Energie der Lehrer bei GLS. Sie motivieren jeden Schüler.',
-                'name' => 'Hamza Belkadi',
-                'year' => 2024,
-            ],
-            [
-                'text' => "GLS Sprachenzentrum est un endroit incroyable pour apprendre l'allemand à ton rythme.",
-                'name' => 'Nadia Cherkaoui',
-                'year' => 2025,
-            ],
-            [
-                'text' => "L'ambiance de l'école est familiale. Tout le monde est gentil et très professionnel.",
-                'name' => 'Karim Berrada',
-                'year' => 2024,
-            ],
-            [
-                'text' => 'Je suis très contente de mes cours à GLS, les professeurs sont dynamiques et motivants.',
-                'name' => 'Hajar Bouziane',
-                'year' => 2025,
-            ],
-            [
-                'text' => "GLS m'a vraiment aidé à préparer mon examen B1. Méthodologie claire et efficace.",
-                'name' => 'Ayoub Idrissi',
-                'year' => 2025,
-            ],
-        ],
     ],
 
     'courses' => [

@@ -72,60 +72,8 @@ return [
     ],
     'reviews' => [
         'title' => 'Treten Sie der am höchsten bewerteten Deutschschule in Marokko bei',
-        'rating_line' => '4.9 / 5 (+677 Bewertungen)',
+        // rating line + reviews now come from config/google_reviews.php (real Google reviews per centre)
 
-        'items' => [
-            [
-                'text' => 'GLS hat mir sehr geholfen, mein Deutsch zu verbessern. Die Lehrer sind sehr geduldig und leidenschaftlich.',
-                'name' => 'Salma Benyahia',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'Ich habe bei GLS einen großartigen Fortschritt gemacht. Die Atmosphäre war freundlich und motivierend.',
-                'name' => 'Youssef El Amrani',
-                'year' => 2024,
-            ],
-            [
-                'text' => 'Der Online-Kurs ist sehr gut strukturiert, ich verstehe endlich deutsche Grammatik!',
-                'name' => 'Lina Zahraoui',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'Ich kann GLS jedem empfehlen, der Deutsch in einer angenehmen Atmosphäre lernen möchte.',
-                'name' => 'Rachid El Khattabi',
-                'year' => 2024,
-            ],
-            [
-                'text' => 'Mein Lehrer war erstaunlich! Der Unterricht war lustig, interaktiv und sehr hilfreich für meine Prüfungen.',
-                'name' => 'Imane Ait Lhaj',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'Ich liebe die Energie der Lehrer bei GLS. Sie motivieren jeden Schüler.',
-                'name' => 'Hamza Belkadi',
-                'year' => 2024,
-            ],
-            [
-                'text' => 'GLS Sprachenzentrum ist ein fantastischer Ort, um Deutsch in deinem eigenen Tempo zu lernen.',
-                'name' => 'Nadia Cherkaoui',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'Die Schulatmosphäre ist familienfreundlich. Alle sind nett und sehr professionell.',
-                'name' => 'Karim Berrada',
-                'year' => 2024,
-            ],
-            [
-                'text' => 'Ich bin sehr zufrieden mit meinen GLS-Kursen, die Lehrer sind dynamisch und motivierend.',
-                'name' => 'Hajar Bouziane',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'GLS hat mir wirklich bei der Vorbereitung auf meine B1-Prüfung geholfen. Klare und effektive Methodik.',
-                'name' => 'Ayoub Idrissi',
-                'year' => 2025,
-            ],
-        ],
     ],
 
     'courses' => [

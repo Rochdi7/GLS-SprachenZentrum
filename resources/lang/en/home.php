@@ -52,60 +52,8 @@ return [
     ],
     'reviews' => [
         'title' => 'Join Morocco\'s highest-rated German school',
-        'rating_line' => '4.9 / 5 (+677 reviews)',
+        // rating line + reviews now come from config/google_reviews.php (real Google reviews per centre)
 
-        'items' => [
-            [
-                'text' => 'GLS helped me a lot to improve my German. The teachers are very patient and passionate.',
-                'name' => 'Salma Benyahia',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'Ich habe bei GLS einen großartigen Fortschritt gemacht. Die Atmosphäre war freundlich und motivierend.',
-                'name' => 'Youssef El Amrani',
-                'year' => 2024,
-            ],
-            [
-                'text' => 'The online course is very well structured, I finally understand German grammar!',
-                'name' => 'Lina Zahraoui',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'I highly recommend GLS to everyone who wants to learn German in a pleasant atmosphere.',
-                'name' => 'Rachid El Khattabi',
-                'year' => 2024,
-            ],
-            [
-                'text' => 'My teacher was amazing! The classes were fun, interactive and very useful for my exams.',
-                'name' => 'Imane Ait Lhaj',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'Ich liebe die Energie der Lehrer bei GLS. Sie motivieren jeden Schüler.',
-                'name' => 'Hamza Belkadi',
-                'year' => 2024,
-            ],
-            [
-                'text' => 'GLS Sprachenzentrum is an amazing place to learn German at your own pace.',
-                'name' => 'Nadia Cherkaoui',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'The school atmosphere is family-like. Everyone is kind and very professional.',
-                'name' => 'Karim Berrada',
-                'year' => 2024,
-            ],
-            [
-                'text' => 'I\'m very happy with my GLS courses, the teachers are dynamic and motivating.',
-                'name' => 'Hajar Bouziane',
-                'year' => 2025,
-            ],
-            [
-                'text' => 'GLS really helped me prepare for my B1 exam. Clear and effective methodology.',
-                'name' => 'Ayoub Idrissi',
-                'year' => 2025,
-            ],
-        ],
     ],
 
     'courses' => [
