@@ -1,0 +1,232 @@
+{
+    "retrieved_at": "2026-11-03T19:02:50+00:00",
+    "report": "phrase_these",
+    "database": "ma",
+    "requested": [
+        "osd a1",
+        "osd a2",
+        "osd b1",
+        "osd b2",
+        "ösd a1",
+        "ösd a2",
+        "ösd c1",
+        "ösd zertifikat",
+        "examen osd maroc",
+        "inscription osd",
+        "osd casablanca",
+        "osd rabat",
+        "goethe a1",
+        "goethe b1",
+        "goethe b2",
+        "examen goethe b1",
+        "centre allemand casa",
+        "centre d'allemand",
+        "ecole allemand",
+        "cours d allemand",
+        "cours allemand a1",
+        "cours allemand b2",
+        "cours d'allemand maroc",
+        "centre de langue allemand",
+        "formation allemand en ligne",
+        "cours allemand en ligne maroc",
+        "formation intensive allemand",
+        "cours intensif allemand maroc",
+        "studienkolleg allemagne",
+        "étudier en allemagne maroc",
+        "niveau allemand pour ausbildung",
+        "ausbildung pour marocain",
+        "allemand pour travailler en allemagne",
+        "travail en allemagne"
+    ],
+    "rows": [
+        {
+            "Keyword": "centre de langue allemand",
+            "Search Volume": "260",
+            "CPC": "0.17",
+            "Competition": "0.12",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "1.00,1.00,0.54,0.54,0.44,0.35,0.35,0.54,0.29,0.44,0.54,0.29"
+        },
+        {
+            "Keyword": "cours allemand a1",
+            "Search Volume": "20",
+            "CPC": "0.1",
+            "Competition": "0.43",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.60,0.20,0.80,0.20,1.00,0.20,0.20,0.20,0.80,0.60,0.20,0.20"
+        },
+        {
+            "Keyword": "cours allemand b2",
+            "Search Volume": "20",
+            "CPC": "0.09",
+            "Competition": "0.4",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.57,0.14,0.14,0.29,1.00,0.43,0.14,0.14,0.14,0.14,0.14,0.43"
+        },
+        {
+            "Keyword": "cours d allemand",
+            "Search Volume": "20",
+            "CPC": "0",
+            "Competition": "0",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.20,0.40,0.20,0.40,0.20,0.20,1.00,0.80,0.20,0.20,0.60,0.00"
+        },
+        {
+            "Keyword": "cours d'allemand maroc",
+            "Search Volume": "0",
+            "CPC": "0",
+            "Competition": "0",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00"
+        },
+        {
+            "Keyword": "ecole allemand",
+            "Search Volume": "30",
+            "CPC": "0",
+            "Competition": "0.05",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.11,0.56,0.33,0.11,0.11,0.33,0.56,0.44,0.11,0.11,1.00,0.11"
+        },
+        {
+            "Keyword": "examen goethe b1",
+            "Search Volume": "10",
+            "CPC": "0",
+            "Competition": "0.33",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.50,0.50,0.50,1.00,1.00,0.50,0.50,1.00,0.50,1.00,0.50,0.50"
+        },
+        {
+            "Keyword": "examen osd maroc",
+            "Search Volume": "0",
+            "CPC": "0",
+            "Competition": "0",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00"
+        },
+        {
+            "Keyword": "formation allemand en ligne",
+            "Search Volume": "20",
+            "CPC": "0",
+            "Competition": "0",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.14,0.14,0.14,0.14,0.29,1.00,0.14,0.00,0.29,0.14,0.14,0.00"
+        },
+        {
+            "Keyword": "goethe a1",
+            "Search Volume": "70",
+            "CPC": "0.15",
+            "Competition": "0.04",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "1.00,1.00,1.00,1.00,1.00,0.57,0.57,1.00,0.71,1.00,0.71,0.71"
+        },
+        {
+            "Keyword": "goethe b1",
+            "Search Volume": "170",
+            "CPC": "0",
+            "Competition": "0.01",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.28,0.28,0.28,0.44,0.44,0.34,0.81,0.81,0.66,1.00,0.66,0.34"
+        },
+        {
+            "Keyword": "goethe b2",
+            "Search Volume": "390",
+            "CPC": "0.42",
+            "Competition": "0.01",
+            "Intent": "2,3",
+            "Keyword Difficulty Index": "18",
+            "Trends": "0.29,0.29,0.36,0.44,0.36,0.36,0.82,1.00,0.82,0.67,0.82,0.29"
+        },
+        {
+            "Keyword": "osd a1",
+            "Search Volume": "140",
+            "CPC": "0.62",
+            "Competition": "0.03",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.52,0.52,0.52,0.67,0.67,0.52,0.43,0.81,0.52,0.81,1.00,0.67"
+        },
+        {
+            "Keyword": "osd b1",
+            "Search Volume": "590",
+            "CPC": "0",
+            "Competition": "0.01",
+            "Intent": "1",
+            "Keyword Difficulty Index": "15",
+            "Trends": "0.25,0.37,0.37,0.45,0.55,0.55,0.77,0.77,0.77,1.00,1.00,0.68"
+        },
+        {
+            "Keyword": "osd b2",
+            "Search Volume": "390",
+            "CPC": "0",
+            "Competition": "0.01",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.29,0.66,0.54,0.44,0.54,0.66,1.00,1.00,0.66,1.00,0.81,0.54"
+        },
+        {
+            "Keyword": "osd rabat",
+            "Search Volume": "0",
+            "CPC": "0",
+            "Competition": "0",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00"
+        },
+        {
+            "Keyword": "studienkolleg allemagne",
+            "Search Volume": "0",
+            "CPC": "0",
+            "Competition": "0",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00"
+        },
+        {
+            "Keyword": "travail en allemagne",
+            "Search Volume": "170",
+            "CPC": "0.33",
+            "Competition": "0.43",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.36,0.67,1.00,0.54,0.54,0.44,0.36,0.36,0.36,0.36,0.28,0.28"
+        },
+        {
+            "Keyword": "étudier en allemagne maroc",
+            "Search Volume": "20",
+            "CPC": "0.22",
+            "Competition": "0.32",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.11,0.11,1.00,0.11,0.78,0.11,0.33,0.11,0.22,0.11,0.11,0.11"
+        },
+        {
+            "Keyword": "ösd a1",
+            "Search Volume": "140",
+            "CPC": "0.62",
+            "Competition": "0.03",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.52,0.52,0.52,0.67,0.67,0.52,0.43,0.81,0.52,0.81,1.00,0.67"
+        },
+        {
+            "Keyword": "ösd zertifikat",
+            "Search Volume": "20",
+            "CPC": "0",
+            "Competition": "0.06",
+            "Intent": "",
+            "Keyword Difficulty Index": "0",
+            "Trends": "0.11,0.11,1.00,0.22,0.11,0.22,0.33,0.33,0.44,0.11,0.11,0.11"
+        }
+    ]
+}

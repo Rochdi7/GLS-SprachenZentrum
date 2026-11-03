@@ -1,0 +1,96 @@
+{
+ "retrieved_at": "2026-11-03",
+ "database": "ma (domain_rank) / global (backlinks_overview)",
+ "domain_rank_ma": {
+  "gls-sprachzentrum.ma": {
+   "rank": 29233,
+   "organic_keywords": 26,
+   "organic_traffic": 329,
+   "pos_1_3": 3,
+   "pos_4_10": 6
+  },
+  "centreallemand-hamra.com": {
+   "rank": 54927,
+   "organic_keywords": 7,
+   "organic_traffic": 94,
+   "pos_1_3": 2,
+   "pos_4_10": 0
+  },
+  "academieallemande.ma": {
+   "rank": 4842,
+   "organic_keywords": 42,
+   "organic_traffic": 4850,
+   "pos_1_3": 10,
+   "pos_4_10": 0
+  },
+  "bremencenter.com": {
+   "rank": 30287,
+   "organic_keywords": 11,
+   "organic_traffic": 312,
+   "pos_1_3": 1,
+   "pos_4_10": 1
+  },
+  "germarok.ma": {
+   "rank": 12880,
+   "organic_keywords": 16,
+   "organic_traffic": 1209,
+   "pos_1_3": 2,
+   "pos_4_10": 1
+  },
+  "mdazentrum.ma": {
+   "rank": 116503,
+   "organic_keywords": 6,
+   "organic_traffic": 17,
+   "pos_1_3": 0,
+   "pos_4_10": 1
+  },
+  "deutschplusma.com": {
+   "rank": 121939,
+   "organic_keywords": 4,
+   "organic_traffic": 15,
+   "pos_1_3": 0,
+   "pos_4_10": 1
+  }
+ },
+ "backlinks_overview": {
+  "gls-sprachzentrum.ma": {
+   "authority_score": 9,
+   "backlinks": 70,
+   "referring_domains": 7,
+   "follow": 64,
+   "nofollow": 6
+  },
+  "centreallemand-hamra.com": {
+   "authority_score": 8,
+   "backlinks": 5434,
+   "referring_domains": 1932,
+   "follow": 5353,
+   "nofollow": 81
+  },
+  "academieallemande.ma": {
+   "authority_score": 11,
+   "backlinks": 6136,
+   "referring_domains": 634,
+   "follow": 5963,
+   "nofollow": 173
+  },
+  "bremencenter.com": {
+   "authority_score": 9,
+   "backlinks": 1992,
+   "referring_domains": 1761,
+   "follow": 1817,
+   "nofollow": 175
+  },
+  "germarok.ma": {
+   "authority_score": 11,
+   "backlinks": 443,
+   "referring_domains": 348,
+   "follow": 220,
+   "nofollow": 223
+  }
+ },
+ "units": {
+  "domain_rank": "10 per domain (7 calls = 70)",
+  "backlinks_overview": "40 per domain (5 calls = 200)"
+ }
+}

@@ -1,0 +1,61 @@
+{
+    "retrieved_at": "2026-11-03",
+    "report": "phrase_organic",
+    "database": "ma",
+    "serps": {
+        "centre allemand rabat": [],
+        "centre allemand casablanca": [],
+        "centre allemand": [
+            {
+                "Domain": "centreallemand-hamra.com",
+                "Url": "https://centreallemand-hamra.com/",
+                "Keywords SERP Features": "3,7,9,13,21,36"
+            },
+            {
+                "Domain": "academieallemande.ma",
+                "Url": "https://academieallemande.ma/",
+                "Keywords SERP Features": "3,7,9,13,21,36"
+            },
+            {
+                "Domain": "bremencenter.com",
+                "Url": "https://bremencenter.com/",
+                "Keywords SERP Features": "3,7,9,13,21,36"
+            },
+            {
+                "Domain": "germarok.ma",
+                "Url": "https://germarok.ma/",
+                "Keywords SERP Features": "3,7,9,13,21,36"
+            },
+            {
+                "Domain": "www.goethe.de",
+                "Url": "https://www.goethe.de/ins/ma/fr/spr/kur.html",
+                "Keywords SERP Features": "3,7,9,13,21,36"
+            },
+            {
+                "Domain": "mdazentrum.ma",
+                "Url": "https://mdazentrum.ma/",
+                "Keywords SERP Features": "3,7,9,13,21,36"
+            },
+            {
+                "Domain": "lial-agadir.com",
+                "Url": "https://lial-agadir.com/",
+                "Keywords SERP Features": "3,7,9,13,21,36"
+            },
+            {
+                "Domain": "deutschplusma.com",
+                "Url": "https://deutschplusma.com/",
+                "Keywords SERP Features": "3,7,9,13,21,36"
+            },
+            {
+                "Domain": "www.instagram.com",
+                "Url": "https://www.instagram.com/goetheinstitut_marokko/?hl=fr",
+                "Keywords SERP Features": "3,7,9,13,21,36"
+            },
+            {
+                "Domain": "gls-sprachzentrum.ma",
+                "Url": "https://gls-sprachzentrum.ma/fr",
+                "Keywords SERP Features": "3,7,9,13,21,36"
+            }
+        ]
+    }
+}

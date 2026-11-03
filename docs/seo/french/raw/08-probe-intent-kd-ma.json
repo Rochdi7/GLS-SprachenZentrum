@@ -1,0 +1,32 @@
+{
+ "retrieved_at": "2026-11-03T19:00:55+00:00",
+ "report": "phrase_these (export_columns incl. intent, keyword_difficulty)",
+ "database": "ma",
+ "units": 30,
+ "rows": [
+  {
+   "Keyword": "ausbildung",
+   "Search Volume": "6600",
+   "CPC": "0.34",
+   "Competition": "0.04",
+   "Intent": "1",
+   "Keyword Difficulty Index": "64"
+  },
+  {
+   "Keyword": "centre allemand",
+   "Search Volume": "590",
+   "CPC": "0.39",
+   "Competition": "0.03",
+   "Intent": "0",
+   "Keyword Difficulty Index": "44"
+  },
+  {
+   "Keyword": "studienkolleg",
+   "Search Volume": "390",
+   "CPC": "0.55",
+   "Competition": "0.2",
+   "Intent": "1",
+   "Keyword Difficulty Index": "30"
+  }
+ ]
+}
