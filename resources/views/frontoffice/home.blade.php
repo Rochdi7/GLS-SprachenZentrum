@@ -311,10 +311,12 @@ SITES — Images only (NO iframe, NO yt-holder, NO video)
                     </div>
 
                     @php $grTotals = \App\Support\GoogleReviews::totals(); @endphp
-                    <div class="reveal delay-2"><strong>{{ __('google-reviews.summary', [
-                        'rating' => \App\Support\GoogleReviews::number($grTotals['rating'], 1),
-                        'count' => \App\Support\GoogleReviews::number($grTotals['count']),
-                    ]) }}</strong></div>
+                    @if ($grTotals['count'] > 0)
+                        <div class="reveal delay-2"><strong>{{ __('google-reviews.summary', [
+                            'rating' => \App\Support\GoogleReviews::number($grTotals['rating'], 1),
+                            'count' => \App\Support\GoogleReviews::number($grTotals['count']),
+                        ]) }}</strong></div>
+                    @endif
                 </div>
             </div>
 
